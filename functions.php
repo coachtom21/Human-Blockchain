@@ -34,3 +34,143 @@ function hello_elementor_child_scripts_styles() {
 
 }
 add_action( 'wp_enqueue_scripts', 'hello_elementor_child_scripts_styles', 20 );
+
+/**
+ * Load HumanBlockchain core files
+ */
+function hb_load_core_files() {
+	$includes_dir = get_stylesheet_directory() . '/includes';
+	
+	// Load service classes
+	if ( file_exists( $includes_dir . '/class-device-registration-service.php' ) ) {
+		require_once $includes_dir . '/class-device-registration-service.php';
+	}
+	
+	if ( file_exists( $includes_dir . '/class-qrtiger-service.php' ) ) {
+		require_once $includes_dir . '/class-qrtiger-service.php';
+	}
+	
+	if ( file_exists( $includes_dir . '/class-discord-service.php' ) ) {
+		require_once $includes_dir . '/class-discord-service.php';
+	}
+	
+	if ( file_exists( $includes_dir . '/class-serendipity-service.php' ) ) {
+		require_once $includes_dir . '/class-serendipity-service.php';
+	}
+	
+	if ( file_exists( $includes_dir . '/class-hb-rest-api.php' ) ) {
+		require_once $includes_dir . '/class-hb-rest-api.php';
+	}
+}
+add_action( 'after_setup_theme', 'hb_load_core_files' );
+
+/**
+ * Register REST API routes
+ */
+function hb_register_rest_routes() {
+	HB_REST_API::register_routes();
+}
+add_action( 'rest_api_init', 'hb_register_rest_routes' );
+
+/**
+ * Run database migrations on theme activation
+ */
+function hb_activate_theme() {
+	require_once get_stylesheet_directory() . '/database/migrations/001_create_device_tables.php';
+	hb_create_device_tables();
+}
+add_action( 'after_switch_theme', 'hb_activate_theme' );
+
+/**
+ * Check and run migrations if needed
+ */
+function hb_check_migrations() {
+	$current_version = get_option( 'hb_db_version', '0.0.0' );
+	
+	if ( version_compare( $current_version, '1.0.0', '<' ) ) {
+		require_once get_stylesheet_directory() . '/database/migrations/001_create_device_tables.php';
+		hb_create_device_tables();
+	}
+}
+add_action( 'admin_init', 'hb_check_migrations' );
+
+/**
+ * Create registration pages automatically
+ * Run once by visiting: ?hb_create_pages=1 (as admin)
+ */
+function hb_create_registration_pages() {
+	if ( ! current_user_can( 'manage_options' ) ) {
+		return;
+	}
+	
+	$pages = array(
+		array(
+			'title' => 'Activate Device',
+			'slug' => 'activate-device',
+			'template' => 'template-activate-device.php',
+		),
+		array(
+			'title' => 'Validate v-Card',
+			'slug' => 'activate-device-step-2',
+			'template' => 'template-activate-device-step-2.php',
+		),
+		array(
+			'title' => 'Connect Discord',
+			'slug' => 'activate-device-step-3',
+			'template' => 'template-activate-device-step-3.php',
+		),
+		array(
+			'title' => 'Choose Membership',
+			'slug' => 'activate-device-step-4',
+			'template' => 'template-activate-device-step-4.php',
+		),
+		array(
+			'title' => 'Registration Complete',
+			'slug' => 'activate-device-complete',
+			'template' => 'template-activate-device-complete.php',
+		),
+	);
+	
+	$created = 0;
+	$updated = 0;
+	
+	foreach ( $pages as $page_data ) {
+		$page = get_page_by_path( $page_data['slug'] );
+		
+		if ( ! $page ) {
+			$page_id = wp_insert_post( array(
+				'post_title'   => $page_data['title'],
+				'post_name'    => $page_data['slug'],
+				'post_status'  => 'publish',
+				'post_type'    => 'page',
+				'post_content' => '',
+			) );
+			
+			if ( $page_id && ! is_wp_error( $page_id ) ) {
+				update_post_meta( $page_id, '_wp_page_template', $page_data['template'] );
+				$created++;
+			}
+		} else {
+			// Update existing page template if needed
+			$current_template = get_post_meta( $page->ID, '_wp_page_template', true );
+			if ( $current_template !== $page_data['template'] ) {
+				update_post_meta( $page->ID, '_wp_page_template', $page_data['template'] );
+				$updated++;
+			}
+		}
+	}
+	
+	return array( 'created' => $created, 'updated' => $updated );
+}
+
+// Auto-create pages if requested
+if ( isset( $_GET['hb_create_pages'] ) && current_user_can( 'manage_options' ) ) {
+	$result = hb_create_registration_pages();
+	echo '<div style="padding:20px; background:#fff; margin:20px;">';
+	echo '<h2>Pages Created!</h2>';
+	echo '<p>Created: ' . $result['created'] . ' pages</p>';
+	echo '<p>Updated: ' . $result['updated'] . ' pages</p>';
+	echo '<p><a href="' . admin_url( 'edit.php?post_type=page' ) . '">View Pages</a></p>';
+	echo '</div>';
+	exit;
+}

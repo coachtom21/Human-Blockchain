@@ -1,1333 +1,852 @@
-<!-- 
-Template Name: Home Template -->
-
-
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Human Blockchain • Your Voice. Your Choice. Your Treasury.</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Human Blockchain is a referral membership gateway that sponsors the United Citizens clearinghouse — a Visa/Mastercard alternative powered by 2-scan Proof-of-Delivery and cooperative patronage." />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>HumanBlockchain.info | Serendipity + YAM-is-ON Proof of Delivery</title>
+  <meta name="description" content="Device-driven 2-scan Proof of Delivery. Serendipity forms Buyer POCs locally by geo-location + timestamp and Seller POCs out-of-state or global. XP in scientific notation. New World Penny recognition. VFN handles redemption." />
+
   <style>
-    :root {
-      --bg: #050816;
-      --bg-alt: #0b1020;
-      --accent: #ffb347;
-      --accent-soft: rgba(255, 179, 71, 0.08);
-      --accent-2: #44ffd2;
-      --text-main: #f5f5f7;
-      --text-muted: #a0a3b1;
-      --border-subtle: #23263a;
-      --danger: #ff4b81;
-      --shadow-soft: 0 22px 45px rgba(0, 0, 0, 0.6);
-      --radius-xl: 26px;
-      --radius-lg: 18px;
-      --radius-pill: 999px;
-      --max-width: 1120px;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
-        "Segoe UI", sans-serif;
-      background: radial-gradient(circle at top, #111827 0, #050816 50%);
-      color: var(--text-main);
-      -webkit-font-smoothing: antialiased;
-    }
-
-    a {
-      color: inherit;
-      text-decoration: none;
-    }
-
-    img {
-      max-width: 100%;
-      display: block;
-    }
-
-    .page {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .shell {
-      width: 100%;
-      max-width: var(--max-width);
-      margin: 0 auto;
-      padding: 1.5rem 1.25rem 4rem;
-    }
-
-    /* Header */
-
-    .site-header {
-      position: sticky;
-      top: 0;
-      z-index: 20;
-      backdrop-filter: blur(16px);
-      background: linear-gradient(
-        to bottom,
-        rgba(5, 8, 22, 0.95),
-        rgba(5, 8, 22, 0.85),
-        transparent
-      );
-      border-bottom: 1px solid rgba(35, 38, 58, 0.8);
-    }
-
-    .site-header-inner {
-      max-width: var(--max-width);
-      margin: 0 auto;
-      padding: 0.75rem 1.25rem 0.9rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 0.65rem;
-    }
-
-    .brand-mark {
-      width: 32px;
-      height: 32px;
-      border-radius: 12px;
-      background: radial-gradient(circle at 30% 0, #ffffff, #ffb347 30%, #7c2cff);
-      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.12),
-        0 14px 35px rgba(0, 0, 0, 0.65);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.85rem;
-      font-weight: 700;
-      color: #050816;
-    }
-
-    .brand-text {
-      display: flex;
-      flex-direction: column;
-      gap: 0.06rem;
-    }
-
-    .brand-name {
-      font-size: 0.98rem;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      font-weight: 650;
-    }
-
-    .brand-tagline {
-      font-size: 0.72rem;
-      color: var(--text-muted);
-    }
-
-    .nav {
-      display: flex;
-      align-items: center;
-      gap: 1.25rem;
-      font-size: 0.82rem;
-      color: var(--text-muted);
-    }
-
-    .nav a {
-      position: relative;
-      padding-bottom: 0.1rem;
-    }
-
-    .nav a::after {
-      content: "";
-      position: absolute;
-      left: 0;
-      bottom: 0;
-      width: 0;
-      height: 1px;
-      background: linear-gradient(90deg, var(--accent), var(--accent-2));
-      transition: width 0.2s ease;
-    }
-
-    .nav a:hover::after {
-      width: 100%;
-    }
-
-    .nav-cta {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      padding: 0.38rem 0.9rem;
-      border-radius: var(--radius-pill);
-      border: 1px solid rgba(255, 179, 71, 0.5);
-      background: radial-gradient(
-          circle at top left,
-          rgba(255, 179, 71, 0.09),
-          transparent 50%
-        ),
-        rgba(5, 8, 22, 0.8);
-      color: var(--accent);
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7);
-      font-size: 0.8rem;
-      font-weight: 600;
-      white-space: nowrap;
-    }
-
-    .nav-cta span.icon {
-      font-size: 0.95rem;
-    }
-
-    @media (max-width: 768px) {
-      .site-header-inner {
-        flex-wrap: wrap;
-        justify-content: center;
-      }
-      .nav {
-        display: none;
-      }
-    }
-
-    /* Hero */
-
-    .hero {
-      padding-top: 2.75rem;
-      display: grid;
-      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1.2fr);
-      gap: 2.5rem;
-      align-items: center;
-    }
-
-    .hero-left {
-      display: flex;
-      flex-direction: column;
-      gap: 1.75rem;
-    }
-
-    .hero-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.55rem;
-      padding: 0.28rem 0.7rem;
-      border-radius: var(--radius-pill);
-      border: 1px solid rgba(68, 255, 210, 0.45);
-      background: radial-gradient(
-          circle at top left,
-          rgba(68, 255, 210, 0.12),
-          transparent 60%
-        ),
-        rgba(11, 16, 32, 0.95);
-      color: var(--accent-2);
-      font-size: 0.78rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      max-width: max-content;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
-    }
-
-    .hero-pill-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 999px;
-      background: radial-gradient(circle at 30% 0, #ffffff, #44ffd2);
-      box-shadow: 0 0 0 4px rgba(68, 255, 210, 0.18);
-    }
-
-    .hero-title {
-      font-size: clamp(2.1rem, 3.1vw + 1.4rem, 3.2rem);
-      line-height: 1.07;
-      letter-spacing: 0.01em;
-    }
-
-    .hero-title span.highlight {
-      background: linear-gradient(120deg, #ffb347, #ff4b81, #44ffd2);
-      -webkit-background-clip: text;
-      color: transparent;
-    }
-
-    .hero-subtitle {
-      font-size: 0.98rem;
-      line-height: 1.7;
-      color: var(--text-muted);
-      max-width: 34rem;
-    }
-
-    .hero-subtitle b {
-      color: var(--accent);
-      font-weight: 600;
-    }
-
-    .hero-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.9rem;
-    }
-
-    .btn {
-      border-radius: var(--radius-pill);
-      padding: 0.75rem 1.35rem;
-      font-size: 0.9rem;
-      font-weight: 600;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.45rem;
-      cursor: pointer;
-      border: none;
-      outline: none;
-      text-decoration: none;
-      transition: transform 0.12s ease, box-shadow 0.12s ease,
-        background 0.12s ease, border-color 0.12s ease;
-      white-space: nowrap;
-    }
-
-    .btn-primary {
-      background: radial-gradient(
-          circle at top left,
-          rgba(255, 255, 255, 0.18),
-          transparent 55%
-        ),
-        linear-gradient(120deg, #ffb347, #ff4b81);
-      color: #050816;
-      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.8);
-    }
-
-    .btn-primary:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 22px 50px rgba(0, 0, 0, 0.9);
-    }
-
-    .btn-ghost {
-      background: rgba(11, 16, 32, 0.85);
-      color: var(--text-main);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-    }
-
-    .btn-ghost:hover {
-      background: rgba(15, 23, 42, 0.95);
-    }
-
-    .btn .icon {
-      font-size: 1rem;
-    }
-
-    .hero-meta {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 0.9rem;
-      margin-top: 0.25rem;
-      max-width: 32rem;
-    }
-
-    .meta-card {
-      border-radius: 16px;
-      padding: 0.85rem 0.9rem;
-      background: radial-gradient(
-          circle at top left,
-          rgba(255, 179, 71, 0.16),
-          transparent 55%
-        ),
-        rgba(11, 16, 32, 0.85);
-      border: 1px solid rgba(35, 38, 58, 0.85);
-      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
-    }
-
-    .meta-card:nth-child(2) {
-      background: radial-gradient(
-          circle at top right,
-          rgba(68, 255, 210, 0.12),
-          transparent 55%
-        ),
-        rgba(11, 16, 32, 0.85);
-    }
-
-    .meta-card:nth-child(3) {
-      background: radial-gradient(
-          circle at top,
-          rgba(255, 75, 129, 0.14),
-          transparent 60%
-        ),
-        rgba(11, 16, 32, 0.85);
-    }
-
-    .meta-label {
-      font-size: 0.68rem;
-      text-transform: uppercase;
-      letter-spacing: 0.09em;
-      color: var(--text-muted);
-      margin-bottom: 0.25rem;
-    }
-
-    .meta-value {
-      font-size: 0.9rem;
-      font-weight: 600;
-    }
-
-    .meta-note {
-      font-size: 0.7rem;
-      margin-top: 0.15rem;
-      color: var(--text-muted);
-    }
-
-    /* Hero right */
-
-    .hero-right {
-      display: flex;
-      justify-content: center;
-    }
-
-    .hero-panel {
-      width: 100%;
-      max-width: 420px;
-      border-radius: var(--radius-xl);
-      border: 1px solid rgba(68, 255, 210, 0.5);
-      background: radial-gradient(
-          circle at top left,
-          rgba(68, 255, 210, 0.12),
-          transparent 55%
-        ),
-        radial-gradient(
-          circle at bottom right,
-          rgba(255, 75, 129, 0.22),
-          transparent 45%
-        ),
-        rgba(5, 8, 22, 0.96);
-      padding: 1.2rem 1.1rem 1.25rem;
-      box-shadow: var(--shadow-soft);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .hero-panel-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 0.75rem;
-    }
-
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      border-radius: var(--radius-pill);
-      border: 1px solid rgba(255, 255, 255, 0.22);
-      padding: 0.25rem 0.6rem;
-      font-size: 0.7rem;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      background: rgba(5, 8, 22, 0.8);
-    }
-
-    .badge-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 999px;
-      background: radial-gradient(circle at 30% 0, #ffffff, #ffb347);
-    }
-
-    .panel-title {
-      font-size: 0.9rem;
-      font-weight: 600;
-    }
-
-    .panel-subtitle {
-      font-size: 0.74rem;
-      color: var(--text-muted);
-    }
-
-    .panel-grid {
-      margin-top: 0.8rem;
-      display: grid;
-      grid-template-columns: 1.1fr 1.1fr;
-      gap: 0.7rem;
-    }
-
-    .panel-card {
-      border-radius: 16px;
-      padding: 0.7rem 0.75rem;
-      background: rgba(11, 16, 32, 0.93);
-      border: 1px solid rgba(35, 38, 58, 0.9);
-    }
-
-    .panel-label {
-      font-size: 0.68rem;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.09em;
-      margin-bottom: 0.35rem;
-    }
-
-    .panel-value {
-      font-size: 0.9rem;
-      font-weight: 600;
-      margin-bottom: 0.2rem;
-    }
-
-    .panel-chip-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.25rem;
-    }
-
-    .chip {
-      font-size: 0.68rem;
-      padding: 0.18rem 0.5rem;
-      border-radius: 999px;
-      border: 1px solid rgba(255, 255, 255, 0.16);
-      background: rgba(15, 23, 42, 0.95);
-      color: var(--text-muted);
-    }
-
-    .chip.highlight {
-      border-color: rgba(255, 179, 71, 0.85);
-      color: var(--accent);
-      background: rgba(15, 23, 42, 0.98);
-    }
-
-    .xp-line {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      gap: 0.75rem;
-      margin-top: 0.4rem;
-    }
-
-    .xp-line .label {
-      font-size: 0.72rem;
-      color: var(--text-muted);
-    }
-
-    .xp-line .value {
-      font-size: 0.76rem;
-      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo,
-        Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      color: var(--accent-2);
-    }
-
-    .xp-line .value span.dim {
-      color: rgba(160, 163, 177, 0.8);
-    }
-
-    .panel-footer {
-      margin-top: 0.85rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 0.75rem;
-      font-size: 0.72rem;
-      color: var(--text-muted);
-    }
-
-    .panel-footer strong {
-      color: var(--accent);
-      font-weight: 600;
-    }
-
-    .panel-footer a {
-      font-size: 0.72rem;
-      color: var(--accent-2);
-      text-decoration: underline;
-      text-decoration-style: dotted;
-      text-underline-offset: 0.14rem;
-    }
-
-    /* Sections */
-
-    .section {
-      margin-top: 3.25rem;
-    }
-
-    .section-header {
-      display: flex;
-      flex-direction: column;
-      gap: 0.3rem;
-      margin-bottom: 1.4rem;
-    }
-
-    .section-kicker {
-      font-size: 0.78rem;
-      text-transform: uppercase;
-      letter-spacing: 0.18em;
-      color: var(--accent-2);
-    }
-
-    .section-title {
-      font-size: 1.25rem;
-      letter-spacing: 0.02em;
-    }
-
-    .section-description {
-      font-size: 0.92rem;
-      color: var(--text-muted);
-      max-width: 40rem;
-    }
-
-    .section-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 1.3rem;
-    }
-
-    .card {
-      border-radius: var(--radius-lg);
-      border: 1px solid var(--border-subtle);
-      background: radial-gradient(
-          circle at top left,
-          rgba(255, 179, 71, 0.07),
-          transparent 55%
-        ),
-        var(--bg-alt);
-      padding: 1rem 1.05rem 1.1rem;
-      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7);
-    }
-
-    .card h3 {
-      font-size: 0.98rem;
-      margin-bottom: 0.45rem;
-    }
-
-    .card p {
-      font-size: 0.86rem;
-      color: var(--text-muted);
-      line-height: 1.6;
-    }
-
-    .card-tag {
-      font-size: 0.68rem;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--text-muted);
-      margin-bottom: 0.45rem;
-    }
-
-    .card-highlight {
-      border-color: rgba(68, 255, 210, 0.8);
-      background: radial-gradient(
-          circle at top right,
-          rgba(68, 255, 210, 0.16),
-          transparent 55%
-        ),
-        var(--bg-alt);
-    }
-
-    .card-list {
-      list-style: none;
-      margin-top: 0.55rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.3rem;
-      font-size: 0.84rem;
-      color: var(--text-muted);
-    }
-
-    .card-list li::before {
-      content: "• ";
-      color: var(--accent);
-    }
-
-    /* How it works */
-
-    .steps {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 1.3rem;
-    }
-
-    .step-number {
-      width: 26px;
-      height: 26px;
-      border-radius: 999px;
-      border: 1px solid rgba(255, 255, 255, 0.18);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.8rem;
-      margin-bottom: 0.5rem;
-      background: radial-gradient(
-          circle at top left,
-          rgba(255, 179, 71, 0.45),
-          transparent 60%
-        ),
-        rgba(5, 8, 22, 0.9);
-    }
-
-    .step-title {
-      font-size: 0.95rem;
-      margin-bottom: 0.3rem;
-    }
-
-    .step-text {
-      font-size: 0.86rem;
-      color: var(--text-muted);
-      line-height: 1.6;
-    }
-
-    /* Referral strip */
-
-    .referral-strip {
-      margin-top: 3.25rem;
-      border-radius: var(--radius-xl);
-      border: 1px solid rgba(68, 255, 210, 0.65);
-      padding: 1.1rem 1.1rem 1.15rem;
-      background: radial-gradient(
-          circle at top left,
-          rgba(68, 255, 210, 0.2),
-          transparent 60%
-        ),
-        radial-gradient(
-          circle at bottom right,
-          rgba(255, 179, 71, 0.22),
-          transparent 55%
-        ),
-        #050816;
-      display: flex;
-      flex-direction: column;
-      gap: 0.65rem;
-      box-shadow: var(--shadow-soft);
-    }
-
-    .referral-strip-main {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 0.75rem;
-      justify-content: space-between;
-    }
-
-    .referral-text {
-      font-size: 0.94rem;
-    }
-
-    .referral-text span {
-      background: linear-gradient(120deg, #ffb347, #ff4b81, #44ffd2);
-      -webkit-background-clip: text;
-      color: transparent;
-      font-weight: 600;
-    }
-
-    .referral-note {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-    }
-
-    /* FAQ */
-
-    .faq-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 1.1rem;
-    }
-
-    .faq-item {
-      border-radius: 18px;
-      border: 1px solid var(--border-subtle);
-      padding: 0.8rem 0.9rem 0.9rem;
-      background: rgba(11, 16, 32, 0.9);
-    }
-
-    .faq-q {
-      font-size: 0.9rem;
-      margin-bottom: 0.25rem;
-    }
-
-    .faq-a {
-      font-size: 0.84rem;
-      color: var(--text-muted);
-      line-height: 1.6;
-    }
+    /* =========================================================
+    HumanBlockchain.info — Modern CSS (inline, ready to paste)
+    ========================================================= */
+    :root{
+      --bg: #0b1220;
+      --bg2:#070d18;
+      --panel: rgba(18,31,61,.70);
+      --line: rgba(232,238,252,.12);
+      --text: #e8eefc;
+      --muted: #b8c3e6;
+
+      --accent: #7dd3fc;
+      --accent2:#a78bfa;
+      --good: #86efac;
+      --warn: #fbbf24;
+
+      --radius: 18px;
+      --shadow2: 0 8px 18px rgba(0,0,0,.22);
+      --maxw: 1100px;
+
+      --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font-family:var(--font); color:var(--text); line-height:1.45;
+      background:
+        radial-gradient(1100px 600px at 15% 0%, rgba(167,139,250,.18), transparent 55%),
+        radial-gradient(900px 500px at 85% 20%, rgba(125,211,252,.16), transparent 55%),
+        radial-gradient(700px 420px at 50% 90%, rgba(134,239,172,.10), transparent 60%),
+        linear-gradient(180deg, var(--bg), var(--bg2));
+    }
+    a{color:inherit;text-decoration:none}
+    code{font-family:var(--mono); background: rgba(232,238,252,.06); border:1px solid var(--line);
+      padding:2px 6px; border-radius:10px; font-size:.95em}
+    .wrap{max-width:var(--maxw); margin:0 auto; padding:0 18px}
+    .grid{display:grid; gap:16px}
+    .two{display:grid; grid-template-columns:1fr 1fr; gap:16px}
+    .three{display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px}
+    @media (max-width:900px){ .two,.three{grid-template-columns:1fr} }
+    .small{font-size:12px; color:var(--muted)}
+    .lead{color:var(--muted); font-size:16px; margin:0 0 18px}
+    h1{font-size:42px; line-height:1.05; margin:10px 0 10px; letter-spacing:-.6px}
+    h2{font-size:28px; margin:0 0 10px; letter-spacing:-.3px}
+    h3{font-size:18px; margin:0 0 8px}
+    @media (max-width:520px){ h1{font-size:34px} h2{font-size:24px} }
+
+    .card{
+      background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
+      padding:18px; box-shadow:var(--shadow2);
+    }
+    .section{padding:26px 0}
+    .hero{padding:44px 0 18px}
+    .hero .grid{grid-template-columns:1.25fr .75fr; align-items:stretch}
+    @media (max-width:900px){ .hero .grid{grid-template-columns:1fr} }
+
+    /* Topbar / Nav */
+    .topbar{
+      position:sticky; top:0; z-index:50;
+      background:rgba(11,18,32,.78);
+      backdrop-filter: blur(10px);
+      border-bottom:1px solid var(--line);
+    }
+    .nav{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:12px; padding:14px 0;
+    }
+    .brand{display:flex; align-items:center; gap:10px; min-width:220px}
+    .logo{
+      width:36px; height:36px; border-radius:12px;
+      background: linear-gradient(135deg, rgba(125,211,252,.95), rgba(167,139,250,.95));
+      box-shadow: 0 10px 20px rgba(0,0,0,.25);
+    }
+    .brand b{letter-spacing:.3px}
+    .menu{display:flex; align-items:center; gap:6px; flex-wrap:wrap; justify-content:center}
+    .menu a{
+      font-size:14px; color:var(--muted);
+      padding:8px 10px; border-radius:12px;
+      border:1px solid transparent;
+    }
+    .menu a:hover{background: rgba(232,238,252,.06); color:var(--text); border-color: rgba(232,238,252,.10)}
+    .cta{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
+
+    /* Buttons */
+    .btn{
+      display:inline-flex; align-items:center; justify-content:center; gap:10px;
+      padding:10px 14px; border-radius:14px; border:1px solid var(--line);
+      background: rgba(232,238,252,.06); color:var(--text);
+      font-weight:800; font-size:14px;
+      box-shadow: 0 10px 18px rgba(0,0,0,.18);
+      transition: transform .08s ease, filter .08s ease, background .12s ease, border-color .12s ease;
+    }
+    .btn:hover{background: rgba(232,238,252,.10); transform: translateY(-1px)}
+    .btn:active{transform: translateY(0px); filter: brightness(.98)}
+    .btn.primary{
+      border-color:transparent;
+      background: linear-gradient(135deg, rgba(125,211,252,.95), rgba(167,139,250,.95));
+      color:#071024;
+    }
+    .btn.primary:hover{filter:brightness(1.05)}
+    .btn.ghost{background: transparent; border-color: rgba(232,238,252,.18)}
+    .btn.small{padding:8px 12px; border-radius:12px; font-size:13px}
+
+    /* Pills / tags */
+    .pill, .tag{
+      display:inline-flex; align-items:center; gap:8px;
+      border-radius:999px; padding:6px 10px;
+      font-size:13px; color:var(--muted);
+      background: rgba(232,238,252,.08); border:1px solid var(--line);
+    }
+    .tag{font-size:12px}
+    .badge{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:6px 10px; border-radius:999px;
+      background: rgba(125,211,252,.10);
+      border:1px solid rgba(125,211,252,.25);
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    /* KPI blocks */
+    .kpi{display:flex; gap:10px; flex-wrap:wrap; margin-top:12px}
+    .kpi .mini{
+      flex:1; min-width:180px;
+      background: rgba(232,238,252,.05); border:1px solid var(--line);
+      border-radius:16px; padding:12px;
+    }
+    .mini b{display:block; font-size:14px; margin-bottom:4px}
+    .mini span{color:var(--muted); font-size:13px}
+
+    /* Lists */
+    .list{display:grid; gap:10px; margin-top:10px}
+    .item{
+      display:flex; gap:10px; align-items:flex-start;
+      padding:12px; border-radius:16px;
+      background: rgba(232,238,252,.05);
+      border:1px solid rgba(232,238,252,.10);
+    }
+    .dot{
+      width:10px; height:10px; border-radius:999px;
+      margin-top:6px; background:var(--accent);
+      box-shadow: 0 0 0 4px rgba(125,211,252,.10);
+    }
+    .dot.good{background:var(--good); box-shadow: 0 0 0 4px rgba(134,239,172,.10)}
+    .dot.warn{background:var(--warn); box-shadow: 0 0 0 4px rgba(251,191,36,.12)}
+
+    /* FAQ accordions */
+    details{
+      border-radius:16px; background: rgba(232,238,252,.05);
+      border:1px solid rgba(232,238,252,.12);
+      padding:12px; overflow:hidden;
+    }
+    details + details{margin-top:10px}
+    details[open]{background: rgba(232,238,252,.06)}
+    details summary{
+      cursor:pointer; list-style:none; font-weight:900;
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+    }
+    details summary::-webkit-details-marker{display:none}
+    details summary::after{
+      content:"+";
+      font-weight:900; color:var(--muted);
+      width:26px; height:26px;
+      display:inline-flex; align-items:center; justify-content:center;
+      border-radius:10px; border:1px solid rgba(232,238,252,.12);
+      background: rgba(232,238,252,.04);
+    }
+    details[open] summary::after{content:"–"}
+    details p{margin:10px 0 0; color:var(--muted)}
 
     /* Footer */
+    .footer{
+      padding:26px 0 36px;
+      border-top:1px solid var(--line);
+      color:var(--muted); font-size:13px;
+    }
+    .footer .cols{display:grid; grid-template-columns:1fr 1fr; gap:16px}
+    @media (max-width:900px){ .footer .cols{grid-template-columns:1fr} }
 
-    .site-footer {
-      border-top: 1px solid rgba(35, 38, 58, 0.9);
-      margin-top: 3.5rem;
-      padding-top: 1.7rem;
-      font-size: 0.78rem;
-      color: var(--text-muted);
+    /* Mobile menu (no JS) */
+    .hamburger{display:none}
+    .hamburger label{
+      display:inline-flex; align-items:center; justify-content:center;
+      width:44px; height:44px; border-radius:14px;
+      border:1px solid rgba(232,238,252,.16);
+      background: rgba(232,238,252,.06);
+      cursor:pointer;
+    }
+    .hamburger label:hover{background: rgba(232,238,252,.10)}
+    .hamburger svg{width:22px;height:22px}
+    #navtoggle{display:none}
+    @media (max-width:900px){
+      .menu{display:none}
+      .hamburger{display:block}
+      #navtoggle:checked ~ .menu-drawer{display:block}
+    }
+    .menu-drawer{
+      display:none;
+      padding:10px 0 14px;
+      border-top:1px solid rgba(232,238,252,.10);
+      margin-top:10px;
+    }
+    .menu-drawer a{
+      display:block;
+      padding:10px 12px;
+      border-radius:14px;
+      color:var(--muted);
+      border:1px solid transparent;
+    }
+    .menu-drawer a:hover{
+      background: rgba(232,238,252,.06);
+      color: var(--text);
+      border-color: rgba(232,238,252,.10);
+    }
+
+    /* ============ ENTRY MODAL OVERLAY ============ */
+    .entry-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      display: grid;
+      place-items: center;
+      z-index: 10000;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    .entry-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .entry-modal {
+      width: min(880px, 92%);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.06));
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: var(--radius);
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+      padding: 28px;
+      transform: scale(0.95);
+      transition: transform 0.3s ease;
+    }
+
+    .entry-overlay.active .entry-modal {
+      transform: scale(1);
+    }
+
+    .entry-modal h1 {
+      margin: 0 0 12px;
+      font-size: 28px;
+      letter-spacing: -0.02em;
+      color: var(--text);
+    }
+
+    .entry-modal p {
+      color: var(--muted);
+      line-height: 1.6;
+      max-width: 60ch;
+      margin: 0;
+    }
+
+    .enter-btn {
+      margin-top: 22px;
+      padding: 14px 22px;
+      font-size: 15px;
+      font-weight: 700;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      background: rgba(255, 255, 255, 0.14);
+      color: var(--text);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .enter-btn:hover {
+      background: rgba(255, 255, 255, 0.20);
+      border-color: var(--accent);
+      transform: translateY(-1px);
+    }
+
+    /* ============ POD GATE MODAL ============ */
+    .pod-gate-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      display: none;
+      grid;
+      place-items: center;
+      z-index: 10000;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    .pod-gate-overlay.active {
+      display: grid;
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .pod-gate-modal {
+      width: min(880px, 92%);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.06));
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: var(--radius);
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+      padding: 28px;
+      transform: scale(0.95);
+      transition: transform 0.3s ease;
+    }
+
+    .pod-gate-overlay.active .pod-gate-modal {
+      transform: scale(1);
+    }
+
+    .pod-gate-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 24px;
+    }
+
+    @media (max-width: 820px) {
+      .pod-gate-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .pod-gate-modal h2 {
+      margin: 0;
+      font-size: 26px;
+      color: var(--text);
+    }
+
+    .pod-gate-sub {
+      margin-top: 10px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .btn-row {
+      margin-top: 18px;
       display: flex;
+      gap: 12px;
       flex-wrap: wrap;
-      align-items: center;
-      gap: 0.75rem;
+    }
+
+    .choice-btn {
+      flex: 1;
+      min-width: 200px;
+      padding: 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      background: rgba(255, 255, 255, 0.12);
+      color: var(--text);
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .choice-btn:hover {
+      background: rgba(255, 255, 255, 0.18);
+      border-color: var(--accent);
+      transform: translateY(-1px);
+    }
+
+    .statement-box {
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 16px;
+      padding: 18px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(0, 0, 0, 0.15));
+    }
+
+    .statement-box strong {
+      color: var(--text);
+    }
+
+    .statement-box p {
+      margin: 0;
+      font-size: 13px;
+      line-height: 1.7;
+      color: var(--muted);
+    }
+
+    .modal-footer {
+      margin-top: 18px;
+      font-size: 12px;
+      color: var(--muted);
+      display: flex;
       justify-content: space-between;
-    }
-
-    .footer-links {
-      display: flex;
       flex-wrap: wrap;
-      gap: 1rem;
-    }
-
-    .footer-links a {
-      text-decoration: underline;
-      text-decoration-style: dotted;
-      text-underline-offset: 0.15rem;
-    }
-
-    @media (max-width: 960px) {
-      .hero {
-        grid-template-columns: minmax(0, 1fr);
-      }
-
-      .hero-right {
-        order: -1;
-      }
-
-      .hero {
-        gap: 2.2rem;
-      }
-
-      .section-grid,
-      .steps,
-      .faq-grid {
-        grid-template-columns: minmax(0, 1fr);
-      }
-
-      .hero-meta {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-    }
-
-    @media (max-width: 640px) {
-      .shell {
-        padding-inline: 1rem;
-      }
-
-      .hero {
-        padding-top: 2rem;
-      }
-
-      .hero-meta {
-        grid-template-columns: minmax(0, 1fr);
-      }
-
-      .referral-strip {
-        padding: 0.95rem;
-      }
+      gap: 0.5rem;
     }
   </style>
 </head>
+
 <body>
-  <div class="page">
-    <!-- Header -->
-    <header class="site-header">
-      <div class="site-header-inner">
-        <a href="#top" class="brand">
-          <div class="brand-mark">HB</div>
-          <div class="brand-text">
-            <div class="brand-name">Human Blockchain</div>
-            <div class="brand-tagline">
-              Your Voice. Your Choice. Your Treasury.
-            </div>
-          </div>
-        </a>
-        <nav class="nav">
-          <a href="#cookie-jar">Cookie Jar Economy</a>
-          <a href="#human-blockchain">2-Scan PoD</a>
-          <a href="#yam-jam">YAM JAM</a>
-          <a href="#small-street">Small Street Applied</a>
-          <a href="#faq">FAQ</a>
-          <a href="#join" class="nav-cta">
-            <span class="icon">✨</span>
-            Join the Referral Network
-          </a>
-        </nav>
-      </div>
-    </header>
-
-    <!-- Main -->
-    <main id="top">
-      <div class="shell">
-        <!-- Hero -->
-        <section class="hero" aria-labelledby="hero-title">
-          <div class="hero-left">
-            <div class="hero-pill">
-              <span class="hero-pill-dot"></span>
-              AI Mastered by Human Intelligence (HI)
-            </div>
-            <h1 class="hero-title" id="hero-title">
-              A <span class="highlight">Human Blockchain</span> for the
-              Cookie&nbsp;Jar Economy.
-            </h1>
-            <p class="hero-subtitle">
-              In the Cookie Jar Economy, <b>speculation is a dirty word</b>.
-              We seek certainty — verified by a <b>2-scan Proof-of-Delivery</b>
-              between <b>You And Me</b>. Every confirmed delivery mints
-              <b>XP (Experience Points)</b>, becomes <b>YAM JAM</b> rewards, and
-              flows into a New World Penny marketplace on
-              <b>Small Street Applied</b>.
-            </p>
-
-            <div class="hero-actions" id="join">
-              <a href="#referral" class="btn btn-primary">
-                <span class="icon">🚀</span>
-                Enter HumanBlockchain.info Portal
-              </a>
-              <a href="#how-it-works" class="btn btn-ghost">
-                <span class="icon">📋</span>
-                See How the 2-Scan Works
-              </a>
-            </div>
-
-            <div class="hero-meta" aria-label="Key system highlights">
-              <div class="meta-card">
-                <div class="meta-label">Currency</div>
-                <div class="meta-value">YAM • 21,000 : 1 USD</div>
-                <div class="meta-note">
-                  Just Alternative Money — You And Me in every exchange.
-                </div>
-              </div>
-              <div class="meta-card">
-                <div class="meta-label">XP Ledger</div>
-                <div class="meta-value">Sextillionths of a Penny</div>
-                <div class="meta-note">
-                  Scientific-notation XP, whole-penny redemption only.
-                </div>
-              </div>
-              <div class="meta-card">
-                <div class="meta-label">Clearinghouse</div>
-                <div class="meta-value">United Citizens</div>
-                <div class="meta-note">
-                  A Visa/Mastercard alternative for Your Voice, Your Choice,
-                  Your Treasury.
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="hero-right" aria-hidden="false">
-            <aside class="hero-panel">
-              <div class="hero-panel-header">
-                <div>
-                  <div class="panel-title">2-Scan Proof of Delivery</div>
-                  <div class="panel-subtitle">
-                    One delivery. Two scans. A Human Blockchain event.
-                  </div>
-                </div>
-                <div class="badge">
-                  <span class="badge-dot"></span>
-                  LIVE XP MINT
-                </div>
-              </div>
-
-              <div class="panel-grid">
-                <div class="panel-card">
-                  <div class="panel-label">Scan #1 • Seller</div>
-                  <div class="panel-value">You ship. You pledge.</div>
-                  <div class="panel-chip-row">
-                    <span class="chip highlight">3% Seller</span>
-                    <span class="chip">10% Personal</span>
-                  </div>
-                  <div class="xp-line">
-                    <span class="label">Trade credit</span>
-                    <span class="value">
-                      $10.30 → <span class="dim">XP ledger mint</span>
-                    </span>
-                  </div>
-                </div>
-
-                <div class="panel-card">
-                  <div class="panel-label">Scan #2 • Buyer</div>
-                  <div class="panel-value">You receive. You confirm.</div>
-                  <div class="panel-chip-row">
-                    <span class="chip highlight">7% Buyer</span>
-                    <span class="chip">Social impact fund</span>
-                  </div>
-                  <div class="xp-line">
-                    <span class="label">XP format</span>
-                    <span class="value">
-                      1.000 × 10<span class="dim">²³</span>
-                      <span class="dim">XP</span>
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              <div class="xp-line" style="margin-top: 0.75rem;">
-                <span class="label">Expression</span>
-                <span class="value">Human value, not LAUGH money</span>
-              </div>
-
-              <div class="panel-footer">
-                <span>
-                  <strong>2-scan</strong> closes the door on speculation and
-                  opens a ledger of trust.
-                </span>
-                <a href="#small-street">View Small Street Applied →</a>
-              </div>
-            </aside>
-          </div>
-        </section>
-
-        <!-- Cookie Jar Economy -->
-        <section
-          class="section"
-          id="cookie-jar"
-          aria-labelledby="cookie-jar-title"
-        >
-          <div class="section-header">
-            <div class="section-kicker">Cookie Jar Economy</div>
-            <h2 class="section-title" id="cookie-jar-title">
-              Where speculation is a dirty word — and certainty is wealth.
-            </h2>
-            <p class="section-description">
-              Instead of chasing charts and whales, the Cookie Jar Economy
-              rewards <b>human action</b>. Every confirmed delivery mints XP,
-              every XP is tied to a <b>New World Penny</b>, and every penny is
-              accountable to the community treasury.
-            </p>
-          </div>
-
-          <div class="section-grid">
-            <article class="card card-highlight">
-              <div class="card-tag">01 • No Speculation</div>
-              <h3>Value from deliveries, not volatility.</h3>
-              <p>
-                No leverage. No betting. No “number go up.” Value appears only
-                when goods or services are actually delivered between You And
-                Me. Each 2-scan Proof-of-Delivery event mints XP into the
-                shared ledger.
-              </p>
-              <ul class="card-list">
-                <li>XP is earned only through action.</li>
-                <li>Every event is time-stamped and geo-verified.</li>
-                <li>Every penny is accounted for in Member Treasury.</li>
-              </ul>
-            </article>
-
-            <article class="card">
-              <div class="card-tag">02 • XP Ledger</div>
-              <h3>Experience Points in scientific notation.</h3>
-              <p>
-                XP is measured in sextillionths of a penny — displayed in
-                scientific notation for integer-safe accounting. “Dust” under
-                one penny stays as XP until it grows into whole-penny value.
-              </p>
-              <ul class="card-list">
-                <li>Dust XP stays in a no-spend ledger.</li>
-                <li>Whole pennies accrue before redemption.</li>
-                <li>Community can see residual XP for everyone.</li>
-              </ul>
-            </article>
-
-            <article class="card">
-              <div class="card-tag">03 • Member Treasury</div>
-              <h3>Your Voice. Your Choice. Your Treasury.</h3>
-              <p>
-                United Citizens operates as a cooperative clearinghouse — a
-                Visa/Mastercard alternative where patronage flow is governed by
-                members, not banks or whales.
-              </p>
-              <ul class="card-list">
-                <li>10% patronage on confirmed trade value.</li>
-                <li>Redemption cycles anchored to calendar dates.</li>
-                <li>XP → YAM → fiat/crypto under cooperative rules.</li>
-              </ul>
-            </article>
-          </div>
-        </section>
-
-        <!-- Human Blockchain / 2-Scan -->
-        <section
-          class="section"
-          id="human-blockchain"
-          aria-labelledby="human-blockchain-title"
-        >
-          <div class="section-header">
-            <div class="section-kicker">Human Blockchain</div>
-            <h2 class="section-title" id="human-blockchain-title">
-              2-scan Proof-of-Delivery between You And Me.
-            </h2>
-            <p class="section-description">
-              A true “block” in the Human Blockchain is not mined by machines;
-              it’s earned when two humans agree: “Delivery happened.” The
-              seller scans first. The buyer confirms. Together, they mint a
-              trust event into the ledger.
-            </p>
-          </div>
-
-          <div class="steps" id="how-it-works">
-            <article class="card">
-              <div class="step-number">1</div>
-              <h3 class="step-title">Scan #1 — Seller</h3>
-              <p class="step-text">
-                The seller places a YAM-is-On voucher or hang tag on the
-                delivery and scans it before shipment. This marks the pledge:
-                <b>$10.30 in trade credit</b> is now in motion — not yet money,
-                but a <b>promise to pay</b> backed by community rules.
-              </p>
-            </article>
-
-            <article class="card">
-              <div class="step-number">2</div>
-              <h3 class="step-title">Scan #2 — Buyer</h3>
-              <p class="step-text">
-                Upon receiving the delivery, the buyer scans the same voucher.
-                This confirms the event in time and space (timestamp + geo
-                location). Only then does the XP ledger mint the full
-                experience credit.
-              </p>
-            </article>
-
-            <article class="card">
-              <div class="step-number">3</div>
-              <h3 class="step-title">Ledger Event — XP Mint</h3>
-              <p class="step-text">
-                The Member Treasury records:
-                <b>7% buyer rebate</b>, <b>3% seller patronage</b> (or 10%
-                personal), and a New World Penny of XP split in sextillionths.
-                Nothing is speculative. Everything is traceable. Every step is
-                governed by FAITH values — Fair, Accepting, Insightful,
-                Transparent, Humble.
-              </p>
-            </article>
-          </div>
-        </section>
-
-        <!-- YAM JAM -->
-        <section class="section" id="yam-jam" aria-labelledby="yam-jam-title">
-          <div class="section-header">
-            <div class="section-kicker">YAM JAM</div>
-            <h2 class="section-title" id="yam-jam-title">
-              Just Alternative Money in action-based rewards.
-            </h2>
-            <p class="section-description">
-              YAM means “You And Me.” YAM JAM is what happens when XP from
-              confirmed deliveries flows into <b>leaderboards, rewards, and
-              community treasuries</b>. Instead of hoarding, YAM JAM celebrates
-              participation.
-            </p>
-          </div>
-
-          <div class="section-grid">
-            <article class="card card-highlight">
-              <div class="card-tag">Action → XP</div>
-              <h3>Every scan is a story of value.</h3>
-              <p>
-                Each hang-tag scan represents a human story: a craftsman, a
-                merchant, a neighbor, a social impact project. YAM JAM turns
-                those stories into XP and showcases them on public leaderboards.
-              </p>
-              <ul class="card-list">
-                <li>Top contributors rise through participation.</li>
-                <li>No pay-to-win — only deliver-to-win.</li>
-                <li>XP is a record of what you’ve done, not what you own.</li>
-              </ul>
-            </article>
-
-            <article class="card">
-              <div class="card-tag">21,000 : 1</div>
-              <h3>Fixed YAM peg to USD.</h3>
-              <p>
-                YAM is pegged at <b>21,000 YAM per 1 USD</b> in a 2:6:8 decimal
-                correlation model (USD:YAM:BTC). This anchors YAM JAM to an
-                easy-to-understand micro-unit environment while keeping XP in a
-                no-spend ledger until maturity.
-              </p>
-              <ul class="card-list">
-                <li>Clear conversion path: XP → YAM → fiat/crypto.</li>
-                <li>90% XP reserves, 10% fiat/crypto exposure.</li>
-                <li>Whole-penny logic for redemption events.</li>
-              </ul>
-            </article>
-
-            <article class="card">
-              <div class="card-tag">Leaderboards</div>
-              <h3>Human value, visible to everyone.</h3>
-              <p>
-                YAM JAM leaderboards invite members to measure success not by
-                balance sheets but by contributions — how many deliveries you’ve
-                confirmed, how many people you’ve helped onboard, how much
-                social impact you’ve funded.
-              </p>
-              <ul class="card-list">
-                <li>XP ranks craftspeople, sellers, and patrons.</li>
-                <li>Referral XP for building the human blockchain.</li>
-                <li>LAUGH Money events celebrate top contributors.</li>
-              </ul>
-            </article>
-          </div>
-        </section>
-
-        <!-- Small Street Applied -->
-        <section
-          class="section"
-          id="small-street"
-          aria-labelledby="small-street-title"
-        >
-          <div class="section-header">
-            <div class="section-kicker">Small Street Applied</div>
-            <h2 class="section-title" id="small-street-title">
-              The New World Penny marketplace for demand and pledges.
-            </h2>
-            <p class="section-description">
-              SmallStreet.app is where the theory becomes practice. It’s the
-              marketplace where <b>demand and pledges take centerstage</b>,
-              tracking every 2-scan delivery as XP in a <b>human-first wallet</b>
-              connected to the HumanBlockchain.info referral network.
-            </p>
-          </div>
-
-          <div class="section-grid">
-            <article class="card card-highlight">
-              <div class="card-tag">Marketplace</div>
-              <h3>Every home, a Small Street.</h3>
-              <p>
-                Every household becomes a micro-marketplace, turning unwanted
-                items and new creations into trade-credit deliveries. Each item
-                that moves with a YAM-is-On voucher adds another story to the
-                human ledger.
-              </p>
-              <ul class="card-list">
-                <li>Estate items, crafts, services, and more.</li>
-                <li>Proof-of-Delivery vouchers on every shipment.</li>
-                <li>XP wallet for every buyer and seller.</li>
-              </ul>
-            </article>
-
-            <article class="card">
-              <div class="card-tag">Wallet</div>
-              <h3>XP-first, money-later wallet design.</h3>
-              <p>
-                Small Street stores XP, not just balances. Until August 31
-                reconciliation dates, funds don’t move — only XP does. This
-                keeps regulators at bay while the community builds a deep ledger
-                of trust and delivery history.
-              </p>
-              <ul class="card-list">
-                <li>2-scan events mint XP in real time.</li>
-                <li>8–12 week XP maturity window.</li>
-                <li>Redemption only after XP becomes whole-penny value.</li>
-              </ul>
-            </article>
-
-            <article class="card">
-              <div class="card-tag">Portal Links</div>
-              <h3>Linked to HumanBlockchain.info gateway.</h3>
-              <p>
-                Small Street Applied connects directly into the
-                HumanBlockchain.info portal and referral network, ensuring every
-                new buyer, seller, or patron is anchored to the same Member
-                Treasury rules and FAITH-based operating system.
-              </p>
-              <ul class="card-list">
-                <li>Onboarding via QRtiger v-card &amp; Discord.</li>
-                <li>Referral tracking for YAM’er, MEGAvoter, Patron levels.</li>
-                <li>Unified XP + YAM JAM identity across the ecosystem.</li>
-              </ul>
-            </article>
-          </div>
-        </section>
-
-        <!-- Referral / Portal Strip -->
-        <section class="referral-strip" id="referral">
-          <div class="referral-strip-main">
-            <div class="referral-text">
-              Join the
-              <span>HumanBlockchain.info referral network</span> and help build
-              the United Citizens clearinghouse — a Visa/Mastercard alternative
-              guided by 2-scan Proof-of-Delivery and cooperative patronage.
-            </div>
-            <div>
-              <a href="#join" class="btn btn-primary">
-                <span class="icon">🔗</span>
-                Get Your Referral Link
-              </a>
-            </div>
-          </div>
-          <div class="referral-note">
-            Start by accepting a Discord Gracebook invite, linking your QRtiger
-            v-card and payment rail (Venmo/PayPal/FonePay), then choosing your
-            role: YAM’er (free), MEGAvoter ($12/year), or Patron. Every
-            confirmed delivery you touch becomes part of the Human Blockchain.
-          </div>
-        </section>
-
-        <!-- FAQ -->
-        <section class="section" id="faq" aria-labelledby="faq-title">
-          <div class="section-header">
-            <div class="section-kicker">FAQ</div>
-            <h2 class="section-title" id="faq-title">
-              Quick answers about the Human Blockchain.
-            </h2>
-          </div>
-
-          <div class="faq-grid">
-            <article class="faq-item">
-              <h3 class="faq-q">Is this a cryptocurrency or a token sale?</h3>
-              <p class="faq-a">
-                No. The Cookie Jar Economy is a <b>promise-to-pay</b> system
-                anchored in XP and YAM JAM. XP is minted only when a 2-scan
-                Proof-of-Delivery event is confirmed. YAM is a community
-                currency pegged at 21,000:1 USD and governed through cooperative
-                patronage — not speculative trading.
-              </p>
-            </article>
-
-            <article class="faq-item">
-              <h3 class="faq-q">
-                What makes this a “Human Blockchain” instead of a traditional
-                blockchain?
-              </h3>
-              <p class="faq-a">
-                A “block” here is a <b>human trust event</b>: You And Me
-                confirming a delivery together. Technology (QR codes, GPS,
-                timestamps, ledgers) simply supports what humans decide. AI is
-                <b>mastered by Human Intelligence (HI)</b>, not the other way
-                around.
-              </p>
-            </article>
-
-            <article class="faq-item">
-              <h3 class="faq-q">
-                How does HumanBlockchain.info relate to SmallStreet.app?
-              </h3>
-              <p class="faq-a">
-                HumanBlockchain.info is the <b>gateway and referral hub</b>,
-                organizing members, roles, and patronage rules. SmallStreet.app
-                is the <b>marketplace and wallet layer</b>, where 2-scan
-                deliveries are tracked as XP and YAM JAM rewards.
-              </p>
-            </article>
-
-            <article class="faq-item">
-              <h3 class="faq-q">Who controls the Member Treasury?</h3>
-              <p class="faq-a">
-                The Member Treasury is stewarded by <b>United Citizens</b>
-                through cooperative frameworks, with XP and YAM flows designed
-                around <b>FAITH values</b>: Fair, Accepting, Insightful,
-                Transparent, Humble. Over time, this structure evolves toward
-                more on-chain cooperative and DAO-style governance.
-              </p>
-            </article>
-          </div>
-        </section>
-
-        <!-- Footer -->
-        <footer class="site-footer">
-          <div>
-            © <span id="year"></span> HumanBlockchain.info • A United Citizens /
-            Small Street Applied experiment in the Cookie Jar Economy.
-          </div>
-          <div class="footer-links">
-            <a href="#cookie-jar">Cookie Jar Overview</a>
-            <a href="#human-blockchain">2-Scan PoD</a>
-            <a href="#yam-jam">YAM JAM</a>
-            <a href="#small-street">Small Street Applied</a>
-          </div>
-        </footer>
-      </div>
-    </main>
+  <!-- ================= ENTRY MODAL ================= -->
+  <div class="entry-overlay" id="enterOverlay">
+    <div class="entry-modal" id="enterModal">
+      <h1>Welcome to HumanBlockchain.info</h1>
+      <p>
+        This site operates a <strong>non-custodial, proof-based clearing-visibility system</strong>.
+        Entering confirms your intent to interact within an independent, device-verified, ledger environment.
+      </p>
+      <button class="enter-btn" id="enterSite">
+        Enter Website
+      </button>
+    </div>
   </div>
 
-  <script>
-    // Set current year in footer
-    document.getElementById("year").textContent =
-      new Date().getFullYear().toString();
-  </script>
+  <!-- ================= POD GATE MODAL ================= -->
+  <div class="pod-gate-overlay" id="podOverlay">
+    <div class="pod-gate-modal" id="podGate">
+      <div class="pod-gate-grid">
+        <div>
+          <h2>Is This Proof of Delivery?</h2>
+          <p class="pod-gate-sub">
+            Select <strong>Yes</strong> only if you are validating a delivery event
+            using a 2-scan Proof-of-Delivery process.
+          </p>
+          <div class="btn-row">
+            <button class="choice-btn" id="podGateYes">
+              YES — Proof of Delivery
+            </button>
+            <button class="choice-btn" id="podGateNo">
+              NO — Continue to Website
+            </button>
+          </div>
+        </div>
+        <aside class="statement-box">
+          <p>
+            <strong>
+              "Small Street Applied–Atlanta is a Wyoming DAO and Limited Cooperative Association
+            </strong>
+            that embodies the functional spirit of an FRB Section 25A coordination role by operating a
+            <strong>non-custodial, proof-based clearing-visibility and reporting system</strong>
+            for independent participants."
+          </p>
+        </aside>
+      </div>
+      <div class="modal-footer">
+        <span>HumanBlockchain.info</span>
+        <span>Proof before payment • Visibility without custody</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOP NAV -->
+  <header class="topbar">
+    <div class="wrap">
+      <nav class="nav" aria-label="Primary">
+        <a class="brand" href="/">
+          <span class="logo" aria-hidden="true"></span>
+          <div>
+            <b>HumanBlockchain.info</b><br>
+            <span class="small">YAM-is-ON • Proof of Delivery + Serendipity POCs</span>
+          </div>
+        </a>
+
+        <!-- Desktop menu -->
+        <div class="menu" aria-label="Menu">
+          <a href="/how-it-works">How It Works</a>
+          <a href="/proof-of-delivery">Proof of Delivery</a>
+          <a href="/serendipity-protocol">Serendipity Protocol</a>
+          <a href="/new-world-penny">New World Penny</a>
+          <a href="/join-the-dao">Join the DAO</a>
+          <a href="/faqs">FAQs</a>
+        </div>
+
+        <!-- Right side actions + mobile toggle -->
+        <div class="cta">
+          <a class="btn primary" href="/activate-device">Activate Device</a>
+          <a class="btn ghost" href="/pod">PoD Mode</a>
+
+          <div class="hamburger">
+            <input id="navtoggle" type="checkbox" />
+            <label for="navtoggle" aria-label="Open menu">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </label>
+          </div>
+        </div>
+      </nav>
+
+      <!-- Mobile drawer -->
+      <div class="menu-drawer" aria-label="Mobile Menu">
+        <a href="/how-it-works">How It Works</a>
+        <a href="/proof-of-delivery">Proof of Delivery</a>
+        <a href="/serendipity-protocol">Serendipity Protocol</a>
+        <a href="/new-world-penny">New World Penny</a>
+        <a href="/join-the-dao">Join the DAO</a>
+        <a href="/faqs">FAQs</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- HERO -->
+    <section class="hero">
+      <div class="wrap">
+        <div class="pill">
+          Serendipity creates POCs from the newest device registrations using geo-location + timestamp
+        </div>
+
+        <div class="grid" style="margin-top:14px">
+          <!-- Left hero -->
+          <div class="card">
+            <span class="badge">SERENDIPITY IS THE ONBOARDING MOMENT</span>
+            <h1>Your device registers — and the network forms around you.</h1>
+            <p class="lead">
+              When you activate a device, the system uses <b>geo-location</b> and <b>timestamp</b> to create the next available
+              Patron Organizing Communities (POCs). <b>Buyer POCs are local</b>. <b>Seller POCs are out-of-state or global</b>.
+              You don't "join a team" — you are <i>placed</i> into a living ledger on purpose.
+            </p>
+
+            <div class="kpi">
+              <div class="mini">
+                <b>Buyer POC = Local</b>
+                <span>Built from recent device registrations near you</span>
+              </div>
+              <div class="mini">
+                <b>Seller POC = Out-of-state / Global</b>
+                <span>Matched away from your locality to encourage détente</span>
+              </div>
+              <div class="mini">
+                <b>XP is measurement</b>
+                <span>Shown as <code>1.0 × 10⁻¹⁸ XP</code> (not money)</span>
+              </div>
+            </div>
+
+            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px">
+              <a class="btn primary" href="/activate-device">Activate This Device</a>
+              <a class="btn" href="/join-the-dao">Join the DAO</a>
+              <a class="btn ghost" href="/serendipity-protocol">Read Serendipity Protocol</a>
+            </div>
+
+            <p class="small" style="margin-top:12px">
+              Device activation triggers role assignments and POC placement. Proof of Delivery remains 2-scan:
+              seller initiates, buyer acceptance completes settlement. The d-DAO General Ledger is non-custodial and does not hold, move, or settle money. The Voluntary Fulfillment Network (VFN) is the sole custodial network for any fiat, MSB, or seller-funded activities.
+            </p>
+          </div>
+
+          <!-- Right hero -->
+          <div class="card">
+            <h3>Serendipity in 60 seconds</h3>
+            <div class="list">
+              <div class="item">
+                <span class="dot good"></span>
+                <div>
+                  <b>Step 1:</b> Activate your device<br>
+                  <span class="small">Your phone becomes your delivery identity.</span>
+                </div>
+              </div>
+
+              <div class="item">
+                <span class="dot"></span>
+                <div>
+                  <b>Step 2:</b> Local Buyer POC is assigned<br>
+                  <span class="small">Based on geo-location + most recent registrations nearby.</span>
+                </div>
+              </div>
+
+              <div class="item">
+                <span class="dot"></span>
+                <div>
+                  <b>Step 3:</b> Seller POC is assigned out-of-state / global<br>
+                  <span class="small">Designed to connect people across regions and countries.</span>
+                </div>
+              </div>
+
+              <div class="item">
+                <span class="dot good"></span>
+                <div>
+                  <b>Step 4:</b> Proof of Delivery becomes real<br>
+                  <span class="small">Scan voucher/hang tag → confirm final destination → earn XP recognition.</span>
+                </div>
+              </div>
+            </div>
+
+            <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">
+              <span class="tag">Geo + timestamp form groups</span>
+              <span class="tag">Buyer local • Seller global</span>
+              <span class="tag">Append-only ledger</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SERENDIPITY PROTOCOL (overview) -->
+    <section class="section" id="serendipity">
+      <div class="wrap">
+        <h2>Serendipity Protocol</h2>
+        <p class="lead">
+          Serendipity is the moment the ledger becomes social. The newest device activations create the next available POCs.
+          This keeps onboarding fair, prevents gatekeeping, and scales globally.
+        </p>
+
+        <div class="three">
+          <div class="card">
+            <h3>Buyer POC (Local)</h3>
+            <div class="list">
+              <div class="item"><span class="dot good"></span>
+                <div><b>Rule:</b> Assigned from your local registration area.</div>
+              </div>
+              <div class="item"><span class="dot"></span>
+                <div><b>Why:</b> Local coordination for buyer confirmations and community trust.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>Seller POC (Out-of-state / Global)</h3>
+            <div class="list">
+              <div class="item"><span class="dot good"></span>
+                <div><b>Rule:</b> Assigned away from your locality.</div>
+              </div>
+              <div class="item"><span class="dot"></span>
+                <div><b>Why:</b> Cross-region cooperation and "détente by design."</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>Timestamp Priority</h3>
+            <div class="list">
+              <div class="item"><span class="dot good"></span>
+                <div><b>Rule:</b> Newest registrations fill the next open POC seats.</div>
+              </div>
+              <div class="item"><span class="dot"></span>
+                <div><b>Why:</b> No waiting lists controlled by humans. The clock is impartial.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:16px">
+          <h3>POC placement happens once — then delivery begins</h3>
+          <p class="lead" style="margin:0">
+            After placement, Proof of Delivery runs on the voucher/hang tag ID. Seller initiates. Optional handoff scans record custody movement.
+            Buyer acceptance completes settlement. Recognition is recorded as XP in scientific notation, e.g. <code>1.0 × 10⁻¹⁸ XP</code>.
+          </p>
+
+          <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">
+            <a class="btn primary" href="/activate-device">Activate Device</a>
+            <a class="btn" href="/pod">I Have Proof of Delivery</a>
+            <a class="btn ghost" href="/proof-of-delivery">Proof of Delivery details</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- NEW WORLD PENNY -->
+    <section class="section" id="nwp">
+      <div class="wrap">
+        <h2>New World Penny</h2>
+        <p class="lead">
+          The New World Penny is recognition for verified delivery steps. XP is a memo-ledger unit used for loyalty accounting of verified human value. XP is <b>not money</b>, <b>not a wallet balance</b>, <b>not transferable</b>, and <b>not redeemable on demand</b>. XP entries are created only after verification and may mature after an 8–12 week policy window. The Voluntary Fulfillment Network (VFN) is the sole custodial network for any fiat, MSB, or seller-funded activities.
+        </p>
+
+        <div class="two">
+          <div class="card">
+            <h3>Ledger display</h3>
+            <div class="list">
+              <div class="item">
+                <span class="dot good"></span>
+                <div>
+                  <b>Example:</b> 1 New World Penny = <code>1.0 × 10⁻¹⁸ XP</code><br>
+                  <span class="small">Scientific notation signals measurement, not currency.</span>
+                </div>
+              </div>
+              <div class="item">
+                <span class="dot"></span>
+                <div><b>Precision:</b><br><span class="small">XP is recorded at sextillionth-of-a-penny resolution with a 21,000-to-1 USD calibration scale.</span></div>
+              </div>
+            </div>
+            <div style="margin-top:14px">
+              <a class="btn" href="/new-world-penny">New World Penny details</a>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>Referral recognition (issued Sep 1)</h3>
+            <p class="small" style="margin-top:0">
+              Issued once per year in XP on <b>September 1st</b>. (No money custody. No conversion inside the ledger.)
+            </p>
+            <div class="list">
+              <div class="item"><span class="dot"></span>
+                <div><b>Tier 1:</b> <code>1.0 × 10⁻¹⁸ XP</code></div>
+              </div>
+              <div class="item"><span class="dot"></span>
+                <div><b>Tier 5:</b> <code>5.0 × 10⁻¹⁸ XP</code></div>
+              </div>
+              <div class="item"><span class="dot"></span>
+                <div><b>Tier 25:</b> <code>2.5 × 10⁻¹⁷ XP</code></div>
+              </div>
+            </div>
+            <div style="margin-top:14px">
+              <a class="btn" href="/faqs#referrals">Read referral rules</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQs -->
+    <section class="section" id="faqs">
+      <div class="wrap">
+        <h2>FAQs</h2>
+        <p class="lead">Fast answers. Clear boundaries. Proof-first design.</p>
+
+        <div class="grid">
+          <details open>
+            <summary>What is Serendipity?</summary>
+            <p>
+              Serendipity is the protocol that creates POCs from the newest device registrations. Geo-location assigns a local Buyer POC.
+              Timestamp priority fills the next open seats. A separate Seller POC is assigned out-of-state or global to connect people across regions.
+            </p>
+          </details>
+
+          <details>
+            <summary>Why is Buyer POC local and Seller POC global?</summary>
+            <p>
+              Local Buyer POCs improve coordination for acceptance scans and community trust. Global Seller POCs are assigned out-of-state or across countries
+              to encourage cooperation and détente by design.
+            </p>
+          </details>
+
+          <details>
+            <summary>Is XP money?</summary>
+            <p>
+              No. XP is a memo-ledger unit used for loyalty accounting of verified human value. XP is <b>not money</b>, <b>not a wallet balance</b>, <b>not transferable</b>, and <b>not redeemable on demand</b>. XP entries are created only after verification and may mature after an 8–12 week policy window. The d-DAO General Ledger is non-custodial and does not hold, move, or settle money. The Voluntary Fulfillment Network (VFN) is the sole custodial network for any fiat, MSB, or seller-funded activities.
+            </p>
+          </details>
+
+          <details id="referrals">
+            <summary>When is referral recognition issued?</summary>
+            <p>
+              Referral recognition is issued in XP on September 1st each year. Tiers are displayed in scientific notation:
+              <br><br>
+              <b>Tier 1:</b> <code>1.0 × 10⁻¹⁸ XP</code><br>
+              <b>Tier 5:</b> <code>5.0 × 10⁻¹⁸ XP</code><br>
+              <b>Tier 25:</b> <code>2.5 × 10⁻¹⁷ XP</code>
+            </p>
+          </details>
+
+          <details>
+            <summary>Where does redemption happen?</summary>
+            <p>
+              The d-DAO General Ledger is non-custodial and does not hold, move, or settle money. The Voluntary Fulfillment Network (VFN) is the sole custodial network for any fiat, MSB, or seller-funded activities. HumanBlockchain.info records proof, accounting, and reporting only.
+            </p>
+          </details>
+        </div>
+
+        <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">
+          <a class="btn primary" href="/activate-device">Activate Device</a>
+          <a class="btn" href="/join-the-dao">Join the DAO</a>
+          <a class="btn ghost" href="/serendipity-protocol">Serendipity Protocol</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="wrap">
+      <div class="cols">
+        <div>
+          <b>HumanBlockchain.info</b><br>
+          <span class="small">Serendipity POCs • Proof of Delivery • XP measurement</span>
+          <div style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap">
+            <a class="btn small" href="/my-device">My Device</a>
+            <a class="btn small" href="/pod">PoD Mode</a>
+          </div>
+        </div>
+
+        <div>
+          <b>System boundaries:</b>
+          <p class="small" style="margin-top:8px">
+            The <b>d-DAO General Ledger is non-custodial</b> (verification + XP accounting only).
+            The <b>Voluntary Fulfillment Network (VFN)</b> is the <b>sole custodial network</b> for fiat/MSB activities.
+            XP is loyalty accounting only—no wallets, balances, escrow, or payment APIs in the ledger layer.
+          </p>
+          <p class="small">
+            Referral recognition is issued in XP on September 1st each year.
+          </p>
+        </div>
+      </div>
+
+      <div style="margin-top:16px" class="small">
+        © <span id="y"></span> HumanBlockchain.info • YAM-is-ON Delivery Credential
+      </div>
+    </div>
+
+    <script>
+      document.getElementById('y').textContent = new Date().getFullYear();
+
+      // Entry Modal - Show on page load
+      const enterOverlay = document.getElementById("enterOverlay");
+      const podOverlay = document.getElementById("podOverlay");
+      const enterSiteBtn = document.getElementById("enterSite");
+      const podGateYes = document.getElementById("podGateYes");
+      const podGateNo = document.getElementById("podGateNo");
+
+      // Show entry modal on page load
+      window.addEventListener("load", () => {
+        enterOverlay.classList.add("active");
+        document.body.style.overflow = "hidden";
+      });
+
+      // Enter Website button - show POD gate
+      enterSiteBtn.addEventListener("click", () => {
+        enterOverlay.classList.remove("active");
+        setTimeout(() => {
+          podOverlay.classList.add("active");
+        }, 300);
+      });
+
+      // POD Gate - Yes button (opens existing PoD modal)
+      podGateYes.addEventListener("click", () => {
+        podOverlay.classList.remove("active");
+        document.body.style.overflow = "";
+        // Open the existing PoD modal after overlay closes
+        setTimeout(() => {
+          window.open("https://www.smallstreet.app/?utm_source=humanblockchain.info&scan_type=proof","_blank");
+        }, 300);
+      });
+
+      // POD Gate - No button (close and continue)
+      podGateNo.addEventListener("click", () => {
+        podOverlay.classList.remove("active");
+        document.body.style.overflow = "";
+      });
+    </script>
+  </footer>
 </body>
 </html>
-
-
