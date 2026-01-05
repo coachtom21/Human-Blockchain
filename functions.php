@@ -95,6 +95,52 @@ function hb_check_migrations() {
 add_action( 'admin_init', 'hb_check_migrations' );
 
 /**
+ * Register templates-parts directory for page templates
+ * This allows WordPress to find page templates in the templates-parts subdirectory
+ */
+function hb_register_template_directory( $templates ) {
+	$template_dir = get_stylesheet_directory() . '/templates-parts';
+	
+	if ( is_dir( $template_dir ) ) {
+		$files = glob( $template_dir . '/template-*.php' );
+		foreach ( $files as $file ) {
+			$template_name = 'templates-parts/' . basename( $file );
+			// Get template name from file header
+			$file_data = get_file_data( $file, array( 'Template Name' => 'Template Name' ) );
+			$display_name = ! empty( $file_data['Template Name'] ) ? $file_data['Template Name'] : basename( $file, '.php' );
+			$templates[ $template_name ] = $display_name;
+		}
+	}
+	
+	return $templates;
+}
+add_filter( 'theme_page_templates', 'hb_register_template_directory' );
+
+/**
+ * Resolve template path when WordPress loads page templates
+ * This ensures templates in templates-parts directory are loaded correctly
+ */
+function hb_resolve_template_path( $template ) {
+	global $post;
+	
+	if ( ! $post || ! is_page() ) {
+		return $template;
+	}
+	
+	$page_template = get_post_meta( $post->ID, '_wp_page_template', true );
+	
+	if ( $page_template && strpos( $page_template, 'templates-parts/' ) === 0 ) {
+		$template_path = get_stylesheet_directory() . '/' . $page_template;
+		if ( file_exists( $template_path ) ) {
+			return $template_path;
+		}
+	}
+	
+	return $template;
+}
+add_filter( 'template_include', 'hb_resolve_template_path', 99 );
+
+/**
  * Create registration pages automatically
  * Run once by visiting: ?hb_create_pages=1 (as admin)
  */
@@ -107,27 +153,27 @@ function hb_create_registration_pages() {
 		array(
 			'title' => 'Activate Device',
 			'slug' => 'activate-device',
-			'template' => 'template-activate-device.php',
+			'template' => 'templates-parts/template-activate-device.php',
 		),
 		array(
 			'title' => 'Validate v-Card',
 			'slug' => 'activate-device-step-2',
-			'template' => 'template-activate-device-step-2.php',
+			'template' => 'templates-parts/template-activate-device-step-2.php',
 		),
 		array(
 			'title' => 'Connect Discord',
 			'slug' => 'activate-device-step-3',
-			'template' => 'template-activate-device-step-3.php',
+			'template' => 'templates-parts/template-activate-device-step-3.php',
 		),
 		array(
 			'title' => 'Choose Membership',
 			'slug' => 'activate-device-step-4',
-			'template' => 'template-activate-device-step-4.php',
+			'template' => 'templates-parts/template-activate-device-step-4.php',
 		),
 		array(
 			'title' => 'Registration Complete',
 			'slug' => 'activate-device-complete',
-			'template' => 'template-activate-device-complete.php',
+			'template' => 'templates-parts/template-activate-device-complete.php',
 		),
 	);
 	

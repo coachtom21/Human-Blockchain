@@ -24,6 +24,7 @@
       --warn: #fbbf24;
 
       --radius: 18px;
+      --shadow: 0 18px 48px rgba(0,0,0,.35);
       --shadow2: 0 8px 18px rgba(0,0,0,.22);
       --maxw: 1100px;
 
@@ -236,6 +237,7 @@
       opacity: 0;
       visibility: hidden;
       transition: opacity 0.3s ease, visibility 0.3s ease;
+      padding: 18px;
     }
 
     .entry-overlay.active {
@@ -243,52 +245,202 @@
       visibility: visible;
     }
 
-    .entry-modal {
-      width: min(880px, 92%);
-      background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.06));
-      border: 1px solid rgba(255, 255, 255, 0.14);
-      border-radius: var(--radius);
-      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
-      padding: 28px;
+    .entry-overlay .overlay {
+      width: min(720px, 100%);
+      background: rgba(11,18,32,.35);
+      border: 1px solid rgba(232,238,252,.10);
+      border-radius: calc(var(--radius) + 6px);
+      padding: 10px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
       transform: scale(0.95);
       transition: transform 0.3s ease;
     }
 
-    .entry-overlay.active .entry-modal {
+    .entry-overlay.active .overlay {
       transform: scale(1);
     }
 
-    .entry-modal h1 {
-      margin: 0 0 12px;
-      font-size: 28px;
-      letter-spacing: -0.02em;
-      color: var(--text);
+    .entry-overlay .modal {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 20px;
     }
 
-    .entry-modal p {
-      color: var(--muted);
-      line-height: 1.6;
-      max-width: 60ch;
-      margin: 0;
+    .entry-overlay .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
     }
 
-    .enter-btn {
-      margin-top: 22px;
-      padding: 14px 22px;
-      font-size: 15px;
-      font-weight: 700;
+    .entry-overlay .logo {
+      width: 40px;
+      height: 40px;
       border-radius: 14px;
-      border: 1px solid rgba(255, 255, 255, 0.14);
-      background: rgba(255, 255, 255, 0.14);
-      color: var(--text);
-      cursor: pointer;
-      transition: all 0.2s ease;
+      background: linear-gradient(135deg, rgba(125,211,252,.95), rgba(167,139,250,.95));
+      box-shadow: 0 12px 24px rgba(0,0,0,.28);
+      flex: 0 0 auto;
     }
 
-    .enter-btn:hover {
-      background: rgba(255, 255, 255, 0.20);
-      border-color: var(--accent);
+    .entry-overlay .brand b {
+      letter-spacing: .3px;
+    }
+
+    .entry-overlay .brand .sub {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .entry-overlay h1 {
+      font-size: 26px;
+      line-height: 1.15;
+      margin: 8px 0 8px;
+      letter-spacing: -.3px;
+    }
+
+    .entry-overlay p {
+      margin: 0 0 12px;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .entry-overlay .pillrow {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin: 10px 0 14px;
+    }
+
+    .entry-overlay .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(232,238,252,.08);
+      border: 1px solid rgba(232,238,252,.12);
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .entry-overlay .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 999px;
+      background: var(--accent);
+      box-shadow: 0 0 0 4px rgba(125,211,252,.10);
+    }
+
+    .entry-overlay .dot.good {
+      background: var(--good);
+      box-shadow: 0 0 0 4px rgba(134,239,172,.10);
+    }
+
+    .entry-overlay .dot.warn {
+      background: var(--warn);
+      box-shadow: 0 0 0 4px rgba(251,191,36,.12);
+    }
+
+    .entry-overlay .cta {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .entry-overlay .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(232,238,252,.16);
+      background: rgba(232,238,252,.06);
+      color: var(--text);
+      font-weight: 900;
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform .08s ease, background .12s ease, filter .08s ease;
+    }
+
+    .entry-overlay .btn:hover {
+      background: rgba(232,238,252,.10);
       transform: translateY(-1px);
+    }
+
+    .entry-overlay .btn:active {
+      transform: translateY(0px);
+      filter: brightness(.98);
+    }
+
+    .entry-overlay .btn.primary {
+      border-color: transparent;
+      background: linear-gradient(135deg, rgba(125,211,252,.95), rgba(167,139,250,.95));
+      color: #071024;
+    }
+
+    .entry-overlay .btn.primary:hover {
+      filter: brightness(1.05);
+    }
+
+    .entry-overlay .btn.ghost {
+      background: transparent;
+    }
+
+    .entry-overlay .divider {
+      height: 1px;
+      background: rgba(232,238,252,.12);
+      margin: 14px 0;
+    }
+
+    .entry-overlay .list {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .entry-overlay .item {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      padding: 12px;
+      border-radius: 16px;
+      background: rgba(232,238,252,.05);
+      border: 1px solid rgba(232,238,252,.10);
+    }
+
+    .entry-overlay .item b {
+      color: var(--text);
+      font-size: 13px;
+    }
+
+    .entry-overlay .item span {
+      display: block;
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .entry-overlay .legal {
+      margin-top: 12px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    @media (max-width: 520px) {
+      .entry-overlay .modal {
+        padding: 16px;
+      }
+      .entry-overlay h1 {
+        font-size: 22px;
+      }
+      .entry-overlay .btn {
+        width: 100%;
+      }
     }
 
     /* ============ POD GATE MODAL ============ */
@@ -409,16 +561,68 @@
 
 <body>
   <!-- ================= ENTRY MODAL ================= -->
-  <div class="entry-overlay" id="enterOverlay">
-    <div class="entry-modal" id="enterModal">
-      <h1>Welcome to HumanBlockchain.info</h1>
-      <p>
-        This site operates a <strong>non-custodial, proof-based clearing-visibility system</strong>.
-        Entering confirms your intent to interact within an independent, device-verified, ledger environment.
-      </p>
-      <button class="enter-btn" id="enterSite">
-        Enter Website
-      </button>
+  <div class="entry-overlay" id="enterOverlay" role="dialog" aria-modal="true" aria-labelledby="title">
+    <div class="overlay">
+      <div class="modal">
+        <div class="brand">
+          <span class="logo" aria-hidden="true"></span>
+          <div>
+            <b>HumanBlockchain.info</b>
+            <div class="sub">YAM-is-ON • Proof of Delivery • Serendipity POCs</div>
+          </div>
+        </div>
+
+        <h1 id="title">Enter the Human Blockchain</h1>
+        <p>
+          This site records <b>verified human delivery steps</b> using a YAM-is-ON voucher (sticker) or hang tag.
+          Serendipity forms Buyer POCs locally (geo-location) and Seller POCs out-of-state or global (timestamp priority).
+        </p>
+
+        <div class="pillrow" aria-label="Key concepts">
+          <span class="pill"><span class="dot good"></span> Proof-first</span>
+          <span class="pill"><span class="dot"></span> Serendipity POCs</span>
+          <span class="pill"><span class="dot warn"></span> XP is not money</span>
+        </div>
+
+        <div class="list" aria-label="What you will see next">
+          <div class="item">
+            <span class="dot good" style="margin-top:6px"></span>
+            <div>
+              <b>Prompt 1:</b> "Is this Proof of Delivery?"
+              <span>YES enters PoD Mode. NO continues into the website.</span>
+            </div>
+          </div>
+
+          <div class="item">
+            <span class="dot" style="margin-top:6px"></span>
+            <div>
+              <b>Prompt 2 (if YES):</b> "Is this the final destination?"
+              <span>YES = delivered to recipient. NO = in-route / handoff.</span>
+            </div>
+          </div>
+
+          <div class="item">
+            <span class="dot warn" style="margin-top:6px"></span>
+            <div>
+              <b>XP display:</b> scientific notation
+              <span>Example: <code>1.0 × 10⁻¹⁸ XP</code> — measurement of action, not money.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider" role="separator"></div>
+
+        <div class="cta" aria-label="Enter options">
+          <a class="btn primary" href="https://www.smallstreet.app/?utm_source=humanblockchain.info&scan_type=proof" target="_blank" rel="noopener noreferrer" id="enterPodMode">Enter PoD Mode</a>
+          <a class="btn" href="#" id="enterWebsite">Enter Website</a>
+          <a class="btn ghost" href="/faq">Read FAQs</a>
+        </div>
+
+        <p class="legal">
+          Disclosure: HumanBlockchain.info provides proof-based ledger visibility and reporting. It does not custody money.
+          Any fiat or crypto redemption—if offered—occurs only through the Voluntary Fulfillment Network (VFN) outside this ledger.
+        </p>
+      </div>
     </div>
   </div>
 
@@ -477,14 +681,14 @@
           <a href="/proof-of-delivery">Proof of Delivery</a>
           <a href="/serendipity-protocol">Serendipity Protocol</a>
           <a href="/new-world-penny">New World Penny</a>
-          <a href="/join-the-dao">Join the DAO</a>
-          <a href="/faqs">FAQs</a>
+          <a href="/dao">Join the DAO</a>
+          <a href="/faq">FAQs</a>
         </div>
 
         <!-- Right side actions + mobile toggle -->
         <div class="cta">
           <a class="btn primary" href="/activate-device">Activate Device</a>
-          <a class="btn ghost" href="/pod">PoD Mode</a>
+          <a class="btn ghost" href="https://www.smallstreet.app/?utm_source=humanblockchain.info&scan_type=proof" target="_blank" rel="noopener noreferrer">PoD Mode</a>
 
           <div class="hamburger">
             <input id="navtoggle" type="checkbox" />
@@ -503,8 +707,8 @@
         <a href="/proof-of-delivery">Proof of Delivery</a>
         <a href="/serendipity-protocol">Serendipity Protocol</a>
         <a href="/new-world-penny">New World Penny</a>
-        <a href="/join-the-dao">Join the DAO</a>
-        <a href="/faqs">FAQs</a>
+        <a href="/dao">Join the DAO</a>
+        <a href="/faq">FAQs</a>
       </div>
     </div>
   </header>
@@ -545,7 +749,7 @@
 
             <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px">
               <a class="btn primary" href="/activate-device">Activate This Device</a>
-              <a class="btn" href="/join-the-dao">Join the DAO</a>
+              <a class="btn" href="/dao">Join the DAO</a>
               <a class="btn ghost" href="/serendipity-protocol">Read Serendipity Protocol</a>
             </div>
 
@@ -658,7 +862,7 @@
 
           <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">
             <a class="btn primary" href="/activate-device">Activate Device</a>
-            <a class="btn" href="/pod">I Have Proof of Delivery</a>
+            <a class="btn" href="https://www.smallstreet.app/?utm_source=humanblockchain.info&scan_type=proof" target="_blank" rel="noopener noreferrer">I Have Proof of Delivery</a>
             <a class="btn ghost" href="/proof-of-delivery">Proof of Delivery details</a>
           </div>
         </div>
@@ -711,7 +915,7 @@
               </div>
             </div>
             <div style="margin-top:14px">
-              <a class="btn" href="/faqs#referrals">Read referral rules</a>
+              <a class="btn" href="/faq#referrals">Read referral rules</a>
             </div>
           </div>
         </div>
@@ -769,7 +973,7 @@
 
         <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">
           <a class="btn primary" href="/activate-device">Activate Device</a>
-          <a class="btn" href="/join-the-dao">Join the DAO</a>
+          <a class="btn" href="/dao">Join the DAO</a>
           <a class="btn ghost" href="/serendipity-protocol">Serendipity Protocol</a>
         </div>
       </div>
@@ -785,7 +989,7 @@
           <span class="small">Serendipity POCs • Proof of Delivery • XP measurement</span>
           <div style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap">
             <a class="btn small" href="/my-device">My Device</a>
-            <a class="btn small" href="/pod">PoD Mode</a>
+            <a class="btn small" href="https://www.smallstreet.app/?utm_source=humanblockchain.info&scan_type=proof" target="_blank" rel="noopener noreferrer">PoD Mode</a>
           </div>
         </div>
 
@@ -813,7 +1017,8 @@
       // Entry Modal - Show on page load
       const enterOverlay = document.getElementById("enterOverlay");
       const podOverlay = document.getElementById("podOverlay");
-      const enterSiteBtn = document.getElementById("enterSite");
+      const enterWebsiteBtn = document.getElementById("enterWebsite");
+      const enterPodModeBtn = document.getElementById("enterPodMode");
       const podGateYes = document.getElementById("podGateYes");
       const podGateNo = document.getElementById("podGateNo");
 
@@ -824,11 +1029,21 @@
       });
 
       // Enter Website button - show POD gate
-      enterSiteBtn.addEventListener("click", () => {
+      enterWebsiteBtn.addEventListener("click", (e) => {
+        e.preventDefault();
         enterOverlay.classList.remove("active");
         setTimeout(() => {
           podOverlay.classList.add("active");
         }, 300);
+      });
+
+      // Enter PoD Mode button - close entry modal and open SmallStreet app in new tab
+      enterPodModeBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        enterOverlay.classList.remove("active");
+        document.body.style.overflow = "";
+        // Open SmallStreet app PoD mode in new tab
+        window.open("https://www.smallstreet.app/?utm_source=humanblockchain.info&scan_type=proof", "_blank", "noopener,noreferrer");
       });
 
       // POD Gate - Yes button (opens existing PoD modal)
