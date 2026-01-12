@@ -1,15 +1,14 @@
 <?php
-
 /**
- * Template Name: Serendipity Protocol
+ * Template: Loyalty XP
  */
 ?>
-<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Serendipity Protocol | HumanBlockchain.info</title>
+  <title>Loyalty Points (XP, NWP & YAM JAM) | HumanBlockchain.info</title>
 
   <style>
     :root{
@@ -107,7 +106,7 @@
     }
 
     h2{margin:12px 0 10px;font-size:34px;line-height:1.15;letter-spacing:.2px}
-    p{margin:10px 0;font-size:16px;line-height:1.65}
+    p{margin:10px 0;font-size:16px;line-height:1.6}
     .muted{color:var(--muted)}
 
     .grid{
@@ -133,6 +132,42 @@
       letter-spacing:.15px;
     }
 
+    .bigStat{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+      margin-top:10px;
+    }
+    @media(max-width:700px){ .bigStat{grid-template-columns:1fr} }
+    .stat{
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.04);
+      border-radius:16px;
+      padding:14px;
+    }
+    .stat .label{
+      color:var(--muted);
+      text-transform:uppercase;
+      letter-spacing:.35px;
+      font-size:12px;
+      font-weight:900;
+    }
+    .stat .value{
+      margin-top:8px;
+      font-size:28px;
+      font-weight:950;
+      letter-spacing:.2px;
+    }
+    .stat .note{
+      margin-top:8px;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.5;
+    }
+
+    ul{margin:0;padding-left:18px}
+    li{margin:9px 0;font-size:16px;line-height:1.6}
+
     .callout{
       margin-top:12px;
       padding:16px;
@@ -155,49 +190,6 @@
       margin-right:10px;
       vertical-align:middle;
     }
-
-    /* Steps */
-    .steps{
-      display:grid;
-      gap:10px;
-      margin-top:10px;
-    }
-    .step{
-      border:1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.04);
-      border-radius:16px;
-      padding:14px;
-    }
-    .stepTop{
-      display:flex;align-items:center;justify-content:space-between;gap:12px;
-      margin-bottom:8px;
-    }
-    .num{
-      width:32px;height:32px;border-radius:12px;
-      display:flex;align-items:center;justify-content:center;
-      background: rgba(52,211,153,.12);
-      border:1px solid rgba(52,211,153,.28);
-      color: var(--text);
-      font-weight:950;
-    }
-    .stepTitle{
-      font-weight:950;
-      font-size:16px;
-      letter-spacing:.15px;
-      flex:1;
-    }
-    .pill{
-      padding:7px 10px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.14);
-      background: rgba(0,0,0,.18);
-      color: var(--muted);
-      font-size:12px;
-      font-weight:850;
-      white-space:nowrap;
-    }
-    ul{margin:8px 0 0;padding-left:18px}
-    li{margin:8px 0;line-height:1.6}
 
     /* Table */
     .tableWrap{
@@ -254,6 +246,17 @@
       margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,255,255,.14);
       font-size:13px;color:var(--muted);line-height:1.6;
     }
+
+    code{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
+      font-size:12px;
+      color: rgba(234,240,255,.92);
+      background: rgba(0,0,0,.22);
+      padding:2px 6px;
+      border-radius:8px;
+      border:1px solid rgba(255,255,255,.10);
+      white-space:nowrap;
+    }
   </style>
 </head>
 
@@ -264,7 +267,7 @@
         <div class="logo" aria-hidden="true"></div>
         <div>
           <h1>HumanBlockchain.info</h1>
-          <small>Serendipity Protocol</small>
+          <small>Loyalty Points (XP & NWP)</small>
         </div>
       </a>
 
@@ -281,111 +284,97 @@
     <section class="card">
       <div class="card-inner">
 
-        <div class="badge"><span class="dot" aria-hidden="true"></span> Location + timestamp • local buyers • global sellers • marketplace of ideas</div>
+        <div class="badge"><span class="dot" aria-hidden="true"></span> YAM JAM • XP & NWP • accounting only • not money</div>
 
-        <h2>Serendipity Protocol</h2>
+        <h2>Loyalty Points (XP & New World Penny)</h2>
         <p class="muted">
-          Serendipity is the moment your device joins the network.
-          Your <b>location</b> and <b>timestamp</b> help organize the community in a fair way—without forms,
-          without gatekeepers, and without needing to “know the right people.”
+          In our community we call this <b>YAM JAM</b> —
+          <b>You And Me, Just Alternative Money</b>.
+          That phrase sounds like money, but here’s the truth:
+          <b>it is not money</b>. It’s a simple way to <b>measure and record</b> real help using loyalty accounting.
         </p>
 
         <div class="grid">
           <!-- LEFT -->
           <div>
             <div class="panel">
-              <h3>What this protocol does (plain language)</h3>
+              <h3>What YAM JAM means (in plain language)</h3>
               <ul>
-                <li>Creates a <b>local Buyer circle</b> (people near you)</li>
-                <li>Creates a <b>global Seller circle</b> (people beyond your local area)</li>
-                <li>Builds a YAM JAM <b>marketplace of ideas</b> where participation is verified by the 2-scan method</li>
+                <li><b>You And Me</b> = real people helping each other</li>
+                <li><b>Just</b> = fair, simple, and easy to understand</li>
+                <li><b>Alternative Money</b> = a <b>measuring stick</b> for human value, not cash</li>
               </ul>
 
               <div class="callout warn">
-                <span class="warnDot" aria-hidden="true"></span><b>YAM JAM reminder</b>
-                YAM JAM means <b>You And Me, Just Alternative Money</b>.
-                Here, “alternative money” means an <b>alternative measuring stick</b> for human value—not cash.
+                <span class="warnDot" aria-hidden="true"></span><b>Important</b>
+                “Alternative money” here means <b>alternative measuring</b>.
+                It does <b>not</b> mean a bank account, a wallet, or something you spend like dollars.
               </div>
             </div>
 
             <div class="panel">
-              <h3>How Serendipity works (step-by-step)</h3>
-              <div class="steps">
-                <div class="step">
-                  <div class="stepTop">
-                    <div class="num">1</div>
-                    <div class="stepTitle">Register your device</div>
-                    <div class="pill">Location + timestamp</div>
-                  </div>
-                  <div class="muted">
-                    Your device creates a “moment in time” record. That moment is used to organize fair groups.
+              <h3>The simplest way to understand the points</h3>
+              <ul>
+                <li><b>XP</b> = loyalty accounting points for verified participation</li>
+                <li><b>New World Penny (NWP)</b> = one “thank you” point for each delivery helper</li>
+                <li>Points are recorded in a <b>general ledger</b> for tracking only</li>
+                <li>Points are <b>not money</b> and do not work like a bank balance</li>
+              </ul>
+
+              <div class="bigStat">
+                <div class="stat">
+                  <div class="label">Peg used for accounting</div>
+                  <div class="value">21,000 : 1</div>
+                  <div class="note">
+                    For ledger math only: <b>21,000 units</b> are treated as the bookkeeping equivalent of <b>$1</b>.
+                    This is not an exchange feature—just a consistent measuring stick.
                   </div>
                 </div>
 
-                <div class="step">
-                  <div class="stepTop">
-                    <div class="num">2</div>
-                    <div class="stepTitle">Local buyers form naturally</div>
-                    <div class="pill">Near you</div>
-                  </div>
-                  <div class="muted">
-                    Devices registering in the same area create a local neighborhood buyer circle—
-                    a marketplace of practical needs and everyday coordination.
-                  </div>
-                </div>
-
-                <div class="step">
-                  <div class="stepTop">
-                    <div class="num">3</div>
-                    <div class="stepTitle">Global sellers connect beyond borders</div>
-                    <div class="pill">Beyond your area</div>
-                  </div>
-                  <div class="muted">
-                    Sellers are organized to be broader than your local circle. The goal is to
-                    build bridging relationships—out of state, and eventually worldwide.
-                  </div>
-                </div>
-
-                <div class="step">
-                  <div class="stepTop">
-                    <div class="num">4</div>
-                    <div class="stepTitle">Ideas become visible through verified action</div>
-                    <div class="pill">2-scan proof</div>
-                  </div>
-                  <div class="muted">
-                    The marketplace of ideas isn’t just talk—people show up, deliver, and confirm using the two-scan method.
-                    Verified actions become loyalty accounting entries (XP / New World Penny).
+                <div class="stat">
+                  <div class="label">Smallest accounting unit</div>
+                  <div class="value">1 / 10²¹</div>
+                  <div class="note">
+                    The ledger can record value down to a <b>sextillionth of a penny</b>
+                    (a 1 with 21 zeros).
+                    This lets many helpers receive credit without rounding away their effort.
                   </div>
                 </div>
               </div>
             </div>
 
+            <div class="callout warn">
+              <span class="warnDot" aria-hidden="true"></span><b>Why use the 21,000-to-1 peg?</b>
+              People understand dollars. The ledger uses the <b>21,000-to-1</b> peg as a familiar reference so reports
+              can be read easily. It remains <b>general ledger accounting only</b>.
+            </div>
+
             <div class="panel">
-              <h3>What gets organized by location and timestamp?</h3>
+              <h3>Examples (simple and practical)</h3>
               <div class="tableWrap">
-                <table aria-label="Serendipity organization table">
+                <table aria-label="Examples table">
                   <thead>
                     <tr>
-                      <th>Signal</th>
-                      <th>What it helps create</th>
+                      <th>Situation</th>
+                      <th>What is recorded</th>
                       <th>Why it matters</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr>
-                      <td><b>Location</b></td>
-                      <td>Local buyer circle</td>
-                      <td>Builds trust and practical collaboration close to home</td>
+                      <td><b>Buyer confirms a delivery</b></td>
+                      <td>$5 buyer rebate in <b>XP</b> (loyalty accounting)</td>
+                      <td>Rewards the buyer for completing the final acceptance</td>
                     </tr>
                     <tr>
-                      <td><b>Timestamp</b></td>
-                      <td>Fair ordering & grouping</td>
-                      <td>Prevents “insiders” from controlling who gets placed where</td>
+                      <td><b>30 people help move a package</b></td>
+                      <td><b>30 NWP</b> (one per helper) issued by seller</td>
+                      <td>Recognizes every helper fairly</td>
                     </tr>
                     <tr>
-                      <td><b>Combined</b></td>
-                      <td>Local buyers + global sellers</td>
-                      <td>Creates a balanced network: local stability + global ideas</td>
+                      <td><b>Many small acts over time</b></td>
+                      <td>Ledger totals in tiny units (down to sextillionths)</td>
+                      <td>Keeps long-term accounting accurate and fair</td>
                     </tr>
                   </tbody>
                 </table>
@@ -393,16 +382,16 @@
             </div>
 
             <div class="callout">
-              <b>Why we call it a “marketplace of ideas”</b>
-              Because the network rewards <b>proof</b>, not hype. People propose ideas, then demonstrate them by
-              doing real deliveries, real handoffs, and real confirmations using the universal QR and the two-scan method.
-              <span class="muted">Ideas become more valuable when they are carried by action.</span>
+              <b>Where money is handled (simple)</b>
+              The <b>d-DAO General Ledger</b> is non-custodial and does not hold or move money.
+              The <b>Voluntary Fulfillment Network (VFN)</b> is the sole custodial network for any fiat or MSB activity.
+              <span class="muted">This page explains loyalty accounting records only.</span>
             </div>
 
             <div class="callout warn">
-              <span class="warnDot" aria-hidden="true"></span><b>How VFN fits in</b>
-              The Voluntary Fulfillment Network (VFN) is the network of buyers and sellers using 2-scan accounting.
-              VFN performs monthly reconciliation to an <b>append-only general ledger</b> for receipts and obligations.
+              <span class="warnDot" aria-hidden="true"></span><b>Cookie Jar Economy launch</b>
+              Seller pledges (like <b>$10.30</b>) support the Cookie Jar Economy scheduled for <b>May 17, 2030</b>.
+              Until then, the ledger focuses on <b>verified records</b> and <b>loyalty accounting</b>.
             </div>
           </div>
 
@@ -411,7 +400,7 @@
             <a class="btn btnPrimary" href="register-device">
               <div>
                 Register This Device
-                <span class="sub">Create your serendipity moment</span>
+                <span class="sub">Start earning loyalty credit</span>
               </div>
               <div class="arrow">→</div>
             </a>
@@ -419,14 +408,14 @@
             <a class="btn" href="pod-mode">
               <div>
                 Enter PoD Mode
-                <span class="sub">Use the universal QR</span>
+                <span class="sub">Scan • confirm • record</span>
               </div>
               <div class="arrow">→</div>
             </a>
 
             <a class="btn" href="how-it-works">
               <div>
-                Read How It Works
+                Read “How It Works”
                 <span class="sub">Simple overview</span>
               </div>
               <div class="arrow">→</div>
@@ -434,16 +423,16 @@
 
             <a class="btn" href="faq">
               <div>
-                FAQs
-                <span class="sub">Quick answers</span>
+                FAQs & Rules
+                <span class="sub">Clear answers</span>
               </div>
               <div class="arrow">→</div>
             </a>
 
             <div class="fineprint">
               <b>Plain-language summary:</b><br />
-              Serendipity uses device registration location and timestamp to form local buyers and global sellers,
-              so your YAM JAM marketplace grows by verified action—not paperwork.
+              YAM JAM is “You And Me, Just Alternative Money”—meaning an alternative way to <b>measure</b> human value,
+              not a way to spend money. The 21,000-to-1 peg and sextillionth units are used for ledger math only.
             </div>
           </aside>
         </div>
@@ -453,3 +442,4 @@
   </main>
 </body>
 </html>
+

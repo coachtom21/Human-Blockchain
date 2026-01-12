@@ -4,331 +4,568 @@
  * Template Name: FAQ
  */
 ?>
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>FAQs | HumanBlockchain.info</title>
-<meta name="description" content="HumanBlockchain.info FAQs: Serendipity POCs, Proof of
-Delivery, XP scientific notation, New World Penny recognition, and VFN redemption boundary.
-"
-/>
-<style>
-:root{
---bg:#0b1220; --bg2:#070d18;
---panel: rgba(18,31,61,.70);
---line: rgba(232,238,252,.12);
---text:#e8eefc; --muted:#b8c3e6;
---accent:#7dd3fc; --accent2:#a78bfa;
---good:#86efac; --warn:#fbbf24;
---radius:18px; --shadow: 0 10px 22px rgba(0,0,0,.22);
---maxw: 980px;
---font: ui-sans-serif, system-ui,
--apple-system, Segoe UI, Roboto, Arial,
-"Apple Color
-Emoji"
-,
-"Segoe UI Emoji";
---mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
-"Liberation
-Mono"
-"Courier New"
-,
-, monospace;
-}
-*{box-sizing:border-box}
-body{
-margin:0;
-font-family:var(--font);
-color:var(--text);
-background:
-radial-gradient(1100px 650px at 18% 0%, rgba(167,139,250,.20), transparent 55%),
-radial-gradient(1000px 520px at 86% 25%, rgba(125,211,252,.18), transparent 55%),
-radial-gradient(700px 420px at 50% 92%, rgba(134,239,172,.10), transparent 60%),
-linear-gradient(180deg, var(--bg), var(--bg2));
-line-height:1.45;
-}
-a{color:inherit;text-decoration:none}
-.wrap{max-width:var(--maxw); margin:0 auto; padding:0 18px}
-.topbar{
-position:sticky; top:0; z-index:50;
-background:rgba(11,18,32,.78);
-backdrop-filter: blur(10px);
-border-bottom:1px solid var(--line);
-}
-.nav{
-display:flex; align-items:center; justify-content:space-between;
-gap:12px; padding:14px 0;
-}
-.brand{display:flex;align-items:center;gap:10px}
-.logo{
-width:36px;height:36px;border-radius:12px;
-background: linear-gradient(135deg, rgba(125,211,252,.95), rgba(167,139,250,.95));
-box-shadow: 0 12px 24px rgba(0,0,0,.25);
-}
-.brand b{letter-spacing:.3px}
-.small{font-size:12px;color:var(--muted)}
-.btn{
-display:inline-flex;align-items:center;justify-content:center;gap:10px;
-padding:10px 14px;border-radius:14px;
-border:1px solid rgba(232,238,252,.16);
-background: rgba(232,238,252,.06);
-color:var(--text);
-font-weight:900;font-size:14px;
-box-shadow: var(--shadow);
-transition: transform .08s ease, background .12s ease, filter .08s ease;
-}
-.btn:hover{background: rgba(232,238,252,.10); transform: translateY(-1px)}
-.btn:active{transform: translateY(0px); filter: brightness(.98)}
-.btn.primary{
-border-color:transparent;
-background: linear-gradient(135deg, rgba(125,211,252,.95), rgba(167,139,250,.95));
-color:#071024;
-}
-.btn.ghost{background: transparent}
-h1{font-size:34px; letter-spacing:-
-.4px; margin:0 0 6px}
-p{margin:0 0 12px; color:var(--muted)}
-.lead{font-size:16px}
-.card{
-background:var(--panel);
-border:1px solid var(--line);
-border-radius:var(--radius);
-padding:18px;
-box-shadow: var(--shadow);
-}
-.section{padding:26px 0}
-.grid{display:grid; gap:12px}
-details{
-border-radius:16px;
-background: rgba(232,238,252,.05);
-border:1px solid rgba(232,238,252,.12);
-padding:12px;
-overflow:hidden;
-}
-details[open]{background: rgba(232,238,252,.06)}
-details + details{margin-top:10px}
-details summary{
-cursor:pointer;
-list-style:none;
-font-weight:900;
-display:flex;
-align-items:center;
-justify-content:space-between;
-gap:12px;
-}
-details summary::-webkit-details-marker{display:none}
-details summary::after{
-content:"+";
-font-weight:900;
-color:var(--muted);
-width:26px;height:26px;
-display:inline-flex;align-items:center;justify-content:center;
-border-radius:10px;
-border:1px solid rgba(232,238,252,.12);
-background: rgba(232,238,252,.04);
-flex:0 0 auto;
-}
-details[open] summary::after{content:"
-–
-"}
-details p{margin:10px 0 0; color:var(--muted)}
-code{
-font-family:var(--mono);
-background: rgba(232,238,252,.06);
-border: 1px solid rgba(232,238,252,.14);
-padding:2px 6px;
-border-radius:10px;
-font-size:.95em;
-color:var(--text);
-}
-.pill{
-.pillrow{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 6px}
-display:inline-flex;align-items:center;gap:8px;
-padding:6px 10px;border-radius:999px;
-background: rgba(232,238,252,.08);
-border:1px solid rgba(232,238,252,.12);
-font-size:12px;color:var(--muted);
-}
-.dot{width:9px;height:9px;border-radius:999px;background:var(--accent);box-shadow:0 0 0
-4px rgba(125,211,252,.10)}
-.dot.good{background:var(--good);box-shadow:0 0 0 4px rgba(134,239,172,.10)}
-.dot.warn{background:var(--warn);box-shadow:0 0 0 4px rgba(251,191,36,.12)}
-.toc{
-display:flex; gap:10px; flex-wrap:wrap; margin-top:12px;
-}
-.toc a{
-display:inline-flex;align-items:center;
-padding:8px 10px;
-border-radius:999px;
-border:1px solid rgba(232,238,252,.14);
-background: rgba(232,238,252,.06);
-color:var(--muted);
-font-size:13px;
-}
-.footer{
-padding:26px 0 36px;
-border-top:1px solid var(--line);
-color:var(--muted);
-font-size:13px;
-.toc a:hover{background: rgba(232,238,252,.10); color:var(--text)}
-}
-@media (max-width:520px){
-h1{font-size:28px}
-.btn{width:100%}
-}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FAQs | HumanBlockchain.info</title>
+
+  <style>
+    :root{
+      --bg:#0b1020;
+      --text:#eef2ff;
+      --muted:#b8c1e3;
+      --line:rgba(255,255,255,.14);
+      --shadow:0 18px 50px rgba(0,0,0,.55);
+      --radius:18px;
+      --btnRadius:14px;
+      --accent:#34d399;
+      --warn:#fbbf24;
+      --danger:#fb7185;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family: system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+      background:
+        radial-gradient(1000px 650px at 20% 10%, rgba(120,160,255,.18), transparent 60%),
+        radial-gradient(900px 650px at 80% 85%, rgba(52,211,153,.12), transparent 65%),
+        var(--bg);
+      color:var(--text);
+    }
+
+    /* Header */
+    .nav{
+      position:sticky; top:0; z-index:10;
+      backdrop-filter: blur(10px);
+      background: rgba(11,16,32,.68);
+      border-bottom:1px solid var(--line);
+    }
+    .nav-inner{
+      max-width:1100px;
+      margin:0 auto;
+      padding:14px 18px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:14px;
+      flex-wrap:wrap;
+    }
+    .brand{
+      display:flex; gap:10px; align-items:center;
+      text-decoration:none; color:var(--text);
+      min-width:260px;
+    }
+    .logo{
+      width:34px;height:34px;border-radius:12px;
+      background:
+        radial-gradient(circle at 30% 30%, rgba(52,211,153,.9), transparent 60%),
+        radial-gradient(circle at 70% 70%, rgba(120,160,255,.9), transparent 60%),
+        rgba(255,255,255,.06);
+      border:1px solid var(--line);
+      flex:0 0 auto;
+    }
+    .brand h1{margin:0;font-size:14px;letter-spacing:.4px}
+    .brand small{display:block;font-size:12px;color:var(--muted)}
+    .nav-links{display:flex;gap:10px;flex-wrap:wrap}
+    .nav-links a{
+      text-decoration:none;
+      color:var(--muted);
+      font-weight:850;
+      font-size:12px;
+      padding:10px 12px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.04);
+    }
+
+    /* Layout */
+    .wrap{max-width:1100px;margin:0 auto;padding:26px 18px 60px;}
+    .card{
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.05);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .card-inner{padding:22px}
+
+    .badge{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:8px 12px;border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.18);
+      color:var(--muted);
+      font-size:12px;
+      letter-spacing:.2px;
+    }
+    .badge .dot{
+      width:8px;height:8px;border-radius:50%;
+      background:var(--accent);
+      box-shadow:0 0 0 3px rgba(52,211,153,.18);
+    }
+
+    h2{margin:12px 0 10px;font-size:34px;line-height:1.15;letter-spacing:.2px}
+    p{margin:10px 0;font-size:16px;line-height:1.6}
+    .muted{color:var(--muted)}
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1.08fr .92fr;
+      gap:18px;
+      margin-top:16px;
+      align-items:start;
+    }
+    @media(max-width:900px){ .grid{grid-template-columns:1fr} }
+
+    .panel{
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.18);
+      border-radius:16px;
+      padding:16px;
+      margin-bottom:12px;
+    }
+    .panel h3{
+      margin:0 0 10px;
+      color:var(--text);
+      font-size:19px;
+      letter-spacing:.15px;
+    }
+
+    .callout{
+      margin-top:12px;
+      padding:16px;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.04);
+      font-size:16px;
+      line-height:1.6;
+    }
+    .callout b{display:block;margin-bottom:8px;font-size:17px}
+    .callout.warn{
+      border-color: rgba(251,191,36,.35);
+      background: rgba(251,191,36,.06);
+    }
+    .callout.danger{
+      border-color: rgba(251,113,133,.35);
+      background: rgba(251,113,133,.08);
+    }
+    .warnDot{
+      display:inline-block;
+      width:10px;height:10px;border-radius:50%;
+      background: var(--warn);
+      box-shadow:0 0 0 3px rgba(251,191,36,.16);
+      margin-right:10px;
+      vertical-align:middle;
+    }
+
+    /* Allocation chips */
+    .alloc{
+      margin-top:10px;
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+    }
+    @media(max-width:720px){ .alloc{grid-template-columns:1fr} }
+    .chip{
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.18);
+      border-radius:16px;
+      padding:12px;
+    }
+    .chip .top{
+      display:flex;justify-content:space-between;align-items:baseline;gap:12px;
+      font-weight:950;
+    }
+    .chip .amt{
+      font-size:18px;
+    }
+    .chip .desc{
+      margin-top:6px;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.5;
+    }
+    .suballoc{
+      margin-top:10px;
+      padding-top:10px;
+      border-top:1px solid rgba(255,255,255,.12);
+      display:grid;
+      gap:8px;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.5;
+    }
+    .row{
+      display:flex;justify-content:space-between;gap:12px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.03);
+      padding:10px 12px;
+      border-radius:14px;
+      color: rgba(238,242,255,.92);
+    }
+    .row span{color:var(--muted)}
+    .row b{color:var(--text)}
+
+    /* FAQ accordion (native) */
+    details{
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.04);
+      border-radius:16px;
+      padding:12px 14px;
+      margin:10px 0;
+    }
+    summary{
+      cursor:pointer;
+      font-weight:950;
+      font-size:16px;
+      list-style:none;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+    }
+    summary::-webkit-details-marker{display:none}
+    summary .chev{
+      width:28px;height:28px;border-radius:10px;
+      display:flex;align-items:center;justify-content:center;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.18);
+      color: var(--muted);
+      flex:0 0 auto;
+      font-weight:950;
+    }
+    details[open] summary .chev{transform: rotate(90deg)}
+    .answer{
+      margin-top:10px;
+      color: rgba(238,242,255,.92);
+      font-size:15px;
+      line-height:1.65;
+    }
+    .answer .muted{color:var(--muted)}
+    .answer ul{margin:10px 0 0;padding-left:18px}
+    .answer li{margin:8px 0}
+
+    /* Right rail */
+    .cta{display:grid;gap:12px;align-content:start}
+    .btn{
+      display:flex;justify-content:space-between;align-items:center;gap:12px;
+      text-decoration:none;border-radius: 14px;
+      padding:16px 16px;font-weight:950;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      cursor:pointer;font-size:16px;
+    }
+    .btnPrimary{
+      background: linear-gradient(180deg,#34d399,#10b981);
+      color:#052015;border-color: rgba(52,211,153,.35);
+    }
+    .btn .sub{
+      display:block;font-size:13px;font-weight:800;opacity:.86;margin-top:4px;
+      color: rgba(255,255,255,.86);
+    }
+    .btnPrimary .sub{color:#062015;opacity:.8}
+    .arrow{font-weight:950}
+
+    .fineprint{
+      margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,255,255,.14);
+      font-size:13px;color:var(--muted);line-height:1.6;
+    }
+  </style>
 </head>
+
 <body>
-<header class="topbar">
-<div class="wrap">
-<nav class="nav">
-<a class="brand" href="/home">
-<span class="logo" aria-hidden="true"></span>
-<div>
-<b>HumanBlockchain.info</b><br>
-<span class="small">FAQs • Proof of Delivery • Serendipity POCs</span>
-</div>
-</a>
-<div style="display:flex;gap:10px;flex-wrap:wrap">
-<a class="btn ghost" href="/home">Back to Home</a>
-<a class="btn primary" href="https://www.smallstreet.app/?utm_source=humanblockchain.info&scan_type=proof" target="_blank" rel="noopener noreferrer">PoD Mode</a>
-</div>
-</nav>
-</div>
-</header>
-<main class="section">
-<div class="wrap">
-<div class="card">
-<h1>Frequently Asked Questions</h1>
-<p class="lead">
-Simple answers first. Clear boundaries. Proof-first design.
-</p>
-<div class="pillrow">
-<span class="pill"><span class="dot good"></span> Serendipity POCs</span>
-<span class="pill"><span class="dot"></span> 2-Scan Proof of Delivery</span>
-<span class="pill"><span class="dot.warn"></span> XP is not money</span>
-</div>
-<div class="toc" aria-label="FAQ jump links">
-<a href="#serendipity">Serendipity</a>
-<a href="#poc">POCs</a>
-<a href="#pod">Proof of Delivery</a>
-<a href="#xp">XP + New World Penny</a>
-<a href="#referrals">Referrals</a>
-<a href="#vfn">VFN / Redemption</a>
-</div>
-<div style="height:1px;background:rgba(232,238,252,.12);margin:14px 0"></div>
-<div class="grid">
-<details open id="serendipity">
-<summary>What is Serendipity?</summary>
-<p>
-Serendipity is the onboarding protocol that creates Patron Organizing Communities
-(POCs) from the newest device registrations.
-It uses <b>geo-location</b> and <b>timestamp</b> so the network forms
-fairly—without gatekeepers.
-</p>
-</details>
-<details id="poc">
-<summary>How are Buyer POCs and Seller POCs assigned?</summary>
-<p>
-<b>Buyer POCs are local</b>—assigned from registrations near your location.
-<b>Seller POCs are out-of-state or global</b>—assigned away
-from your locality to encourage cross-region cooperation and détente by design.
-</p>
-</details>
-<details id="pod">
-<summary>What is 2-Scan Proof of Delivery?</summary>
-<p>
-Proof of Delivery is anchored to a YAM-is-ON voucher (sticker) or hang tag ID. The
-<b>seller initiates</b> (first scan).
-Optional handoff scans can record custody movement. The <b>buyer acceptance</b>
-(second scan) completes settlement.
-</p>
-</details>
-<details>
-<p>
-destination?” YES/NO.
-</p>
-</details>
-<summary>What do I see right after I scan a voucher or hang tag?</summary>
-You’ll see: (1) “Is this Proof of Delivery?” YES/NO. If YES, (2) “Is this the final
-YES records a delivered step. NO records an in-route / handoff step.
-<details id="xp">
-<summary>Is XP money?</summary>
-<p>
-No. XP is a <b>measurement of verified human action</b>
-, displayed in scientific
-notation so it can’t be confused with money.
-Example: <code>1.0 × 10⁻¹⁸ XP</code>
-. XP is recorded at sextillionth-of-a-penny
-precision using a 21,000-to-1 USD reference scale
-for calibration only (no conversion inside the ledger).
-</p>
-</details>
-<details>
-<p>
-<summary>What is the New World Penny?</summary>
-The New World Penny is the public name for XP-based recognition. It represents
-verified action on the ledger and is displayed as
-scientific notation XP (measurement), not dollars or cents.
-</p>
-</details>
-<details id="referrals">
-<summary>How do referrals work?</summary>
-<p>
-Referrals are linked through Discord invites. Referral recognition is issued once per
-year on <b>September 1st</b> in XP measurement units.
-Tiers are displayed in scientific notation:
-<br><br>
-<b>Tier 1:</b> <code>1.0 × 10⁻¹⁸ XP</code><br>
-<b>Tier 5:</b> <code>5.0 × 10⁻¹⁸ XP</code><br>
-<b>Tier 25:</b> <code>2.5 × 10⁻¹⁷ XP</code>
-</p>
-</details>
-<details id="vfn">
-<summary>Where does redemption happen?</summary>
-<p>
-Any fiat or crypto redemption—if offered—happens only through the <b>Voluntary
-Fulfillment Network (VFN)</b> outside the d-DAO ledger.
-HumanBlockchain.info records proof, accounting, and reporting only. No money
-custody occurs here.
-</p>
-</details>
-<details>
-<summary>Why separate the ledger from redemption?</summary>
-<p>
-Separation prevents confusion and reduces fraud. The ledger records truth (proof +
-accountability). VFN handles any optional redemption
-under its own rules and compliance boundaries.
-</p>
-</details>
-</div>
-<div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">
-<a class="btn primary" href="https://www.smallstreet.app/?utm_source=humanblockchain.info&scan_type=proof" target="_blank" rel="noopener noreferrer">Enter PoD Mode</a>
-<a class="btn" href="/home">Enter Website</a>
-<a class="btn ghost" href="/new-world-penny">New World Penny</a>
-</div>
-<p class="small" style="margin-top:12px">
-Disclosure: HumanBlockchain.info provides proof-based ledger visibility and reporting. It
-does not custody money.
-XP is a cooperative measurement unit displayed in scientific notation.
-Any fiat/crypto redemption occurs only through the Voluntary Fulfillment Network (VFN)
-outside this ledger.
-</p>
-</div>
-</div>
-</main>
-<footer class="footer">
-<div class="wrap">
-© <span id="y"></span> HumanBlockchain.info • YAM-is-ON Delivery Credential
-</div>
-<script>
-document.getElementById('y').textContent = new Date().getFullYear();
-</script>
-</footer>
+  <header class="nav">
+    <div class="nav-inner">
+      <a class="brand" href="home">
+        <div class="logo" aria-hidden="true"></div>
+        <div>
+          <h1>HumanBlockchain.info</h1>
+          <small>Frequently Asked Questions</small>
+        </div>
+      </a>
+
+      <nav class="nav-links" aria-label="Primary">
+        <a href="how-it-works">How It Works</a>
+        <a href="register-device">Register Device</a>
+        <a href="pod-mode">PoD Mode</a>
+        <a href="loyalty-xp">Loyalty Points</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="card">
+      <div class="card-inner">
+
+        <div class="badge"><span class="dot" aria-hidden="true"></span> One universal QR • VFN monthly reconciliation • patronage split clarified</div>
+
+        <h2>FAQs</h2>
+        <p class="muted">
+          Plain-language answers for everyday people. If you still have a question,
+          the fastest help is in PoD Help or in Discord after you accept your invite.
+        </p>
+
+        <div class="grid">
+          <!-- LEFT -->
+          <div>
+
+            <div class="callout warn">
+              <span class="warnDot" aria-hidden="true"></span><b>Seller pledge allocation (simple)</b>
+              When the seller initiates Scan 1 and pledges <b>$10.30</b>, it is allocated as:
+              <div class="alloc" aria-label="Pledge allocation">
+                <div class="chip">
+                  <div class="top"><span>$5</span><span class="amt">Buyer Rebate</span></div>
+                  <div class="desc">Recorded in XP when the buyer confirms receipt (Scan 2).</div>
+                </div>
+
+                <div class="chip">
+                  <div class="top"><span>$4</span><span class="amt">Social Impact Resource</span></div>
+                  <div class="desc">A community resource allocation (recorded as XP accounting).</div>
+                </div>
+
+                <div class="chip">
+                  <div class="top"><span>$1</span><span class="amt">Patronage (split)</span></div>
+                  <div class="desc">
+                    Patronage is recorded in XP and split into three parts:
+                    <div class="suballoc" aria-label="Patronage split">
+                      <div class="row"><b>$0.50</b><span>Individual seller pledge return</span></div>
+                      <div class="row"><b>$0.40</b><span>Rotating 5-seller group bonus pool</span></div>
+                      <div class="row"><b>$0.10</b><span>Treasury reserve</span></div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="chip">
+                  <div class="top"><span>$0.30</span><span class="amt">PoD Service COGS</span></div>
+                  <div class="desc">Cost of goods sold for Proof of Delivery service (recorded as part of reconciliation).</div>
+                </div>
+              </div>
+              <p class="muted" style="margin:10px 0 0">
+                This page explains the allocation model and the accounting record. It is not a bank screen.
+              </p>
+            </div>
+
+            <div class="panel">
+              <h3>Most common questions</h3>
+
+              <details open>
+                <summary>
+                  Is there really only one QR code for everyone?
+                  <span class="chev">›</span>
+                </summary>
+                <div class="answer">
+                  Yes. There is <b>one universal QR code</b> used to start the process.
+                  Everyone scans the <b>same QR</b> to begin Proof of Delivery.
+                  <ul>
+                    <li>The universal QR opens PoD Mode and starts the “two-scan” flow.</li>
+                    <li>Your role (seller, helper, buyer) is selected inside the flow—<b>not</b> by a different QR.</li>
+                    <li>This keeps PoD simple: <b>one code, one process, clear choices</b>.</li>
+                  </ul>
+                </div>
+              </details>
+
+              <details>
+                <summary>
+                  What is the Voluntary Fulfillment Network (VFN)?
+                  <span class="chev">›</span>
+                </summary>
+                <div class="answer">
+                  The <b>Voluntary Fulfillment Network (VFN)</b> is the real-world network of <b>buyers and sellers</b>
+                  delivering goods and services using the <b>same two-scan method</b> as an accounting record.
+                  <ul>
+                    <li><b>Sellers</b> initiate delivery records and pledge the $10.30.</li>
+                    <li><b>Buyers</b> complete the record by confirming receipt.</li>
+                    <li>Both roles are part of “fulfillment” because both complete a required step of the verified delivery record.</li>
+                  </ul>
+                </div>
+              </details>
+
+              <details>
+                <summary>
+                  Who does monthly reconciliation and what does that mean?
+                  <span class="chev">›</span>
+                </summary>
+                <div class="answer">
+                  The <b>VFN</b> is responsible for <b>monthly reconciliation</b> to the <b>append-only general ledger</b>.
+                  In plain language:
+                  <ul>
+                    <li>All verified PoD records are gathered for the month.</li>
+                    <li>Receipts (what was confirmed) and obligations (what was pledged) are summarized.</li>
+                    <li>The summary is written to the ledger in a way that cannot be quietly edited later.</li>
+                  </ul>
+                  <span class="muted">Append-only means: records can be added, but not changed after the fact.</span>
+                </div>
+              </details>
+
+              <details>
+                <summary>
+                  Is this money? Can I cash out XP or New World Pennies?
+                  <span class="chev">›</span>
+                </summary>
+                <div class="answer">
+                  No. <b>XP</b> and <b>New World Penny (NWP)</b> are <b>loyalty accounting</b>—a record that you helped.
+                  They are used for <b>general ledger purposes only</b>.
+                  <div class="callout warn" style="margin-top:12px">
+                    <span class="warnDot" aria-hidden="true"></span><b>YAM JAM clarification</b>
+                    YAM JAM means <b>You And Me, Just Alternative Money</b>.
+                    Here, “alternative money” means an <b>alternative measuring stick</b> for human value—not cash.
+                  </div>
+                </div>
+              </details>
+
+              <details>
+                <summary>
+                  What is Proof of Delivery (PoD) in plain language?
+                  <span class="chev">›</span>
+                </summary>
+                <div class="answer">
+                  Proof of Delivery is two scans that confirm a real delivery happened:
+                  <ul>
+                    <li><b>Scan 1 (Seller):</b> Seller starts the delivery, pledges <b>$10.30</b>, and creates the <b>Transaction ID</b>.</li>
+                    <li><b>Scan 2 (Buyer):</b> Buyer validates the Transaction ID and accepts receipt.</li>
+                  </ul>
+                  Both scans are recorded with time and location to prevent confusion.
+                </div>
+              </details>
+
+              <details>
+                <summary>
+                  How does the $1 patronage work (and why split it)?
+                  <span class="chev">›</span>
+                </summary>
+                <div class="answer">
+                  Patronage is recorded in XP accounting and split to support both individuals and group fairness:
+                  <ul>
+                    <li><b>$0.50</b> goes to the <b>individual seller</b> as a pledge return.</li>
+                    <li><b>$0.40</b> goes into a <b>rotating 5-seller group bonus pool</b> (so each seller gets a turn).</li>
+                    <li><b>$0.10</b> remains as a <b>treasury reserve</b> for stability and reconciliation.</li>
+                  </ul>
+                </div>
+              </details>
+
+              <details>
+                <summary>
+                  Why does it ask “Is this the final destination?”
+                  <span class="chev">›</span>
+                </summary>
+                <div class="answer">
+                  Because deliveries often include handoffs. The system needs to know:
+                  <ul>
+                    <li><b>No</b> = this is a handoff along the route (not the final stop)</li>
+                    <li><b>Yes</b> = this is the true final stop</li>
+                  </ul>
+                  <b>Every “No” handoff and the single “Yes” final destination response earns 1 NWP</b>,
+                  issued by the seller to recognize delivery helpers.
+                </div>
+              </details>
+
+              <details>
+                <summary>
+                  What is the 21,000 to 1 USD peg and “sextillionth of a penny”?
+                  <span class="chev">›</span>
+                </summary>
+                <div class="answer">
+                  It’s a bookkeeping ruler—nothing more.
+                  <ul>
+                    <li>The ledger uses <b>21,000 units</b> as a familiar reference for <b>$1</b> in reporting.</li>
+                    <li>It measures tiny amounts down to a <b>sextillionth of a penny</b> so credit can be shared fairly.</li>
+                  </ul>
+                  Used for <b>general ledger purposes only</b>.
+                </div>
+              </details>
+
+              <details>
+                <summary>
+                  Do I have to join Discord? Why?
+                  <span class="chev">›</span>
+                </summary>
+                <div class="answer">
+                  Yes—Discord acceptance is part of participation because it is our community room.
+                  It’s where you get help, updates, and community assignments.
+                </div>
+              </details>
+
+              <details>
+                <summary>
+                  Is it safe to scan while delivering?
+                  <span class="chev">›</span>
+                </summary>
+                <div class="answer">
+                  Safety first:
+                  <ul>
+                    <li>Never scan while driving.</li>
+                    <li>Stop, park, and scan safely.</li>
+                  </ul>
+                </div>
+              </details>
+            </div>
+
+            <div class="callout danger">
+              <b>Reminder</b>
+              If you are unsure which role to choose, pause and use PoD Help or ask in Discord.
+            </div>
+          </div>
+
+          <!-- RIGHT -->
+          <aside class="cta">
+            <a class="btn btnPrimary" href="register-device">
+              <div>
+                Register This Device
+                <span class="sub">Start here</span>
+              </div>
+              <div class="arrow">→</div>
+            </a>
+
+            <a class="btn" href="pod-mode">
+              <div>
+                Enter PoD Mode
+                <span class="sub">Universal QR starts here</span>
+              </div>
+              <div class="arrow">→</div>
+            </a>
+
+            <a class="btn" href="pod-help">
+              <div>
+                PoD Help & Troubleshooting
+                <span class="sub">Fix common issues</span>
+              </div>
+              <div class="arrow">→</div>
+            </a>
+
+            <a class="btn" href="loyalty-xp">
+              <div>
+                Loyalty Points (XP & NWP)
+                <span class="sub">What you earn and why</span>
+              </div>
+              <div class="arrow">→</div>
+            </a>
+
+            <a class="btn" href="how-it-works">
+              <div>
+                How It Works
+                <span class="sub">Simple overview</span>
+              </div>
+              <div class="arrow">→</div>
+            </a>
+
+            <div class="fineprint">
+              <b>Plain-language summary:</b><br />
+              One universal QR starts the process. VFN is the buyer/seller fulfillment network using the 2-scan method.
+              Seller pledge allocation includes: $5 buyer rebate, $4 social impact resource, and $1 patronage split as
+              $0.50 individual seller return, $0.40 rotating 5-seller group bonus pool, and $0.10 treasury reserve
+              (plus $0.30 PoD service COGS).
+            </div>
+          </aside>
+        </div>
+
+      </div>
+    </section>
+  </main>
 </body>
 </html>
-
 
 
