@@ -613,7 +613,7 @@
         <div class="divider" role="separator"></div>
 
         <div class="cta" aria-label="Enter options">
-          <a class="btn primary" href="https://www.smallstreet.app/?utm_source=humanblockchain.info&scan_type=proof" target="_blank" rel="noopener noreferrer" id="enterPodMode">Enter PoD Mode</a>
+          <a class="btn primary" href="/pod-mode" id="enterPodMode">Enter PoD Mode</a>
           <a class="btn" href="#" id="enterWebsite">Enter Website</a>
           <a class="btn ghost" href="/faq">Read FAQs</a>
         </div>
@@ -688,7 +688,7 @@
         <!-- Right side actions + mobile toggle -->
         <div class="cta">
           <a class="btn primary" href="/activate-device">Activate Device</a>
-          <a class="btn ghost" href="https://www.smallstreet.app/?utm_source=humanblockchain.info&scan_type=proof" target="_blank" rel="noopener noreferrer">PoD Mode</a>
+          <a class="btn ghost" href="/pod-mode">PoD Mode</a>
 
           <div class="hamburger">
             <input id="navtoggle" type="checkbox" />
@@ -989,7 +989,7 @@
           <span class="small">Serendipity POCs • Proof of Delivery • XP measurement</span>
           <div style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap">
             <a class="btn small" href="/my-device">My Device</a>
-            <a class="btn small" href="https://www.smallstreet.app/?utm_source=humanblockchain.info&scan_type=proof" target="_blank" rel="noopener noreferrer">PoD Mode</a>
+            <a class="btn small" href="/pod-mode">PoD Mode</a>
           </div>
         </div>
 
@@ -1037,13 +1037,13 @@
         }, 300);
       });
 
-      // Enter PoD Mode button - close entry modal and open SmallStreet app in new tab
+      // Enter PoD Mode button - close entry modal and navigate to /pod-mode
       enterPodModeBtn.addEventListener("click", (e) => {
         e.preventDefault();
         enterOverlay.classList.remove("active");
         document.body.style.overflow = "";
-        // Open SmallStreet app PoD mode in new tab
-        window.open("https://www.smallstreet.app/?utm_source=humanblockchain.info&scan_type=proof", "_blank", "noopener,noreferrer");
+        // Navigate to PoD mode page
+        window.location.href = "/pod-mode";
       });
 
       // POD Gate - Yes button (opens existing PoD modal)

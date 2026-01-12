@@ -190,7 +190,7 @@ line-height:1.5;
 <body>
 <header class="nav">
 <div class="nav-inner">
-<a class="brand" href="index.html">
+<a class="brand" href="home">
 <div class="logo"></div>
 <div>
 <h1>HumanBlockchain.info</h1>
