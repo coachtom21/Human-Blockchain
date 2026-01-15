@@ -225,6 +225,53 @@
       border-color: rgba(232,238,252,.10);
     }
 
+    /* ============ DEVICE STATUS DISPLAY ============ */
+    .device-status{
+      display:none;
+      padding:12px 16px;
+      border-radius:14px;
+      background:rgba(134,239,172,.1);
+      border:1px solid rgba(134,239,172,.3);
+      align-items:center;
+      gap:12px;
+    }
+    .device-status.active{
+      display:flex;
+    }
+    .status-dot{
+      width:10px;
+      height:10px;
+      border-radius:50%;
+      background:#86efac;
+      box-shadow:0 0 0 3px rgba(134,239,172,.2);
+      animation:pulse 2s infinite;
+      flex-shrink:0;
+    }
+    @keyframes pulse{
+      0%,100%{opacity:1}
+      50%{opacity:.7}
+    }
+    .status-text{
+      flex:1;
+      font-size:14px;
+    }
+    .status-text strong{
+      display:block;
+      color:var(--text);
+      margin-bottom:2px;
+    }
+    .status-text small{
+      display:block;
+      color:var(--muted);
+      font-size:12px;
+    }
+    .device-activate-wrapper{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+
     /* ============ ENTRY MODAL OVERLAY ============ */
     .entry-overlay {
       position: fixed;
@@ -687,7 +734,18 @@
 
         <!-- Right side actions + mobile toggle -->
         <div class="cta">
-          <a class="btn primary" href="/activate-device">Activate Device</a>
+          <div class="device-activate-wrapper">
+            <!-- Active Status Display (hidden by default) -->
+            <div class="device-status" id="device-status-nav">
+              <span class="status-dot"></span>
+              <div class="status-text">
+                <strong>Device Active</strong>
+                <small id="device-status-nav-message">Ready to use</small>
+              </div>
+            </div>
+            <!-- Activate Button (shown by default) -->
+            <a class="btn primary" href="/activate-device" id="activate-device-nav">Activate Device</a>
+          </div>
           <a class="btn ghost" href="/pod-mode">PoD Mode</a>
 
           <div class="hamburger">
@@ -747,8 +805,17 @@
               </div>
             </div>
 
-            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px">
-              <a class="btn primary" href="/activate-device">Activate This Device</a>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px" class="device-activate-wrapper">
+              <!-- Active Status Display (hidden by default) -->
+              <div class="device-status" id="device-status-hero">
+                <span class="status-dot"></span>
+                <div class="status-text">
+                  <strong>Device Active</strong>
+                  <small id="device-status-hero-message">Ready to use</small>
+                </div>
+              </div>
+              <!-- Activate Button (shown by default) -->
+              <a class="btn primary" href="/activate-device" id="activate-device-hero">Activate This Device</a>
               <a class="btn" href="/dao">Join the DAO</a>
               <a class="btn ghost" href="/serendipity-protocol">Read Serendipity Protocol</a>
             </div>
@@ -860,8 +927,17 @@
             Buyer acceptance completes settlement. Recognition is recorded as XP in scientific notation, e.g. <code>1.0 × 10⁻¹⁸ XP</code>.
           </p>
 
-          <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">
-            <a class="btn primary" href="/activate-device">Activate Device</a>
+          <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap" class="device-activate-wrapper">
+            <!-- Active Status Display (hidden by default) -->
+            <div class="device-status" id="device-status-pod">
+              <span class="status-dot"></span>
+              <div class="status-text">
+                <strong>Device Active</strong>
+                <small id="device-status-pod-message">Ready to use</small>
+              </div>
+            </div>
+            <!-- Activate Button (shown by default) -->
+            <a class="btn primary" href="/activate-device" id="activate-device-pod">Activate Device</a>
             <a class="btn" href="https://www.smallstreet.app/?utm_source=humanblockchain.info&scan_type=proof" target="_blank" rel="noopener noreferrer">I Have Proof of Delivery</a>
             <a class="btn ghost" href="/proof-of-delivery">Proof of Delivery details</a>
           </div>
@@ -971,8 +1047,17 @@
           </details>
         </div>
 
-        <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">
-          <a class="btn primary" href="/activate-device">Activate Device</a>
+        <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap" class="device-activate-wrapper">
+          <!-- Active Status Display (hidden by default) -->
+          <div class="device-status" id="device-status-faq">
+            <span class="status-dot"></span>
+            <div class="status-text">
+              <strong>Device Active</strong>
+              <small id="device-status-faq-message">Ready to use</small>
+            </div>
+          </div>
+          <!-- Activate Button (shown by default) -->
+          <a class="btn primary" href="/activate-device" id="activate-device-faq">Activate Device</a>
           <a class="btn" href="/dao">Join the DAO</a>
           <a class="btn ghost" href="/serendipity-protocol">Serendipity Protocol</a>
         </div>
@@ -1011,7 +1096,20 @@
       </div>
     </div>
 
+    <?php
+    // Get current user info for JavaScript
+    $current_user = wp_get_current_user();
+    $user_data = array(
+      'userId' => $current_user->ID,
+      'userName' => $current_user->display_name,
+      'userEmail' => $current_user->user_email,
+      'loggedIn' => is_user_logged_in()
+    );
+    ?>
     <script>
+      // Pass WordPress user data to JavaScript
+      var hbcUserData = <?php echo json_encode($user_data); ?>;
+      
       document.getElementById('y').textContent = new Date().getFullYear();
 
       // Entry Modal - Show on page load
@@ -1060,6 +1158,199 @@
       podGateNo.addEventListener("click", () => {
         podOverlay.classList.remove("active");
         document.body.style.overflow = "";
+      });
+
+      // ============ DEVICE STATUS CHECK ============
+      /**
+       * Generate UUIDv4
+       */
+      function generateUUIDv4() {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+          var r = Math.random() * 16 | 0;
+          var v = c == 'x' ? r : (r & 0x3 | 0x8);
+          return v.toString(16);
+        });
+      }
+
+      /**
+       * Get or create device ID from localStorage
+       */
+      function getOrCreateDeviceId() {
+        let device_id = localStorage.getItem('hbc_device_id');
+        if (!device_id) {
+          device_id = generateUUIDv4();
+          localStorage.setItem('hbc_device_id', device_id);
+        }
+        return device_id;
+      }
+
+      /**
+       * Create device fingerprint
+       */
+      function createDeviceFingerprint() {
+        let fingerprint = {
+          screen: {
+            width: screen.width || null,
+            height: screen.height || null,
+            colorDepth: screen.colorDepth || null
+          },
+          window: {
+            devicePixelRatio: window.devicePixelRatio || null
+          },
+          navigator: {
+            platform: navigator.platform || null,
+            language: navigator.language || null,
+            hardwareConcurrency: navigator.hardwareConcurrency || null,
+            maxTouchPoints: navigator.maxTouchPoints || null
+          },
+          timezone: {
+            timezone: Intl.DateTimeFormat ? Intl.DateTimeFormat().resolvedOptions().timeZone : null
+          }
+        };
+        return fingerprint;
+      }
+
+      /**
+       * Create device hash from fingerprint
+       */
+      function createDeviceHash(fingerprint) {
+        let hashData = {
+          screen: fingerprint.screen.width + 'x' + fingerprint.screen.height + 'x' + fingerprint.screen.colorDepth,
+          timezone: fingerprint.timezone.timezone,
+          language: fingerprint.navigator.language,
+          hardware: fingerprint.navigator.hardwareConcurrency,
+          touch: fingerprint.navigator.maxTouchPoints,
+          platform: fingerprint.navigator.platform,
+          pixelRatio: fingerprint.window.devicePixelRatio
+        };
+        let hashString = JSON.stringify(hashData);
+        let hash = 0;
+        for (let i = 0; i < hashString.length; i++) {
+          let char = hashString.charCodeAt(i);
+          hash = ((hash << 5) - hash) + char;
+          hash = hash & hash;
+        }
+        return Math.abs(hash).toString(16);
+      }
+
+      /**
+       * Get user account info
+       */
+      function getUserAccountInfo() {
+        let userInfo = {
+          loggedIn: false,
+          userId: null,
+          userName: null,
+          userEmail: null
+        };
+        if (typeof hbcUserData !== 'undefined') {
+          userInfo.loggedIn = true;
+          userInfo.userId = hbcUserData.userId || null;
+          userInfo.userName = hbcUserData.userName || null;
+          userInfo.userEmail = hbcUserData.userEmail || null;
+        }
+        return userInfo;
+      }
+
+      /**
+       * Show active status for all buttons
+       */
+      function showActiveStatus(status, deviceData) {
+        const statusIds = ['nav', 'hero', 'pod', 'faq'];
+        const buttonIds = ['activate-device-nav', 'activate-device-hero', 'activate-device-pod', 'activate-device-faq'];
+        
+        let message = 'Your device is registered and ready to use';
+        if (status === 'validated') {
+          message = 'Your device is fully validated and ready for all features';
+        } else if (status === 'activating') {
+          message = 'Your device is activated and ready to use';
+        }
+
+        statusIds.forEach((id, index) => {
+          const statusDiv = document.getElementById(`device-status-${id}`);
+          const statusMessage = document.getElementById(`device-status-${id}-message`);
+          const button = document.getElementById(buttonIds[index]);
+          
+          if (statusDiv && button) {
+            statusDiv.classList.add('active');
+            button.style.display = 'none';
+            if (statusMessage) {
+              statusMessage.textContent = message;
+            }
+          }
+        });
+      }
+
+      /**
+       * Show activate buttons
+       */
+      function showActivateButtons() {
+        const statusIds = ['nav', 'hero', 'pod', 'faq'];
+        const buttonIds = ['activate-device-nav', 'activate-device-hero', 'activate-device-pod', 'activate-device-faq'];
+        
+        statusIds.forEach((id, index) => {
+          const statusDiv = document.getElementById(`device-status-${id}`);
+          const button = document.getElementById(buttonIds[index]);
+          
+          if (statusDiv && button) {
+            statusDiv.classList.remove('active');
+            button.style.display = '';
+          }
+        });
+      }
+
+      /**
+       * Check if device is active
+       */
+      async function checkDeviceActive() {
+        let device_id = localStorage.getItem('hbc_device_id');
+        
+        if (!device_id) {
+          showActivateButtons();
+          return false;
+        }
+        
+        let fingerprint = createDeviceFingerprint();
+        let device_hash = createDeviceHash(fingerprint);
+        let userInfo = getUserAccountInfo();
+        
+        if (!device_id || !device_hash) {
+          showActivateButtons();
+          return false;
+        }
+        
+        try {
+          const response = await fetch('/wp-json/hb/v1/device/check-active', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              device_id: device_id,
+              device_hash: device_hash,
+              wp_user_id: userInfo.loggedIn ? userInfo.userId : null
+            })
+          });
+          
+          const data = await response.json();
+          
+          if (data.active) {
+            showActiveStatus(data.status, data.device);
+            return true;
+          } else {
+            showActivateButtons();
+            return false;
+          }
+        } catch (error) {
+          console.error('Error checking device status:', error);
+          showActivateButtons();
+          return false;
+        }
+      }
+
+      // Check device status when page loads
+      document.addEventListener('DOMContentLoaded', function() {
+        checkDeviceActive();
       });
     </script>
   </footer>

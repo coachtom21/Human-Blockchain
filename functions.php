@@ -87,12 +87,45 @@ add_action( 'after_switch_theme', 'hb_activate_theme' );
 function hb_check_migrations() {
 	$current_version = get_option( 'hb_db_version', '0.0.0' );
 	
+	// Run migration 001 if needed
 	if ( version_compare( $current_version, '1.0.0', '<' ) ) {
 		require_once get_stylesheet_directory() . '/database/migrations/001_create_device_tables.php';
 		hb_create_device_tables();
+		$current_version = '1.0.0'; // Update after migration
+	}
+	
+	// Run migration 002 if needed (add hybrid method columns)
+	if ( version_compare( $current_version, '1.1.0', '<' ) ) {
+		require_once get_stylesheet_directory() . '/database/migrations/002_add_hybrid_method_columns.php';
+		$result = hb_add_hybrid_method_columns();
+		if ( ! is_wp_error( $result ) ) {
+			update_option( 'hb_db_version', '1.1.0' );
+			$current_version = '1.1.0';
+		}
+	}
+	
+	// Run migration 003 if needed (verify indexes and migrate data)
+	if ( version_compare( $current_version, '1.2.0', '<' ) ) {
+		require_once get_stylesheet_directory() . '/database/migrations/003_verify_and_migrate_data.php';
+		$result = hb_verify_and_migrate_data();
+		if ( ! is_wp_error( $result ) ) {
+			update_option( 'hb_db_version', '1.2.0' );
+		}
 	}
 }
 add_action( 'admin_init', 'hb_check_migrations' );
+add_action( 'init', 'hb_check_migrations_frontend' );
+
+/**
+ * Check migrations on frontend (for manual trigger)
+ */
+function hb_check_migrations_frontend() {
+	// Only run if migration parameter is present and user is admin
+	if ( isset( $_GET['hb_run_migration_003'] ) && current_user_can( 'manage_options' ) ) {
+		require_once get_stylesheet_directory() . '/database/migrations/003_verify_and_migrate_data.php';
+		hb_verify_and_migrate_data();
+	}
+}
 
 /**
  * Register templates-parts directory for page templates

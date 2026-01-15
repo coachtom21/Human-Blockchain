@@ -280,5 +280,198 @@ class Device_Registration_Service {
 		
 		return true;
 	}
+	
+	/**
+	 * Check if device is active (hybrid method)
+	 * Checks by device_id (UUIDv4) or device_hash
+	 * 
+	 * @param string $device_id Device ID (UUIDv4)
+	 * @param string $device_hash Device hash (fingerprint)
+	 * @param int|null $wp_user_id WordPress user ID (optional)
+	 * @return array|false Device data if active, false if not found
+	 */
+	public static function check_device_active( $device_id, $device_hash = null, $wp_user_id = null ) {
+		global $wpdb;
+		
+		$table_name = $wpdb->prefix . 'hb_devices';
+		
+		// First, check if table has device_id column (UUIDv4)
+		// If not, we'll need to add it via migration
+		$columns = $wpdb->get_col( "DESCRIBE {$table_name}" );
+		$has_device_id_col = in_array( 'device_id', $columns );
+		$has_device_hash_col = in_array( 'device_hash', $columns );
+		$has_wp_user_id_col = in_array( 'wp_user_id', $columns );
+		
+		// Build query based on available columns
+		$where = array();
+		$where_values = array();
+		
+		if ( $has_device_id_col && $device_id ) {
+			$where[] = "device_id = %s";
+			$where_values[] = $device_id;
+		}
+		
+		if ( $has_device_hash_col && $device_hash ) {
+			$where[] = "device_hash = %s";
+			$where_values[] = $device_hash;
+		}
+		
+		if ( $has_wp_user_id_col && $wp_user_id ) {
+			$where[] = "wp_user_id = %d";
+			$where_values[] = $wp_user_id;
+		}
+		
+		// If no columns match, fall back to device_fingerprint
+		if ( empty( $where ) && $device_hash ) {
+			$where[] = "device_fingerprint = %s";
+			$where_values[] = $device_hash;
+		}
+		
+		if ( empty( $where ) ) {
+			return false;
+		}
+		
+		$sql = "SELECT * FROM {$table_name} WHERE " . implode( ' OR ', $where );
+		$device = $wpdb->get_row(
+			$wpdb->prepare( $sql, $where_values ),
+			ARRAY_A
+		);
+		
+		if ( ! $device ) {
+			return false;
+		}
+		
+		// Check if device is active (activating or validated)
+		$active_statuses = array( 'activating', 'validated' );
+		if ( in_array( $device['status'], $active_statuses ) ) {
+			return $device;
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * Register device with hybrid method (UUIDv4 + device_hash + wp_user_id)
+	 * 
+	 * @param array $device_data Device registration data
+	 * @return array|WP_Error Device data or error
+	 */
+	public static function register_device_hybrid( $device_data ) {
+		global $wpdb;
+		
+		$table_name = $wpdb->prefix . 'hb_devices';
+		
+		// Check if device already exists
+		$existing = self::check_device_active(
+			$device_data['device_id'] ?? null,
+			$device_data['device_hash'] ?? null,
+			$device_data['wp_user_id'] ?? null
+		);
+		
+		if ( $existing ) {
+			// Update last_seen_at if column exists
+			$columns = $wpdb->get_col( "DESCRIBE {$table_name}" );
+			if ( in_array( 'last_seen_at', $columns ) ) {
+				$wpdb->update(
+					$table_name,
+					array( 'last_seen_at' => current_time( 'mysql' ) ),
+					array( 'id' => $existing['id'] ),
+					array( '%s' ),
+					array( '%d' )
+				);
+			}
+			
+			return array(
+				'device_id' => $device_data['device_id'] ?? $existing['device_id'] ?? null,
+				'device_hash' => $device_data['device_hash'] ?? $existing['device_hash'] ?? null,
+				'status' => $existing['status'],
+				'existing' => true,
+				'db_id' => $existing['id']
+			);
+		}
+		
+		// Prepare insert data
+		$insert_data = array(
+			'status' => 'activating', // Set to activating when device is registered
+			'created_at' => current_time( 'mysql' ),
+			'activated_at' => current_time( 'mysql' ),
+		);
+		
+		// Add device_id (UUIDv4) if column exists
+		$columns = $wpdb->get_col( "DESCRIBE {$table_name}" );
+		if ( in_array( 'device_id', $columns ) && isset( $device_data['device_id'] ) ) {
+			$insert_data['device_id'] = sanitize_text_field( $device_data['device_id'] );
+		}
+		
+		// Add device_hash if column exists
+		if ( in_array( 'device_hash', $columns ) && isset( $device_data['device_hash'] ) ) {
+			$insert_data['device_hash'] = sanitize_text_field( $device_data['device_hash'] );
+		} elseif ( isset( $device_data['device_hash'] ) ) {
+			// Fall back to device_fingerprint if device_hash column doesn't exist
+			$insert_data['device_fingerprint'] = sanitize_text_field( $device_data['device_hash'] );
+		}
+		
+		// Add wp_user_id if column exists
+		if ( in_array( 'wp_user_id', $columns ) && isset( $device_data['wp_user_id'] ) ) {
+			$insert_data['wp_user_id'] = intval( $device_data['wp_user_id'] );
+		}
+		
+		// Add device_name if column exists
+		if ( in_array( 'device_name', $columns ) && isset( $device_data['device_name'] ) ) {
+			$insert_data['device_name'] = sanitize_text_field( $device_data['device_name'] );
+		}
+		
+		// Add fingerprint data
+		if ( isset( $device_data['fingerprint'] ) ) {
+			$fp = $device_data['fingerprint'];
+			
+			if ( isset( $fp['navigator']['userAgent'] ) ) {
+				$insert_data['user_agent'] = sanitize_text_field( $fp['navigator']['userAgent'] );
+			}
+			
+			if ( isset( $fp['screen']['width'] ) && isset( $fp['screen']['height'] ) ) {
+				$insert_data['screen_resolution'] = $fp['screen']['width'] . 'x' . $fp['screen']['height'];
+			}
+			
+			if ( isset( $fp['timezone']['timezone'] ) ) {
+				$insert_data['timezone'] = sanitize_text_field( $fp['timezone']['timezone'] );
+			}
+			
+			if ( isset( $fp['navigator']['language'] ) ) {
+				$insert_data['language'] = sanitize_text_field( $fp['navigator']['language'] );
+			}
+		}
+		
+		// Add geolocation if available
+		if ( isset( $device_data['geolocation'] ) && $device_data['geolocation']['available'] ) {
+			$geo = $device_data['geolocation'];
+			$insert_data['location_lat'] = floatval( $geo['latitude'] );
+			$insert_data['location_lng'] = floatval( $geo['longitude'] );
+		}
+		
+		// Add IP address
+		$insert_data['activation_ip'] = self::get_client_ip();
+		
+		// Insert device
+		$result = $wpdb->insert( $table_name, $insert_data );
+		
+		if ( $result === false ) {
+			return new WP_Error(
+				'db_error',
+				'Failed to register device',
+				array( 'error' => $wpdb->last_error )
+			);
+		}
+		
+		$db_id = $wpdb->insert_id;
+		
+		return array(
+			'device_id' => $device_data['device_id'] ?? null,
+			'device_hash' => $device_data['device_hash'] ?? null,
+			'status' => 'activating',
+			'existing' => false,
+			'db_id' => $db_id
+		);
+	}
 }
 

@@ -66,6 +66,65 @@ class HB_REST_API {
 			),
 		) );
 		
+		// Hybrid method device activation endpoint
+		register_rest_route( $namespace, '/device/activate-hybrid', array(
+			'methods'             => 'POST',
+			'callback'            => array( __CLASS__, 'activate_device_hybrid' ),
+			'permission_callback' => '__return_true',
+			'args'                => array(
+				'device_id'    => array( 
+					'required' => true, 
+					'type' => 'string',
+					'validate_callback' => function( $param ) {
+						return ! empty( $param );
+					}
+				),
+				'device_hash'  => array( 
+					'required' => true, 
+					'type' => 'string',
+					'validate_callback' => function( $param ) {
+						return ! empty( $param );
+					}
+				),
+				'device_name'  => array( 
+					'required' => false, 
+					'type' => 'string',
+					'sanitize_callback' => 'sanitize_text_field'
+				),
+				'wp_user_id'   => array( 
+					'required' => false, 
+					'type' => 'integer',
+					'sanitize_callback' => 'absint'
+				),
+				'fingerprint'  => array( 
+					'required' => false, 
+					'type' => 'object',
+					'validate_callback' => function( $param ) {
+						return is_array( $param ) || is_object( $param );
+					}
+				),
+				'geolocation'  => array( 
+					'required' => false, 
+					'type' => 'object',
+					'validate_callback' => function( $param ) {
+						return is_array( $param ) || is_object( $param );
+					}
+				),
+			),
+		) );
+		
+		// Check if device is active
+		register_rest_route( $namespace, '/device/check-active', array(
+			'methods'             => 'POST',
+			'callback'            => array( __CLASS__, 'check_device_active' ),
+			'permission_callback' => '__return_true',
+			'args'                => array(
+				'device_id'   => array( 'required' => false, 'type' => 'string' ),
+				'device_hash' => array( 'required' => false, 'type' => 'string' ),
+				'wp_user_id'  => array( 'required' => false, 'type' => 'integer' ),
+			),
+		) );
+		
 		// QRtiger v-Card Validation Endpoints
 		register_rest_route( $namespace, '/vcard/validate', array(
 			'methods'             => 'POST',
@@ -460,6 +519,93 @@ class HB_REST_API {
 			'success' => true,
 			'device_id' => $device_id,
 			'status' => 'validated',
+		), 200 );
+	}
+	
+	/**
+	 * Activate device with hybrid method (UUIDv4 + device_hash + wp_user_id)
+	 */
+	public static function activate_device_hybrid( WP_REST_Request $request ) {
+		// Get parameters
+		$device_id = $request->get_param( 'device_id' );
+		$device_hash = $request->get_param( 'device_hash' );
+		$device_name = $request->get_param( 'device_name' );
+		$wp_user_id = $request->get_param( 'wp_user_id' );
+		$fingerprint = $request->get_param( 'fingerprint' );
+		$geolocation = $request->get_param( 'geolocation' );
+		
+		// Validate required fields
+		if ( empty( $device_id ) ) {
+			return new WP_Error(
+				'missing_device_id',
+				'Device ID is required',
+				array( 'status' => 400 )
+			);
+		}
+		
+		if ( empty( $device_hash ) ) {
+			return new WP_Error(
+				'missing_device_hash',
+				'Device hash is required',
+				array( 'status' => 400 )
+			);
+		}
+		
+		// Sanitize string fields
+		$device_id = sanitize_text_field( $device_id );
+		$device_hash = sanitize_text_field( $device_hash );
+		$device_name = ! empty( $device_name ) ? sanitize_text_field( $device_name ) : null;
+		$wp_user_id = ! empty( $wp_user_id ) ? intval( $wp_user_id ) : null;
+		
+		$device_data = array(
+			'device_id' => $device_id,
+			'device_hash' => $device_hash,
+			'device_name' => $device_name,
+			'wp_user_id' => $wp_user_id,
+			'fingerprint' => $fingerprint,
+			'geolocation' => $geolocation,
+		);
+		
+		$result = Device_Registration_Service::register_device_hybrid( $device_data );
+		
+		if ( is_wp_error( $result ) ) {
+			return new WP_Error(
+				$result->get_error_code(),
+				$result->get_error_message(),
+				array( 
+					'status' => 400,
+					'error_data' => $result->get_error_data()
+				)
+			);
+		}
+		
+		return new WP_REST_Response( $result, 200 );
+	}
+	
+	/**
+	 * Check if device is active
+	 */
+	public static function check_device_active( WP_REST_Request $request ) {
+		$device_id = sanitize_text_field( $request->get_param( 'device_id' ) );
+		$device_hash = sanitize_text_field( $request->get_param( 'device_hash' ) );
+		$wp_user_id = intval( $request->get_param( 'wp_user_id' ) ) ?: null;
+		
+		$device = Device_Registration_Service::check_device_active( $device_id, $device_hash, $wp_user_id );
+		
+		if ( ! $device ) {
+			return new WP_REST_Response( array(
+				'active' => false,
+				'message' => 'Device not found or not active'
+			), 200 );
+		}
+		
+		// Remove sensitive data
+		unset( $device['activation_ip'] );
+		
+		return new WP_REST_Response( array(
+			'active' => true,
+			'device' => $device,
+			'status' => $device['status']
 		), 200 );
 	}
 }

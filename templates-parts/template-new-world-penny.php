@@ -334,14 +334,14 @@ The point is not “how much money.
 ”
 </p>
 </div>
-<a class="btn btnPrimary" href="pod-mode.html">
+<a class="btn btnPrimary" href="pod-mode">
 <div>
 Enter PoD Mode
 <span class="sub">Verify actions that earn XP</span>
 </div>
 <div class="arrow">→</div>
 </a>
-<a class="btn btnGhost" href="activate-device.html">
+<a class="btn btnGhost" href="activate-device">
 <div>
 Activate Your Device
 <span class="sub">Enable verified participation</span>
