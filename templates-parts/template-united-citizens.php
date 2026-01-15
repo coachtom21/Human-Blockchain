@@ -70,8 +70,8 @@
     }
 
     .logo-icon {
-      width: 36px;
-      height: 36px;
+      width: 28px;
+      height: 28px;
       border-radius: 999px;
       border: 1px solid var(--border-subtle);
       background: radial-gradient(circle at 30% 0%, var(--accent) 0, #140b30 45%, #050816 100%);
@@ -79,10 +79,17 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 0.8rem;
+      font-size: 0.65rem;
       font-weight: 700;
       letter-spacing: 0.08em;
       text-transform: uppercase;
+      overflow: hidden;
+    }
+    
+    .logo-icon img {
+      height: 100%;
+      object-fit: contain;
+      border-radius: 999px;
     }
 
     .logo-text {
@@ -497,9 +504,17 @@
   <div class="page">
     <header>
       <div class="logo-block">
-        <div class="logo-icon">HB</div>
+        <?php 
+        $logo = hb_get_site_logo( 'medium', array( 'class' => 'logo-icon' ) );
+        // If logo is image, use it; otherwise use fallback "HB" text
+        if ( strpos( $logo, '<img' ) === false ) {
+            echo '<div class="logo-icon">HB</div>';
+        } else {
+            echo $logo;
+        }
+        ?>
         <div class="logo-text">
-          <div class="logo-title">Human Blockchain</div>
+          <div class="logo-title"><?php echo esc_html( get_bloginfo( 'name' ) ); ?></div>
           <div class="logo-sub">Your Voice. Your Choice. Your Treasury.</div>
         </div>
       </div>

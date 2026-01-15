@@ -69,23 +69,36 @@
     }
 
     .logo-mark {
-      width: 40px;
-      height: 40px;
-      border-radius: 16px;
+      width: 28px;
+      height: 28px;
+      border-radius: 10px;
       background: conic-gradient(from 190deg, #ffb347, #ff4b81, #7b61ff, #44ffd2, #ffb347);
       display: flex;
       align-items: center;
       justify-content: center;
       box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35), var(--shadow-soft);
       position: relative;
+      overflow: hidden;
     }
 
     .logo-mark::after {
       content: "XP";
-      font-size: 11px;
+      font-size: 9px;
       font-weight: 700;
       letter-spacing: 0.09em;
       color: #050816;
+    }
+    
+    .logo-mark img {
+      height: 100%;
+      object-fit: contain;
+      border-radius: 10px;
+      position: absolute;
+      z-index: 1;
+    }
+    
+    .logo-mark:has(img)::after {
+      display: none;
     }
 
     .logo-text-block {
@@ -743,9 +756,9 @@
   <div class="page">
     <header>
       <div class="logo-lockup">
-        <div class="logo-mark"></div>
-        <a href="home" class="logo-text-block">
-          <div class="logo-title">Human Blockchain</div>
+        <?php echo hb_get_site_logo( 'medium', array( 'class' => 'logo-mark' ) ); ?>
+        <a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="logo-text-block">
+          <div class="logo-title"><?php echo esc_html( get_bloginfo( 'name' ) ); ?></div>
           <div class="logo-sub">NIL Free Agency • Powered by XP &amp; YAM JAM</div>
   </a>
       </div>

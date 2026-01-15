@@ -117,6 +117,70 @@ add_action( 'admin_init', 'hb_check_migrations' );
 add_action( 'init', 'hb_check_migrations_frontend' );
 
 /**
+ * Get site logo dynamically
+ * Returns WordPress custom logo or site icon, with fallback to CSS-based logo
+ * 
+ * @param string $size Logo size (thumbnail, medium, large, full)
+ * @param array $attrs Additional attributes for img tag
+ * @return string HTML for logo
+ */
+function hb_get_site_logo( $size = 'medium', $attrs = array() ) {
+	$default_attrs = array(
+		'class' => 'logo',
+		'alt' => get_bloginfo( 'name' ) . ' Logo',
+		'aria-hidden' => 'true'
+	);
+	$attrs = wp_parse_args( $attrs, $default_attrs );
+	
+	// Try to get custom logo first
+	$custom_logo_id = get_theme_mod( 'custom_logo' );
+	if ( $custom_logo_id ) {
+		$logo_url = wp_get_attachment_image_url( $custom_logo_id, $size );
+		if ( $logo_url ) {
+			$logo_html = '<img src="' . esc_url( $logo_url ) . '"';
+			foreach ( $attrs as $key => $value ) {
+				if ( $key === 'aria-hidden' && $value === 'true' ) {
+					$logo_html .= ' aria-hidden="true"';
+				} else {
+					$logo_html .= ' ' . esc_attr( $key ) . '="' . esc_attr( $value ) . '"';
+				}
+			}
+			$logo_html .= ' style="height: 100%; object-fit: contain;" />';
+			return $logo_html;
+		}
+	}
+	
+	// Fallback to site icon
+	$site_icon_id = get_option( 'site_icon' );
+	if ( $site_icon_id ) {
+		$icon_url = wp_get_attachment_image_url( $site_icon_id, $size );
+		if ( $icon_url ) {
+			$logo_html = '<img src="' . esc_url( $icon_url ) . '"';
+			foreach ( $attrs as $key => $value ) {
+				if ( $key === 'aria-hidden' && $value === 'true' ) {
+					$logo_html .= ' aria-hidden="true"';
+				} else {
+					$logo_html .= ' ' . esc_attr( $key ) . '="' . esc_attr( $value ) . '"';
+				}
+			}
+			$logo_html .= ' style="height: 100%; object-fit: contain;" />';
+			return $logo_html;
+		}
+	}
+	
+	// Fallback to CSS-based logo (existing style) - return empty div/span that CSS will style
+	$fallback_class = isset( $attrs['class'] ) ? $attrs['class'] : 'logo';
+	$aria_hidden = isset( $attrs['aria-hidden'] ) && $attrs['aria-hidden'] === 'true' ? ' aria-hidden="true"' : '';
+	
+	// Return appropriate element based on class
+	if ( strpos( $fallback_class, 'mark' ) !== false || strpos( $fallback_class, 'icon' ) !== false ) {
+		return '<div class="' . esc_attr( $fallback_class ) . '"' . $aria_hidden . '></div>';
+	}
+	
+	return '<span class="' . esc_attr( $fallback_class ) . '"' . $aria_hidden . '></span>';
+}
+
+/**
  * Check migrations on frontend (for manual trigger)
  */
 function hb_check_migrations_frontend() {

@@ -58,15 +58,35 @@ text-decoration:none;
 color:var(--text);
 }
 .logo{
-width:34px;height:34px;border-radius:12px;
+width:28px;height:28px;border-radius:10px;
 background:
 radial-gradient(circle at 30% 30%, rgba(52,211,153,.9), transparent 60%),
 radial-gradient(circle at 70% 70%, rgba(120,160,255,.9), transparent 60%),
 rgba(255,255,255,.06);
 border:1px solid var(--line);
+display: flex;
+align-items: center;
+justify-content: center;
+overflow: hidden;
+}
+.logo img{
+height: 100%;
+object-fit: contain;
+border-radius: 10px;
 }
 .brand h1{margin:0;font-size:14px;letter-spacing:.4px}
 .brand small{display:block;font-size:12px;color:var(--muted)}
+.nav-links{display:flex;gap:10px;flex-wrap:wrap}
+.nav-links a{
+text-decoration:none;
+color:var(--muted);
+font-weight:850;
+font-size:12px;
+padding:10px 12px;
+border-radius:999px;
+border:1px solid rgba(255,255,255,.10);
+background: rgba(255,255,255,.04);
+}
 /* Layout */
 .wrap{
 max-width:1100px;
@@ -226,13 +246,20 @@ font-size:12px;
 <body>
 <header class="nav">
 <div class="nav-inner">
-<a class="brand" href="home">
-<div class="logo"></div>
+<a class="brand" href="<?php echo esc_url( home_url( '/' ) ); ?>">
+<?php echo hb_get_site_logo( 'medium', array( 'class' => 'logo' ) ); ?>
 <div>
-<h1>HumanBlockchain.info</h1>
+<h1><?php echo esc_html( get_bloginfo( 'name' ) ); ?></h1>
 <small>Activate Device</small>
 </div>
 </a>
+
+<nav class="nav-links" aria-label="Primary">
+<a href="how-it-works">How It Works</a>
+<a href="register-device">Register Device</a>
+<a href="pod-mode">PoD Mode</a>
+<a href="loyalty-xp">Loyalty Points</a>
+</nav>
 </div>
 </header>
 <main class="wrap">
@@ -575,164 +602,26 @@ function createDeviceHash(fingerprint) {
  */
 async function activateDevice() {
     console.clear(); // Clear console for cleaner output
-    console.log('%c=== Device Activation Started ===', 'color: #34d399; font-weight: bold; font-size: 14px;');
-    console.log('Note: Any "spoofer.js" errors are from browser extensions, not our code.');
     
     // 1. Get or create device ID
     let device_id = getOrCreateDeviceId();
-    console.log('%c✓ Device ID:', 'color: #34d399; font-weight: bold;', device_id);
     
     // 2. Create device fingerprint
     let fingerprint = createDeviceFingerprint();
-    console.log('%c✓ Device Fingerprint Collected:', 'color: #34d399; font-weight: bold; font-size: 13px;');
-    console.group('%cFingerprint Details:', 'color: #7c3aed; font-weight: bold;');
-    console.log('%cScreen:', 'color: #60a5fa; font-weight: bold;', fingerprint.screen);
-    console.log('%cWindow:', 'color: #60a5fa; font-weight: bold;', fingerprint.window);
-    console.log('%cNavigator:', 'color: #60a5fa; font-weight: bold;', fingerprint.navigator);
-    console.log('%cTimezone:', 'color: #60a5fa; font-weight: bold;', fingerprint.timezone);
-    console.log('%cTimestamp:', 'color: #60a5fa; font-weight: bold;', fingerprint.timestamp);
-    console.groupEnd();
     
     // 3. Create device hash
     let device_hash = createDeviceHash(fingerprint);
-    console.log('%c✓ Device Hash:', 'color: #34d399; font-weight: bold;', device_hash);
-    console.log('%c  (Created from: screen, timezone, language, hardware, touch, platform, pixelRatio)', 'color: #9ca3af; font-size: 11px;');
     
     // 4. Get geolocation (async)
     let geolocation = await getGeolocation();
-    console.log('%c' + (geolocation.available ? '✓' : '⚠') + ' Geolocation:', geolocation.available ? 'color: #34d399; font-weight: bold;' : 'color: #fbbf24; font-weight: bold;');
-    console.group('%cGeolocation Details:', 'color: #7c3aed; font-weight: bold;');
-    if (geolocation.available) {
-        console.log('%c✓ Available:', 'color: #34d399; font-weight: bold;', 'Yes');
-        console.log('  Latitude:', geolocation.latitude);
-        console.log('  Longitude:', geolocation.longitude);
-        console.log('  Accuracy:', geolocation.accuracy + 'm');
-        if (geolocation.altitude) console.log('  Altitude:', geolocation.altitude);
-        if (geolocation.heading) console.log('  Heading:', geolocation.heading);
-        if (geolocation.speed) console.log('  Speed:', geolocation.speed);
-    } else {
-        console.log('%c✗ Available:', 'color: #ef4444; font-weight: bold;', 'No');
-        console.log('  Error:', geolocation.error);
-        console.log('  Error Code:', geolocation.errorCode);
-        if (geolocation.errorCode === 'INSECURE_CONTEXT') {
-            console.log('%c  Note: Geolocation requires HTTPS. Use https:// or localhost for testing.', 'color: #fbbf24; font-style: italic;');
-        }
-    }
-    console.groupEnd();
     
     // 5. Get user account info
     let userInfo = getUserAccountInfo();
-    if (userInfo.loggedIn) {
-        console.log('%c✓ User Account:', 'color: #34d399; font-weight: bold;', userInfo.userName + ' (ID: ' + userInfo.userId + ')');
-    } else {
-        console.log('%c⚠ User Account:', 'color: #fbbf24; font-weight: bold;', 'Not logged in');
-    }
     
     // 6. Get device name
     let device_name = getDeviceName();
-    if (device_name) {
-        console.log('%c✓ Device Name:', 'color: #34d399; font-weight: bold;', device_name);
-    } else {
-        console.log('%c⚠ Device Name:', 'color: #fbbf24; font-weight: bold;', 'Not set');
-    }
     
-    // 7. Compile all information
-    let deviceInfo = {
-        device_id: device_id,
-        device_hash: device_hash,
-        device_name: device_name,
-        fingerprint: fingerprint,
-        geolocation: geolocation,
-        user_account: userInfo,
-        storage: {
-            localStorage: {
-                device_id: localStorage.getItem('hbc_device_id'),
-                device_name: localStorage.getItem('hbc_device_name')
-            },
-            cookie: document.cookie || 'No cookies'
-        }
-    };
-    
-    // 8. Display in alert
-    let alertMessage = '=== DEVICE ACTIVATION INFO ===\n\n';
-    alertMessage += 'Device ID: ' + device_id + '\n';
-    alertMessage += 'Device Hash: ' + device_hash + '\n';
-    alertMessage += 'Device Name: ' + (device_name || 'Not set') + '\n\n';
-    
-    alertMessage += '--- User Account ---\n';
-    alertMessage += 'Logged In: ' + (userInfo.loggedIn ? 'Yes' : 'No') + '\n';
-    if (userInfo.loggedIn) {
-        alertMessage += 'User ID: ' + (userInfo.userId || 'N/A') + '\n';
-        alertMessage += 'User Name: ' + (userInfo.userName || 'N/A') + '\n';
-        alertMessage += 'User Email: ' + (userInfo.userEmail || 'N/A') + '\n';
-    }
-    alertMessage += '\n';
-    
-    alertMessage += '--- Device Fingerprint ---\n';
-    alertMessage += 'Screen Resolution: ' + fingerprint.screen.width + 'x' + fingerprint.screen.height + '\n';
-    alertMessage += 'Available Screen: ' + fingerprint.screen.availWidth + 'x' + fingerprint.screen.availHeight + '\n';
-    alertMessage += 'Color Depth: ' + fingerprint.screen.colorDepth + ' bits\n';
-    alertMessage += 'Pixel Depth: ' + fingerprint.screen.pixelDepth + ' bits\n';
-    alertMessage += 'Window Size: ' + fingerprint.window.innerWidth + 'x' + fingerprint.window.innerHeight + '\n';
-    alertMessage += 'Outer Size: ' + fingerprint.window.outerWidth + 'x' + fingerprint.window.outerHeight + '\n';
-    alertMessage += 'Pixel Ratio: ' + fingerprint.window.devicePixelRatio + '\n';
-    alertMessage += 'Platform: ' + fingerprint.navigator.platform + '\n';
-    alertMessage += 'Language: ' + fingerprint.navigator.language + '\n';
-    alertMessage += 'Languages: ' + (fingerprint.navigator.languages ? fingerprint.navigator.languages.join(', ') : 'N/A') + '\n';
-    alertMessage += 'Timezone: ' + fingerprint.timezone.timezone + '\n';
-    alertMessage += 'Timezone Offset: ' + fingerprint.timezone.timezoneOffset + ' minutes\n';
-    alertMessage += 'Hardware Cores: ' + fingerprint.navigator.hardwareConcurrency + '\n';
-    alertMessage += 'Max Touch Points: ' + (fingerprint.navigator.maxTouchPoints || 'N/A') + '\n';
-    alertMessage += 'Cookies Enabled: ' + (fingerprint.navigator.cookieEnabled ? 'Yes' : 'No') + '\n';
-    alertMessage += 'Online Status: ' + (fingerprint.navigator.onLine ? 'Online' : 'Offline') + '\n';
-    alertMessage += 'User Agent: ' + fingerprint.navigator.userAgent.substring(0, 50) + '...\n';
-    alertMessage += '\n';
-    
-    alertMessage += '--- Geolocation ---\n';
-    if (geolocation.available) {
-        alertMessage += '✓ Location captured\n';
-        alertMessage += 'Latitude: ' + geolocation.latitude + '\n';
-        alertMessage += 'Longitude: ' + geolocation.longitude + '\n';
-        alertMessage += 'Accuracy: ' + geolocation.accuracy + 'm\n';
-    } else {
-        alertMessage += '✗ Location not available\n';
-        alertMessage += 'Reason: ' + (geolocation.error || 'Not available') + '\n';
-        if (geolocation.errorCode) {
-            alertMessage += 'Error Code: ' + geolocation.errorCode + '\n';
-        }
-    }
-    alertMessage += '\n';
-    
-    alertMessage += '--- Storage ---\n';
-    alertMessage += 'localStorage Device ID: ' + (deviceInfo.storage.localStorage.device_id || 'Not set') + '\n';
-    alertMessage += 'localStorage Device Name: ' + (deviceInfo.storage.localStorage.device_name || 'Not set') + '\n';
-    
-    alertMessage += '\n\nCheck console for full details!';
-    
-    // Show alert
-    alert(alertMessage);
-    
-    // Log complete info to console
-    console.log('%c=== COMPLETE DEVICE INFO ===', 'color: #7c3aed; font-weight: bold; font-size: 14px;');
-    console.log(deviceInfo);
-    
-    // Display formatted summary
-    console.log('%c=== FINGERPRINT SUMMARY ===', 'color: #7c3aed; font-weight: bold; font-size: 13px;');
-    console.table({
-        'Screen Resolution': fingerprint.screen.width + 'x' + fingerprint.screen.height,
-        'Color Depth': fingerprint.screen.colorDepth + ' bits',
-        'Pixel Ratio': fingerprint.window.devicePixelRatio,
-        'Platform': fingerprint.navigator.platform,
-        'Language': fingerprint.navigator.language,
-        'Timezone': fingerprint.timezone.timezone,
-        'Hardware Cores': fingerprint.navigator.hardwareConcurrency,
-        'Max Touch Points': fingerprint.navigator.maxTouchPoints || 'N/A',
-        'Device Hash': device_hash
-    });
-    
-    // Send data to backend API
-    console.log('%c=== Sending to Backend API ===', 'color: #60a5fa; font-weight: bold; font-size: 13px;');
-    
+    // 7. Send data to backend API
     const requestData = {
         device_id: device_id,
         device_hash: device_hash,
@@ -742,8 +631,6 @@ async function activateDevice() {
         geolocation: geolocation
     };
     
-    console.log('Request Data:', requestData);
-    
     fetch('/wp-json/hb/v1/device/activate-hybrid', {
         method: 'POST',
         headers: {
@@ -752,13 +639,10 @@ async function activateDevice() {
         body: JSON.stringify(requestData)
     })
     .then(response => {
-        console.log('Response Status:', response.status, response.statusText);
-        
         // Check if response is ok
         if (!response.ok) {
             // Try to get error message from response
             return response.json().then(errData => {
-                console.error('%c✗ API Error Response:', 'color: #ef4444; font-weight: bold;', errData);
                 throw new Error(errData.message || errData.code || 'Unknown error');
             });
         }
@@ -766,36 +650,14 @@ async function activateDevice() {
         return response.json();
     })
     .then(data => {
-        console.log('%c✓ Device saved to database!', 'color: #34d399; font-weight: bold;');
-        console.log('Response:', data);
-        
-        if (data.existing) {
-            console.log('%c⚠ Device already exists in database', 'color: #fbbf24; font-weight: bold;');
-            console.log('Status:', data.status);
-            console.log('Database ID:', data.db_id);
-        } else {
-            console.log('%c✓ New device registered successfully!', 'color: #34d399; font-weight: bold;');
-            console.log('Status:', data.status);
-            console.log('Database ID:', data.db_id);
-        }
-        
         // Update UI to show active status
         if (data.status === 'activating' || data.status === 'validated') {
             showActiveStatus(data.status, data);
         }
-        
-        console.log('%c=== Device Activation Complete ===', 'color: #34d399; font-weight: bold; font-size: 14px;');
-        console.log('%cAll device information saved to database!', 'color: #34d399; font-weight: bold;');
     })
     .catch(error => {
-        console.error('%c✗ Error saving device:', 'color: #ef4444; font-weight: bold;', error);
-        console.error('Error message:', error.message);
-        console.error('Full error:', error);
-        alert('Error activating device: ' + error.message + '\n\nCheck console for details.');
+        // Silent error handling - no console logs or alerts
     });
-    
-    // Return device info for further processing
-    return deviceInfo;
 }
 
 /**
@@ -805,7 +667,6 @@ async function checkDeviceActive() {
     let device_id = localStorage.getItem('hbc_device_id');
     
     if (!device_id) {
-        console.log('%c⚠ Cannot check device status: No device ID found', 'color: #fbbf24; font-weight: bold;');
         showActivateButton(); // Show button if no device ID
         return false;
     }
@@ -816,12 +677,9 @@ async function checkDeviceActive() {
     let userInfo = getUserAccountInfo();
     
     if (!device_id || !device_hash) {
-        console.log('%c⚠ Cannot check device status: Missing device ID or hash', 'color: #fbbf24; font-weight: bold;');
         showActivateButton(); // Show button if missing data
         return false;
     }
-    
-    console.log('%c=== Checking Device Status ===', 'color: #60a5fa; font-weight: bold; font-size: 13px;');
     
     try {
         const response = await fetch('/wp-json/hb/v1/device/check-active', {
@@ -839,23 +697,15 @@ async function checkDeviceActive() {
         const data = await response.json();
         
         if (data.active) {
-            console.log('%c✓ Device is ACTIVE!', 'color: #34d399; font-weight: bold;');
-            console.log('Device Status:', data.status);
-            console.log('Device Data:', data.device);
-            
             // Show active status, hide activate button
             showActiveStatus(data.status, data.device);
             return true;
         } else {
-            console.log('%c⚠ Device is NOT active', 'color: #fbbf24; font-weight: bold;');
-            console.log('Message:', data.message);
-            
             // Show activate button, hide active status
             showActivateButton();
             return false;
         }
     } catch (error) {
-        console.error('%c✗ Error checking device status:', 'color: #ef4444; font-weight: bold;', error);
         showActivateButton(); // Show button on error
         return false;
     }
@@ -887,8 +737,6 @@ function showActiveStatus(status, deviceData) {
         if (statusMessage) {
             statusMessage.textContent = message;
         }
-        
-        console.log('%c✓ UI Updated: Active status displayed', 'color: #34d399; font-weight: bold;');
     }
 }
 
@@ -905,8 +753,6 @@ function showActivateButton() {
         
         // Show activate button
         activateSection.style.display = 'block';
-        
-        console.log('%c✓ UI Updated: Activate button displayed', 'color: #60a5fa; font-weight: bold;');
     }
 }
 

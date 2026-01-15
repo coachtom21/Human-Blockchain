@@ -78,9 +78,18 @@
     }
     .brand{display:flex; align-items:center; gap:10px; min-width:220px}
     .logo{
-      width:36px; height:36px; border-radius:12px;
+      width:28px; height:28px; border-radius:10px;
       background: linear-gradient(135deg, rgba(125,211,252,.95), rgba(167,139,250,.95));
       box-shadow: 0 10px 20px rgba(0,0,0,.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .logo img{
+      height: 100%;
+      object-fit: contain;
+      border-radius: 10px;
     }
     .brand b{letter-spacing:.3px}
     .menu{display:flex; align-items:center; gap:6px; flex-wrap:wrap; justify-content:center}
@@ -612,9 +621,9 @@
     <div class="overlay">
       <div class="modal">
         <div class="brand">
-          <span class="logo" aria-hidden="true"></span>
+          <?php echo hb_get_site_logo( 'medium', array( 'class' => 'logo', 'aria-hidden' => 'true' ) ); ?>
           <div>
-            <b>HumanBlockchain.info</b>
+            <b><?php echo esc_html( get_bloginfo( 'name' ) ); ?></b>
             <div class="sub">YAM-is-ON • Proof of Delivery • Serendipity POCs</div>
           </div>
         </div>
@@ -715,9 +724,9 @@
     <div class="wrap">
       <nav class="nav" aria-label="Primary">
         <a class="brand" href="/">
-          <span class="logo" aria-hidden="true"></span>
+          <?php echo hb_get_site_logo( 'medium', array( 'class' => 'logo', 'aria-hidden' => 'true' ) ); ?>
           <div>
-            <b>HumanBlockchain.info</b><br>
+            <b><?php echo esc_html( get_bloginfo( 'name' ) ); ?></b><br>
             <span class="small">YAM-is-ON • Proof of Delivery + Serendipity POCs</span>
           </div>
         </a>

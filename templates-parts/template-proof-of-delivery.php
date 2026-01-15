@@ -43,39 +43,56 @@
     a{color:inherit; text-decoration:none}
     .wrap{max-width:var(--max); margin:0 auto; padding:24px}
 
-    /* Topbar */
-    .topbar{
-      position:sticky; top:0; z-index:50;
-      backdrop-filter: blur(12px);
-      background: linear-gradient(180deg, rgba(11,16,32,.78), rgba(11,16,32,.42));
+    /* Header */
+    .nav{
+      position:sticky; top:0; z-index:10;
+      backdrop-filter: blur(10px);
+      background: rgba(11,16,32,.68);
       border-bottom:1px solid var(--line);
     }
-    .topbar-inner{
-      max-width:var(--max); margin:0 auto;
-      padding:14px 24px;
-      display:flex; align-items:center; justify-content:space-between; gap:14px;
+    .nav-inner{
+      max-width:1100px;
+      margin:0 auto;
+      padding:14px 18px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:14px;
+      flex-wrap:wrap;
     }
-    .brand{display:flex; align-items:center; gap:10px; min-width:240px}
+    .brand{display:flex; gap:10px; align-items:center;
+      text-decoration:none; color:var(--text);
+      min-width:260px;
+    }
     .logo{
-      width:34px; height:34px; border-radius:12px;
+      width:28px; height:28px; border-radius:10px;
       background: conic-gradient(from 210deg, var(--accent), var(--accent2), var(--good), var(--accent));
       box-shadow: 0 10px 30px rgba(0,0,0,.35);
       border:1px solid rgba(255,255,255,.18);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
     }
-    .brand h1{font-size:14px; margin:0; letter-spacing:.08em; text-transform:uppercase}
-    .brand .sub{font-size:12px; margin:2px 0 0; color:var(--muted)}
-    nav{display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end}
-    nav a{
+    .logo img{
+      height: 100%;
+      object-fit: contain;
+      border-radius: 10px;
+    }
+    .brand h1{margin:0;font-size:14px;letter-spacing:.4px}
+    .brand small{display:block;font-size:12px;color:var(--muted)}
+    .nav-links{display:flex;gap:10px;flex-wrap:wrap}
+    .nav-links a{
+      text-decoration:none;
+      color:var(--muted);
+      font-weight:850;
       font-size:12px;
       padding:10px 12px;
-      border:1px solid var(--line);
       border-radius:999px;
+      border:1px solid rgba(255,255,255,.10);
       background: rgba(255,255,255,.04);
-      transition: transform .12s ease, background .12s ease, border-color .12s ease;
-      white-space:nowrap;
     }
-    nav a:hover{
-      transform: translateY(-1px);
+    .nav-links a:hover{
       background: rgba(255,255,255,.08);
       border-color: rgba(255,255,255,.22);
     }
@@ -327,23 +344,21 @@
 </head>
 
 <body>
-  <header class="topbar" role="banner">
-    <div class="topbar-inner">
-      <a class="brand" href="home" aria-label="HumanBlockchain Home">
-        <div class="logo" aria-hidden="true"></div>
+  <header class="nav">
+    <div class="nav-inner">
+      <a class="brand" href="<?php echo esc_url( home_url( '/' ) ); ?>">
+        <?php echo hb_get_site_logo( 'medium', array( 'class' => 'logo', 'aria-hidden' => 'true' ) ); ?>
         <div>
-          <h1>HumanBlockchain.info</h1>
-          <div class="sub">United Citizens • Human Value Ledger</div>
+          <h1><?php echo esc_html( get_bloginfo( 'name' ) ); ?></h1>
+          <small>I Have Proof of Delivery</small>
         </div>
       </a>
 
-      <nav aria-label="Primary navigation">
-        <a href="dao">Join the DAO</a>
-        <a href="register-device">Register Device</a>
-        <a href="proof-of-delivery" aria-current="page" style="border-color:rgba(125,211,252,.45); background:rgba(125,211,252,.10);">I Have Proof of Delivery</a>
+      <nav class="nav-links" aria-label="Primary">
         <a href="how-it-works">How It Works</a>
-        <a href="new-world-penny">New World Penny</a>
-        <a href="faq">FAQ</a>
+        <a href="register-device">Register Device</a>
+        <a href="pod-mode">PoD Mode</a>
+        <a href="loyalty-xp">Loyalty Points</a>
       </nav>
     </div>
   </header>

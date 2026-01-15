@@ -59,13 +59,22 @@
       min-width:260px;
     }
     .logo{
-      width:34px;height:34px;border-radius:12px;
+      width:28px;height:28px;border-radius:10px;
       background:
         radial-gradient(circle at 30% 30%, rgba(52,211,153,.9), transparent 60%),
         radial-gradient(circle at 70% 70%, rgba(120,160,255,.9), transparent 60%),
         rgba(255,255,255,.06);
       border:1px solid var(--line);
       flex:0 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .logo img{
+      height: 100%;
+      object-fit: contain;
+      border-radius: 10px;
     }
     .brand h1{margin:0;font-size:14px;letter-spacing:.4px}
     .brand small{display:block;font-size:12px;color:var(--muted)}
@@ -280,10 +289,10 @@
 <body>
   <header class="nav">
     <div class="nav-inner">
-      <a class="brand" href="home">
-        <div class="logo" aria-hidden="true"></div>
+      <a class="brand" href="<?php echo esc_url( home_url( '/' ) ); ?>">
+        <?php echo hb_get_site_logo( 'medium', array( 'class' => 'logo', 'aria-hidden' => 'true' ) ); ?>
         <div>
-          <h1>HumanBlockchain.info</h1>
+          <h1><?php echo esc_html( get_bloginfo( 'name' ) ); ?></h1>
           <small>Frequently Asked Questions</small>
         </div>
       </a>
