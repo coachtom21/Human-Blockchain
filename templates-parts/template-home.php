@@ -198,7 +198,7 @@
     .footer .cols{display:grid; grid-template-columns:1fr 1fr; gap:16px}
     @media (max-width:900px){ .footer .cols{grid-template-columns:1fr} }
 
-    /* Mobile menu (no JS) */
+    /* Mobile menu - Sidebar */
     .hamburger{display:none}
     .hamburger label{
       display:inline-flex; align-items:center; justify-content:center;
@@ -206,32 +206,180 @@
       border:1px solid rgba(232,238,252,.16);
       background: rgba(232,238,252,.06);
       cursor:pointer;
+      transition: background .12s ease;
     }
     .hamburger label:hover{background: rgba(232,238,252,.10)}
     .hamburger svg{width:22px;height:22px}
     #navtoggle{display:none}
-    @media (max-width:900px){
-      .menu{display:none}
-      .hamburger{display:block}
-      #navtoggle:checked ~ .menu-drawer{display:block}
+    
+    /* Sidebar overlay */
+    .sidebar-overlay{
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+      z-index: 9998;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      cursor: pointer;
     }
-    .menu-drawer{
-      display:none;
-      padding:10px 0 14px;
-      border-top:1px solid rgba(232,238,252,.10);
-      margin-top:10px;
+    
+    .sidebar-overlay.active{
+      display: block;
+      opacity: 1;
     }
-    .menu-drawer a{
-      display:block;
-      padding:10px 12px;
-      border-radius:14px;
-      color:var(--muted);
-      border:1px solid transparent;
+    
+    /* Sidebar menu */
+    .sidebar-menu{
+      position: fixed;
+      top: 0;
+      right: -100%;
+      width: 320px;
+      max-width: 85vw;
+      height: 100vh;
+      background: rgba(11,18,32,.95);
+      backdrop-filter: blur(20px);
+      border-left: 1px solid rgba(232,238,252,.12);
+      z-index: 9999;
+      overflow-y: auto;
+      transition: right 0.3s ease;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
     }
-    .menu-drawer a:hover{
+    
+    .sidebar-menu.active{
+      right: 0;
+    }
+    
+    /* Prevent body scroll when sidebar is open */
+    body.sidebar-open{
+      overflow: hidden;
+    }
+    
+    /* Sidebar header */
+    .sidebar-header{
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 16px;
+      border-bottom: 1px solid rgba(232,238,252,.12);
+    }
+    
+    .sidebar-close{
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      border: 1px solid rgba(232,238,252,.16);
+      background: rgba(232,238,252,.06);
+      cursor: pointer;
+      color: var(--text);
+      transition: background .12s ease;
+    }
+    
+    .sidebar-close:hover{
+      background: rgba(232,238,252,.10);
+    }
+    
+    .sidebar-close svg{
+      width: 20px;
+      height: 20px;
+    }
+    
+    /* Sidebar menu links */
+    .sidebar-menu-links{
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    .sidebar-menu-links a{
+      display: block;
+      padding: 14px 16px;
+      border-radius: 14px;
+      color: var(--muted);
+      border: 1px solid transparent;
+      font-size: 15px;
+      transition: all .12s ease;
+    }
+    
+    .sidebar-menu-links a:hover{
       background: rgba(232,238,252,.06);
       color: var(--text);
       border-color: rgba(232,238,252,.10);
+    }
+    
+    /* Sidebar device status section */
+    .sidebar-device-section{
+      padding: 16px;
+      border-radius: 16px;
+      background: rgba(232,238,252,.05);
+      border: 1px solid rgba(232,238,252,.12);
+    }
+    
+    .sidebar-device-section h3{
+      font-size: 14px;
+      font-weight: 800;
+      margin: 0 0 12px 0;
+      color: var(--text);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    /* Device status in sidebar */
+    .sidebar-device-section .device-status{
+      margin-bottom: 0;
+      display: none;
+    }
+    
+    .sidebar-device-section .device-status.active{
+      display: flex;
+    }
+    
+    .sidebar-device-section #activate-device-sidebar{
+      display: block;
+    }
+    
+    .sidebar-device-section .device-status.active ~ #activate-device-sidebar{
+      display: none !important;
+    }
+    
+    /* Sidebar buttons */
+    .sidebar-buttons{
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: auto;
+      padding-top: 20px;
+      border-top: 1px solid rgba(232,238,252,.12);
+    }
+    
+    .sidebar-buttons .btn{
+      width: 100%;
+      justify-content: center;
+    }
+    
+    /* Mobile responsive */
+    @media (max-width:900px){
+      .menu{display:none}
+      .cta .device-activate-wrapper{display:none}
+      .cta .btn.ghost{display:none}
+      .hamburger{display:block}
+      .brand .small{display:none}
+      .brand b{font-size: 16px}
+    }
+    
+    /* Old menu drawer - hide it */
+    .menu-drawer{
+      display: none !important;
     }
 
     /* ============ DEVICE STATUS DISPLAY ============ */
@@ -294,6 +442,16 @@
       visibility: hidden;
       transition: opacity 0.3s ease, visibility 0.3s ease;
       padding: 18px;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    
+    /* Lock body scroll when modal is active */
+    body:has(.entry-overlay.active),
+    body:has(.pod-gate-overlay.active) {
+      overflow: hidden;
+      position: fixed;
+      width: 100%;
     }
 
     .entry-overlay.active {
@@ -303,6 +461,8 @@
 
     .entry-overlay .overlay {
       width: min(720px, 100%);
+      max-width: 100%;
+      max-height: calc(100vh - 36px);
       background: rgba(11,18,32,.35);
       border: 1px solid rgba(232,238,252,.10);
       border-radius: calc(var(--radius) + 6px);
@@ -311,6 +471,9 @@
       backdrop-filter: blur(10px);
       transform: scale(0.95);
       transition: transform 0.3s ease;
+      margin: auto;
+      display: flex;
+      flex-direction: column;
     }
 
     .entry-overlay.active .overlay {
@@ -322,6 +485,11 @@
       border: 1px solid var(--line);
       border-radius: var(--radius);
       padding: 20px;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      max-height: 100%;
+      display: flex;
+      flex-direction: column;
     }
 
     .entry-overlay .brand {
@@ -487,15 +655,112 @@
       color: var(--muted);
     }
 
-    @media (max-width: 520px) {
+    @media (max-width: 768px) {
+      .entry-overlay {
+        padding: 0;
+        align-items: stretch;
+        padding-top: 0;
+        padding-bottom: 0;
+        display: flex;
+        flex-direction: column;
+      }
+      .entry-overlay .overlay {
+        max-height: 100vh;
+        width: 100%;
+        padding: 0;
+        border-radius: 0;
+        margin: 0;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+      }
       .entry-overlay .modal {
-        padding: 16px;
+        padding: 20px 16px;
+        max-height: 100vh;
+        border-radius: 0;
+        overflow-y: auto;
+        flex: 1;
+        min-height: 0;
+        -webkit-overflow-scrolling: touch;
       }
       .entry-overlay h1 {
         font-size: 22px;
+        margin: 4px 0 8px;
+      }
+      .entry-overlay .brand {
+        margin-bottom: 8px;
+      }
+      .entry-overlay .logo {
+        width: 36px;
+        height: 36px;
+      }
+      .entry-overlay .brand b {
+        font-size: 16px;
+      }
+      .entry-overlay .brand .sub {
+        font-size: 11px;
+      }
+      .entry-overlay p {
+        font-size: 14px;
+        line-height: 1.5;
       }
       .entry-overlay .btn {
         width: 100%;
+        min-height: 48px;
+        font-size: 15px;
+        padding: 12px 16px;
+      }
+      .entry-overlay .cta {
+        margin-top: 16px;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .entry-overlay .legal {
+        margin-top: 16px;
+        font-size: 11px;
+        line-height: 1.5;
+      }
+      .entry-overlay .list {
+        gap: 8px;
+        margin-top: 10px;
+      }
+      .entry-overlay .item {
+        padding: 10px;
+      }
+      .entry-overlay .item b {
+        font-size: 12px;
+      }
+      .entry-overlay .item span {
+        font-size: 11px;
+      }
+      .entry-overlay .pillrow {
+        gap: 6px;
+        margin: 8px 0 12px;
+      }
+      .entry-overlay .pill {
+        font-size: 11px;
+        padding: 5px 8px;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .entry-overlay .modal {
+        padding: 16px 12px;
+      }
+      .entry-overlay h1 {
+        font-size: 20px;
+      }
+      .entry-overlay .logo {
+        width: 32px;
+        height: 32px;
+      }
+      .entry-overlay .brand b {
+        font-size: 15px;
+      }
+      .entry-overlay .btn {
+        min-height: 44px;
+        font-size: 14px;
       }
     }
 
@@ -512,6 +777,9 @@
       opacity: 0;
       visibility: hidden;
       transition: opacity 0.3s ease, visibility 0.3s ease;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 18px;
     }
 
     .pod-gate-overlay.active {
@@ -522,6 +790,8 @@
 
     .pod-gate-modal {
       width: min(880px, 92%);
+      max-width: 100%;
+      max-height: calc(100vh - 36px);
       background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.06));
       border: 1px solid rgba(255, 255, 255, 0.14);
       border-radius: var(--radius);
@@ -529,6 +799,9 @@
       padding: 28px;
       transform: scale(0.95);
       transition: transform 0.3s ease;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      margin: auto;
     }
 
     .pod-gate-overlay.active .pod-gate-modal {
@@ -544,6 +817,94 @@
     @media (max-width: 820px) {
       .pod-gate-grid {
         grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .pod-gate-overlay {
+        padding: 0;
+        align-items: stretch;
+        padding-top: 0;
+        padding-bottom: 0;
+        display: flex;
+        flex-direction: column;
+      }
+      .pod-gate-modal {
+        max-height: 100vh;
+        width: 100%;
+        padding: 24px 20px;
+        border-radius: 0;
+        margin: 0;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+      .pod-gate-grid {
+        flex: 1;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+      }
+      .pod-gate-modal h2 {
+        font-size: 22px;
+        margin-bottom: 12px;
+      }
+      .pod-gate-sub {
+        font-size: 14px;
+        line-height: 1.6;
+        margin-top: 8px;
+      }
+      .choice-btn {
+        min-width: 100%;
+        min-height: 48px;
+        padding: 14px 16px;
+        font-size: 15px;
+      }
+      .btn-row {
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 16px;
+      }
+      .statement-box {
+        margin-top: 16px;
+        padding: 16px;
+      }
+      .statement-box p {
+        font-size: 13px;
+        line-height: 1.6;
+      }
+      .modal-footer {
+        margin-top: 16px;
+        font-size: 11px;
+        flex-direction: column;
+        gap: 8px;
+        text-align: center;
+      }
+      .pod-gate-grid {
+        gap: 20px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .pod-gate-modal {
+        padding: 20px 16px;
+      }
+      .pod-gate-modal h2 {
+        font-size: 20px;
+      }
+      .choice-btn {
+        min-height: 44px;
+        font-size: 14px;
+        padding: 12px 14px;
+      }
+      .statement-box {
+        padding: 12px;
+      }
+      .statement-box p {
+        font-size: 12px;
       }
     }
 
@@ -590,6 +951,81 @@
       border-radius: 16px;
       padding: 18px;
       background: linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(0, 0, 0, 0.15));
+    }
+
+    /* ============ OTP POPUP ROLE SELECTION - With visible radio buttons ============ */
+    .hb-role-selection {
+      text-align: left;
+    }
+
+    .hb-role-option {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px 20px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text);
+      font-weight: 500;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .hb-role-option:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.18);
+      transform: translateY(-1px);
+    }
+
+    .hb-role-option input[type="radio"] {
+      width: 22px;
+      height: 22px;
+      margin: 0;
+      cursor: pointer;
+      accent-color: var(--accent);
+      flex-shrink: 0;
+      -webkit-appearance: none;
+      appearance: none;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      background: transparent;
+      position: relative;
+    }
+
+    .hb-role-option input[type="radio"]:checked {
+      border-color: var(--accent);
+      background: var(--accent);
+    }
+
+    .hb-role-option input[type="radio"]:checked::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(7, 16, 36, 0.9);
+    }
+
+    .hb-role-option span {
+      font-size: 16px;
+      color: var(--text);
+      font-weight: 500;
+      flex: 1;
+    }
+
+    .hb-role-option:has(input[type="radio"]:checked) {
+      background: rgba(125,211,252,.12);
+      border-color: rgba(125,211,252,.3);
+    }
+
+    .hb-role-option:has(input[type="radio"]:checked) span {
+      font-weight: 600;
+      color: var(--accent);
     }
 
     .statement-box strong {
@@ -767,15 +1203,51 @@
           </div>
         </div>
       </nav>
-
-      <!-- Mobile drawer -->
-      <div class="menu-drawer" aria-label="Mobile Menu">
+    </div>
+    
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay"></div>
+    
+    <!-- Sidebar Menu -->
+    <div class="sidebar-menu" aria-label="Mobile Sidebar Menu">
+      <div class="sidebar-header">
+        <h2 style="margin:0; font-size:18px; font-weight:800;">Menu</h2>
+        <label for="navtoggle" class="sidebar-close" aria-label="Close menu">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </label>
+      </div>
+      
+      <!-- Navigation Links -->
+      <div class="sidebar-menu-links">
         <a href="/how-it-works">How It Works</a>
         <a href="/proof-of-delivery">Proof of Delivery</a>
         <a href="/serendipity-protocol">Serendipity Protocol</a>
         <a href="/new-world-penny">New World Penny</a>
         <a href="/dao">Join the DAO</a>
         <a href="/faq">FAQs</a>
+      </div>
+      
+      <!-- Device Status Section -->
+      <div class="sidebar-device-section">
+        <h3>Device Status</h3>
+        <!-- Active Status Display -->
+        <div class="device-status" id="device-status-sidebar">
+          <span class="status-dot"></span>
+          <div class="status-text">
+            <strong>Device Active</strong>
+            <small id="device-status-sidebar-message">Ready to use</small>
+          </div>
+        </div>
+        <!-- Activate Button -->
+        <a class="btn primary" href="/activate-device" id="activate-device-sidebar" style="margin-top:12px; width:100%; justify-content:center;">Activate Device</a>
+      </div>
+      
+      <!-- Action Buttons -->
+      <div class="sidebar-buttons">
+        <a class="btn ghost" href="/pod-mode">PoD Mode</a>
       </div>
     </div>
   </header>
@@ -1153,13 +1625,119 @@
         window.location.href = "/pod-mode";
       });
 
-      // POD Gate - Yes button (opens existing PoD modal)
+      // POD Gate - Yes button (opens OTP verification popup - role selection)
       podGateYes.addEventListener("click", () => {
         podOverlay.classList.remove("active");
         document.body.style.overflow = "";
-        // Open the existing PoD modal after overlay closes
+        // Open OTP verification popup at role selection step (Step 3)
         setTimeout(() => {
-          window.open("https://www.smallstreet.app/?utm_source=humanblockchain.info&scan_type=proof","_blank");
+          // Function to show role selection popup
+          function showRolePopup() {
+            const otpPopup = document.getElementById('hb-otp-popup');
+            
+            if (!otpPopup) {
+              console.error('OTP Popup element not found in DOM. Checking if it exists...');
+              // Wait a bit and try again (in case DOM not fully loaded)
+              setTimeout(() => {
+                const retryPopup = document.getElementById('hb-otp-popup');
+                if (retryPopup) {
+                  showRolePopup();
+                } else {
+                  console.error('OTP Popup still not found after retry');
+                }
+              }, 100);
+              return;
+            }
+            
+            console.log('OTP Popup element found, showing role selection...');
+            
+            // Hide all steps first
+            const allSteps = otpPopup.querySelectorAll('.hb-popup-step');
+            console.log('Found', allSteps.length, 'popup steps');
+            allSteps.forEach(step => {
+              step.style.display = 'none';
+            });
+            
+            // Show role selection step (Step 3)
+            const roleStep = document.getElementById('hb-step-3');
+            if (roleStep) {
+              roleStep.style.display = 'block';
+              console.log('Role selection step shown');
+            } else {
+              console.error('Role selection step (hb-step-3) not found');
+            }
+            
+            // Show the popup - set all necessary styles explicitly
+            otpPopup.style.cssText = `
+              position: fixed !important;
+              top: 0 !important;
+              left: 0 !important;
+              width: 100% !important;
+              height: 100% !important;
+              background-color: rgba(0, 0, 0, 0.7) !important;
+              z-index: 99999 !important;
+              display: flex !important;
+              visibility: visible !important;
+              opacity: 1 !important;
+              align-items: center !important;
+              justify-content: center !important;
+            `;
+            
+            // Also ensure the popup container is visible
+            const popupContainer = otpPopup.querySelector('.hb-popup-container');
+            if (popupContainer) {
+              popupContainer.style.display = 'block';
+              popupContainer.style.visibility = 'visible';
+              popupContainer.style.opacity = '1';
+            }
+            
+            document.body.style.overflow = "hidden";
+            
+            // Verify it's visible
+            const computedStyle = window.getComputedStyle(otpPopup);
+            console.log('OTP Popup styles:', {
+              display: computedStyle.display,
+              visibility: computedStyle.visibility,
+              opacity: computedStyle.opacity,
+              zIndex: computedStyle.zIndex,
+              position: computedStyle.position,
+              width: computedStyle.width,
+              height: computedStyle.height
+            });
+            
+            // Check if popup is actually in viewport
+            const rect = otpPopup.getBoundingClientRect();
+            console.log('OTP Popup position:', {
+              top: rect.top,
+              left: rect.left,
+              width: rect.width,
+              height: rect.height,
+              visible: rect.width > 0 && rect.height > 0
+            });
+            
+            console.log('OTP Popup displayed at role selection step');
+          }
+          
+          // Try to show immediately
+          showRolePopup();
+          
+          // Also try with jQuery if available (as backup)
+          if (typeof jQuery !== 'undefined') {
+            jQuery(document).ready(function($) {
+              const $popup = $('#hb-otp-popup');
+              if ($popup.length && $popup.css('display') === 'none') {
+                $('.hb-popup-step').hide();
+                $('#hb-step-3').show();
+                $popup.css({
+                  'display': 'flex',
+                  'visibility': 'visible',
+                  'opacity': '1'
+                });
+                document.body.style.overflow = "hidden";
+                console.log('OTP Popup shown via jQuery fallback');
+              }
+            });
+          }
         }, 300);
       });
 
@@ -1265,8 +1843,8 @@
        * Show active status for all buttons
        */
       function showActiveStatus(status, deviceData) {
-        const statusIds = ['nav', 'hero', 'pod', 'faq'];
-        const buttonIds = ['activate-device-nav', 'activate-device-hero', 'activate-device-pod', 'activate-device-faq'];
+        const statusIds = ['nav', 'sidebar', 'hero', 'pod', 'faq'];
+        const buttonIds = ['activate-device-nav', 'activate-device-sidebar', 'activate-device-hero', 'activate-device-pod', 'activate-device-faq'];
         
         let message = 'Your device is registered and ready to use';
         if (status === 'validated') {
@@ -1294,8 +1872,8 @@
        * Show activate buttons
        */
       function showActivateButtons() {
-        const statusIds = ['nav', 'hero', 'pod', 'faq'];
-        const buttonIds = ['activate-device-nav', 'activate-device-hero', 'activate-device-pod', 'activate-device-faq'];
+        const statusIds = ['nav', 'sidebar', 'hero', 'pod', 'faq'];
+        const buttonIds = ['activate-device-nav', 'activate-device-sidebar', 'activate-device-hero', 'activate-device-pod', 'activate-device-faq'];
         
         statusIds.forEach((id, index) => {
           const statusDiv = document.getElementById(`device-status-${id}`);
@@ -1357,11 +1935,82 @@
         }
       }
 
+      // Sidebar toggle functionality
+      function toggleSidebar(open) {
+        const overlay = document.querySelector('.sidebar-overlay');
+        const sidebar = document.querySelector('.sidebar-menu');
+        const navToggle = document.getElementById('navtoggle');
+        
+        if (overlay && sidebar && navToggle) {
+          if (open) {
+            overlay.classList.add('active');
+            sidebar.classList.add('active');
+            document.body.classList.add('sidebar-open');
+            navToggle.checked = true;
+          } else {
+            overlay.classList.remove('active');
+            sidebar.classList.remove('active');
+            document.body.classList.remove('sidebar-open');
+            navToggle.checked = false;
+          }
+        }
+      }
+      
       // Check device status when page loads
       document.addEventListener('DOMContentLoaded', function() {
         checkDeviceActive();
+        
+        const navToggle = document.getElementById('navtoggle');
+        const overlay = document.querySelector('.sidebar-overlay');
+        const sidebar = document.querySelector('.sidebar-menu');
+        
+        // Toggle sidebar when checkbox changes
+        if (navToggle) {
+          navToggle.addEventListener('change', function() {
+            toggleSidebar(this.checked);
+          });
+        }
+        
+        // Close sidebar when clicking overlay
+        if (overlay) {
+          overlay.addEventListener('click', function() {
+            toggleSidebar(false);
+          });
+        }
+        
+        // Close sidebar when clicking a menu link
+        const sidebarLinks = document.querySelectorAll('.sidebar-menu-links a');
+        sidebarLinks.forEach(link => {
+          link.addEventListener('click', function() {
+            toggleSidebar(false);
+          });
+        });
+        
+        // Close sidebar when clicking PoD Mode button
+        const podModeBtn = document.querySelector('.sidebar-buttons .btn');
+        if (podModeBtn) {
+          podModeBtn.addEventListener('click', function() {
+            toggleSidebar(false);
+          });
+        }
+        
+        // Close sidebar when clicking activate device button
+        const activateBtn = document.getElementById('activate-device-sidebar');
+        if (activateBtn) {
+          activateBtn.addEventListener('click', function() {
+            toggleSidebar(false);
+          });
+        }
       });
     </script>
   </footer>
+  
+  <?php
+  // Include OTP Verification Popup directly in this template
+  $popup_file = get_stylesheet_directory() . '/templates-parts/popup-otp-verification.php';
+  if ( file_exists( $popup_file ) ) {
+    include $popup_file;
+  }
+  ?>
 </body>
 </html>

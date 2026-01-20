@@ -1,0 +1,421 @@
+/* OTP Verification Popup Styles - Matching POD Gate Modal Exactly */
+
+/* Popup Overlay - Match pod-gate-overlay exactly */
+.hb-popup-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(8px);
+    display: none;
+    place-items: center;
+    z-index: 10000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    padding: 18px;
+}
+
+.hb-popup-overlay[style*="display: flex"],
+.hb-popup-overlay[style*="display:flex"],
+.hb-popup-overlay[style*="display: grid"],
+.hb-popup-overlay[style*="display:grid"] {
+    display: grid !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+/* Popup Container - Match pod-gate-modal exactly */
+.hb-popup-container {
+    width: min(880px, 92%);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.06));
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: var(--radius, 18px);
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+    padding: 28px;
+    transform: scale(0.95);
+    transition: transform 0.3s ease;
+    position: relative;
+}
+
+.hb-popup-overlay[style*="display: flex"] .hb-popup-container,
+.hb-popup-overlay[style*="display:flex"] .hb-popup-container,
+.hb-popup-overlay[style*="display: grid"] .hb-popup-container,
+.hb-popup-overlay[style*="display:grid"] .hb-popup-container {
+    transform: scale(1);
+}
+
+/* Close Button */
+.hb-popup-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--muted, rgba(232,238,252,.6));
+    cursor: pointer;
+    line-height: 1;
+    transition: color 0.3s;
+    z-index: 1;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+}
+
+.hb-popup-close:hover {
+    color: var(--text, rgba(232,238,252,.95));
+    background: rgba(232,238,252,.08);
+}
+
+/* Popup Content - Match POD gate structure */
+.hb-popup-content {
+    text-align: center;
+    /* Remove any background/border since container already has it */
+    background: transparent;
+    border: none;
+    padding: 0;
+}
+
+.hb-popup-content h2 {
+    margin: 0;
+    font-size: 26px;
+    color: var(--text, rgba(232,238,252,.95));
+    line-height: 1.15;
+    letter-spacing: -.3px;
+}
+
+.hb-popup-content p {
+    margin: 10px 0 0;
+    color: var(--muted, rgba(232,238,252,.6));
+    line-height: 1.6;
+}
+
+/* Buttons - Match choice-btn style */
+.hb-btn-primary {
+    flex: 1;
+    min-width: 200px;
+    padding: 14px;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: rgba(255, 255, 255, 0.12);
+    color: var(--text, rgba(232,238,252,.95));
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: 100%;
+    max-width: 300px;
+    margin: 18px auto 0;
+    display: block;
+}
+
+.hb-btn-primary:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.18);
+    border-color: var(--accent, rgba(125,211,252,.95));
+    transform: translateY(-1px);
+}
+
+.hb-btn-primary:disabled {
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--muted, rgba(232,238,252,.4));
+    border-color: rgba(255, 255, 255, 0.08);
+    cursor: not-allowed;
+    transform: none;
+}
+
+.hb-btn-secondary {
+    flex: 1;
+    min-width: 200px;
+    padding: 14px;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: rgba(255, 255, 255, 0.12);
+    color: var(--text, rgba(232,238,252,.95));
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: 100%;
+    max-width: 300px;
+    margin: 18px auto 0;
+    display: block;
+}
+
+.hb-btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.18);
+    border-color: var(--accent, rgba(125,211,252,.95));
+    transform: translateY(-1px);
+}
+
+.hb-btn-link {
+    background: none;
+    border: none;
+    color: var(--accent, rgba(125,211,252,.95));
+    cursor: pointer;
+    font-size: 14px;
+    text-decoration: underline;
+    padding: 10px;
+    margin-top: 10px;
+    transition: color 0.3s;
+}
+
+.hb-btn-link:hover {
+    color: rgba(125,211,252,1);
+}
+
+/* Button Group - Match btn-row */
+.hb-button-group {
+    margin-top: 18px;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.hb-button-group .hb-btn-primary,
+.hb-button-group .hb-btn-secondary {
+    flex: 1;
+    min-width: 200px;
+    max-width: none;
+    margin: 0;
+}
+
+/* Role Selection - With visible radio buttons, matching image style */
+.hb-role-selection {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin: 24px 0;
+    text-align: left;
+}
+
+.hb-role-option {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 20px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text, rgba(232,238,252,.95));
+    font-weight: 500;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.hb-role-option:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.18);
+    transform: translateY(-1px);
+}
+
+.hb-role-option input[type="radio"] {
+    width: 22px;
+    height: 22px;
+    margin: 0;
+    cursor: pointer;
+    accent-color: var(--accent, rgba(125,211,252,.95));
+    flex-shrink: 0;
+    -webkit-appearance: none;
+    appearance: none;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    background: transparent;
+    position: relative;
+}
+
+.hb-role-option input[type="radio"]:checked {
+    border-color: var(--accent, rgba(125,211,252,.95));
+    background: var(--accent, rgba(125,211,252,.95));
+}
+
+.hb-role-option input[type="radio"]:checked::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(7, 16, 36, 0.9);
+}
+
+.hb-role-option span {
+    font-size: 16px;
+    color: var(--text, rgba(232,238,252,.95));
+    font-weight: 500;
+    flex: 1;
+}
+
+.hb-role-option:has(input[type="radio"]:checked) {
+    background: rgba(125,211,252,.12);
+    border-color: rgba(125,211,252,.3);
+}
+
+.hb-role-option:has(input[type="radio"]:checked) span {
+    font-weight: 600;
+    color: var(--accent, rgba(125,211,252,.95));
+}
+
+/* Phone Input */
+.hb-phone-input-group {
+    position: relative;
+    margin: 24px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hb-phone-input-group i {
+    position: absolute;
+    left: 20px;
+    color: var(--muted, rgba(232,238,252,.6));
+    font-size: 18px;
+    z-index: 1;
+}
+
+.hb-phone-input-group input {
+    width: 100%;
+    max-width: 300px;
+    padding: 12px 20px 12px 50px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text, rgba(232,238,252,.95));
+    font-size: 16px;
+    text-align: center;
+    transition: all 0.2s ease;
+}
+
+.hb-phone-input-group input:focus {
+    outline: none;
+    border-color: var(--accent, rgba(125,211,252,.5));
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.hb-phone-input-group input::placeholder {
+    color: var(--muted, rgba(232,238,252,.4));
+}
+
+/* OTP Input */
+.hb-otp-instruction {
+    margin-bottom: 20px;
+    color: var(--muted, rgba(232,238,252,.6));
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.hb-otp-input-group {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin: 24px 0;
+}
+
+.hb-otp-input {
+    width: 50px;
+    height: 50px;
+    text-align: center;
+    font-size: 24px;
+    font-weight: 600;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text, rgba(232,238,252,.95));
+    transition: all 0.2s ease;
+}
+
+.hb-otp-input:focus {
+    outline: none;
+    border-color: var(--accent, rgba(125,211,252,.5));
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.hb-otp-input:not(:placeholder-shown) {
+    border-color: var(--accent, rgba(125,211,252,.5));
+}
+
+/* OTP Actions */
+.hb-otp-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+/* Form Messages */
+.hb-form-message {
+    margin: 16px 0;
+    padding: 12px 16px;
+    border-radius: 12px;
+    font-size: 14px;
+    text-align: center;
+    min-height: 20px;
+    line-height: 1.5;
+}
+
+.hb-form-message.error {
+    background: rgba(239, 68, 68, .15);
+    color: rgba(254, 226, 226, .95);
+    border: 1px solid rgba(239, 68, 68, .3);
+}
+
+.hb-form-message.success {
+    background: rgba(34, 197, 94, .15);
+    color: rgba(220, 252, 231, .95);
+    border: 1px solid rgba(34, 197, 94, .3);
+}
+
+.hb-form-message.info {
+    background: rgba(59, 130, 246, .15);
+    color: rgba(219, 234, 254, .95);
+    border: 1px solid rgba(59, 130, 246, .3);
+}
+
+/* Loading Spinner */
+.hb-loading-spinner {
+    border: 4px solid rgba(255, 255, 255, 0.1);
+    border-top: 4px solid var(--accent, rgba(125,211,252,.95));
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .hb-popup-container {
+        padding: 20px;
+    }
+
+    .hb-popup-content h2 {
+        font-size: 22px;
+    }
+
+    .hb-otp-input {
+        width: 40px;
+        height: 40px;
+        font-size: 20px;
+    }
+
+    .hb-button-group {
+        flex-direction: column;
+    }
+
+    .hb-button-group .hb-btn-primary,
+    .hb-button-group .hb-btn-secondary {
+        max-width: 100%;
+        min-width: 100%;
+    }
+}

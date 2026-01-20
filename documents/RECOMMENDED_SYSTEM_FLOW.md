@@ -26,6 +26,7 @@ TABLE OF CONTENTS
 11. 10 Postmaster Generals Framework
 12. Complete Flow Diagrams
 13. Summary
+14. Theme Development Architecture
 
 ---
 
@@ -1459,15 +1460,317 @@ Key Database Tables
 
 ---
 
+THEME DEVELOPMENT ARCHITECTURE
+
+Purpose: Technical implementation guide for WordPress theme development with CI/CD
+
+---
+
+Overview
+
+The HumanBlockchain system is implemented within the WordPress theme located at `/wp-content/themes/hello-theme-child-master/`. The theme provides all core functionality including device registration, membership management, XP ledger, referral system, and integration with WooCommerce for order fulfillment.
+
+The theme has CI/CD (Continuous Integration/Continuous Deployment) implemented, allowing for automated testing, building, and deployment of changes.
+
+Core Principles
+- XP is NOT money - It's a measurement of human value
+- Append-only ledger - Immutable audit trail
+- Privacy-first - No sensitive data collection
+- Trust-first - Value moves before money
+- One complimentary pack per device - Ever
+
+---
+
+Theme Structure
+
+Location: `/wp-content/themes/hello-theme-child-master/`
+
+Directory Structure:
+```
+hello-theme-child-master/
+├── style.css (theme stylesheet with header)
+├── functions.php (main theme file - loads all components)
+├── includes/
+│   ├── class-device-registration-service.php (existing)
+│   ├── class-hb-rest-api.php (existing)
+│   ├── class-discord-service.php
+│   ├── class-xp-ledger-service.php
+│   ├── class-referral-service.php
+│   ├── class-voucher-service.php
+│   └── class-serendipity-service.php
+├── templates-parts/
+│   ├── template-activate-device.php (existing)
+│   ├── template-home.php (existing)
+│   ├── template-register-device.php (existing)
+│   └── [other template files]
+├── database/
+│   ├── migrations/
+│   │   ├── 001_create_device_tables.php (existing)
+│   │   ├── 002_add_hybrid_method_columns.php (existing)
+│   │   └── 003_verify_and_migrate_data.php (existing)
+│   └── schema.sql
+├── assets/
+│   ├── css/
+│   │   └── theme.css
+│   └── js/
+│       ├── device-activation.js
+│       └── dashboard.js
+├── admin/
+│   ├── class-admin-pages.php
+│   └── views/
+│       ├── devices-list.php
+│       ├── members-list.php
+│       ├── referrals-list.php
+│       └── xp-ledger-viewer.php
+└── documents/
+    └── [documentation files]
+```
+
+CI/CD Integration:
+- Automated testing on code commits
+- Automated building and deployment
+- Version control integration
+- Deployment pipeline configured
+
+Development Workflow:
+1. Code changes committed to version control
+2. CI/CD pipeline automatically runs tests
+3. On successful tests, code is built and deployed
+4. Theme updates are automatically applied to the site
+5. No manual deployment steps required
+
+---
+
+Core Services
+
+Device Registration Service (class-device-registration-service.php) - EXISTING
+- Handles device registration and activation
+- Manages device fingerprinting and hash generation
+- Stores device data in wp_hb_devices table
+- Links devices to WordPress user accounts
+- Implements hybrid device recognition (device_id, device_hash, wp_user_id)
+- REST API integration via class-hb-rest-api.php
+
+REST API Service (class-hb-rest-api.php) - EXISTING
+- Registers WordPress REST API endpoints
+- Handles device activation endpoints (/wp-json/hb/v1/device/activate-hybrid)
+- Device status check endpoints (/wp-json/hb/v1/device/check-active)
+- Endpoint validation and error handling
+
+Discord Service (class-discord-service.php) - PENDING
+- OAuth2 integration for Discord login
+- Discord bot role assignment based on membership tier
+- Stores Discord user ID and username
+- Manages Discord connection status
+
+XP Ledger Service (class-xp-ledger-service.php) - PENDING
+- Append-only ledger for tracking human value
+- Immutable hash chain for audit trail
+- Maturity system (8-12 weeks for referrals)
+- Annual close processing (August 31)
+- XP entry types: device_register, referral_award, role_assigned, complimentary_pack_issued, voucher_used, maturity_unlock, annual_close_adjustment, action_completed
+
+Referral Service (class-referral-service.php) - PENDING
+- Tracks referral relationships
+- Calculates XP amounts based on referrer's tier
+- Manages maturity dates (8-12 weeks random)
+- Handles referral status flow (pending_maturity, matured, void)
+- Creates XP ledger entries for referrals
+
+Voucher Service (class-voucher-service.php) - PENDING
+- Manages complimentary 10-pack vouchers/hang tags
+- One pack per device (ever)
+- Tracks voucher issuance and usage
+- Links vouchers to device_id
+
+Serendipity Service (class-serendipity-service.php) - PENDING
+- POC (Point of Contact) assignment logic
+- Buyer POC assignment (local, max 30 members)
+- Seller POC assignment (global, max 5 sellers)
+- Peace Pentagon branch assignment (time-based hash)
+- Slot index assignment for seller POCs
+
+---
+
+Database Tables
+
+The theme uses custom database tables with wp_hb_ prefix:
+
+wp_hb_devices
+- Stores device information, membership tier, POC assignments
+- Key columns: device_id (UUIDv4), device_hash, wp_user_id, membership_tier, peace_pentagon_branch
+
+wp_hb_poc_memberships
+- Stores POC assignments for buyers and sellers
+- Key columns: device_id, poc_id, poc_type, slot_index, status
+
+wp_hb_referrals
+- Stores referral relationships and XP amounts
+- Key columns: referrer_wp_user_id, referred_device_id, xp_amount, maturity_date, status
+
+wp_hb_xp_ledger
+- Append-only ledger for all XP entries
+- Key columns: entry_type, actor_type, actor_id, amount, immutable_hash, previous_hash, maturity_date
+
+wp_hb_postmaster_generals
+- Stores annual PMG selections
+- Key columns: device_id, peace_pentagon_branch, year, total_xp, rank_in_branch
+
+---
+
+REST API Endpoints
+
+The theme registers custom WordPress REST API endpoints via class-hb-rest-api.php:
+
+Device Management:
+- POST /wp-json/hb/v1/device/activate-hybrid - Hybrid device activation
+- POST /wp-json/hb/v1/device/check-active - Check device activation status
+
+Membership:
+- POST /wp-json/hb/v1/membership/select - Select membership tier
+- GET /wp-json/hb/v1/membership/status - Get membership status
+
+Referrals:
+- POST /wp-json/hb/v1/referral/create - Create referral relationship
+- GET /wp-json/hb/v1/referral/list - List user's referrals
+
+XP Ledger:
+- GET /wp-json/hb/v1/xp/ledger - Get XP ledger entries
+- GET /wp-json/hb/v1/xp/balance - Get XP balance
+
+---
+
+Integration Points
+
+WordPress Integration:
+- Uses WordPress user system (wp_users table)
+- Integrates with WordPress authentication
+- Uses WordPress REST API framework
+- Leverages WordPress hooks and filters
+
+WooCommerce Integration:
+- REST API sync for order data
+- Order status tracking
+- Backorder pool management
+- Admin assignment workflow
+
+Discord Integration:
+- OAuth2 authentication flow
+- Discord bot for role assignment
+- Webhook support for notifications
+
+---
+
+Development Milestones
+
+Milestone 1: Theme Foundation & Database (COMPLETED)
+- Theme structure already exists
+- Database tables created via migrations
+- Migration system implemented (001, 002, 003)
+- Device registration service implemented
+
+Milestone 2: Device Registration System (COMPLETED)
+- Device fingerprinting implemented
+- Device activation endpoints created
+- Hybrid device recognition working
+- Device data stored in database
+- Device linking to user accounts functional
+
+Milestone 3: Discord Integration (PENDING)
+- OAuth2 flow implementation
+- Discord bot role assignment
+- Store Discord user data
+- Update membership status
+
+Milestone 4: Complimentary 10-Pack System (PENDING)
+- Voucher issuance logic
+- One pack per device enforcement
+- Voucher tracking and validation
+
+Milestone 5: XP Ledger & Maturity System (PENDING)
+- Append-only ledger implementation
+- Hash chain for immutability
+- Maturity date calculation
+- Daily cron for maturity checks
+
+Milestone 6: Referral System (PENDING)
+- Referral link generation
+- Referral tracking and storage
+- XP calculation based on tier
+- Maturity window management
+
+Milestone 7: Admin Panel (PENDING)
+- Device management interface
+- Member list and status
+- Referral tracking dashboard
+- XP ledger viewer
+
+Milestone 8: Frontend UI & Templates (IN PROGRESS)
+- Device activation template (completed)
+- Home page template (completed)
+- Additional templates as needed
+- Dashboard functionality
+
+---
+
+Security & Compliance
+
+API Endpoints:
+- Nonce checks for logged-in actions
+- HMAC signature for Discord webhooks
+- Rate limiting per IP/device_hash
+
+Data Storage:
+- Hash sensitive data (IP, User Agent)
+- Encrypt bot tokens
+- Log geolocation consent
+
+Abuse Prevention:
+- One pack per device enforcement
+- Flag multiple devices from same person
+- Manual review capability
+
+---
+
+Testing Requirements
+
+Device Registration:
+- New device creates record
+- Geo-location captured
+- POC assigned correctly
+- Complimentary pack issued
+
+Discord Integration:
+- OAuth flow works
+- Roles assigned correctly
+- Status updated properly
+
+XP Ledger:
+- Entries immutable
+- Hash chain maintained
+- Maturity processes correctly
+
+Referral System:
+- Referrals tracked accurately
+- Maturity dates set correctly
+- XP awarded on maturity
+
+Admin Panel:
+- All pages load correctly
+- Data displays accurately
+- Exports work properly
+
+---
+
 ---
 
 DOCUMENT FOOTER
 
 Last Updated: January 2025
-Version: 2.0
-Status: Complete Recommended System Flow (Including Membership & Referral)
+Version: 2.2
+Status: Complete Recommended System Flow (Including Membership, Referral & Theme Development)
 Maintained By: HumanBlockchain Development Team
 
 ---
 
-*This document serves as the complete reference guide for the HumanBlockchain.info system flow, including device activation, user accounts, order fulfillment, membership tiers, referral system, and resource allocation.*
+*This document serves as the complete reference guide for the HumanBlockchain.info system flow, including device activation, user accounts, order fulfillment, membership tiers, referral system, resource allocation, and WordPress theme development architecture with CI/CD integration.*

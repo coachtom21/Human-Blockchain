@@ -32,6 +32,30 @@ function hello_elementor_child_scripts_styles() {
 		HELLO_ELEMENTOR_CHILD_VERSION
 	);
 
+	// Enqueue OTP Popup styles and scripts
+	wp_enqueue_style(
+		'hb-otp-popup-style',
+		get_stylesheet_directory_uri() . '/assets/css/otp-popup.css',
+		array(),
+		HELLO_ELEMENTOR_CHILD_VERSION
+	);
+
+	wp_enqueue_script(
+		'hb-otp-popup-script',
+		get_stylesheet_directory_uri() . '/assets/js/otp-popup.js',
+		array('jquery'),
+		HELLO_ELEMENTOR_CHILD_VERSION,
+		true
+	);
+
+	// Enqueue Font Awesome for icons
+	wp_enqueue_style(
+		'hb-font-awesome',
+		'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css',
+		array(),
+		'6.5.2'
+	);
+
 }
 add_action( 'wp_enqueue_scripts', 'hello_elementor_child_scripts_styles', 20 );
 
@@ -317,3 +341,16 @@ if ( isset( $_GET['hb_create_pages'] ) && current_user_can( 'manage_options' ) )
 	echo '</div>';
 	exit;
 }
+
+/**
+ * Include OTP Verification Popup on all pages
+ */
+function hb_include_otp_popup() {
+	if ( ! is_admin() ) {
+		$popup_file = get_stylesheet_directory() . '/templates-parts/popup-otp-verification.php';
+		if ( file_exists( $popup_file ) ) {
+			include $popup_file;
+		}
+	}
+}
+add_action( 'wp_footer', 'hb_include_otp_popup' );

@@ -1,7 +1,8 @@
 <?php
+
 /*
-Template Name: New World Penny
-*/
+ * Template Name: New World Penny
+ */
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -76,6 +77,9 @@ border-radius: 10px;
 }
 .brand h1{margin:0;font-size:14px;letter-spacing:.4px}
 .brand small{display:block;font-size:12px;color:var(--muted)}
+.nav-inner{
+  position: relative;
+}
 .nav-links{display:flex;gap:10px;flex-wrap:wrap}
 .nav-links a{
 text-decoration:none;
@@ -86,6 +90,180 @@ padding:10px 12px;
 border-radius:999px;
 border:1px solid rgba(255,255,255,.10);
 background: rgba(255,255,255,.04);
+transition: all .12s ease;
+}
+.nav-links a:hover{
+background: rgba(255,255,255,.08);
+color: var(--text);
+}
+
+/* Hamburger Menu */
+.hamburger-menu{
+display: none;
+}
+.hamburger-toggle{
+display: none;
+}
+.hamburger-btn{
+display: inline-flex;
+align-items: center;
+justify-content: center;
+width: 44px;
+height: 44px;
+border-radius: 12px;
+border: 1px solid rgba(255,255,255,.16);
+background: rgba(255,255,255,.06);
+cursor: pointer;
+transition: background .12s ease;
+flex-shrink: 0;
+}
+.hamburger-btn:hover{
+background: rgba(255,255,255,.10);
+}
+.hamburger-btn svg{
+width: 22px;
+height: 22px;
+stroke: currentColor;
+}
+
+/* Sidebar Overlay */
+.sidebar-overlay{
+display: none;
+position: fixed;
+top: 0;
+left: 0;
+right: 0;
+bottom: 0;
+background: rgba(0, 0, 0, 0.5);
+backdrop-filter: blur(4px);
+z-index: 9998;
+opacity: 0;
+transition: opacity 0.3s ease;
+cursor: pointer;
+}
+
+.sidebar-overlay.active{
+display: block;
+opacity: 1;
+}
+
+/* Sidebar Menu */
+.sidebar-menu{
+position: fixed;
+top: 0;
+right: -100%;
+width: 320px;
+max-width: 85vw;
+height: 100vh;
+background: rgba(11,18,32,.95);
+backdrop-filter: blur(20px);
+border-left: 1px solid rgba(255,255,255,.12);
+z-index: 9999;
+overflow-y: auto;
+transition: right 0.3s ease;
+padding: 20px;
+display: flex;
+flex-direction: column;
+gap: 20px;
+-webkit-overflow-scrolling: touch;
+}
+
+.sidebar-menu.active{
+right: 0;
+}
+
+/* Sidebar Header */
+.sidebar-header{
+display: flex;
+align-items: center;
+justify-content: space-between;
+padding-bottom: 16px;
+border-bottom: 1px solid rgba(255,255,255,.12);
+}
+
+.sidebar-header h2{
+margin: 0;
+font-size: 18px;
+font-weight: 800;
+color: var(--text);
+}
+
+.sidebar-close{
+display: inline-flex;
+align-items: center;
+justify-content: center;
+width: 40px;
+height: 40px;
+border-radius: 12px;
+border: 1px solid rgba(255,255,255,.16);
+background: rgba(255,255,255,.06);
+cursor: pointer;
+color: var(--text);
+transition: background .12s ease;
+}
+
+.sidebar-close:hover{
+background: rgba(255,255,255,.10);
+}
+
+.sidebar-close svg{
+width: 20px;
+height: 20px;
+}
+
+/* Sidebar Menu Links */
+.sidebar-menu-links{
+display: flex;
+flex-direction: column;
+gap: 8px;
+}
+
+.sidebar-menu-links a{
+display: block;
+padding: 14px 16px;
+border-radius: 14px;
+color: var(--muted);
+border: 1px solid transparent;
+font-size: 15px;
+text-decoration: none;
+transition: all .12s ease;
+}
+
+.sidebar-menu-links a:hover{
+background: rgba(255,255,255,.06);
+color: var(--text);
+border-color: rgba(255,255,255,.10);
+}
+
+/* Mobile Responsive */
+@media (max-width: 900px){
+.nav-links{
+display: none;
+}
+.hamburger-menu{
+display: block;
+}
+.brand{
+min-width: auto;
+flex: 1;
+min-width: 0;
+}
+.brand small{
+display: none;
+}
+.brand h1{
+font-size: 16px;
+white-space: nowrap;
+overflow: hidden;
+text-overflow: ellipsis;
+}
+}
+
+/* Prevent body scroll when sidebar is open */
+body.sidebar-open{
+overflow: hidden;
+position: fixed;
+width: 100%;
 }
 /* Layout */
 .wrap{
@@ -238,21 +416,98 @@ white-space:nowrap;
 <body>
 <header class="nav">
 <div class="nav-inner">
-<a class="brand" href="<?php echo esc_url( home_url( '/' ) ); ?>">
-<?php echo hb_get_site_logo( 'medium', array( 'class' => 'logo' ) ); ?>
+<a class="brand" href="<?php echo esc_url(home_url('/')); ?>">
+<?php echo hb_get_site_logo('medium', array('class' => 'logo')); ?>
 <div>
-<h1><?php echo esc_html( get_bloginfo( 'name' ) ); ?></h1>
+<h1><?php echo esc_html(get_bloginfo('name')); ?></h1>
 <small>Loyalty Points = XP / New World Penny</small>
 </div>
 </a>
 <nav class="nav-links" aria-label="Primary">
-<a href="how-it-works">How It Works</a>
-<a href="register-device">Register Device</a>
-<a href="pod-mode">PoD Mode</a>
-<a href="loyalty-xp">Loyalty Points</a>
+<a href="/how-it-works">How It Works</a>
+<a href="/register-device">Register Device</a>
+<a href="/pod-mode">PoD Mode</a>
+<a href="/loyalty-xp">Loyalty Points</a>
 </nav>
+
+<div class="hamburger-menu">
+<input type="checkbox" id="hamburger-toggle-<?php echo get_the_ID(); ?>" class="hamburger-toggle" />
+<label for="hamburger-toggle-<?php echo get_the_ID(); ?>" class="hamburger-btn" aria-label="Open menu">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+<path d="M4 7h16M4 12h16M4 17h16"/>
+</svg>
+</label>
+</div>
+</div>
+
+<!-- Sidebar Overlay -->
+<div class="sidebar-overlay" id="sidebar-overlay-<?php echo get_the_ID(); ?>"></div>
+
+<!-- Sidebar Menu -->
+<div class="sidebar-menu" id="sidebar-menu-<?php echo get_the_ID(); ?>" aria-label="Mobile Sidebar Menu">
+<div class="sidebar-header">
+<h2>Menu</h2>
+<label for="hamburger-toggle-<?php echo get_the_ID(); ?>" class="sidebar-close" aria-label="Close menu">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<line x1="18" y1="6" x2="6" y2="18"></line>
+<line x1="6" y1="6" x2="18" y2="18"></line>
+</svg>
+</label>
+</div>
+
+<!-- Navigation Links -->
+<div class="sidebar-menu-links">
+<a href="/how-it-works">How It Works</a>
+<a href="/register-device">Register Device</a>
+<a href="/pod-mode">PoD Mode</a>
+<a href="/loyalty-xp">Loyalty Points</a>
+</div>
 </div>
 </header>
+
+<script>
+(function() {
+const toggleId = 'hamburger-toggle-<?php echo get_the_ID(); ?>';
+const toggle = document.getElementById(toggleId);
+const overlay = document.getElementById('sidebar-overlay-<?php echo get_the_ID(); ?>');
+const sidebar = document.getElementById('sidebar-menu-<?php echo get_the_ID(); ?>');
+
+function toggleSidebar(open) {
+if (overlay && sidebar && toggle) {
+if (open) {
+overlay.classList.add('active');
+sidebar.classList.add('active');
+document.body.classList.add('sidebar-open');
+toggle.checked = true;
+} else {
+overlay.classList.remove('active');
+sidebar.classList.remove('active');
+document.body.classList.remove('sidebar-open');
+toggle.checked = false;
+}
+}
+}
+
+if (toggle) {
+toggle.addEventListener('change', function() {
+toggleSidebar(this.checked);
+});
+}
+
+if (overlay) {
+overlay.addEventListener('click', function() {
+toggleSidebar(false);
+});
+}
+
+const sidebarLinks = sidebar ? sidebar.querySelectorAll('.sidebar-menu-links a') : [];
+sidebarLinks.forEach(link => {
+link.addEventListener('click', function() {
+toggleSidebar(false);
+});
+});
+})();
+</script>
 <main class="wrap">
 <section class="card">
 <div class="card-inner">
