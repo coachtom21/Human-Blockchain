@@ -1048,6 +1048,249 @@
       flex-wrap: wrap;
       gap: 0.5rem;
     }
+
+    /* POC Join Guild Modal (YAM) */
+    :root{
+      --yam-bg:#0b0f14;
+      --yam-card:#0f1621;
+      --yam-ink:#eaf1ff;
+      --yam-muted:#b7c3d9;
+      --yam-line:rgba(255,255,255,.12);
+      --yam-shadow: 0 16px 40px rgba(0,0,0,.45);
+      --yam-radius:18px;
+      --yam-good:#7CFFB2;
+      --yam-link:#a7c7ff;
+      --yam-warn:#FFD37C;
+      --yam-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --yam-sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+    .yam-btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      padding:12px 14px;
+      border-radius:14px;
+      border:1px solid var(--yam-line);
+      background:rgba(255,255,255,.05);
+      color:var(--yam-ink);
+      font-weight:800;
+      letter-spacing:.01em;
+      cursor:pointer;
+      box-shadow: 0 10px 26px rgba(0,0,0,.25);
+    }
+    .yam-btn:hover{background:rgba(255,255,255,.08)}
+    .yam-btn.primary{
+      background:linear-gradient(90deg, rgba(124,255,178,.22), rgba(167,199,255,.22));
+      border-color: rgba(167,199,255,.25);
+    }
+    .yam-modal{
+      position:fixed;
+      inset:0;
+      display:none;
+      padding:18px;
+      background:rgba(0,0,0,.60);
+      backdrop-filter: blur(6px);
+      z-index:9999;
+      overflow-y:auto;
+      overflow-x:hidden;
+      -webkit-overflow-scrolling:touch;
+    }
+    .yam-modal[aria-hidden="false"]{display:block;}
+    .yam-modal[aria-hidden="false"]{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:flex-start;
+      padding-top:24px;
+      padding-bottom:24px;
+    }
+    body:has(.yam-modal[aria-hidden="false"]){overflow:hidden;}
+    .yam-dialog{
+      width:min(980px, 100%);
+      border-radius:22px;
+      background:rgba(15,22,33,.92);
+      border:1px solid var(--yam-line);
+      box-shadow:var(--yam-shadow);
+      overflow:visible;
+      margin:auto;
+      flex-shrink:0;
+    }
+    .yam-dialogHeader{
+      padding:18px 18px 14px;
+      border-bottom:1px solid var(--yam-line);
+      background:linear-gradient(to bottom, rgba(255,255,255,.04), transparent);
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:14px;
+    }
+    .yam-titleBlock{min-width:0}
+    .yam-kicker{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      color:var(--yam-muted);
+      font-size:13px;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+    }
+    .yam-dot{
+      width:10px; height:10px; border-radius:999px;
+      background:linear-gradient(90deg, var(--yam-good), var(--yam-link));
+      box-shadow:0 0 0 4px rgba(124,255,178,.10);
+    }
+    .yam-dialogHeader h3{
+      margin:10px 0 6px;
+      font-size:22px;
+      letter-spacing:-.01em;
+      color:var(--yam-ink);
+    }
+    .yam-sub{
+      margin:0;
+      color:var(--yam-muted);
+      font-size:14px;
+      max-width:80ch;
+    }
+    .yam-close{
+      flex:0 0 auto;
+      border:1px solid var(--yam-line);
+      background:rgba(255,255,255,.04);
+      color:var(--yam-ink);
+      width:42px; height:42px;
+      border-radius:14px;
+      cursor:pointer;
+      font-weight:900;
+    }
+    .yam-close:hover{background:rgba(255,255,255,.07)}
+    .yam-body{
+      padding:16px 18px 18px;
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap:16px;
+    }
+    @media (max-width: 900px){
+      .yam-body{grid-template-columns:1fr}
+    }
+    .yam-card{
+      border:1px solid var(--yam-line);
+      border-radius:18px;
+      padding:14px;
+      background:rgba(255,255,255,.03);
+    }
+    .yam-alert{
+      border-left:4px solid rgba(255,211,124,.55);
+      background:rgba(255,211,124,.06);
+      border-radius:16px;
+      padding:12px 12px 12px 14px;
+    }
+    .yam-alert strong{color:var(--yam-warn)}
+    .yam-metaRow{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:10px;
+    }
+    .yam-pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid var(--yam-line);
+      color:var(--yam-muted);
+      background:rgba(0,0,0,.18);
+      font-size:12.5px;
+      white-space:nowrap;
+    }
+    .yam-pill b{color:var(--yam-ink)}
+    .yam-form{
+      display:grid;
+      gap:12px;
+      margin-top:12px;
+    }
+    .yam-row{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:12px;
+    }
+    @media (max-width: 700px){
+      .yam-row{grid-template-columns:1fr}
+    }
+    .yam-field label{
+      display:block;
+      font-size:12px;
+      letter-spacing:.06em;
+      text-transform:uppercase;
+      color:var(--yam-muted);
+      margin:0 0 6px;
+    }
+    .yam-field input,
+    .yam-field select,
+    .yam-field textarea{
+      width:100%;
+      padding:11px 12px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(0,0,0,.25);
+      color:var(--yam-ink);
+      outline:none;
+    }
+    .yam-field textarea{min-height:90px; resize:vertical}
+    .yam-field input::placeholder,
+    .yam-field textarea::placeholder{color:rgba(183,195,217,.65)}
+    .yam-help{
+      margin:6px 0 0;
+      color:var(--yam-muted);
+      font-size:12.5px;
+    }
+    .yam-meter{
+      display:grid;
+      gap:10px;
+      margin-top:12px;
+    }
+    .yam-meterTop{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      color:var(--yam-muted);
+      font-size:13px;
+    }
+    .yam-bar{
+      height:12px;
+      border-radius:999px;
+      border:1px solid var(--yam-line);
+      background:rgba(0,0,0,.22);
+      overflow:hidden;
+    }
+    .yam-bar > span{
+      display:block;
+      height:100%;
+      width:0%;
+      background:linear-gradient(90deg, rgba(255,211,124,.28), rgba(124,255,178,.28), rgba(167,199,255,.28));
+    }
+    .yam-mono{
+      font-family:var(--yam-mono);
+      font-size:12.5px;
+      color:rgba(234,241,255,.88);
+    }
+    .yam-actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      justify-content:flex-end;
+      padding:14px 18px;
+      border-top:1px solid var(--yam-line);
+      background:rgba(0,0,0,.18);
+    }
+    .yam-note{
+      flex:1 1 240px;
+      color:var(--yam-muted);
+      font-size:12.5px;
+      align-self:center;
+      min-width:200px;
+    }
   </style>
 </head>
 
@@ -1174,11 +1417,13 @@
           <a href="/serendipity-protocol">Serendipity Protocol</a>
           <a href="/new-world-penny">New World Penny</a>
           <a href="/dao">Join the DAO</a>
+          <a href="/poc-guilds">POC Guilds</a>
           <a href="/faq">FAQs</a>
         </div>
 
         <!-- Right side actions + mobile toggle -->
         <div class="cta">
+          <button class="btn primary open-join-poc-trigger" id="openJoinPOC" type="button">Start POC</button>
           <div class="device-activate-wrapper">
             <!-- Active Status Display (hidden by default) -->
             <div class="device-status" id="device-status-nav">
@@ -1227,6 +1472,7 @@
         <a href="/serendipity-protocol">Serendipity Protocol</a>
         <a href="/new-world-penny">New World Penny</a>
         <a href="/dao">Join the DAO</a>
+        <a href="/poc-guilds">POC Guilds</a>
         <a href="/faq">FAQs</a>
       </div>
       
@@ -1247,10 +1493,194 @@
       
       <!-- Action Buttons -->
       <div class="sidebar-buttons">
+        <button type="button" class="btn primary open-join-poc-trigger" style="width:100%; justify-content:center;">Start POC</button>
         <a class="btn ghost" href="/pod-mode">PoD Mode</a>
       </div>
     </div>
   </header>
+
+  <!-- Join POC Guild Modal -->
+  <div class="yam-modal" id="joinPOCModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="joinPOCTitle">
+    <div class="yam-dialog">
+      <div class="yam-dialogHeader">
+        <div class="yam-titleBlock">
+          <div class="yam-kicker"><span class="yam-dot"></span> YAM'er Portal • Accrued Demand</div>
+          <h3 id="joinPOCTitle">Join a POC Guild (5 sellers / 25 buyers)</h3>
+          <p class="yam-sub">
+            This pop-up records your <b>accrued demand</b> to join a community Guild. That demand is a Kalshi Mirror reputation signal:
+            it proves who is ready to participate <i>before</i> assignments are finalized.
+          </p>
+        </div>
+        <button class="yam-close" type="button" data-close-modal aria-label="Close">✕</button>
+      </div>
+
+      <div class="yam-body">
+        <div class="yam-card">
+          <div class="yam-alert">
+            <strong>Status check:</strong> You do not currently have an active POC assignment.<br/>
+            Submit this demand record to enter the serendipity assignment queue.
+          </div>
+
+          <form class="yam-form" id="joinPOCForm" action="#" method="post">
+            <input type="hidden" name="member_id" value="" />
+            <input type="hidden" name="device_id" value="" />
+            <input type="hidden" name="current_poc_status" value="NO_ACTIVE_POC" />
+
+            <div class="yam-row">
+              <div class="yam-field">
+                <label for="rolePref">Role preference</label>
+                <select id="rolePref" name="role_preference" required>
+                  <option value="" selected disabled>Select…</option>
+                  <option value="YAMER_BUYER">YAM'er (Buyer)</option>
+                  <option value="SELLER_ELIGIBLE">Seller-Eligible (I can sponsor + deliver)</option>
+                  <option value="EITHER_SERENDIPITY">Either (serendipity assigns)</option>
+                </select>
+                <p class="yam-help">Serendipity can assign you to a buyer POC and/or place you in the seller queue, based on capacity.</p>
+              </div>
+              <div class="yam-field">
+                <label for="assignmentMode">Assignment mode</label>
+                <select id="assignmentMode" name="assignment_mode" required>
+                  <option value="" selected disabled>Select…</option>
+                  <option value="SERENDIPITY_DEFAULT">Serendipity (default)</option>
+                  <option value="INVITE_CODE">I have an invite code</option>
+                  <option value="ORG_SPONSORED_EVENT">I joined at an event</option>
+                </select>
+                <p class="yam-help">Invite code and event mode help your Guild form faster while still respecting assignments.</p>
+              </div>
+            </div>
+
+            <div class="yam-row">
+              <div class="yam-field">
+                <label for="pledgeIntent">Pledge intent</label>
+                <select id="pledgeIntent" name="pledge_intent" required>
+                  <option value="" selected disabled>Select…</option>
+                  <option value="READY_30">I'm ready to pledge $30 at the next kite festival</option>
+                  <option value="READY_NOW">I'm ready now (next available event)</option>
+                  <option value="OBSERVE_FIRST">I will observe first, then pledge</option>
+                </select>
+                <p class="yam-help">This is a participation signal—"leave your wallet at home" still applies.</p>
+              </div>
+              <div class="yam-field">
+                <label for="eventWindow">Preferred event window</label>
+                <select id="eventWindow" name="preferred_event_window" required>
+                  <option value="" selected disabled>Select…</option>
+                  <option value="NEXT_30_DAYS">Next 30 days</option>
+                  <option value="NEXT_60_DAYS">Next 60 days</option>
+                  <option value="NEXT_90_DAYS">Next 90 days</option>
+                  <option value="ANYTIME">Anytime (first available)</option>
+                </select>
+                <p class="yam-help">Used to measure demand and schedule Guild formation.</p>
+              </div>
+            </div>
+
+            <div class="yam-row">
+              <div class="yam-field">
+                <label for="region">Region (city/state)</label>
+                <input id="region" name="region" type="text" placeholder="e.g., Atlanta, GA" required />
+                <p class="yam-help">Helps group nearby participation opportunities without exposing your exact location.</p>
+              </div>
+              <div class="yam-field">
+                <label for="contact">Contact (email or SMS)</label>
+                <input id="contact" name="contact" type="text" placeholder="you@email.com or (555) 555-5555" required />
+                <p class="yam-help">Only used for Guild assignment notifications and event reminders.</p>
+              </div>
+            </div>
+
+            <div class="yam-field">
+              <label for="notes">Notes (optional)</label>
+              <textarea id="notes" name="notes" placeholder="Anything that helps place you faster: invite code, organizer name, event name, etc."></textarea>
+              <p class="yam-help">If you selected "Invite code," place it here (or your portal can show an invite field conditionally).</p>
+            </div>
+
+            <div class="yam-row">
+              <div class="yam-field">
+                <label for="consent1"><span class="yam-mono">Kalshi Mirror consent</span></label>
+                <select id="consent1" name="kalshi_mirror_consent" required>
+                  <option value="" selected disabled>Select…</option>
+                  <option value="YES">Yes — record my demand as reputation</option>
+                  <option value="NO">No — do not record demand</option>
+                </select>
+                <p class="yam-help">Selecting "Yes" creates a demand signal for community formation metrics.</p>
+              </div>
+              <div class="yam-field">
+                <label for="consent2"><span class="yam-mono">Serendipity assignment acknowledgement</span></label>
+                <select id="consent2" name="serendipity_ack" required>
+                  <option value="" selected disabled>Select…</option>
+                  <option value="YES">Yes — I accept serendipity placement</option>
+                  <option value="NO">No — I do not accept placement</option>
+                </select>
+                <p class="yam-help">If "No," you can still browse events but won't enter the assignment queue.</p>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <div class="yam-card">
+          <h4 style="margin:0 0 8px; font-size:16px; letter-spacing:-.01em;">Accrued Demand (Mirror Signal)</h4>
+          <p class="yam-sub" style="max-width:none">
+            As you fill the form, this preview shows the demand signal your Guild will publish:
+            a simple, auditable count of who's ready to participate.
+          </p>
+
+          <div class="yam-meter" aria-live="polite">
+            <div class="yam-meterTop">
+              <span>Demand strength</span>
+              <span class="yam-mono" id="demandScore">0 / 100</span>
+            </div>
+            <div class="yam-bar" aria-label="Demand strength bar">
+              <span id="demandBar"></span>
+            </div>
+            <div class="yam-metaRow">
+              <div class="yam-pill"><b>Status:</b> NO_ACTIVE_POC</div>
+              <div class="yam-pill"><b>Signal:</b> Accrued Demand</div>
+              <div class="yam-pill"><b>Queue:</b> Serendipity</div>
+            </div>
+          </div>
+
+          <div class="divider" style="margin:16px 0"></div>
+
+          <div class="yam-card" style="padding:12px; background:rgba(0,0,0,.22)">
+            <div class="yam-mono" style="margin-bottom:8px; opacity:.9">Mirror event payload (preview)</div>
+            <div class="ledger" style="margin:0">
+<pre id="mirrorPreview">{
+  "event_type": "POC_ACCRUED_DEMAND",
+  "member_status": "NO_ACTIVE_POC",
+  "role_preference": null,
+  "assignment_mode": null,
+  "pledge_intent": null,
+  "preferred_event_window": null,
+  "region": null,
+  "consents": {
+    "kalshi_mirror": null,
+    "serendipity_ack": null
+  }
+}</pre>
+            </div>
+            <p class="note" style="margin-top:10px">
+              Your backend can post this to the GitHub append-only ledger as a monthly aggregate or as hashed, privacy-preserving events.
+            </p>
+          </div>
+
+          <div class="divider" style="margin:16px 0"></div>
+
+          <div class="yam-alert">
+            <strong>Reminder:</strong> This is not a cash register. It's a trust register.<br/>
+            Demand today → Guild formation tomorrow → monthly receipts/obligations/extinguishments posted.
+          </div>
+        </div>
+      </div>
+
+      <div class="yam-actions">
+        <div class="yam-note">
+          Submitting creates a demand record for Kalshi Mirror reputation and serendipity queueing.
+        </div>
+        <button class="yam-btn" type="button" data-close-modal>Cancel</button>
+        <button class="yam-btn primary" type="submit" form="joinPOCForm" id="submitJoinPOC">
+          Submit Demand Signal
+        </button>
+      </div>
+    </div>
+  </div>
 
   <main>
     <!-- HERO -->
@@ -1745,6 +2175,12 @@
       podGateNo.addEventListener("click", () => {
         podOverlay.classList.remove("active");
         document.body.style.overflow = "";
+        if (window.location.hash === "#openJoinPOC") {
+          setTimeout(() => {
+            const pocBtn = document.getElementById("openJoinPOC");
+            if (pocBtn) pocBtn.click();
+          }, 200);
+        }
       });
 
       // ============ DEVICE STATUS CHECK ============
@@ -2002,6 +2438,110 @@
           });
         }
       });
+
+      // ============ JOIN POC MODAL ============
+      (function(){
+        const modal = document.getElementById('joinPOCModal');
+        if (!modal) return;
+        const closeEls = modal.querySelectorAll('[data-close-modal]');
+        const form = document.getElementById('joinPOCForm');
+        const demandScoreEl = document.getElementById('demandScore');
+        const demandBar = document.getElementById('demandBar');
+        const mirrorPreview = document.getElementById('mirrorPreview');
+
+        let lastFocus = null;
+
+        function openModal(){
+          lastFocus = document.activeElement;
+          modal.setAttribute('aria-hidden','false');
+          const first = modal.querySelector('select, input, textarea, button');
+          if(first) first.focus();
+          document.addEventListener('keydown', onPOCKeydown);
+        }
+
+        function closeModal(){
+          modal.setAttribute('aria-hidden','true');
+          document.removeEventListener('keydown', onPOCKeydown);
+          if(lastFocus) lastFocus.focus();
+        }
+
+        function onPOCKeydown(e){
+          if(e.key === 'Escape') closeModal();
+        }
+
+        document.querySelectorAll('.open-join-poc-trigger').forEach(function(btn){ btn.addEventListener('click', openModal); });
+        closeEls.forEach(el => el.addEventListener('click', closeModal));
+
+        modal.addEventListener('click', (e)=>{
+          if(e.target === modal) closeModal();
+        });
+
+        function computeScore(data){
+          let score = 0;
+          if(data.role_preference) score += 20;
+          if(data.assignment_mode) score += 15;
+          if(data.pledge_intent) score += 20;
+          if(data.preferred_event_window) score += 10;
+          if(data.region) score += 10;
+          if(data.contact) score += 10;
+          if(data.kalshi_mirror_consent === 'YES') score += 10;
+          if(data.serendipity_ack === 'YES') score += 5;
+          if(data.kalshi_mirror_consent === 'NO') score = Math.min(score, 40);
+          if(data.serendipity_ack === 'NO') score = Math.min(score, 55);
+          return Math.max(0, Math.min(100, score));
+        }
+
+        function readForm(){
+          if(!form) return {};
+          const fd = new FormData(form);
+          return Object.fromEntries(fd.entries());
+        }
+
+        function updatePreview(){
+          if(!demandScoreEl || !demandBar || !mirrorPreview || !form) return;
+          const data = readForm();
+          const score = computeScore(data);
+          demandScoreEl.textContent = score + ' / 100';
+          demandBar.style.width = score + '%';
+          const payload = {
+            event_type: "POC_ACCRUED_DEMAND",
+            member_status: "NO_ACTIVE_POC",
+            role_preference: data.role_preference || null,
+            assignment_mode: data.assignment_mode || null,
+            pledge_intent: data.pledge_intent || null,
+            preferred_event_window: data.preferred_event_window || null,
+            region: data.region || null,
+            consents: {
+              kalshi_mirror: data.kalshi_mirror_consent || null,
+              serendipity_ack: data.serendipity_ack || null
+            }
+          };
+          mirrorPreview.textContent = JSON.stringify(payload, null, 2);
+        }
+
+        if(form){
+          form.addEventListener('input', updatePreview);
+          form.addEventListener('change', updatePreview);
+          form.addEventListener('submit', (e)=>{
+            e.preventDefault();
+            const data = readForm();
+            const score = computeScore(data);
+            if(data.serendipity_ack !== 'YES'){
+              alert("To enter the POC assignment queue, please acknowledge serendipity placement (set to YES).");
+              return;
+            }
+            if(data.kalshi_mirror_consent !== 'YES'){
+              if(!confirm("You selected NO for Kalshi Mirror demand recording. Submit anyway (no demand signal will be recorded)?")) return;
+            }
+            console.log("Submit Demand Signal", { ...data, demand_score: score });
+            alert("Demand signal submitted. You are now in the serendipity assignment queue (pending capacity).");
+            closeModal();
+            form.reset();
+            updatePreview();
+          });
+        }
+        updatePreview();
+      })();
     </script>
   </footer>
   
