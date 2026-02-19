@@ -32,6 +32,13 @@ function hello_elementor_child_scripts_styles() {
 		HELLO_ELEMENTOR_CHILD_VERSION
 	);
 
+	wp_enqueue_style(
+		'hb-responsive',
+		get_stylesheet_directory_uri() . '/assets/css/responsive.css',
+		array( 'hello-elementor-child-style' ),
+		HELLO_ELEMENTOR_CHILD_VERSION
+	);
+
 	// Enqueue OTP Popup styles and scripts
 	wp_enqueue_style(
 		'hb-otp-popup-style',

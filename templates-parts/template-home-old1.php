@@ -71,18 +71,10 @@
       background:rgba(11,18,32,.78);
       backdrop-filter: blur(10px);
       border-bottom:1px solid var(--line);
-      width:100%;
-    }
-    .topbar .wrap{
-      max-width:none;
-      width:100%;
-      padding-left:24px;
-      padding-right:24px;
     }
     .nav{
       display:flex; align-items:center; justify-content:space-between;
       gap:12px; padding:14px 0;
-      flex-wrap:wrap;
     }
     .brand{display:flex; align-items:center; gap:10px; min-width:220px}
     .logo{
@@ -100,15 +92,14 @@
       border-radius: 10px;
     }
     .brand b{letter-spacing:.3px}
-    .brand .small.tagline{white-space:normal; line-height:1.35; max-width:280px}
-    .menu{display:flex; align-items:center; gap:6px; flex-wrap:wrap; justify-content:center; flex:1 1 auto; min-width:0}
+    .menu{display:flex; align-items:center; gap:6px; flex-wrap:wrap; justify-content:center}
     .menu a{
       font-size:14px; color:var(--muted);
       padding:8px 10px; border-radius:12px;
       border:1px solid transparent;
     }
     .menu a:hover{background: rgba(232,238,252,.06); color:var(--text); border-color: rgba(232,238,252,.10)}
-    .cta{display:flex; align-items:center; gap:10px; flex-wrap:wrap; flex-shrink:0}
+    .cta{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
 
     /* Buttons */
     .btn{
@@ -209,9 +200,6 @@
 
     /* Mobile menu - Sidebar */
     .hamburger{display:none}
-    @media (min-width: 901px){
-      .hamburger{display:none !important}
-    }
     .hamburger label{
       display:inline-flex; align-items:center; justify-content:center;
       width:44px; height:44px; border-radius:14px;
@@ -224,7 +212,7 @@
     .hamburger svg{width:22px;height:22px}
     #navtoggle{display:none}
     
-    /* Sidebar overlay - mobile/tablet only; hidden on desktop */
+    /* Sidebar overlay */
     .sidebar-overlay{
       display: none;
       position: fixed;
@@ -239,23 +227,13 @@
       transition: opacity 0.3s ease;
       cursor: pointer;
     }
-    @media (min-width: 901px){
-      .sidebar-overlay{
-        display: none !important;
-        pointer-events: none;
-      }
-    }
+    
     .sidebar-overlay.active{
       display: block;
       opacity: 1;
     }
-    @media (min-width: 901px){
-      .sidebar-overlay.active{
-        display: none !important;
-      }
-    }
     
-    /* Sidebar menu - mobile/tablet only; hidden on desktop */
+    /* Sidebar menu */
     .sidebar-menu{
       position: fixed;
       top: 0;
@@ -274,20 +252,9 @@
       flex-direction: column;
       gap: 20px;
     }
-    @media (min-width: 901px){
-      .sidebar-menu{
-        display: none !important;
-        right: -100% !important;
-        pointer-events: none;
-      }
-    }
+    
     .sidebar-menu.active{
       right: 0;
-    }
-    @media (min-width: 901px){
-      .sidebar-menu.active{
-        display: none !important;
-      }
     }
     
     /* Prevent body scroll when sidebar is open */
@@ -406,11 +373,8 @@
       .cta .device-activate-wrapper{display:none}
       .cta .btn.ghost{display:none}
       .hamburger{display:block}
-      .brand .small.tagline{display:none}
-      .brand b{font-size: 16px}
-    }
-    @media (max-width:600px){
       .brand .small{display:none}
+      .brand b{font-size: 16px}
     }
     
     /* Old menu drawer - hide it */
@@ -655,55 +619,6 @@
       height: 1px;
       background: rgba(232,238,252,.12);
       margin: 14px 0;
-    }
-
-    .entry-overlay .top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      margin-bottom: 10px;
-      flex-wrap: wrap;
-    }
-    .entry-overlay .q {
-      margin-top: 14px;
-      padding: 14px;
-      border-radius: 16px;
-      border: 1px solid var(--line);
-      background: rgba(0,0,0,.18);
-    }
-    .entry-overlay .q h2 { margin: 0 0 6px; font-size: 14px; }
-    .entry-overlay .q p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.45; }
-    .entry-overlay .pillRow {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 10px;
-    }
-    .entry-overlay .pillRow .pill {
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      padding: 8px 12px;
-      background: rgba(255,255,255,.04);
-      cursor: pointer;
-      font-weight: 800;
-      font-size: 13px;
-      appearance: none;
-    }
-    .entry-overlay .pillRow .pill[aria-pressed="true"] {
-      outline: 2px solid rgba(125,211,252,.55);
-    }
-    .entry-overlay .fine {
-      margin-top: 12px;
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.5;
-    }
-    .entry-overlay .note {
-      font-size: 12px;
-      color: var(--muted);
-      line-height: 1.5;
-      margin: 8px 0 0;
     }
 
     .entry-overlay .list {
@@ -1376,77 +1291,71 @@
       align-self:center;
       min-width:200px;
     }
-    .ctaRow{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
-    .home-register-modal{position:fixed;inset:0;background:rgba(0,0,0,.68);display:none;align-items:center;justify-content:center;padding:18px;z-index:10001}
-    .home-register-modal.show{display:flex}
-    .home-register-modal .modal-inner{max-width:820px;width:100%;border-radius:18px;border:1px solid var(--line);background:#0c121b;padding:18px}
-    .home-register-modal .modalTop{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px}
-    .home-register-modal .modalTop h3{margin:0;font-size:18px}
-    .home-register-modal .modalTop .x{margin-left:auto}
-    .home-register-modal .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-    @media (max-width:760px){.home-register-modal .row{grid-template-columns:1fr}}
-    .home-register-modal label{display:block;font-size:12px;color:var(--muted);margin:10px 0 6px}
-    .home-register-modal input,.home-register-modal select{width:100%;padding:11px 12px;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--text);outline:none}
-    .home-register-modal .check{display:flex;gap:10px;align-items:flex-start;margin-top:10px}
-    .home-register-modal .check input{width:auto;margin-top:2px}
-    .home-register-modal .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
-    .home-register-modal .hidden{display:none !important}
   </style>
-  <link rel="stylesheet" href="<?php echo esc_url( get_stylesheet_directory_uri() ); ?>/assets/css/responsive.css" />
 </head>
 
 <body>
-  <!-- ================= ENTRY MODAL (Enter Website protocol) ================= -->
-  <div class="entry-overlay" id="enterOverlay" role="dialog" aria-modal="true" aria-labelledby="enterTitle">
+  <!-- ================= ENTRY MODAL ================= -->
+  <div class="entry-overlay" id="enterOverlay" role="dialog" aria-modal="true" aria-labelledby="title">
     <div class="overlay">
       <div class="modal">
-        <div class="top">
-          <div class="brand">
-            <?php echo hb_get_site_logo( 'medium', array( 'class' => 'logo', 'aria-hidden' => 'true' ) ); ?>
+        <div class="brand">
+          <?php echo hb_get_site_logo( 'medium', array( 'class' => 'logo', 'aria-hidden' => 'true' ) ); ?>
+          <div>
+            <b><?php echo esc_html( get_bloginfo( 'name' ) ); ?></b>
+            <div class="sub">YAM-is-ON • Proof of Delivery • Serendipity POCs</div>
+          </div>
+        </div>
+
+        <h1 id="title">Enter the Human Blockchain</h1>
+        <p>
+          This site records <b>verified human delivery steps</b> using a YAM-is-ON voucher (sticker) or hang tag.
+          Serendipity forms Buyer POCs locally (geo-location) and Seller POCs out-of-state or global (timestamp priority).
+        </p>
+
+        <div class="pillrow" aria-label="Key concepts">
+          <span class="pill"><span class="dot good"></span> Proof-first</span>
+          <span class="pill"><span class="dot"></span> Serendipity POCs</span>
+          <span class="pill"><span class="dot warn"></span> XP is not money</span>
+        </div>
+
+        <div class="list" aria-label="What you will see next">
+          <div class="item">
+            <span class="dot good" style="margin-top:6px"></span>
             <div>
-              <h1 id="enterTitle"><?php echo esc_html( get_bloginfo( 'name' ) ); ?> • Enter Website</h1>
-              <div class="sub">Two quick prompts. Then you choose the path.</div>
+              <b>Prompt 1:</b> "Is this Proof of Delivery?"
+              <span>YES enters PoD Mode. NO continues into the website.</span>
             </div>
           </div>
-          <div class="cta" style="margin-top:0">
-            <button type="button" class="btn" id="entryHomeBtn">Home</button>
-            <a class="btn" href="<?php echo esc_url( home_url( '/faq' ) ); ?>">What is this?</a>
-          </div>
-        </div>
 
-        <div class="q" id="q1">
-          <h2>Prompt 1 — Is this Proof of Delivery?</h2>
-          <p>Choose <strong>Yes</strong> only if you're confirming a delivery event (voucher attached / proof recorded).</p>
-          <div class="pillRow">
-            <button type="button" class="pill" id="podYes" aria-pressed="false">Yes</button>
-            <button type="button" class="pill" id="podNo" aria-pressed="false">No</button>
+          <div class="item">
+            <span class="dot" style="margin-top:6px"></span>
+            <div>
+              <b>Prompt 2 (if YES):</b> "Is this the final destination?"
+              <span>YES = delivered to recipient. NO = in-route / handoff.</span>
+            </div>
           </div>
-        </div>
 
-        <div class="q" id="q2">
-          <h2>Prompt 2 — Is this the Final Destination?</h2>
-          <p>Choose <strong>Yes</strong> only if the package arrived at its intended final destination.</p>
-          <div class="pillRow">
-            <button type="button" class="pill" id="fdYes" aria-pressed="false">Yes</button>
-            <button type="button" class="pill" id="fdNo" aria-pressed="false">No</button>
+          <div class="item">
+            <span class="dot warn" style="margin-top:6px"></span>
+            <div>
+              <b>XP display:</b> scientific notation
+              <span>Example: <code>1.0 × 10⁻¹⁸ XP</code> — measurement of action, not money.</span>
+            </div>
           </div>
         </div>
 
         <div class="divider" role="separator"></div>
 
-        <div class="cta">
-          <button type="button" class="btn primary" id="enterWebsite">Enter Website</button>
-          <a class="btn" href="<?php echo esc_url( home_url( '/how-it-works' ) ); ?>" id="entryHowBtn">How it works</a>
+        <div class="cta" aria-label="Enter options">
+          <a class="btn primary" href="/pod-mode" id="enterPodMode">Enter PoD Mode</a>
+          <a class="btn" href="#" id="enterWebsite">Enter Website</a>
+          <a class="btn ghost" href="/faq">Read FAQs</a>
         </div>
 
-        <p class="fine">
-          Your responses are recorded for reputation outcomes ("Kalshi Mirror" style metrics) at individual / group / guild levels.
-          Demo storage key: <code>hb_last_scan</code>.
-        </p>
-
-        <p class="note">
-          If <strong>Proof of Delivery = Yes</strong>, you'll be routed to the <strong>WooCommerce Backorder routine</strong>.
-          If <strong>No</strong>, you'll be routed into the onboarding funnel (device registration → membership → Discord).
+        <p class="legal">
+          Disclosure: HumanBlockchain.info provides proof-based ledger visibility and reporting. It does not custody money.
+          Any fiat or crypto redemption—if offered—occurs only through the Voluntary Fulfillment Network (VFN) outside this ledger.
         </p>
       </div>
     </div>
@@ -1497,25 +1406,23 @@
           <?php echo hb_get_site_logo( 'medium', array( 'class' => 'logo', 'aria-hidden' => 'true' ) ); ?>
           <div>
             <b><?php echo esc_html( get_bloginfo( 'name' ) ); ?></b><br>
-            <span class="small tagline">Device-driven trust • 2-scan Proof of Delivery • XP accounting</span>
+            <span class="small">YAM-is-ON • Proof of Delivery + Serendipity POCs</span>
           </div>
         </a>
 
         <!-- Desktop menu -->
         <div class="menu" aria-label="Menu">
-          <a href="<?php echo esc_url( home_url( '/membership' ) ); ?>">Membership</a>
-          <a href="#how">How it works</a>
-          <a href="#faq">FAQs</a>
-          <a href="#organizers">Organizers</a>
-          <a href="<?php echo esc_url( home_url( '/detente-2030' ) ); ?>">Detente 2030</a>
           <a href="/how-it-works">How It Works</a>
           <a href="/proof-of-delivery">Proof of Delivery</a>
+          <a href="/serendipity-protocol">Serendipity Protocol</a>
+          <a href="/new-world-penny">New World Penny</a>
+          <a href="/dao">Join the DAO</a>
           <a href="/poc-guilds">POC Guilds</a>
+          <a href="/faq">FAQs</a>
         </div>
 
         <!-- Right side actions + mobile toggle -->
         <div class="cta">
-          <button class="btn primary" type="button" id="openRegisterModal">Register Device</button>
           <button class="btn primary open-join-poc-trigger" id="openJoinPOC" type="button">Start POC</button>
           <div class="device-activate-wrapper">
             <!-- Active Status Display (hidden by default) -->
@@ -1560,14 +1467,13 @@
       
       <!-- Navigation Links -->
       <div class="sidebar-menu-links">
-        <a href="<?php echo esc_url( home_url( '/membership' ) ); ?>">Membership</a>
-        <a href="#how">How it works</a>
-        <a href="#faq">FAQs</a>
-        <a href="#organizers">Organizers</a>
-        <a href="<?php echo esc_url( home_url( '/detente-2030' ) ); ?>">Detente 2030</a>
         <a href="/how-it-works">How It Works</a>
         <a href="/proof-of-delivery">Proof of Delivery</a>
+        <a href="/serendipity-protocol">Serendipity Protocol</a>
+        <a href="/new-world-penny">New World Penny</a>
+        <a href="/dao">Join the DAO</a>
         <a href="/poc-guilds">POC Guilds</a>
+        <a href="/faq">FAQs</a>
       </div>
       
       <!-- Device Status Section -->
@@ -1587,7 +1493,6 @@
       
       <!-- Action Buttons -->
       <div class="sidebar-buttons">
-        <button type="button" class="btn primary" id="openRegisterModalSidebar" style="width:100%; justify-content:center;">Register Device</button>
         <button type="button" class="btn primary open-join-poc-trigger" style="width:100%; justify-content:center;">Start POC</button>
         <a class="btn ghost" href="/pod-mode">PoD Mode</a>
       </div>
@@ -1777,202 +1682,295 @@
     </div>
   </div>
 
-  <!-- Device Registration Modal -->
-  <div class="home-register-modal" id="registerModalBg" role="dialog" aria-modal="true" aria-label="Device Registration">
-    <div class="modal-inner">
-      <div class="modalTop">
-        <div>
-          <h3 id="register">Register your device (Proof-first onboarding)</h3>
-          <div class="small">Buyers: no QRtiger v-card required. Sellers: QRtiger v-card required.</div>
-        </div>
-        <button class="btn x" type="button" id="closeRegisterModal">Close</button>
-      </div>
-      <div class="row">
-        <div>
-          <label for="regFullName">Name (or handle)</label>
-          <input id="regFullName" placeholder="Your name / handle" autocomplete="name" />
-        </div>
-        <div>
-          <label for="regEmail">Email</label>
-          <input id="regEmail" type="email" placeholder="you@email.com" autocomplete="email" />
-        </div>
-      </div>
-      <div class="row">
-        <div>
-          <label for="regPhone">Mobile (SMS)</label>
-          <input id="regPhone" placeholder="+1 (___) ___-____" autocomplete="tel" />
-        </div>
-        <div>
-          <label for="regMsb">MSB credentials (choose one)</label>
-          <select id="regMsb">
-            <option value="PayPal">PayPal</option>
-            <option value="Venmo">Venmo</option>
-            <option value="ApplePay">Apple Pay</option>
-            <option value="GooglePay">Google Pay</option>
-            <option value="AliPay">AliPay</option>
-            <option value="FonePay">FonePay</option>
-          </select>
-        </div>
-      </div>
-      <div class="row">
-        <div>
-          <label for="regRole">I am registering as…</label>
-          <select id="regRole">
-            <option value="Buyer">Buyer (YAM'er)</option>
-            <option value="Seller">Seller / Sponsor (MEGAvoter)</option>
-          </select>
-        </div>
-        <div id="regSellerTypeWrap" class="hidden">
-          <label for="regSellerType">Seller type</label>
-          <select id="regSellerType">
-            <option value="IndividualSponsored">Individual-sponsored</option>
-            <option value="GroupSponsored">Group-sponsored</option>
-          </select>
-        </div>
-      </div>
-      <div id="regVcardWrap" class="hidden">
-        <label for="regQrVcard">QRtiger v-card link (required for Sellers)</label>
-        <input id="regQrVcard" placeholder="https://qrtiger.com/..." />
-      </div>
-      <div class="check">
-        <input id="regConsent" type="checkbox" />
-        <label for="regConsent" class="small">I consent to device-driven proof logging (timestamp + location if enabled) and understand XP is a non-cash accounting unit.</label>
-      </div>
-      <div class="check">
-        <input id="regDiscord" type="checkbox" />
-        <label for="regDiscord" class="small">I will accept the Discord Gracebook invite to activate my status (Pending → Active).</label>
-      </div>
-      <div class="actions">
-        <button class="btn primary" type="button" id="submitDeviceBtn">Confirm Registration</button>
-        <a class="btn" href="<?php echo esc_url( home_url( '/membership' ) ); ?>">Go to Membership</a>
-      </div>
-      <p class="small" id="regStatus" style="margin-top:10px;"></p>
-      <div style="height:1px;background:var(--line);margin:12px 0"></div>
-      <p class="small">Output created: Member ID, Device ID (hash), Serendipity Peace Pentagon role assignment, Buyer/Seller POC assignment status (Pending/Active).</p>
-      <p class="small">Referral XP opportunities are shown after activation. NWP issuance is available only through Seller POCs.</p>
-    </div>
-  </div>
-
   <main>
+    <!-- HERO -->
     <section class="hero">
       <div class="wrap">
-        <div class="grid" style="grid-template-columns:1.2fr .8fr;margin-top:0">
+        <div class="pill">
+          Serendipity creates POCs from the newest device registrations using geo-location + timestamp
+        </div>
+
+        <div class="grid" style="margin-top:14px">
+          <!-- Left hero -->
           <div class="card">
-            <div class="kicker">
-              <span class="pill">Leave wallet at home</span>
-              <span class="pill">Presence becomes proof</span>
-              <span class="pill">8–12 week maturity window</span>
-            </div>
-            <h1>Show how money should work—by showing up.</h1>
+            <span class="badge">SERENDIPITY IS THE ONBOARDING MOMENT</span>
+            <h1>Your device registers — and the network forms around you.</h1>
             <p class="lead">
-              This is a pledge-based economy where <strong>presence becomes proof</strong>.
-              Register your device, choose Buyer or Seller, accept your Discord Gracebook invite, and let Serendipity assign
-              your Peace Pentagon role and your buyer/seller POC community.
+              When you activate a device, the system uses <b>geo-location</b> and <b>timestamp</b> to create the next available
+              Patron Organizing Communities (POCs). <b>Buyer POCs are local</b>. <b>Seller POCs are out-of-state or global</b>.
+              You don't "join a team" — you are <i>placed</i> into a living ledger on purpose.
             </p>
-            <div class="ctaRow">
-              <button class="btn primary" type="button" id="openRegisterModalHero">Start: Register your device</button>
-              <a class="btn" href="<?php echo esc_url( home_url( '/membership' ) ); ?>">Choose membership level</a>
-              <a class="btn" href="#how">How it works</a>
-              <a class="btn" href="#faq">FAQs</a>
+
+            <div class="kpi">
+              <div class="mini">
+                <b>Buyer POC = Local</b>
+                <span>Built from recent device registrations near you</span>
+              </div>
+              <div class="mini">
+                <b>Seller POC = Out-of-state / Global</b>
+                <span>Matched away from your locality to encourage détente</span>
+              </div>
+              <div class="mini">
+                <b>XP is measurement</b>
+                <span>Shown as <code>1.0 × 10⁻¹⁸ XP</code> (not money)</span>
+              </div>
             </div>
-            <p class="note" style="margin-top:12px">
-              <span class="warn">XP disclaimer:</span>
-              XP is a <strong>non-cash, non-transferable accounting unit</strong> used to measure verified participation events
-              (device + timestamp + location + prompt outcomes). XP is <strong>not money</strong> and has <strong>no guaranteed redemption value</strong>
-              prior to scheduled governance milestones.
-            </p>
-            <p class="note">
-              Monthly statements are posted to an append-only ledger.
-              Annual reconciliation aligns receipts, obligations, and extinguishment rules.
+
+            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px" class="device-activate-wrapper">
+              <!-- Active Status Display (hidden by default) -->
+              <div class="device-status" id="device-status-hero">
+                <span class="status-dot"></span>
+                <div class="status-text">
+                  <strong>Device Active</strong>
+                  <small id="device-status-hero-message">Ready to use</small>
+                </div>
+              </div>
+              <!-- Activate Button (shown by default) -->
+              <a class="btn primary" href="/activate-device" id="activate-device-hero">Activate This Device</a>
+              <a class="btn" href="/dao">Join the DAO</a>
+              <a class="btn ghost" href="/serendipity-protocol">Read Serendipity Protocol</a>
+            </div>
+
+            <p class="small" style="margin-top:12px">
+              Device activation triggers role assignments and POC placement. Proof of Delivery remains 2-scan:
+              seller initiates, buyer acceptance completes settlement. The d-DAO General Ledger is non-custodial and does not hold, move, or settle money. The Voluntary Fulfillment Network (VFN) is the sole custodial network for any fiat, MSB, or seller-funded activities.
             </p>
           </div>
+
+          <!-- Right hero -->
           <div class="card">
-            <div class="badge"><span class="good">Buyer</span> • No QRtiger v-card required</div>
-            <div style="height:1px;background:var(--line);margin:12px 0"></div>
-            <div class="mini">
-              <h3>Buyer (YAM'er path)</h3>
-              <p>Device registration + MSB credentials (PayPal, Venmo, Apple Pay, Google Pay) + Discord Gracebook acceptance. A verified $30 pledge can trigger the <strong>$5 XP reward</strong>.</p>
+            <h3>Serendipity in 60 seconds</h3>
+            <div class="list">
+              <div class="item">
+                <span class="dot good"></span>
+                <div>
+                  <b>Step 1:</b> Activate your device<br>
+                  <span class="small">Your phone becomes your delivery identity.</span>
+                </div>
+              </div>
+
+              <div class="item">
+                <span class="dot"></span>
+                <div>
+                  <b>Step 2:</b> Local Buyer POC is assigned<br>
+                  <span class="small">Based on geo-location + most recent registrations nearby.</span>
+                </div>
+              </div>
+
+              <div class="item">
+                <span class="dot"></span>
+                <div>
+                  <b>Step 3:</b> Seller POC is assigned out-of-state / global<br>
+                  <span class="small">Designed to connect people across regions and countries.</span>
+                </div>
+              </div>
+
+              <div class="item">
+                <span class="dot good"></span>
+                <div>
+                  <b>Step 4:</b> Proof of Delivery becomes real<br>
+                  <span class="small">Scan voucher/hang tag → confirm final destination → earn XP recognition.</span>
+                </div>
+              </div>
             </div>
-            <div style="height:10px"></div>
-            <div class="badge"><span class="good">Seller</span> • QRtiger v-card required</div>
-            <div style="height:1px;background:var(--line);margin:12px 0"></div>
-            <div class="mini">
-              <h3>Seller / Sponsor (MEGAvoter path)</h3>
-              <p>Everything a buyer has, plus a <strong>QRtiger v-card</strong>. Seller can be individual-sponsored or group-sponsored. <strong>NWP issuing is strictly a feature of the Seller POC.</strong></p>
+
+            <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">
+              <span class="tag">Geo + timestamp form groups</span>
+              <span class="tag">Buyer local • Seller global</span>
+              <span class="tag">Append-only ledger</span>
             </div>
-            <p class="note">If five sellers can't gather and sing a song for peace, how will any plan work? This movement scales when even a small fraction shows up.</p>
           </div>
         </div>
       </div>
     </section>
 
-    <section class="section" id="how">
+    <!-- SERENDIPITY PROTOCOL (overview) -->
+    <section class="section" id="serendipity">
       <div class="wrap">
-        <div class="card">
-          <h2>How it works</h2>
-          <div class="grid">
-            <div class="mini">
-              <h3>1) Register device</h3>
-              <p>Link a phone to MSB credentials and consent to proof logging. Discord Gracebook acceptance activates the ledger identity.</p>
-            </div>
-            <div class="mini">
-              <h3>2) Choose Buyer or Seller</h3>
-              <p>Buyers do not need a QRtiger v-card. Sellers do. Serendipity assigns Peace Pentagon role + POC membership (Pending → Active).</p>
-            </div>
-            <div class="mini">
-              <h3>3) Proof prompts</h3>
-              <p>"Is this Proof of Delivery?" and "Final Destination?" outcomes are recorded for reputation metrics (individual / POC / guild).</p>
-            </div>
-            <div class="mini">
-              <h3>4) Maturity + statements</h3>
-              <p>XP matures 8–12 weeks after confirmed delivery. Monthly statements post to an append-only ledger; annual reconciliation follows.</p>
+        <h2>Serendipity Protocol</h2>
+        <p class="lead">
+          Serendipity is the moment the ledger becomes social. The newest device activations create the next available POCs.
+          This keeps onboarding fair, prevents gatekeeping, and scales globally.
+        </p>
+
+        <div class="three">
+          <div class="card">
+            <h3>Buyer POC (Local)</h3>
+            <div class="list">
+              <div class="item"><span class="dot good"></span>
+                <div><b>Rule:</b> Assigned from your local registration area.</div>
+              </div>
+              <div class="item"><span class="dot"></span>
+                <div><b>Why:</b> Local coordination for buyer confirmations and community trust.</div>
+              </div>
             </div>
           </div>
-          <p class="note">PoD uses vouchers / delivery credentials attached to packages (never "stamp" language). Settlement is governed and reported outside the event moment.</p>
-        </div>
-      </div>
-    </section>
 
-    <section class="section" id="organizers">
-      <div class="wrap">
-        <div class="card">
-          <h2>Grassroots organizers</h2>
+          <div class="card">
+            <h3>Seller POC (Out-of-state / Global)</h3>
+            <div class="list">
+              <div class="item"><span class="dot good"></span>
+                <div><b>Rule:</b> Assigned away from your locality.</div>
+              </div>
+              <div class="item"><span class="dot"></span>
+                <div><b>Why:</b> Cross-region cooperation and "détente by design."</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>Timestamp Priority</h3>
+            <div class="list">
+              <div class="item"><span class="dot good"></span>
+                <div><b>Rule:</b> Newest registrations fill the next open POC seats.</div>
+              </div>
+              <div class="item"><span class="dot"></span>
+                <div><b>Why:</b> No waiting lists controlled by humans. The clock is impartial.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:16px">
+          <h3>POC placement happens once — then delivery begins</h3>
           <p class="lead" style="margin:0">
-            Organizers can qualify for <strong>MEGA Grants (up to 70%)</strong> when reliability is proven through Kalshi Mirror reputation scores
-            (delivery performance, participation recovery, verified event outcomes).
+            After placement, Proof of Delivery runs on the voucher/hang tag ID. Seller initiates. Optional handoff scans record custody movement.
+            Buyer acceptance completes settlement. Recognition is recorded as XP in scientific notation, e.g. <code>1.0 × 10⁻¹⁸ XP</code>.
           </p>
-          <div class="ctaRow">
-            <a class="btn" href="<?php echo esc_url( home_url( '/organizers' ) ); ?>">Organizer streamline</a>
-            <a class="btn" href="<?php echo esc_url( home_url( '/detente-2030' ) ); ?>">Detente 2030 build-out</a>
+
+          <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap" class="device-activate-wrapper">
+            <!-- Active Status Display (hidden by default) -->
+            <div class="device-status" id="device-status-pod">
+              <span class="status-dot"></span>
+              <div class="status-text">
+                <strong>Device Active</strong>
+                <small id="device-status-pod-message">Ready to use</small>
+              </div>
+            </div>
+            <!-- Activate Button (shown by default) -->
+            <a class="btn primary" href="/activate-device" id="activate-device-pod">Activate Device</a>
+            <a class="btn" href="https://www.smallstreet.app/?utm_source=humanblockchain.info&scan_type=proof" target="_blank" rel="noopener noreferrer">I Have Proof of Delivery</a>
+            <a class="btn ghost" href="/proof-of-delivery">Proof of Delivery details</a>
           </div>
-          <p class="note">Kite festivals and quiet gatherings beat outrage marches. No slogans needed. Proof requires presence.</p>
         </div>
       </div>
     </section>
 
-    <section class="section" id="faq">
+    <!-- NEW WORLD PENNY -->
+    <section class="section" id="nwp">
       <div class="wrap">
-        <div class="card">
-          <h2>FAQs</h2>
-          <div class="grid">
-            <div class="mini">
-              <h3>Do buyers need a QRtiger v-card?</h3>
-              <p>No. Buyers need device registration + MSB credentials + Discord acceptance. Sellers must have a QRtiger v-card.</p>
+        <h2>New World Penny</h2>
+        <p class="lead">
+          The New World Penny is recognition for verified delivery steps. XP is a memo-ledger unit used for loyalty accounting of verified human value. XP is <b>not money</b>, <b>not a wallet balance</b>, <b>not transferable</b>, and <b>not redeemable on demand</b>. XP entries are created only after verification and may mature after an 8–12 week policy window. The Voluntary Fulfillment Network (VFN) is the sole custodial network for any fiat, MSB, or seller-funded activities.
+        </p>
+
+        <div class="two">
+          <div class="card">
+            <h3>Ledger display</h3>
+            <div class="list">
+              <div class="item">
+                <span class="dot good"></span>
+                <div>
+                  <b>Example:</b> 1 New World Penny = <code>1.0 × 10⁻¹⁸ XP</code><br>
+                  <span class="small">Scientific notation signals measurement, not currency.</span>
+                </div>
+              </div>
+              <div class="item">
+                <span class="dot"></span>
+                <div><b>Precision:</b><br><span class="small">XP is recorded at sextillionth-of-a-penny resolution with a 21,000-to-1 USD calibration scale.</span></div>
+              </div>
             </div>
-            <div class="mini">
-              <h3>What makes someone "Active"?</h3>
-              <p>After device registration, accepting the Discord Gracebook invite moves status from Pending to Active (plus any verification rules your governance applies).</p>
-            </div>
-            <div class="mini">
-              <h3>Who issues NWP?</h3>
-              <p>Only Seller POCs issue NWP. Buyer-only accounts earn XP recognition but don't issue NWP unless they activate as a seller.</p>
-            </div>
-            <div class="mini">
-              <h3>Is XP money?</h3>
-              <p>No. XP is an accounting unit for verified participation events. It's not cash, not transferable, and not guaranteed redeemable before scheduled milestones.</p>
+            <div style="margin-top:14px">
+              <a class="btn" href="/new-world-penny">New World Penny details</a>
             </div>
           </div>
-          <p class="note">Want the simplest start? Register your device, choose Buyer, accept Discord, then explore referrals and "How it works."</p>
+
+          <div class="card">
+            <h3>Referral recognition (issued Sep 1)</h3>
+            <p class="small" style="margin-top:0">
+              Issued once per year in XP on <b>September 1st</b>. (No money custody. No conversion inside the ledger.)
+            </p>
+            <div class="list">
+              <div class="item"><span class="dot"></span>
+                <div><b>Tier 1:</b> <code>1.0 × 10⁻¹⁸ XP</code></div>
+              </div>
+              <div class="item"><span class="dot"></span>
+                <div><b>Tier 5:</b> <code>5.0 × 10⁻¹⁸ XP</code></div>
+              </div>
+              <div class="item"><span class="dot"></span>
+                <div><b>Tier 25:</b> <code>2.5 × 10⁻¹⁷ XP</code></div>
+              </div>
+            </div>
+            <div style="margin-top:14px">
+              <a class="btn" href="/faq#referrals">Read referral rules</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQs -->
+    <section class="section" id="faqs">
+      <div class="wrap">
+        <h2>FAQs</h2>
+        <p class="lead">Fast answers. Clear boundaries. Proof-first design.</p>
+
+        <div class="grid">
+          <details open>
+            <summary>What is Serendipity?</summary>
+            <p>
+              Serendipity is the protocol that creates POCs from the newest device registrations. Geo-location assigns a local Buyer POC.
+              Timestamp priority fills the next open seats. A separate Seller POC is assigned out-of-state or global to connect people across regions.
+            </p>
+          </details>
+
+          <details>
+            <summary>Why is Buyer POC local and Seller POC global?</summary>
+            <p>
+              Local Buyer POCs improve coordination for acceptance scans and community trust. Global Seller POCs are assigned out-of-state or across countries
+              to encourage cooperation and détente by design.
+            </p>
+          </details>
+
+          <details>
+            <summary>Is XP money?</summary>
+            <p>
+              No. XP is a memo-ledger unit used for loyalty accounting of verified human value. XP is <b>not money</b>, <b>not a wallet balance</b>, <b>not transferable</b>, and <b>not redeemable on demand</b>. XP entries are created only after verification and may mature after an 8–12 week policy window. The d-DAO General Ledger is non-custodial and does not hold, move, or settle money. The Voluntary Fulfillment Network (VFN) is the sole custodial network for any fiat, MSB, or seller-funded activities.
+            </p>
+          </details>
+
+          <details id="referrals">
+            <summary>When is referral recognition issued?</summary>
+            <p>
+              Referral recognition is issued in XP on September 1st each year. Tiers are displayed in scientific notation:
+              <br><br>
+              <b>Tier 1:</b> <code>1.0 × 10⁻¹⁸ XP</code><br>
+              <b>Tier 5:</b> <code>5.0 × 10⁻¹⁸ XP</code><br>
+              <b>Tier 25:</b> <code>2.5 × 10⁻¹⁷ XP</code>
+            </p>
+          </details>
+
+          <details>
+            <summary>Where does redemption happen?</summary>
+            <p>
+              The d-DAO General Ledger is non-custodial and does not hold, move, or settle money. The Voluntary Fulfillment Network (VFN) is the sole custodial network for any fiat, MSB, or seller-funded activities. HumanBlockchain.info records proof, accounting, and reporting only.
+            </p>
+          </details>
+        </div>
+
+        <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap" class="device-activate-wrapper">
+          <!-- Active Status Display (hidden by default) -->
+          <div class="device-status" id="device-status-faq">
+            <span class="status-dot"></span>
+            <div class="status-text">
+              <strong>Device Active</strong>
+              <small id="device-status-faq-message">Ready to use</small>
+            </div>
+          </div>
+          <!-- Activate Button (shown by default) -->
+          <a class="btn primary" href="/activate-device" id="activate-device-faq">Activate Device</a>
+          <a class="btn" href="/dao">Join the DAO</a>
+          <a class="btn ghost" href="/serendipity-protocol">Serendipity Protocol</a>
         </div>
       </div>
     </section>
@@ -1981,13 +1979,31 @@
   <!-- FOOTER -->
   <footer class="footer">
     <div class="wrap">
-      <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap" class="small">
-        <div>© <span id="y"></span> <?php echo esc_html( get_bloginfo( 'name' ) ); ?> • YAM = You And Me • Proof of Delivery vouchers • Append-only ledger posting</div>
+      <div class="cols">
         <div>
-          <a href="<?php echo esc_url( home_url( '/membership' ) ); ?>">Membership</a> •
-          <a href="#register" id="footerRegisterLink">Register</a> •
-          <a href="<?php echo esc_url( home_url( '/pod-mode' ) ); ?>">Scan Router</a>
+          <b>HumanBlockchain.info</b><br>
+          <span class="small">Serendipity POCs • Proof of Delivery • XP measurement</span>
+          <div style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap">
+            <a class="btn small" href="/my-device">My Device</a>
+            <a class="btn small" href="/pod-mode">PoD Mode</a>
+          </div>
         </div>
+
+        <div>
+          <b>System boundaries:</b>
+          <p class="small" style="margin-top:8px">
+            The <b>d-DAO General Ledger is non-custodial</b> (verification + XP accounting only).
+            The <b>Voluntary Fulfillment Network (VFN)</b> is the <b>sole custodial network</b> for fiat/MSB activities.
+            XP is loyalty accounting only—no wallets, balances, escrow, or payment APIs in the ledger layer.
+          </p>
+          <p class="small">
+            Referral recognition is issued in XP on September 1st each year.
+          </p>
+        </div>
+      </div>
+
+      <div style="margin-top:16px" class="small">
+        © <span id="y"></span> HumanBlockchain.info • YAM-is-ON Delivery Credential
       </div>
     </div>
 
@@ -2007,149 +2023,40 @@
       
       document.getElementById('y').textContent = new Date().getFullYear();
 
-      // ---------- Register Device Modal ----------
-      function openRegisterModal() {
-        const el = document.getElementById('registerModalBg');
-        if (el) { el.classList.add('show'); document.body.style.overflow = 'hidden'; }
-        if (typeof toggleSidebar === 'function') toggleSidebar(false);
-      }
-      function closeRegisterModal() {
-        const el = document.getElementById('registerModalBg');
-        if (el) { el.classList.remove('show'); document.body.style.overflow = ''; }
-      }
-      function toggleRegisterSellerFields() {
-        const role = document.getElementById('regRole') && document.getElementById('regRole').value;
-        const v = document.getElementById('regVcardWrap');
-        const t = document.getElementById('regSellerTypeWrap');
-        if (role === 'Seller') {
-          if (v) v.classList.remove('hidden');
-          if (t) t.classList.remove('hidden');
-        } else {
-          if (v) v.classList.add('hidden');
-          if (t) t.classList.add('hidden');
-        }
-      }
-      function submitDeviceRegistration() {
-        const role = document.getElementById('regRole').value;
-        const name = (document.getElementById('regFullName') && document.getElementById('regFullName').value.trim()) || '';
-        const email = (document.getElementById('regEmail') && document.getElementById('regEmail').value.trim()) || '';
-        const phone = (document.getElementById('regPhone') && document.getElementById('regPhone').value.trim()) || '';
-        const msb = document.getElementById('regMsb').value;
-        const consent = document.getElementById('regConsent').checked;
-        const discord = document.getElementById('regDiscord').checked;
-        const vcard = (document.getElementById('regQrVcard') && document.getElementById('regQrVcard').value.trim()) || '';
-        if (!name || !email || !phone) { alert('Please enter name, email, and mobile.'); return; }
-        if (!consent) { alert('Please accept the consent checkbox.'); return; }
-        if (!discord) { alert('Discord Gracebook acceptance is required to activate.'); return; }
-        if (role === 'Seller' && !vcard) { alert('Sellers must provide a QRtiger v-card link.'); return; }
-        var randId = function(prefix) { return prefix + '_' + Math.random().toString(16).slice(2) + '_' + Date.now().toString(16); };
-        var branches = ['Planning','Budget','Media','Distribution','Membership'];
-        var assignSerendipity = function() { return branches[Math.floor(Math.random() * branches.length)]; };
-        var payload = {
-          member_id: randId('m'),
-          device_id: randId('d'),
-          role: role,
-          seller_type: role === 'Seller' ? document.getElementById('regSellerType').value : null,
-          qrtiger_vcard: role === 'Seller' ? vcard : null,
-          name: name,
-          email: email,
-          phone: phone,
-          msb: msb,
-          peace_pentagon_role: assignSerendipity(),
-          buyer_poc_status: 'Pending',
-          seller_poc_status: role === 'Seller' ? 'Pending' : null,
-          created_at: new Date().toISOString()
-        };
-        try { localStorage.setItem('hb_registration', JSON.stringify(payload)); } catch (e) {}
-        var statusEl = document.getElementById('regStatus');
-        if (statusEl) statusEl.textContent = 'Saved (demo). Next: complete Membership choice and accept your Discord invite to move Pending → Active.';
-      }
-      (function() {
-        var r = document.getElementById('regRole');
-        if (r) r.addEventListener('change', toggleRegisterSellerFields);
-        toggleRegisterSellerFields();
-        ['openRegisterModal','openRegisterModalHero','openRegisterModalSidebar'].forEach(function(id) {
-          var btn = document.getElementById(id);
-          if (btn) btn.addEventListener('click', function(e) { e.preventDefault(); openRegisterModal(); });
-        });
-        var closeBtn = document.getElementById('closeRegisterModal');
-        if (closeBtn) closeBtn.addEventListener('click', closeRegisterModal);
-        var footerLink = document.getElementById('footerRegisterLink');
-        if (footerLink) footerLink.addEventListener('click', function(e) { e.preventDefault(); openRegisterModal(); });
-        var submitBtn = document.getElementById('submitDeviceBtn');
-        if (submitBtn) submitBtn.addEventListener('click', submitDeviceRegistration);
-        var modalBg = document.getElementById('registerModalBg');
-        if (modalBg) modalBg.addEventListener('click', function(e) { if (e.target === modalBg) closeRegisterModal(); });
-        document.addEventListener('keydown', function(e) { if (e.key === 'Escape' && modalBg && modalBg.classList.contains('show')) closeRegisterModal(); });
-      })();
-
-      // Entry Modal (Enter Website protocol) - Show on page load
+      // Entry Modal - Show on page load
       const enterOverlay = document.getElementById("enterOverlay");
       const podOverlay = document.getElementById("podOverlay");
       const enterWebsiteBtn = document.getElementById("enterWebsite");
+      const enterPodModeBtn = document.getElementById("enterPodMode");
       const podGateYes = document.getElementById("podGateYes");
       const podGateNo = document.getElementById("podGateNo");
 
-      var scanState = { pod: null, final: null };
-      var WOO_BACKORDER_URL = "<?php echo esc_url( home_url( '/backorder' ) ); ?>";
-      var HOME_REGISTER = "<?php echo esc_url( home_url( '/' ) ); ?>#register";
-
-      function setPressed(idYes, idNo, yesPressed) {
-        var y = document.getElementById(idYes), n = document.getElementById(idNo);
-        if (y) y.setAttribute("aria-pressed", yesPressed ? "true" : "false");
-        if (n) n.setAttribute("aria-pressed", yesPressed ? "false" : "true");
-      }
-      function setAnswer(which, val) {
-        scanState[which] = val;
-        if (which === "pod") setPressed("podYes", "podNo", val === "YES");
-        if (which === "final") setPressed("fdYes", "fdNo", val === "YES");
-      }
-      function persistScan() {
-        var payload = {
-          ts: new Date().toISOString(),
-          pod: scanState.pod,
-          final: scanState.final,
-          geo: "client_geo_if_enabled",
-          device: "device_hash_if_registered"
-        };
-        try { localStorage.setItem("hb_last_scan", JSON.stringify(payload)); } catch (e) {}
-        console.log("Saved hb_last_scan:", payload);
-      }
-      function enterWebsiteFromOverlay() {
-        if (!scanState.pod || !scanState.final) {
-          alert("Please answer both prompts (PoD + Final Destination).");
-          return;
-        }
-        persistScan();
-        if (scanState.pod === "YES") {
-          window.location.href = WOO_BACKORDER_URL;
-        } else {
-          enterOverlay.classList.remove("active");
-          document.body.style.overflow = "";
-          if (typeof openRegisterModal === "function") openRegisterModal();
-          else window.location.href = HOME_REGISTER;
-        }
-      }
-
       // Show entry modal on page load
-      window.addEventListener("load", function() {
+      window.addEventListener("load", () => {
         enterOverlay.classList.add("active");
         document.body.style.overflow = "hidden";
       });
 
-      if (enterWebsiteBtn) enterWebsiteBtn.addEventListener("click", function(e) { e.preventDefault(); enterWebsiteFromOverlay(); });
-      var entryHomeBtn = document.getElementById("entryHomeBtn");
-      if (entryHomeBtn) entryHomeBtn.addEventListener("click", function() { enterOverlay.classList.remove("active"); document.body.style.overflow = ""; });
+      // Enter Website button - show POD gate
+      enterWebsiteBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        enterOverlay.classList.remove("active");
+        setTimeout(() => {
+          podOverlay.classList.add("active");
+        }, 300);
+      });
 
-      var podYes = document.getElementById("podYes"), podNo = document.getElementById("podNo");
-      var fdYes = document.getElementById("fdYes"), fdNo = document.getElementById("fdNo");
-      if (podYes) podYes.addEventListener("click", function() { setAnswer("pod", "YES"); });
-      if (podNo) podNo.addEventListener("click", function() { setAnswer("pod", "NO"); });
-      if (fdYes) fdYes.addEventListener("click", function() { setAnswer("final", "YES"); });
-      if (fdNo) fdNo.addEventListener("click", function() { setAnswer("final", "NO"); });
+      // Enter PoD Mode button - close entry modal and navigate to /pod-mode
+      enterPodModeBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        enterOverlay.classList.remove("active");
+        document.body.style.overflow = "";
+        // Navigate to PoD mode page
+        window.location.href = "/pod-mode";
+      });
 
-      // POD Gate (legacy / alternate flow) - Yes button (opens OTP verification popup - role selection)
-      if (podGateYes) podGateYes.addEventListener("click", function() {
+      // POD Gate - Yes button (opens OTP verification popup - role selection)
+      podGateYes.addEventListener("click", () => {
         podOverlay.classList.remove("active");
         document.body.style.overflow = "";
         // Open OTP verification popup at role selection step (Step 3)
@@ -2530,13 +2437,6 @@
             toggleSidebar(false);
           });
         }
-        
-        // Close sidebar when resizing to desktop (sidebar is mobile/tablet only)
-        window.addEventListener('resize', function() {
-          if (window.innerWidth >= 901) {
-            toggleSidebar(false);
-          }
-        });
       });
 
       // ============ JOIN POC MODAL ============

@@ -50,6 +50,7 @@
     @keyframes spin{to{transform:rotate(360deg)}}
     .footer-note{margin-top:20px; font-size:12px; color:var(--muted); text-align:center}
   </style>
+  <link rel="stylesheet" href="<?php echo esc_url( get_stylesheet_directory_uri() ); ?>/assets/css/responsive.css" />
 </head>
 <body>
   <div class="wrap">

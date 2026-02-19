@@ -9,31 +9,37 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>How It Works | HumanBlockchain.info</title>
+  <title>How This Works • Algorithm • Proof of Delivery (PoD) | <?php echo esc_attr( get_bloginfo( 'name' ) ); ?></title>
 
   <style>
     :root{
-      --bg:#0b1020;
-      --text:#eef2ff;
-      --muted:#b8c1e3;
-      --line:rgba(255,255,255,.14);
-      --shadow:0 18px 50px rgba(0,0,0,.55);
+      --bg:#0b0f14;
+      --card:#101824;
+      --text:#e9eef6;
+      --ink:#e9eef6;
+      --muted:#b7c4d6;
+      --line:rgba(255,255,255,.10);
+      --shadow:0 18px 45px rgba(0,0,0,.35);
       --radius:18px;
-      --btnRadius:14px;
+      --btnRadius:12px;
       --accent:#34d399;
-      --warn:#fbbf24;
-      --soft: rgba(255,255,255,.06);
+      --a:#7dd3fc;
+      --b:#a78bfa;
+      --ok:#86efac;
+      --warn:#fde68a;
+      --btn:#1f2a3a;
+      --danger:#fb7185;
     }
     *{box-sizing:border-box}
     body{
       margin:0;
       min-height:100vh;
-      font-family: system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
       background:
-        radial-gradient(1000px 650px at 20% 10%, rgba(120,160,255,.18), transparent 60%),
-        radial-gradient(900px 650px at 80% 85%, rgba(52,211,153,.12), transparent 65%),
+        radial-gradient(1200px 600px at 20% 10%, rgba(125,211,252,.12), transparent 60%),
+        radial-gradient(900px 500px at 80% 30%, rgba(167,139,250,.10), transparent 55%),
         var(--bg);
-      color:var(--text);
+      color:var(--ink);
     }
 
     /* Header */
@@ -403,7 +409,45 @@
       background: rgba(0,0,0,.16);
     }
     .mini b{display:block;margin-bottom:6px}
+    a{color:var(--a);text-decoration:none}
+    a:hover{text-decoration:underline}
+    .hiw-wrap{max-width:1120px;margin:0 auto;padding:24px}
+    .hiw-header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:16px;flex-wrap:wrap}
+    .hiw-brand{display:flex;align-items:center;gap:12px}
+    .hiw-mark{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,rgba(125,211,252,.35),rgba(167,139,250,.35));border:1px solid var(--line);box-shadow:0 12px 30px rgba(0,0,0,.35);flex-shrink:0;display:flex;align-items:center;justify-content:center;overflow:hidden}
+    .hiw-mark img{height:100%;object-fit:contain;border-radius:14px}
+    .hiw-brand h1{font-size:16px;margin:0}
+    .hiw-brand .sub{margin:2px 0 0;color:var(--muted);font-size:12px;line-height:1.4}
+    .hiw-nav{display:flex;gap:10px;flex-wrap:wrap}
+    .hiw-btn{appearance:none;border:1px solid var(--line);background:var(--btn);color:var(--ink);padding:10px 12px;border-radius:12px;cursor:pointer;font-weight:800;font-size:13px;text-decoration:none;display:inline-block}
+    .hiw-btn:hover{filter:brightness(1.1)}
+    .hiw-btn.primary{background:linear-gradient(135deg,rgba(125,211,252,.25),rgba(167,139,250,.20))}
+    .hero{display:grid;grid-template-columns:1.15fr .85fr;gap:14px;align-items:stretch}
+    @media (max-width:980px){.hero{grid-template-columns:1fr}}
+    .hiw-card{background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02));border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:0 18px 45px rgba(0,0,0,.35)}
+    .hiw-card h2{margin:8px 0 8px;font-size:30px;line-height:1.08}
+    .lead{color:var(--muted);font-size:15px;line-height:1.6;margin:0}
+    .kicker{display:flex;gap:8px;flex-wrap:wrap;align-items:center;color:var(--muted);font-size:12px}
+    .pill{border:1px solid var(--line);border-radius:999px;padding:4px 10px;background:rgba(0,0,0,.25)}
+    .hiw-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:14px}
+    @media (max-width:980px){.hiw-grid{grid-template-columns:1fr}}
+    .math{border:1px solid var(--line);background:rgba(255,255,255,.03);border-radius:16px;padding:14px;margin-top:12px}
+    .math .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    @media (max-width:980px){.math .row2{grid-template-columns:1fr}}
+    .eq{padding:10px 12px;border-radius:14px;border:1px solid var(--line);background:rgba(0,0,0,.18);color:var(--muted);font-size:13px;line-height:1.5}
+    .eq strong{color:var(--ink)}
+    .calc{margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    @media (max-width:980px){.calc{grid-template-columns:1fr}}
+    .calc label{display:block;font-size:12px;color:var(--muted);margin:10px 0 6px}
+    .calc input{width:100%;padding:11px 12px;border-radius:12px;border:1px solid var(--line);background:rgba(0,0,0,.20);color:var(--ink);outline:none}
+    .out{padding:12px;border-radius:16px;border:1px solid var(--line);background:rgba(0,0,0,.18);color:var(--muted);font-size:13px;line-height:1.55}
+    .out .big{font-size:15px;color:var(--ink);font-weight:900}
+    .scanBox{border:1px solid var(--line);background:rgba(0,0,0,.18);border-radius:16px;padding:14px}
+    .scanRow{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+    .tag{display:inline-flex;gap:8px;align-items:center;border:1px solid var(--line);border-radius:999px;padding:6px 10px;background:rgba(255,255,255,.03);color:var(--muted);font-size:12px}
+    .hiw-footer{margin-top:18px;color:var(--muted);font-size:12px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
   </style>
+  <link rel="stylesheet" href="<?php echo esc_url( get_stylesheet_directory_uri() ); ?>/assets/css/responsive.css" />
 </head>
 
 <body>
@@ -503,197 +547,171 @@
     })();
   </script>
 
-  <main class="wrap">
-    <section class="card">
-      <div class="card-inner">
-        <div class="badge"><span class="dot" aria-hidden="true"></span> Scan • Confirm • Earn loyalty credit • Build community</div>
-
-        <h2>How It Works</h2>
-        <p class="muted">
-          HumanBlockchain is a simple way to confirm deliveries, recognize helpers, and track loyalty credit.
-          You don’t need to understand technology. If you can scan a code and answer a question, you can use it.
-        </p>
-
-        <div class="grid">
-
-          <!-- LEFT CONTENT -->
-          <div>
-            <div class="panel">
-              <h3>Step-by-step (the short version)</h3>
-              <div class="steps">
-                <div class="step">
-                  <div class="num">1</div>
-                  <div>
-                    <b>Register your device</b>
-                    <div class="muted">Your phone becomes your “membership card.”</div>
-                  </div>
-                </div>
-                <div class="step">
-                  <div class="num">2</div>
-                  <div>
-                    <b>Accept the Discord invite</b>
-                    <div class="muted">Discord is our community room for help, updates, and group proof.</div>
-                  </div>
-                </div>
-                <div class="step">
-                  <div class="num">3</div>
-                  <div>
-                    <b>Use 2-scan Proof of Delivery</b>
-                    <div class="muted">Seller starts it. Buyer confirms it. Helpers are recognized.</div>
-                  </div>
-                </div>
-                <div class="step">
-                  <div class="num">4</div>
-                  <div>
-                    <b>Earn loyalty credit</b>
-                    <div class="muted">New World Penny (NWP) for helpers + $5 buyer rebate in XP.</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="panel">
-              <h3>Discord acceptance (why it matters)</h3>
-              <p>
-                Discord is where the community stays connected. When you accept the invite, you can:
-              </p>
-              <ul>
-                <li>Get help from real people (and see updates)</li>
-                <li>View your referral status and community messages</li>
-                <li>Participate in group activities that unlock membership status (when required)</li>
-              </ul>
-
-              <div class="callout">
-                <b>Simple rule</b>
-                Device registration is your “check-in.” Discord acceptance is your “welcome handshake.”
-                Both are required to fully participate.
-              </div>
-            </div>
-
-            <div class="panel">
-              <h3>Serendipity role assignment</h3>
-              <p>
-                When you register, the system assigns you to community roles automatically.
-                This is called <b>Serendipity</b>—it keeps things fair and prevents favoritism.
-              </p>
-
-              <div class="miniCards">
-                <div class="mini">
-                  <b>You are assigned two groups</b>
-                  One as a <b>buyer group</b> and one as a <b>seller group</b>.
-                  <span class="muted">This helps build local trust and wider connection.</span>
-                </div>
-                <div class="mini">
-                  <b>Assignments are based on timing and location</b>
-                  People registering around the same time are grouped together.
-                  <span class="muted">You don’t have to “pick a team.”</span>
-                </div>
-                <div class="mini">
-                  <b>You can still participate immediately</b>
-                  Your assignment simply organizes the community and helps routing decisions later.
-                </div>
-              </div>
-            </div>
-
-            <div class="panel">
-              <h3>Referral bonus (simple and fair)</h3>
-              <p>
-                If someone invited you, they may earn a referral bonus after you complete the basic steps.
-                Referral bonuses are recorded as loyalty accounting (XP), not money.
-              </p>
-
-              <ul>
-                <li><b>Inviter must be registered</b> before inviting others</li>
-                <li>You can register <b>with a sponsor</b> or <b>by yourself</b></li>
-                <li>Referral bonuses follow an <b>8–12 week maturity window</b> before any outside settlement is considered</li>
-              </ul>
-
-              <div class="callout warn">
-                <span class="warnDot" aria-hidden="true"></span><b>Important</b>
-                This site tracks <b>verification and loyalty accounting</b>.
-                Any fiat or MSB activity (if used) happens in the <b>Voluntary Fulfillment Network (VFN)</b> or seller systems,
-                not inside the ledger.
-              </div>
-            </div>
-
-            <div class="panel">
-              <h3>Proof of Delivery (the key question)</h3>
-              <p>
-                Along a delivery route, everyone may be asked:
-                <b>“Is this the final destination?”</b>
-              </p>
-              <ul>
-                <li><b>Handoffs answer “No”</b> → each helper is recognized with <b>1 NWP</b> issued by the seller</li>
-                <li><b>The final stop answers “Yes”</b> → the delivery arrival is confirmed</li>
-                <li><b>Buyer acceptance</b> assigns the <b>$5 buyer rebate in XP</b></li>
-              </ul>
-              <div class="callout">
-                <b>Example</b>
-                If 30 people helped move a package along, the seller issues <b>30 New World Pennies</b>—one per helper.
-              </div>
-            </div>
-
-            <div class="callout warn">
-              <span class="warnDot" aria-hidden="true"></span><b>Cookie Jar Economy launch</b>
-              The seller pledge of <b>$10.30</b> supports the Cookie Jar Economy, scheduled to launch on
-              <b>May 17, 2030</b>. Until then, pledges and confirmations are recorded to build long-term trust.
-            </div>
-          </div>
-
-          <!-- RIGHT RAIL CTAs -->
-          <aside class="cta">
-            <a class="btn btnPrimary" href="device-register">
-              <div>
-                Register My Device
-                <span class="sub">Start here • simple check-in</span>
-              </div>
-              <div class="arrow">→</div>
-            </a>
-
-            <a class="btn" href="discord-invite">
-              <div>
-                Accept Discord Invite
-                <span class="sub">Join the community room</span>
-              </div>
-              <div class="arrow">→</div>
-            </a>
-
-            <a class="btn" href="pod-mode">
-              <div>
-                Enter PoD Mode
-                <span class="sub">Scan 1 / Scan 2</span>
-              </div>
-              <div class="arrow">→</div>
-            </a>
-
-            <a class="btn" href="loyalty-xp">
-              <div>
-                Loyalty Points (XP & NWP)
-                <span class="sub">What you earn and why</span>
-              </div>
-              <div class="arrow">→</div>
-            </a>
-
-            <a class="btn" href="faq">
-              <div>
-                FAQs & Rules
-                <span class="sub">Clear answers, no jargon</span>
-              </div>
-              <div class="arrow">→</div>
-            </a>
-
-            <div class="fineprint">
-              <b>Plain-language promise:</b><br />
-              If you can scan and answer yes/no, you can use this system.
-              The goal is simple: verify real deliveries and reward helpful people.
-            </div>
-          </aside>
-
+  <div class="hiw-wrap">
+    <header class="hiw-header">
+      <div class="hiw-brand">
+        <div class="hiw-mark" aria-hidden="true"><?php echo hb_get_site_logo( 'medium', array( 'aria-hidden' => 'true' ) ); ?></div>
+        <div>
+          <h1>How This Works • <span class="ok">Algorithm</span> • Proof of Delivery (PoD)</h1>
+          <div class="sub">A device-driven Wyoming DAO/LCA: Proof of Presence → Kalshi Mirror outcomes → XP accounting → extinguishment at 21,000 YAM : 1 USD.</div>
         </div>
       </div>
+      <div class="hiw-nav">
+        <a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="hiw-btn">Back to PoD Prompts</a>
+        <a href="<?php echo esc_url( home_url( '/dao' ) ); ?>" class="hiw-btn">Membership</a>
+        <a href="<?php echo esc_url( home_url( '/activate-device' ) ); ?>" class="hiw-btn primary">Register Device</a>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div class="hiw-card">
+        <div class="kicker">
+          <span class="pill">Leave wallet at home</span>
+          <span class="pill">Presence becomes proof</span>
+          <span class="pill">Scientific notation ledger</span>
+        </div>
+        <h2>What the PoD prompts are doing</h2>
+        <p class="lead">The universal QR asks two questions: <strong>"Is this Proof of Delivery?"</strong> and <strong>"Is this the Final Destination?"</strong>. Those answers become a measurable proof signal — not money — recorded with device, timestamp, and (if enabled) geo-location. That proof signal feeds the <strong>Kalshi Mirror</strong> reputation model for individuals, POCs, and guilds.</p>
+        <div class="hiw-grid">
+          <div class="mini">
+            <h3>Prompt 1 — Proof of Delivery?</h3>
+            <p><span class="ok">PoD = Yes</span> means you are confirming a delivery event (voucher / delivery credential attached). The routine routes you into the <strong>WooCommerce Backorder</strong> path. <span class="ok">PoD = No</span> routes you into onboarding (register → membership → Discord).</p>
+          </div>
+          <div class="mini">
+            <h3>Prompt 2 — Final Destination?</h3>
+            <p>Final Destination is a reliability marker. It is always recorded for Kalshi Mirror performance outcomes, but it should never block entry into the website.</p>
+          </div>
+          <div class="mini">
+            <h3>Buyer vs Seller rule</h3>
+            <p>Buyers: device + MSB credentials + Discord acceptance. <strong>No QRtiger v-card required.</strong> Sellers: everything buyers have plus a <strong>QRtiger v-card required</strong>. Sellers can be individual- or group-sponsored.</p>
+          </div>
+          <div class="mini">
+            <h3>NWP issuing rule</h3>
+            <p><strong>NWP issuing is strictly a feature of the Seller POC.</strong> Buyer-only accounts earn XP recognition but do not issue NWP unless they activate as sellers and join a Seller POC.</p>
+          </div>
+        </div>
+        <div class="math">
+          <div class="kicker"><span class="pill">Algorithm constants</span><span class="pill">Published extinguishment</span><span class="pill">21,000 YAM : 1 USD</span></div>
+          <div class="row2" style="margin-top:10px">
+            <div class="eq"><strong>1 NWP (1 cent)</strong> = <strong>4.76190476 × 10¹⁸ XP</strong><br/><span class="note" style="margin-top:6px;display:block">This is the published XP extinguishment required to close one penny of obligation.</span></div>
+            <div class="eq"><strong>1 USD (100 cents)</strong> = <strong>4.76190476 × 10²⁰ XP</strong><br/><span class="note" style="margin-top:6px;display:block">Derived as 100 × the NWP rate.</span></div>
+          </div>
+          <div class="row2" style="margin-top:10px">
+            <div class="eq"><strong>1 USD</strong> = <strong>21,000 YAM</strong><br/><span class="note" style="margin-top:6px;display:block">Redemption peg used for extinguishment mapping.</span></div>
+            <div class="eq"><strong>1 YAM</strong> = <strong>2.267573695 × 10¹⁶ XP</strong><br/><span class="note" style="margin-top:6px;display:block">Derived: (4.76190476 × 10²⁰ XP per USD) ÷ 21,000.</span></div>
+          </div>
+          <div class="divider"></div>
+          <div class="eq"><strong>Extinguishment (burn) formulas</strong><br/><span class="note" style="margin-top:6px;display:block">YAM = XP ÷ (2.267573695 × 10¹⁶)<br/>USD = YAM ÷ 21,000  (equivalently: USD = XP ÷ (4.76190476 × 10²⁰)</span></div>
+        </div>
+        <p class="note">Why a sextillionth-of-a-penny scale can "measure everything": it is small enough to record nearly any participation event without rounding away meaning, and large enough in aggregate to support an auditable redemption mapping at the published peg. XP is not money — it is the measurement rail that makes social and financial outcomes behave consistently.</p>
+      </div>
+      <div class="hiw-card">
+        <h3 style="margin:0 0 10px;font-size:16px">Your last scan (integration)</h3>
+        <div class="scanBox">
+          <div class="tag">PoD: <strong id="podVal">—</strong></div>
+          <div class="tag">Final Destination: <strong id="finalVal">—</strong></div>
+          <div class="tag">Routed: <strong id="routeVal">—</strong></div>
+          <div class="tag">Timestamp: <strong id="tsVal">—</strong></div>
+          <div class="scanRow">
+            <a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="hiw-btn primary">Answer prompts again</a>
+            <a href="<?php echo esc_url( home_url( '/backorder' ) ); ?>" class="hiw-btn" id="btn-backorder">Woo Backorder</a>
+            <a href="<?php echo esc_url( home_url( '/activate-device' ) ); ?>" class="hiw-btn">Register device</a>
+          </div>
+          <p class="note" style="margin-top:10px">Demo reads <code>localStorage</code> key <code>hb_last_scan</code>. Server should log to an append-only ledger table.</p>
+        </div>
+        <div class="divider"></div>
+        <h3 style="margin:0 0 10px;font-size:16px">XP ↔ YAM ↔ USD calculator</h3>
+        <p class="note" style="margin:0 0 10px">This is the "human value math engine." It shows the redemption correlation at the published extinguishment rate.</p>
+        <div class="calc">
+          <div>
+            <label for="xpIn">Enter XP units</label>
+            <input id="xpIn" inputmode="decimal" placeholder="e.g. 2.38095238e21" />
+            <div class="note">Tip: you can paste scientific notation like <code>1.428571428e22</code>.</div>
+          </div>
+          <div class="out" id="xpOut"><div class="big">—</div><div>YAM: —</div><div>USD: —</div></div>
+          <div>
+            <label for="usdIn">Enter USD value</label>
+            <input id="usdIn" inputmode="decimal" placeholder="e.g. 30" />
+            <div class="note">USD → XP uses: <code>1 USD = 4.76190476 × 10²⁰ XP</code>.</div>
+          </div>
+          <div class="out" id="usdOut"><div class="big">—</div><div>XP: —</div><div>YAM: —</div></div>
+        </div>
+        <div class="divider"></div>
+        <h3 style="margin:0 0 10px;font-size:16px">Participation → redemption correlation</h3>
+        <p class="note" style="margin:0">Participation is captured as proof (device + time + geo + prompt outcomes). Kalshi Mirror scoring converts proof into reputation. Reputation can qualify organizer communities for MEGA Grants (up to 70%) and unlock higher pledge throughput. XP records the accounting of those outcomes, and redemption/extinguishment burns XP at the published peg.</p>
+        <div class="divider"></div>
+        <h3 style="margin:0 0 10px;font-size:16px">XP disclaimer (must-read)</h3>
+        <p class="note" style="margin:0"><span class="warn">XP is non-cash and non-transferable.</span> XP is an accounting unit for verified participation events. XP is <strong>not money</strong> and has <strong>no guaranteed redemption value</strong> prior to scheduled governance milestones. Delivery-related XP may require an <strong>8–12 week maturity window</strong> after confirmed delivery, with monthly statement posting to an append-only ledger and annual reconciliation.</p>
+      </div>
     </section>
-  </main>
+
+    <section class="hiw-card" style="margin-top:14px">
+      <h3 style="margin:0 0 8px">The end-to-end algorithm (plain English)</h3>
+      <div class="hiw-grid">
+        <div class="mini"><h3>1) Scan & answer</h3><p>PoD and Final Destination are recorded with device/time/geo for proof of presence.</p></div>
+        <div class="mini"><h3>2) Route</h3><p>PoD=Yes routes to Woo Backorder. PoD=No routes to onboarding.</p></div>
+        <div class="mini"><h3>3) Register device</h3><p>MSB credentials + consent + Discord invite acceptance requirement.</p></div>
+        <div class="mini"><h3>4) Serendipity assignment</h3><p>Peace Pentagon branch + Buyer/Seller POCs assigned (Pending → Active).</p></div>
+        <div class="mini"><h3>5) Kalshi Mirror outcomes</h3><p>Proof signals become reliability scores for individuals, POCs, and guilds.</p></div>
+        <div class="mini"><h3>6) XP accounting & extinguishment</h3><p>XP records participation value; redemption burns XP at 21,000 YAM : 1 USD using scientific notation constants.</p></div>
+      </div>
+      <div class="divider"></div>
+      <div class="scanRow">
+        <a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="hiw-btn primary">Return to PoD prompts</a>
+        <a href="<?php echo esc_url( home_url( '/dao' ) ); ?>" class="hiw-btn">Membership choices</a>
+        <a href="<?php echo esc_url( home_url( '/activate-device' ) ); ?>" class="hiw-btn">Register device</a>
+      </div>
+    </section>
+
+    <footer class="hiw-footer">
+      <div>© <?php echo esc_html( get_bloginfo( 'name' ) ); ?> • How This Works • Algorithm • XP accounting • Kalshi Mirror proof of presence</div>
+      <div><a href="<?php echo esc_url( home_url( '/' ) ); ?>">Home</a> • <a href="<?php echo esc_url( home_url( '/' ) ); ?>">PoD Router</a> • <a href="<?php echo esc_url( home_url( '/dao' ) ); ?>">Membership</a></div>
+    </footer>
+  </div>
+
+  <script>
+  (function(){
+    var XP_PER_CENT = 4.76190476e18, XP_PER_USD = 4.76190476e20, YAM_PER_USD = 21000, XP_PER_YAM = XP_PER_USD / YAM_PER_USD;
+    function safeText(id, txt){ var el = document.getElementById(id); if(el) el.textContent = (txt === null || txt === undefined || txt === "") ? "—" : String(txt); }
+    function inferRoute(pod){ return pod === "YES" ? "WOO_BACKORDER" : (pod === "NO" ? "WEBSITE" : "—"); }
+    function loadLastScan(){
+      try{
+        var raw = localStorage.getItem("hb_last_scan");
+        if(!raw) return;
+        var s = JSON.parse(raw);
+        safeText("podVal", s.pod || "—");
+        safeText("finalVal", s.final || "—");
+        safeText("routeVal", inferRoute(s.pod));
+        safeText("tsVal", s.ts || "—");
+      }catch(e){ console.warn("Could not parse hb_last_scan", e); }
+    }
+    function fmtSci(n){
+      if(!isFinite(n)) return "—";
+      var abs = Math.abs(n);
+      if(abs === 0) return "0";
+      if(abs >= 1e6 || abs < 1e-3) return n.toExponential(8);
+      return n.toLocaleString(undefined, {maximumFractionDigits: 8});
+    }
+    function parseNum(val){ var x = Number(String(val).trim()); return isFinite(x) ? x : NaN; }
+    function recalcFromXP(){
+      var xp = parseNum(document.getElementById("xpIn").value), out = document.getElementById("xpOut");
+      if(!out) return;
+      if(!isFinite(xp)){ out.innerHTML = "<div class=\"big\">—</div><div>YAM: —</div><div>USD: —</div>"; return; }
+      var yam = xp / XP_PER_YAM, usd = yam / YAM_PER_USD;
+      out.innerHTML = "<div class=\"big\">From XP</div><div>YAM: <strong>"+fmtSci(yam)+"</strong></div><div>USD: <strong>"+fmtSci(usd)+"</strong></div><div class=\"note\" style=\"margin-top:8px\">Burn rule: XP extinguished at <code>1 USD = 4.76190476×10²⁰ XP</code> and <code>1 USD = 21,000 YAM</code>.</div>";
+    }
+    function recalcFromUSD(){
+      var usd = parseNum(document.getElementById("usdIn").value), out = document.getElementById("usdOut");
+      if(!out) return;
+      if(!isFinite(usd)){ out.innerHTML = "<div class=\"big\">—</div><div>XP: —</div><div>YAM: —</div>"; return; }
+      var xp = usd * XP_PER_USD, yam = usd * YAM_PER_USD;
+      out.innerHTML = "<div class=\"big\">From USD</div><div>XP: <strong>"+fmtSci(xp)+"</strong></div><div>YAM: <strong>"+fmtSci(yam)+"</strong></div><div class=\"note\" style=\"margin-top:8px\">Example: $30 → "+fmtSci(30 * XP_PER_USD)+" XP and "+fmtSci(30 * YAM_PER_USD)+" YAM.</div>";
+    }
+    loadLastScan();
+    var xpIn = document.getElementById("xpIn"), usdIn = document.getElementById("usdIn");
+    if(xpIn){ xpIn.value = (30 * XP_PER_USD).toExponential(8); xpIn.addEventListener("input", recalcFromXP); recalcFromXP(); }
+    if(usdIn){ usdIn.value = "5"; usdIn.addEventListener("input", recalcFromUSD); recalcFromUSD(); }
+  })();
+  </script>
 </body>
 </html>
-
-

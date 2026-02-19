@@ -428,6 +428,7 @@
       box-shadow:0 0 0 3px rgba(52,211,153,.18);
     }
   </style>
+  <link rel="stylesheet" href="<?php echo esc_url( get_stylesheet_directory_uri() ); ?>/assets/css/responsive.css" />
 </head>
 
 <body>

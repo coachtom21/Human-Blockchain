@@ -419,6 +419,7 @@ color:var(--muted);
 font-size:12px;
 }
 </style>
+  <link rel="stylesheet" href="<?php echo esc_url( get_stylesheet_directory_uri() ); ?>/assets/css/responsive.css" />
 </head>
 <body>
 <header class="nav">

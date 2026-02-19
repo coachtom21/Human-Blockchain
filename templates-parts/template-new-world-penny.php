@@ -412,6 +412,7 @@ border:1px solid rgba(255,255,255,.10);
 white-space:nowrap;
 }
 </style>
+  <link rel="stylesheet" href="<?php echo esc_url( get_stylesheet_directory_uri() ); ?>/assets/css/responsive.css" />
 </head>
 <body>
 <header class="nav">
