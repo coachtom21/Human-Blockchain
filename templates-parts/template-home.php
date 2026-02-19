@@ -1504,13 +1504,12 @@
         <!-- Desktop menu -->
         <div class="menu" aria-label="Menu">
           <a href="<?php echo esc_url( home_url( '/membership' ) ); ?>">Membership</a>
-          <a href="#how">How it works</a>
+          <a href="<?php echo esc_url( home_url( '/how-it-works' ) ); ?>">How it works</a>
           <a href="#faq">FAQs</a>
           <a href="#organizers">Organizers</a>
           <a href="<?php echo esc_url( home_url( '/detente-2030' ) ); ?>">Detente 2030</a>
-          <a href="/how-it-works">How It Works</a>
-          <a href="/proof-of-delivery">Proof of Delivery</a>
-          <a href="/poc-guilds">POC Guilds</a>
+          <a href="<?php echo esc_url( home_url( '/proof-of-delivery' ) ); ?>">Proof of Delivery</a>
+          <a href="<?php echo esc_url( home_url( '/poc-guilds' ) ); ?>">POC Guilds</a>
         </div>
 
         <!-- Right side actions + mobile toggle -->
@@ -1561,13 +1560,12 @@
       <!-- Navigation Links -->
       <div class="sidebar-menu-links">
         <a href="<?php echo esc_url( home_url( '/membership' ) ); ?>">Membership</a>
-        <a href="#how">How it works</a>
+        <a href="<?php echo esc_url( home_url( '/how-it-works' ) ); ?>">How it works</a>
         <a href="#faq">FAQs</a>
         <a href="#organizers">Organizers</a>
         <a href="<?php echo esc_url( home_url( '/detente-2030' ) ); ?>">Detente 2030</a>
-        <a href="/how-it-works">How It Works</a>
-        <a href="/proof-of-delivery">Proof of Delivery</a>
-        <a href="/poc-guilds">POC Guilds</a>
+        <a href="<?php echo esc_url( home_url( '/proof-of-delivery' ) ); ?>">Proof of Delivery</a>
+        <a href="<?php echo esc_url( home_url( '/poc-guilds' ) ); ?>">POC Guilds</a>
       </div>
       
       <!-- Device Status Section -->
