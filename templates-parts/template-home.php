@@ -1510,6 +1510,7 @@
           <a href="<?php echo esc_url( home_url( '/detente-2030' ) ); ?>">Detente 2030</a>
           <a href="<?php echo esc_url( home_url( '/proof-of-delivery' ) ); ?>">Proof of Delivery</a>
           <a href="<?php echo esc_url( home_url( '/poc-guilds' ) ); ?>">POC Guilds</a>
+          <a class="btn primary" href="<?php echo esc_url( home_url( '/kite-festival' ) ); ?>">Kite Festival</a>
         </div>
 
         <!-- Right side actions + mobile toggle -->
@@ -1566,6 +1567,7 @@
         <a href="<?php echo esc_url( home_url( '/detente-2030' ) ); ?>">Detente 2030</a>
         <a href="<?php echo esc_url( home_url( '/proof-of-delivery' ) ); ?>">Proof of Delivery</a>
         <a href="<?php echo esc_url( home_url( '/poc-guilds' ) ); ?>">POC Guilds</a>
+        <a class="btn primary" href="<?php echo esc_url( home_url( '/kite-festival' ) ); ?>" style="justify-content:center;">Kite Festival</a>
       </div>
       
       <!-- Device Status Section -->
