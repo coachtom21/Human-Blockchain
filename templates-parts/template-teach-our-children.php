@@ -265,6 +265,13 @@
       max-width: 56ch;
     }
     .player .placeholder strong{color: rgba(255,255,255,0.92)}
+    .player video{
+      width:100%;
+      height:auto;
+      min-height:260px;
+      display:block;
+      vertical-align:middle;
+    }
     .thumbs{
       border-radius: 18px;
       border:1px solid rgba(255,255,255,0.14);
@@ -559,14 +566,11 @@ Pledge first → Proof second → Settlement last
           </p>
 
           <div class="video-grid">
-            <div class="player" role="group" aria-label="Primary video player placeholder">
-              <div class="placeholder">
-                <strong>Primary Video Placeholder</strong><br/>
-                Drop in your YouTube/Vimeo embed here (or self-hosted player).
-                <div style="margin-top:12px; color: rgba(255,255,255,0.70); font-size:13px;">
-                  Suggested title: "Teach This to Our Children — Joy First, Purpose First"
-                </div>
-              </div>
+            <div class="player" role="group" aria-label="Teach This to Our Children — Joy First, Purpose First">
+              <video controls preload="metadata" title="Teach This to Our Children — Joy First, Purpose First">
+                <source src="<?php echo esc_url( content_url( '/uploads/2026/02/Get-Hooked-on-XP_-The-Sand-Castle-Story-2026-02-2611.mp4' ) ); ?>" type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
             </div>
 
             <div class="thumbs" aria-label="Video thumbnail gallery">
