@@ -567,8 +567,13 @@ Pledge first → Proof second → Settlement last
 
           <div class="video-grid">
             <div class="player" role="group" aria-label="Teach This to Our Children — Joy First, Purpose First">
-              <video controls preload="metadata" title="Teach This to Our Children — Joy First, Purpose First">
-                <source src="<?php echo esc_url( content_url( '/uploads/2026/02/Get-Hooked-on-XP_-The-Sand-Castle-Story-2026-02-2611.mp4' ) ); ?>" type="video/mp4" />
+              <?php
+              $video_url = content_url( '/uploads/2026/02/Get-Hooked-on-XP_-The-Sand-Castle-Story-2026-02-2611.mp4' );
+              $poster_path = WP_CONTENT_DIR . '/uploads/2026/02/Get-Hooked-on-XP_-The-Sand-Castle-Story-2026-02-2611-poster.jpg';
+              $poster_url = file_exists( $poster_path ) ? content_url( '/uploads/2026/02/Get-Hooked-on-XP_-The-Sand-Castle-Story-2026-02-2611-poster.jpg' ) : '';
+              ?>
+              <video controls preload="metadata"<?php echo $poster_url ? ' poster="' . esc_url( $poster_url ) . '"' : ''; ?> title="Teach This to Our Children — Joy First, Purpose First">
+                <source src="<?php echo esc_url( $video_url ); ?>" type="video/mp4" />
                 Your browser does not support the video tag.
               </video>
             </div>
