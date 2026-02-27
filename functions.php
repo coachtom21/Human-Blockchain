@@ -39,12 +39,13 @@ function hello_elementor_child_scripts_styles() {
 		HELLO_ELEMENTOR_CHILD_VERSION
 	);
 
-	// Enqueue OTP Popup styles and scripts
+	// Enqueue OTP Popup styles - use filemtime for cache busting
+	$otp_css_path = get_stylesheet_directory() . '/assets/css/otp-popup.css';
 	wp_enqueue_style(
 		'hb-otp-popup-style',
 		get_stylesheet_directory_uri() . '/assets/css/otp-popup.css',
 		array(),
-		HELLO_ELEMENTOR_CHILD_VERSION
+		file_exists( $otp_css_path ) ? filemtime( $otp_css_path ) : HELLO_ELEMENTOR_CHILD_VERSION
 	);
 
 	wp_enqueue_script(
@@ -54,6 +55,10 @@ function hello_elementor_child_scripts_styles() {
 		HELLO_ELEMENTOR_CHILD_VERSION,
 		true
 	);
+
+	wp_localize_script( 'hb-otp-popup-script', 'hbOTPVars', array(
+		'backorderUrl' => home_url( '/backorder' ),
+	) );
 
 	// Enqueue Font Awesome for icons
 	wp_enqueue_style(
@@ -351,10 +356,11 @@ if ( isset( $_GET['hb_create_pages'] ) && current_user_can( 'manage_options' ) )
 }
 
 /**
- * Include OTP Verification Popup on all pages
+ * Include OTP Verification Popup on non-home pages only.
+ * Home page has its own inline role popup in template-home.php.
  */
 function hb_include_otp_popup() {
-	if ( ! is_admin() ) {
+	if ( ! is_admin() && ! is_front_page() ) {
 		$popup_file = get_stylesheet_directory() . '/templates-parts/popup-otp-verification.php';
 		if ( file_exists( $popup_file ) ) {
 			include $popup_file;

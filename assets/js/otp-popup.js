@@ -69,6 +69,21 @@
             e.stopPropagation();
             console.log('Continue button clicked, userRole:', userRole);
             
+            // Ensure userRole is set from checked radio
+            userRole = $('input[name="user_role"]:checked').val() || 'seller';
+            
+            // If coming from Enter Website flow (Yes/Yes), redirect to backorder instead of step 4
+            try {
+                var redirectToBackorder = sessionStorage.getItem('hb_redirect_to_backorder');
+                if (redirectToBackorder === '1') {
+                    sessionStorage.removeItem('hb_redirect_to_backorder');
+                    closePopup();
+                    var backorderUrl = (typeof hbOTPVars !== 'undefined' && hbOTPVars.backorderUrl) ? hbOTPVars.backorderUrl : '/backorder';
+                    window.location.href = backorderUrl;
+                    return false;
+                }
+            } catch (err) {}
+            
             // Ensure popup is visible
             const popup = $('#hb-otp-popup');
             if (!popup.is(':visible')) {
@@ -76,8 +91,6 @@
                 document.body.style.overflow = "hidden";
             }
             
-            // Ensure userRole is set from checked radio
-            userRole = $('input[name="user_role"]:checked').val() || 'seller';
             console.log('Proceeding to step 4 with role:', userRole);
             
             if (userRole) {
@@ -220,6 +233,7 @@
     function closePopup() {
         $('#hb-otp-popup').fadeOut(300);
         document.body.style.overflow = "";
+        try { sessionStorage.removeItem('hb_redirect_to_backorder'); } catch (e) {}
     }
 
     /**

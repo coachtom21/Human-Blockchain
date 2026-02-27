@@ -2122,12 +2122,23 @@
         }
         persistScan();
         if (scanState.pod === "YES") {
-          window.location.href = WOO_BACKORDER_URL;
+          // Show role popup first, then redirect to backorder after user selects role
+          enterOverlay.classList.remove("active");
+          try { sessionStorage.setItem("hb_redirect_to_backorder", "1"); } catch (e) {}
+          showRolePopupFromEntry();
         } else {
           enterOverlay.classList.remove("active");
           document.body.style.overflow = "";
           if (typeof openRegisterModal === "function") openRegisterModal();
           else window.location.href = HOME_REGISTER;
+        }
+      }
+
+      function showRolePopupFromEntry() {
+        var rolePopup = document.getElementById('hb-role-popup-overlay');
+        if (rolePopup) {
+          rolePopup.style.display = 'flex';
+          document.body.style.overflow = 'hidden';
         }
       }
 
@@ -2148,120 +2159,54 @@
       if (fdYes) fdYes.addEventListener("click", function() { setAnswer("final", "YES"); });
       if (fdNo) fdNo.addEventListener("click", function() { setAnswer("final", "NO"); });
 
-      // POD Gate (legacy / alternate flow) - Yes button (opens OTP verification popup - role selection)
+      // Role popup - Close and Continue handlers (use event delegation - popup is after this script)
+      function hideRolePopup() {
+        var el = document.getElementById('hb-role-popup-overlay');
+        if (el) el.style.display = 'none';
+        document.body.style.overflow = '';
+        try { sessionStorage.removeItem('hb_redirect_to_backorder'); } catch (e) {}
+      }
+      document.addEventListener('click', function(e) {
+        var target = e.target;
+        if (!target) return;
+        if (target.id === 'hb-role-popup-close') {
+          e.preventDefault();
+          e.stopPropagation();
+          hideRolePopup();
+          return;
+        }
+        if (target.id === 'hb-role-continue-home') {
+          e.preventDefault();
+          e.stopPropagation();
+          try {
+            if (sessionStorage.getItem('hb_redirect_to_backorder') === '1') {
+              sessionStorage.removeItem('hb_redirect_to_backorder');
+              window.location.href = WOO_BACKORDER_URL;
+              return;
+            }
+          } catch (err) {}
+          hideRolePopup();
+          return;
+        }
+        if (target.id === 'hb-role-popup-overlay') {
+          e.preventDefault();
+          hideRolePopup();
+          return;
+        }
+      });
+
+      // POD Gate - Yes button (shows role popup, same as Enter Website flow)
       if (podGateYes) podGateYes.addEventListener("click", function() {
         podOverlay.classList.remove("active");
         document.body.style.overflow = "";
-        // Open OTP verification popup at role selection step (Step 3)
-        setTimeout(() => {
-          // Function to show role selection popup
-          function showRolePopup() {
-            const otpPopup = document.getElementById('hb-otp-popup');
-            
-            if (!otpPopup) {
-              console.error('OTP Popup element not found in DOM. Checking if it exists...');
-              // Wait a bit and try again (in case DOM not fully loaded)
-              setTimeout(() => {
-                const retryPopup = document.getElementById('hb-otp-popup');
-                if (retryPopup) {
-                  showRolePopup();
-                } else {
-                  console.error('OTP Popup still not found after retry');
-                }
-              }, 100);
-              return;
-            }
-            
-            console.log('OTP Popup element found, showing role selection...');
-            
-            // Hide all steps first
-            const allSteps = otpPopup.querySelectorAll('.hb-popup-step');
-            console.log('Found', allSteps.length, 'popup steps');
-            allSteps.forEach(step => {
-              step.style.display = 'none';
-            });
-            
-            // Show role selection step (Step 3)
-            const roleStep = document.getElementById('hb-step-3');
-            if (roleStep) {
-              roleStep.style.display = 'block';
-              console.log('Role selection step shown');
-            } else {
-              console.error('Role selection step (hb-step-3) not found');
-            }
-            
-            // Show the popup - set all necessary styles explicitly
-            otpPopup.style.cssText = `
-              position: fixed !important;
-              top: 0 !important;
-              left: 0 !important;
-              width: 100% !important;
-              height: 100% !important;
-              background-color: rgba(0, 0, 0, 0.7) !important;
-              z-index: 99999 !important;
-              display: flex !important;
-              visibility: visible !important;
-              opacity: 1 !important;
-              align-items: center !important;
-              justify-content: center !important;
-            `;
-            
-            // Also ensure the popup container is visible
-            const popupContainer = otpPopup.querySelector('.hb-popup-container');
-            if (popupContainer) {
-              popupContainer.style.display = 'block';
-              popupContainer.style.visibility = 'visible';
-              popupContainer.style.opacity = '1';
-            }
-            
-            document.body.style.overflow = "hidden";
-            
-            // Verify it's visible
-            const computedStyle = window.getComputedStyle(otpPopup);
-            console.log('OTP Popup styles:', {
-              display: computedStyle.display,
-              visibility: computedStyle.visibility,
-              opacity: computedStyle.opacity,
-              zIndex: computedStyle.zIndex,
-              position: computedStyle.position,
-              width: computedStyle.width,
-              height: computedStyle.height
-            });
-            
-            // Check if popup is actually in viewport
-            const rect = otpPopup.getBoundingClientRect();
-            console.log('OTP Popup position:', {
-              top: rect.top,
-              left: rect.left,
-              width: rect.width,
-              height: rect.height,
-              visible: rect.width > 0 && rect.height > 0
-            });
-            
-            console.log('OTP Popup displayed at role selection step');
+        try { sessionStorage.setItem("hb_redirect_to_backorder", "1"); } catch (e) {}
+        setTimeout(function() {
+          var rolePopup = document.getElementById('hb-role-popup-overlay');
+          if (rolePopup) {
+            rolePopup.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
           }
-          
-          // Try to show immediately
-          showRolePopup();
-          
-          // Also try with jQuery if available (as backup)
-          if (typeof jQuery !== 'undefined') {
-            jQuery(document).ready(function($) {
-              const $popup = $('#hb-otp-popup');
-              if ($popup.length && $popup.css('display') === 'none') {
-                $('.hb-popup-step').hide();
-                $('#hb-step-3').show();
-                $popup.css({
-                  'display': 'flex',
-                  'visibility': 'visible',
-                  'opacity': '1'
-                });
-                document.body.style.overflow = "hidden";
-                console.log('OTP Popup shown via jQuery fallback');
-              }
-            });
-          }
-        }, 300);
+        }, 100);
       });
 
       // POD Gate - No button (close and continue)
@@ -2645,12 +2590,64 @@
     </script>
   </footer>
   
-  <?php
-  // Include OTP Verification Popup directly in this template
-  $popup_file = get_stylesheet_directory() . '/templates-parts/popup-otp-verification.php';
-  if ( file_exists( $popup_file ) ) {
-    include $popup_file;
+  <!-- ================= ROLE POPUP (shown when Enter Website clicked with Yes/Yes) ================= -->
+  <div id="hb-role-popup-overlay" class="hb-role-popup-overlay" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="hb-role-popup-title">
+    <div class="hb-popup-container">
+      <span class="hb-popup-close" id="hb-role-popup-close" aria-label="Close">&times;</span>
+      <div class="hb-popup-content">
+        <h2 id="hb-role-popup-title">What is your role?</h2>
+        <div class="hb-role-selection">
+          <label class="hb-role-option" for="hb-role-seller">
+            <input type="radio" name="user_role" value="seller" id="hb-role-seller" checked>
+            <span>Seller</span>
+          </label>
+          <label class="hb-role-option" for="hb-role-buyer">
+            <input type="radio" name="user_role" value="buyer" id="hb-role-buyer">
+            <span>Buyer</span>
+          </label>
+        </div>
+        <div class="hb-button-group">
+          <button type="button" class="hb-btn-primary" id="hb-role-continue-home">Continue</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <style>
+  /* Role popup - inline in home template */
+  .hb-role-popup-overlay {
+    position: fixed; inset: 0; z-index: 99999;
+    background: rgba(3, 8, 18, 0.95);
+    display: flex; align-items: center; justify-content: center;
+    padding: 18px;
   }
-  ?>
+  .hb-role-popup-overlay .hb-popup-container {
+    background: #1e293b !important;
+    width: min(500px, 92%); padding: 20px; border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.08);
+    box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+    position: relative;
+  }
+  .hb-role-popup-overlay .hb-popup-close {
+    position: absolute; top: 14px; right: 14px;
+    background: #94a3b8; color: #1e293b;
+    padding: 5px 10px; border-radius: 5px;
+    cursor: pointer; font-size: 18px; font-weight: 600;
+  }
+  .hb-role-popup-overlay .hb-popup-content h2 { color: #fff; margin: 0 0 20px; font-size: 22px; text-align: center; }
+  .hb-role-popup-overlay .hb-role-selection { display: flex; flex-direction: column; gap: 10px; margin: 20px 0; }
+  .hb-role-popup-overlay .hb-role-option {
+    display: flex; align-items: center; gap: 14px; padding: 16px 20px;
+    border-radius: 12px; border: 1px solid rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.05); color: #e2e8f0; cursor: pointer;
+  }
+  .hb-role-popup-overlay .hb-role-option:has(input:checked) {
+    background: #334155; border-color: rgba(255,255,255,0.2);
+  }
+  .hb-role-popup-overlay .hb-btn-primary {
+    width: 100%; padding: 10px 20px; font-size: 20px; font-weight: 600;
+    background: #e2e8f0; color: #1e293b; border: none; border-radius: 12px;
+    cursor: pointer; margin-top: 20px;
+  }
+  </style>
 </body>
 </html>

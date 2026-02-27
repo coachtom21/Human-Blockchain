@@ -1,18 +1,20 @@
 /* OTP Verification Popup Styles - Matching POD Gate Modal Exactly */
 
-/* Popup Overlay - Match pod-gate-overlay exactly */
+/* Popup Overlay - Dark backdrop to fully obscure background */
 .hb-popup-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.75);
-    backdrop-filter: blur(8px);
+    background: rgba(3, 8, 18, 0.95);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
     display: none;
     place-items: center;
-    z-index: 10000;
+    z-index: 99999;
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.3s ease, visibility 0.3s ease;
     padding: 18px;
+    isolation: isolate;
 }
 
 .hb-popup-overlay[style*="display: flex"],
@@ -24,17 +26,20 @@
     visibility: visible !important;
 }
 
-/* Popup Container - Match pod-gate-modal exactly */
+/* Popup Container - Solid dark blue-grey, subtle shadow */
 .hb-popup-container {
-    width: min(880px, 92%);
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.06));
-    border: 1px solid rgba(255, 255, 255, 0.14);
-    border-radius: var(--radius, 18px);
-    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
-    padding: 28px;
+    width: min(500px, 92%);
+    max-width: 500px;
+    background: #1e293b !important;
+    background-color: #1e293b !important;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+    padding: 20px;
     transform: scale(0.95);
     transition: transform 0.3s ease;
     position: relative;
+    isolation: isolate;
 }
 
 .hb-popup-overlay[style*="display: flex"] .hb-popup-container,
@@ -44,29 +49,29 @@
     transform: scale(1);
 }
 
-/* Close Button */
+/* Close Button - Gray rounded square, top right */
 .hb-popup-close {
     position: absolute;
-    top: 20px;
-    right: 20px;
-    font-size: 24px;
-    font-weight: bold;
-    color: var(--muted, rgba(232,238,252,.6));
+    top: 14px;
+    right: 14px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #1e293b;
     cursor: pointer;
     line-height: 1;
-    transition: color 0.3s;
+    transition: all 0.2s;
     z-index: 1;
-    width: 32px;
-    height: 32px;
+    padding: 5px 10px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 8px;
+    border-radius: 5px;
+    background: #94a3b8;
 }
 
 .hb-popup-close:hover {
-    color: var(--text, rgba(232,238,252,.95));
-    background: rgba(232,238,252,.08);
+    background: #cbd5e1;
+    color: #0f172a;
 }
 
 /* Popup Content - Match POD gate structure */
@@ -79,11 +84,13 @@
 }
 
 .hb-popup-content h2 {
-    margin: 0;
-    font-size: 26px;
-    color: var(--text, rgba(232,238,252,.95));
-    line-height: 1.15;
-    letter-spacing: -.3px;
+    margin: 0 0 20px;
+    font-size: 22px;
+    font-weight: 700;
+    color: #ffffff;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    text-align: center;
 }
 
 .hb-popup-content p {
@@ -92,28 +99,27 @@
     line-height: 1.6;
 }
 
-/* Buttons - Match choice-btn style */
+/* Buttons - Continue: light grey background, black text */
 .hb-btn-primary {
     flex: 1;
     min-width: 200px;
-    padding: 14px;
-    border-radius: 14px;
-    border: 1px solid rgba(255, 255, 255, 0.14);
-    background: rgba(255, 255, 255, 0.12);
-    color: var(--text, rgba(232,238,252,.95));
-    font-weight: 700;
-    font-size: 16px;
+    padding: 10px 20px;
+    border-radius: 12px;
+    border: none;
+    background: #e2e8f0;
+    color: #1e293b;
+    font-weight: 600;
+    font-size: 20px;
     cursor: pointer;
     transition: all 0.2s ease;
     width: 100%;
     max-width: 300px;
-    margin: 18px auto 0;
+    margin: 0 auto;
     display: block;
 }
 
 .hb-btn-primary:hover:not(:disabled) {
-    background: rgba(255, 255, 255, 0.18);
-    border-color: var(--accent, rgba(125,211,252,.95));
+    background: #cbd5e1;
     transform: translateY(-1px);
 }
 
@@ -168,6 +174,7 @@
 /* Button Group - Match btn-row */
 .hb-button-group {
     margin-top: 18px;
+    padding-top: 20px;
     display: flex;
     gap: 12px;
     flex-wrap: wrap;
@@ -182,12 +189,12 @@
     margin: 0;
 }
 
-/* Role Selection - With visible radio buttons, matching image style */
+/* Role Selection - Card/pill style with distinct selected vs unselected */
 .hb-role-selection {
     display: flex;
     flex-direction: column;
-    gap: 16px;
-    margin: 24px 0;
+    gap: 10px;
+    margin: 20px 0;
     text-align: left;
 }
 
@@ -195,11 +202,11 @@
     display: flex;
     align-items: center;
     gap: 14px;
-    padding: 16px 20px;
+    padding: 18px 20px;
     border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.14);
-    background: rgba(255, 255, 255, 0.08);
-    color: var(--text, rgba(232,238,252,.95));
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: #0f172a;
+    color: #ffffff;
     font-weight: 500;
     font-size: 16px;
     cursor: pointer;
@@ -207,29 +214,27 @@
 }
 
 .hb-role-option:hover {
-    background: rgba(255, 255, 255, 0.12);
-    border-color: rgba(255, 255, 255, 0.18);
-    transform: translateY(-1px);
+    background: #1e293b;
+    border-color: rgba(255, 255, 255, 0.12);
 }
 
 .hb-role-option input[type="radio"] {
-    width: 22px;
-    height: 22px;
+    width: 20px;
+    height: 20px;
     margin: 0;
     cursor: pointer;
-    accent-color: var(--accent, rgba(125,211,252,.95));
     flex-shrink: 0;
     -webkit-appearance: none;
     appearance: none;
-    border: 2px solid rgba(255, 255, 255, 0.3);
+    border: 2px solid #64748b;
     border-radius: 50%;
     background: transparent;
     position: relative;
 }
 
 .hb-role-option input[type="radio"]:checked {
-    border-color: var(--accent, rgba(125,211,252,.95));
-    background: var(--accent, rgba(125,211,252,.95));
+    border-color: #3b82f6;
+    background: #3b82f6;
 }
 
 .hb-role-option input[type="radio"]:checked::after {
@@ -238,27 +243,28 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 8px;
-    height: 8px;
+    width: 6px;
+    height: 6px;
     border-radius: 50%;
-    background: rgba(7, 16, 36, 0.9);
+    background: #ffffff;
 }
 
 .hb-role-option span {
     font-size: 16px;
-    color: var(--text, rgba(232,238,252,.95));
+    color: #ffffff;
     font-weight: 500;
     flex: 1;
 }
 
+/* Selected: slightly brighter blue-grey background */
 .hb-role-option:has(input[type="radio"]:checked) {
-    background: rgba(125,211,252,.12);
-    border-color: rgba(125,211,252,.3);
+    background: #334155;
+    border-color: rgba(255, 255, 255, 0.12);
 }
 
 .hb-role-option:has(input[type="radio"]:checked) span {
-    font-weight: 600;
-    color: var(--accent, rgba(125,211,252,.95));
+    font-weight: 500;
+    color: #ffffff;
 }
 
 /* Phone Input */

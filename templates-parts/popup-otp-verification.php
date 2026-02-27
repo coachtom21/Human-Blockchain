@@ -4,7 +4,37 @@
  * UI Only - No backend integration yet
  */
 ?>
-
+<style id="hb-otp-popup-critical">
+/* Critical overrides - ensures popup styles apply over Elementor/other themes */
+#hb-otp-popup {
+    background: rgba(3, 8, 18, 0.95) !important;
+}
+#hb-otp-popup .hb-popup-container {
+    background: #1e293b !important;
+    background-color: #1e293b !important;
+}
+#hb-otp-popup .hb-popup-close {
+    background: #94a3b8 !important;
+    color: #1e293b !important;
+}
+#hb-otp-popup .hb-popup-content h2 {
+    color: #ffffff !important;
+}
+#hb-otp-popup .hb-role-option {
+    background: rgba(15, 23, 42, 0.8) !important;
+    color: #ffffff !important;
+}
+#hb-otp-popup .hb-role-option:has(input:checked) {
+    background: #334155 !important;
+}
+#hb-otp-popup .hb-role-option span {
+    color: #ffffff !important;
+}
+#hb-otp-popup .hb-btn-primary {
+    background: #e2e8f0 !important;
+    color: #1e293b !important;
+}
+</style>
 <!-- OTP Verification Popup Container -->
 <div id="hb-otp-popup" class="hb-popup-overlay" style="display: none;">
     <div class="hb-popup-container">
