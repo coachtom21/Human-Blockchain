@@ -255,7 +255,7 @@
           Listen to the podcast on kite festivals for peace.
         </p>
         <audio controls preload="metadata">
-          <source src="<?php echo esc_url( content_url( '/uploads/2026/03/YAM-JAM-Slam1.mp4' ) ); ?>" type="audio/mp4" />
+          <source src="<?php echo esc_url( 'http://humanblockchain.info/wp-content/uploads/2026/02/Toppling_Dictators_With_Nylon_And_String.mp3' ); ?>" type="audio/mpeg" />
           Your browser does not support the audio element.
         </audio>
       </div>
@@ -265,7 +265,7 @@
           Watch the God Wink proposal video.
         </p>
         <video controls preload="metadata">
-          <source src="<?php echo esc_url( content_url( '/uploads/2026/03/YAM-JAM-Slam.mp4' ) ); ?>" type="video/mp4" />
+          <source src="<?php echo esc_url( 'http://humanblockchain.info/wp-content/uploads/2026/02/The_God_Wink_Proposal.mp4' ); ?>" type="video/mp4" />
           Your browser does not support the video tag.
         </video>
       </div>
