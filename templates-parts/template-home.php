@@ -1,10 +1,11 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>HumanBlockchain.info | Serendipity + YAM-is-ON Proof of Delivery</title>
-  <meta name="description" content="Device-driven 2-scan Proof of Delivery. Serendipity forms Buyer POCs locally by geo-location + timestamp and Seller POCs out-of-state or global. XP in scientific notation. New World Penny recognition. VFN handles redemption." />
+<?php get_header(); ?>
+<?php
+$hb_two_qr_href = home_url( '/two-qrcode/' );
+$hb_two_qr_page = get_page_by_path( 'two-qrcode' );
+if ( $hb_two_qr_page instanceof WP_Post ) {
+	$hb_two_qr_href = get_permalink( $hb_two_qr_page );
+}
+?>
 
   <style>
     /* =========================================================
@@ -1392,10 +1393,7 @@
     .home-register-modal .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
     .home-register-modal .hidden{display:none !important}
   </style>
-  <link rel="stylesheet" href="<?php echo esc_url( get_stylesheet_directory_uri() ); ?>/assets/css/responsive.css" />
-</head>
 
-<body>
   <!-- ================= ENTRY MODAL (Enter Website protocol) ================= -->
   <div class="entry-overlay" id="enterOverlay" role="dialog" aria-modal="true" aria-labelledby="enterTitle">
     <div class="overlay">
@@ -1436,7 +1434,7 @@
 
         <div class="cta">
           <button type="button" class="btn primary" id="enterWebsite">Enter Website</button>
-          <a class="btn" href="<?php echo esc_url( home_url( '/how-it-works' ) ); ?>" id="entryHowBtn">How it works</a>
+          <a class="btn" href="<?php echo esc_url( $hb_two_qr_href ); ?>" id="entryHowBtn">How it works</a>
         </div>
 
         <p class="fine">
@@ -1488,111 +1486,6 @@
       </div>
     </div>
   </div>
-
-  <!-- TOP NAV -->
-  <header class="topbar">
-    <div class="wrap">
-      <nav class="nav" aria-label="Primary">
-        <a class="brand" href="/">
-          <?php echo hb_get_site_logo( 'medium', array( 'class' => 'logo', 'aria-hidden' => 'true' ) ); ?>
-          <div>
-            <b><?php echo esc_html( get_bloginfo( 'name' ) ); ?></b><br>
-            <span class="small tagline">Device-driven trust • 2-scan Proof of Delivery • XP accounting</span>
-          </div>
-        </a>
-
-        <!-- Desktop menu -->
-        <div class="menu" aria-label="Menu">
-          <a href="<?php echo esc_url( home_url( '/membership' ) ); ?>">Membership</a>
-          <a href="<?php echo esc_url( home_url( '/how-it-works' ) ); ?>">How it works</a>
-          <a href="#faq">FAQs</a>
-          <a href="#organizers">Organizers</a>
-          <a href="<?php echo esc_url( home_url( '/detente-2030' ) ); ?>">Detente 2030</a>
-          <a href="<?php echo esc_url( home_url( '/proof-of-delivery' ) ); ?>">Proof of Delivery</a>
-          <a href="<?php echo esc_url( home_url( '/poc-guilds' ) ); ?>">POC Guilds</a>
-          <a class="btn primary" href="<?php echo esc_url( home_url( '/kite-festival' ) ); ?>">Kite Festival</a>
-        </div>
-
-        <!-- Right side actions + mobile toggle -->
-        <div class="cta">
-          <button class="btn primary" type="button" id="openRegisterModal">Register Device</button>
-          <button class="btn primary open-join-poc-trigger" id="openJoinPOC" type="button">Start POC</button>
-          <div class="device-activate-wrapper">
-            <!-- Active Status Display (hidden by default) -->
-            <div class="device-status" id="device-status-nav">
-              <span class="status-dot"></span>
-              <div class="status-text">
-                <strong>Device Active</strong>
-                <small id="device-status-nav-message">Ready to use</small>
-              </div>
-            </div>
-            <!-- Activate Button (shown by default) -->
-            <a class="btn primary" href="/activate-device" id="activate-device-nav">Activate Device</a>
-          </div>
-          <a class="btn ghost" href="/pod-mode">PoD Mode</a>
-
-          <div class="hamburger">
-            <input id="navtoggle" type="checkbox" />
-            <label for="navtoggle" aria-label="Open menu">
-              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-              </svg>
-            </label>
-          </div>
-        </div>
-      </nav>
-    </div>
-    
-    <!-- Sidebar Overlay -->
-    <div class="sidebar-overlay"></div>
-    
-    <!-- Sidebar Menu -->
-    <div class="sidebar-menu" aria-label="Mobile Sidebar Menu">
-      <div class="sidebar-header">
-        <h2 style="margin:0; font-size:18px; font-weight:800;">Menu</h2>
-        <label for="navtoggle" class="sidebar-close" aria-label="Close menu">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
-        </label>
-      </div>
-      
-      <!-- Navigation Links -->
-      <div class="sidebar-menu-links">
-        <a href="<?php echo esc_url( home_url( '/membership' ) ); ?>">Membership</a>
-        <a href="<?php echo esc_url( home_url( '/how-it-works' ) ); ?>">How it works</a>
-        <a href="#faq">FAQs</a>
-        <a href="#organizers">Organizers</a>
-        <a href="<?php echo esc_url( home_url( '/detente-2030' ) ); ?>">Detente 2030</a>
-        <a href="<?php echo esc_url( home_url( '/proof-of-delivery' ) ); ?>">Proof of Delivery</a>
-        <a href="<?php echo esc_url( home_url( '/poc-guilds' ) ); ?>">POC Guilds</a>
-        <a class="btn primary" href="<?php echo esc_url( home_url( '/kite-festival' ) ); ?>" style="justify-content:center;">Kite Festival</a>
-      </div>
-      
-      <!-- Device Status Section -->
-      <div class="sidebar-device-section">
-        <h3>Device Status</h3>
-        <!-- Active Status Display -->
-        <div class="device-status" id="device-status-sidebar">
-          <span class="status-dot"></span>
-          <div class="status-text">
-            <strong>Device Active</strong>
-            <small id="device-status-sidebar-message">Ready to use</small>
-          </div>
-        </div>
-        <!-- Activate Button -->
-        <a class="btn primary" href="/activate-device" id="activate-device-sidebar" style="margin-top:12px; width:100%; justify-content:center;">Activate Device</a>
-      </div>
-      
-      <!-- Action Buttons -->
-      <div class="sidebar-buttons">
-        <button type="button" class="btn primary" id="openRegisterModalSidebar" style="width:100%; justify-content:center;">Register Device</button>
-        <button type="button" class="btn primary open-join-poc-trigger" style="width:100%; justify-content:center;">Start POC</button>
-        <a class="btn ghost" href="/pod-mode">PoD Mode</a>
-      </div>
-    </div>
-  </header>
 
   <!-- Join POC Guild Modal -->
   <div class="yam-modal" id="joinPOCModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="joinPOCTitle">
@@ -2649,5 +2542,4 @@
     cursor: pointer; margin-top: 20px;
   }
   </style>
-</body>
-</html>
+<?php get_footer(); ?>
