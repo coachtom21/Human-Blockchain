@@ -54,7 +54,7 @@ get_header();
               preload="metadata"
               title="<?php echo esc_attr( 'Two QRcode Détente 2030 XP Economy' ); ?>"
             >
-              <source src="<?php echo esc_url( 'http://humanblockchain.info/wp-content/uploads/2026/03/Two-QRcode-Scans.mp4' ); ?>" type="video/mp4">
+              <source src="<?php echo esc_url( 'http://humanblockchain.info/wp-content/uploads/2026/04/CMS-YAM-JAM.mp4' ); ?>" type="video/mp4">
               <?php esc_html_e( 'Your browser does not support the video tag.', 'hello-elementor-child' ); ?>
             </video>
           </div>
@@ -77,7 +77,7 @@ get_header();
                 preload="metadata"
                 title="<?php echo esc_attr( 'Coach Tom on the Human Blockchain — Two QRcode Détente 2030' ); ?>"
               >
-                <source src="<?php echo esc_url( 'http://humanblockchain.info/wp-content/uploads/2026/03/Two-QRcode-Scans1.mp4' ); ?>" type="audio/mp4">
+                <source src="<?php echo esc_url( 'http://humanblockchain.info/wp-content/uploads/2026/04/CMS-YAM-JAM-Domains.mp4' ); ?>" type="audio/mp4">
                 <?php esc_html_e( 'Your browser does not support the audio element.', 'hello-elementor-child' ); ?>
               </audio>
             </div>
