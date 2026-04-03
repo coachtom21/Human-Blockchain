@@ -32,7 +32,7 @@ get_header();
         </p>
 
         <div class="hb2030-cta">
-          <a href="/join/" class="hb2030-btn hb2030-btn--primary">Scan to Join</a>
+          <button type="button" class="hb2030-btn hb2030-btn--primary cpm-hb-open-membership-modal" id="hb2030JoinSandbox"><?php esc_html_e( 'Join Sandbox', 'hello-elementor-child' ); ?></button>
           <a href="/how-it-works/" class="hb2030-btn hb2030-btn--secondary">Explore the Protocol</a>
         </div>
 
@@ -319,8 +319,11 @@ get_header();
     min-width: 180px;
     padding: 15px 22px;
     border-radius: 14px;
+    border: none;
     text-decoration: none;
+    font: inherit;
     font-weight: 700;
+    cursor: pointer;
     transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
   }
 

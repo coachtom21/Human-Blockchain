@@ -2035,10 +2035,21 @@ if ( $hb_two_qr_page instanceof WP_Post ) {
         }
       }
 
-      // Show entry modal on page load
+      // Show entry modal on page load (skip if opening device / membership registration from #register)
       window.addEventListener("load", function() {
-        enterOverlay.classList.add("active");
-        document.body.style.overflow = "hidden";
+        if (window.location.hash === "#register") {
+          if (typeof openRegisterModal === "function") {
+            openRegisterModal();
+          }
+          if (history.replaceState) {
+            history.replaceState(null, "", window.location.pathname + window.location.search);
+          }
+          return;
+        }
+        if (enterOverlay) {
+          enterOverlay.classList.add("active");
+          document.body.style.overflow = "hidden";
+        }
       });
 
       if (enterWebsiteBtn) enterWebsiteBtn.addEventListener("click", function(e) { e.preventDefault(); enterWebsiteFromOverlay(); });
