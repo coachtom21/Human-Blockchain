@@ -172,7 +172,16 @@ $header_fallback_links = array(
 		.device-status.active{display:flex}
 		.status-dot{width:10px;height:10px;border-radius:50%;background:#86efac;box-shadow:0 0 0 3px rgba(134,239,172,.2);flex-shrink:0}
 		.device-activate-wrapper{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-		@media(max-width:900px){.menu{display:none}.cta .device-activate-wrapper{display:none}.cta .btn.ghost{display:none}.hamburger{display:block}.brand .small.tagline{display:none}.brand b{font-size:16px}}
+		/* Mobile: Start POC + PoD Mode live in the drawer only (sidebar-buttons), not duplicated in the top bar */
+		@media(max-width:900px){
+			.menu{display:none}
+			.cta .device-activate-wrapper{display:none}
+			.cta .btn.ghost{display:none}
+			.cta #openJoinPOC{display:none!important}
+			.hamburger{display:block}
+			.brand .small.tagline{display:none}
+			.brand b{font-size:16px}
+		}
 		@media(max-width:600px){.brand .small{display:none}}
 		/* Drawer open: hide duplicate hamburger (close is in panel); avoids tap confusion. */
 		body.sidebar-open .hamburger{visibility:hidden;pointer-events:none}
