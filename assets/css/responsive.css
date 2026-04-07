@@ -61,6 +61,12 @@
   h3 {
     font-size: 1rem !important;
   }
+  /* Branded templates: keep hero scale on phones (generic h1 rule above is too small) */
+  h1.hb2030-title,
+  .yamjam-page h1 {
+    font-size: clamp(1.85rem, 5.5vw + 0.75rem, 2.85rem) !important;
+    line-height: 1.08 !important;
+  }
   .btn {
     min-height: 44px;
     padding: 12px 16px;
@@ -213,19 +219,27 @@
   }
 }
 
-/* === Main content padding === */
+/* === Main content padding (scoped: avoid double padding on nested layouts) === */
 @media (max-width: 768px) {
-  main {
-    padding-left: 16px !important;
-    padding-right: 16px !important;
+  main.wrap,
+  main#content,
+  main.grid,
+  main.content,
+  main[role="main"] {
+    padding-left: max(16px, env(safe-area-inset-left, 0px)) !important;
+    padding-right: max(16px, env(safe-area-inset-right, 0px)) !important;
     padding-bottom: 40px !important;
   }
 }
 
 @media (max-width: 520px) {
-  main {
-    padding-left: 12px !important;
-    padding-right: 12px !important;
+  main.wrap,
+  main#content,
+  main.grid,
+  main.content,
+  main[role="main"] {
+    padding-left: max(12px, env(safe-area-inset-left, 0px)) !important;
+    padding-right: max(12px, env(safe-area-inset-right, 0px)) !important;
   }
   header {
     padding-left: 12px !important;
@@ -243,5 +257,83 @@
 @media (min-width: 769px) {
   .show-mobile-only {
     display: none !important;
+  }
+}
+
+/* === Child theme page templates — overflow + media (standalone + wp_enqueue pages) === */
+main#content,
+main.wrap,
+main.grid,
+main.content,
+main[role="main"] {
+  overflow-x: clip;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+main#content img,
+main#content video,
+main#content audio,
+main#content svg,
+main#content canvas,
+main.wrap img,
+main.wrap video,
+main.wrap audio,
+main.grid img,
+main.grid video,
+main.content img,
+main.content video {
+  max-width: 100%;
+  height: auto;
+}
+
+/* YAM JAM Rewards — rows + spacing on narrow screens */
+@media (max-width: 520px) {
+  .yamjam-page .yamjam-wrap {
+    width: min(1180px, calc(100% - 20px));
+  }
+  .yamjam-page .yamjam-hero {
+    padding-top: 52px;
+    padding-bottom: 28px;
+  }
+  .yamjam-page .yamjam-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  .yamjam-page .yamjam-row strong {
+    align-self: flex-end;
+  }
+  .yamjam-page .yamjam-cta-box {
+    padding: 22px 16px;
+  }
+  .yamjam-page .yamjam-band {
+    padding: 20px 14px;
+  }
+  .yamjam-page .yamjam-card {
+    padding: 18px 16px;
+  }
+}
+
+/* Two QR Codes portal — safe-area padding (class on section inside main#content) */
+@media (max-width: 520px) {
+  main#content .hb2030-portal {
+    padding-left: max(12px, env(safe-area-inset-left, 0px));
+    padding-right: max(12px, env(safe-area-inset-right, 0px));
+  }
+}
+
+/* Standalone templates: .wrap inside body without main.wrap */
+@media (max-width: 768px) {
+  body > .wrap {
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+  }
+}
+
+@media (max-width: 520px) {
+  body > .wrap {
+    padding-left: max(12px, env(safe-area-inset-left, 0px));
+    padding-right: max(12px, env(safe-area-inset-right, 0px));
   }
 }

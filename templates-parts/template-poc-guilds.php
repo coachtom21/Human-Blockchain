@@ -121,10 +121,12 @@
       cursor:pointer;
     }
     .sidebar-overlay.active{display:block; opacity:1}
+    /* Off-canvas: left:100% + translateX(-100%) when open (matches theme header drawer) */
     .sidebar-menu{
       position:fixed;
       top:0;
-      right:-100%;
+      left:100%;
+      right:auto;
       width:320px;
       max-width:85vw;
       height:100vh;
@@ -132,13 +134,18 @@
       border-left:1px solid var(--line);
       z-index:9999;
       overflow-y:auto;
-      transition:right .3s ease;
+      transition:transform .3s ease;
       padding:20px;
       display:flex;
       flex-direction:column;
       gap:20px;
+      transform:translateX(0);
+      pointer-events:none;
     }
-    .sidebar-menu.active{right:0}
+    .sidebar-menu.active{
+      transform:translateX(-100%);
+      pointer-events:auto;
+    }
     .sidebar-header{
       display:flex;
       align-items:center;

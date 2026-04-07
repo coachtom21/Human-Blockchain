@@ -117,14 +117,31 @@ $header_fallback_links = array(
 		@media(min-width:901px){.sidebar-overlay{display:none!important;pointer-events:none}}
 		.sidebar-overlay.active{display:block;opacity:1}
 		@media(min-width:901px){.sidebar-overlay.active{display:none!important}}
+		/*
+		 * Off-canvas drawer: position:fixed is correct for a viewport overlay.
+		 * Closed: left:100% parks the panel entirely past the right edge (no “column” gap beside content).
+		 * Open: translateX(-100%) slides it in by one panel width (avoids right:0 + translateX(100%) quirks).
+		 */
 		.sidebar-menu{
-			position:fixed;top:0;right:-100%;width:320px;max-width:85vw;height:100vh;
+			position:fixed;top:0;left:100%;right:auto;width:320px;max-width:85vw;height:100vh;
 			background:rgba(11,18,32,.95);backdrop-filter:blur(20px);border-left:1px solid rgba(232,238,252,.12);
-			z-index:9999;overflow-y:auto;transition:right .3s ease;padding:20px;
+			z-index:9999;overflow-y:auto;padding:20px;
 			display:flex;flex-direction:column;gap:20px;
+			transform:translateX(0);
+			transition:transform .3s ease;
+			pointer-events:none;
 		}
-		@media(min-width:901px){.sidebar-menu{display:none!important;right:-100%!important;pointer-events:none}}
-		.sidebar-menu.active{right:0}
+		@media(min-width:901px){
+			.sidebar-menu{
+				display:none!important;
+				transform:none!important;
+				pointer-events:none!important;
+			}
+		}
+		.sidebar-menu.active{
+			transform:translateX(-100%);
+			pointer-events:auto;
+		}
 		@media(min-width:901px){.sidebar-menu.active{display:none!important}}
 		body.sidebar-open{overflow:hidden}
 		.sidebar-header{display:flex;align-items:center;justify-content:space-between;padding-bottom:16px;border-bottom:1px solid rgba(232,238,252,.12)}
@@ -157,6 +174,54 @@ $header_fallback_links = array(
 		.device-activate-wrapper{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 		@media(max-width:900px){.menu{display:none}.cta .device-activate-wrapper{display:none}.cta .btn.ghost{display:none}.hamburger{display:block}.brand .small.tagline{display:none}.brand b{font-size:16px}}
 		@media(max-width:600px){.brand .small{display:none}}
+		/* Drawer open: hide duplicate hamburger (close is in panel); avoids tap confusion. */
+		body.sidebar-open .hamburger{visibility:hidden;pointer-events:none}
+
+		/* —— Responsive: topbar row (narrow / notched phones) —— */
+		@media (max-width: 900px) {
+			.topbar .nav {
+				min-width: 0;
+				gap: 8px;
+			}
+			.topbar .brand {
+				min-width: 0;
+				flex: 1 1 auto;
+				overflow: hidden;
+			}
+			.topbar .brand > div {
+				min-width: 0;
+			}
+			.topbar .brand b {
+				overflow: hidden;
+				text-overflow: ellipsis;
+				white-space: nowrap;
+			}
+			.topbar .cta {
+				flex-shrink: 0;
+				gap: 8px;
+			}
+		}
+		@media (max-width: 480px) {
+			.topbar .wrap {
+				padding-left: max(12px, env(safe-area-inset-left, 0px));
+				padding-right: max(12px, env(safe-area-inset-right, 0px));
+			}
+			.topbar .cta .btn {
+				font-size: 13px;
+				padding: 9px 12px;
+			}
+			.topbar .hamburger label {
+				width: 42px;
+				height: 42px;
+			}
+		}
+		/* responsive.css adds header padding at 520px; .wrap already pads — avoid double inset on .topbar */
+		@media (max-width: 520px) {
+			header.topbar {
+				padding-left: 0 !important;
+				padding-right: 0 !important;
+			}
+		}
 	</style>
 </head>
 <body <?php body_class(); ?>>
@@ -198,7 +263,7 @@ $header_fallback_links = array(
 				<a class="btn ghost" href="<?php echo esc_url( home_url( '/pod-mode' ) ); ?>">PoD Mode</a>
 
 				<div class="hamburger">
-					<input id="navtoggle" type="checkbox" />
+					<input id="navtoggle" type="checkbox" autocomplete="off" />
 					<label for="navtoggle" aria-label="Open menu">
 						<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
 							<path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
@@ -208,41 +273,48 @@ $header_fallback_links = array(
 			</div>
 		</nav>
 	</div>
-
-	<div class="sidebar-overlay"></div>
-
-	<div class="sidebar-menu" aria-label="Mobile Sidebar Menu">
-		<div class="sidebar-header">
-			<h2 style="margin:0;font-size:18px;font-weight:800;">Menu</h2>
-			<label for="navtoggle" class="sidebar-close" aria-label="Close menu">
-				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-					<line x1="18" y1="6" x2="6" y2="18"></line>
-					<line x1="6" y1="6" x2="18" y2="18"></line>
-				</svg>
-			</label>
-		</div>
-
-		<div class="sidebar-menu-links">
-			<?php
-			if ( $header_has_menu ) {
-				wp_nav_menu( array_merge( $menu_args, array(
-					'items_wrap' => '<ul class="%2$s">%3$s</ul>',
-				) ) );
-			} else {
-				echo '<ul class="menu-nav">';
-				foreach ( $header_fallback_links as $item ) {
-					$class = ! empty( $item['class'] ) ? ' class="' . esc_attr( $item['class'] ) . '"' : '';
-					$style = ! empty( $item['class'] ) ? ' style="justify-content:center;"' : '';
-					echo '<li><a href="' . esc_url( $item['url'] ) . '"' . $class . $style . '>' . esc_html( $item['label'] ) . '</a></li>';
-				}
-				echo '</ul>';
-			}
-			?>
-		</div>
-
-		<div class="sidebar-buttons">
-			<button type="button" class="btn primary open-join-poc-trigger" style="width:100%;justify-content:center;">Start POC</button>
-			<a class="btn ghost" href="<?php echo esc_url( home_url( '/pod-mode' ) ); ?>">PoD Mode</a>
-		</div>
-	</div>
 </header>
+
+<?php
+/*
+ * Mobile overlay + drawer must NOT live inside .topbar: backdrop-filter (and filter) on the header
+ * creates a containing block in WebKit/Chromium, so position:fixed on these panels is laid out
+ * relative to the header strip instead of the viewport — causing the “gap + narrow drawer” bug.
+ */
+?>
+<div class="sidebar-overlay" id="hb-sidebar-overlay" aria-hidden="true"></div>
+
+<div class="sidebar-menu" id="hb-sidebar-menu" aria-label="Mobile Sidebar Menu" aria-hidden="true">
+	<div class="sidebar-header">
+		<h2 style="margin:0;font-size:18px;font-weight:800;">Menu</h2>
+		<label for="navtoggle" class="sidebar-close" aria-label="Close menu">
+			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+				<line x1="18" y1="6" x2="6" y2="18"></line>
+				<line x1="6" y1="6" x2="18" y2="18"></line>
+			</svg>
+		</label>
+	</div>
+
+	<div class="sidebar-menu-links">
+		<?php
+		if ( $header_has_menu ) {
+			wp_nav_menu( array_merge( $menu_args, array(
+				'items_wrap' => '<ul class="%2$s">%3$s</ul>',
+			) ) );
+		} else {
+			echo '<ul class="menu-nav">';
+			foreach ( $header_fallback_links as $item ) {
+				$class = ! empty( $item['class'] ) ? ' class="' . esc_attr( $item['class'] ) . '"' : '';
+				$style = ! empty( $item['class'] ) ? ' style="justify-content:center;"' : '';
+				echo '<li><a href="' . esc_url( $item['url'] ) . '"' . $class . $style . '>' . esc_html( $item['label'] ) . '</a></li>';
+			}
+			echo '</ul>';
+		}
+		?>
+	</div>
+
+	<div class="sidebar-buttons">
+		<button type="button" class="btn primary open-join-poc-trigger" style="width:100%;justify-content:center;">Start POC</button>
+		<a class="btn ghost" href="<?php echo esc_url( home_url( '/pod-mode' ) ); ?>">PoD Mode</a>
+	</div>
+</div>

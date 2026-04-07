@@ -32,7 +32,7 @@ get_header();
         </p>
 
         <div class="hb2030-cta">
-          <button type="button" class="hb2030-btn hb2030-btn--primary cpm-hb-open-membership-modal" id="hb2030JoinSandbox"><?php esc_html_e( 'Join Sandbox', 'hello-elementor-child' ); ?></button>
+          <button type="button" class="hb2030-btn hb2030-btn--primary" id="hb2030JoinSandbox"><?php esc_html_e( 'Join Sandbox', 'hello-elementor-child' ); ?></button>
           <a href="/how-it-works/" class="hb2030-btn hb2030-btn--secondary">Explore the Protocol</a>
         </div>
 
@@ -672,3 +672,43 @@ get_header();
 
 <?php
 get_footer();
+?>
+<script>
+(function () {
+	function hb2030OpenMembershipModal() {
+		var gs = document.querySelector('.cpm-hb-get-started-btn');
+		if (gs) {
+			gs.click();
+			return;
+		}
+		if (typeof jQuery !== 'undefined') {
+			var $gs = jQuery('.cpm-hb-get-started-btn').first();
+			if ($gs.length) {
+				$gs.trigger('click');
+				return;
+			}
+		}
+		var modal = document.getElementById('cpm-hb-membership-modal');
+		if (modal) {
+			modal.classList.add('is-open');
+			modal.setAttribute('aria-hidden', 'false');
+			document.body.classList.add('cpm-hb-membership-modal-open');
+		}
+	}
+	function hb2030BindJoinSandbox() {
+		var btn = document.getElementById('hb2030JoinSandbox');
+		if (!btn) {
+			return;
+		}
+		btn.addEventListener('click', function (e) {
+			e.preventDefault();
+			hb2030OpenMembershipModal();
+		});
+	}
+	if (document.readyState === 'loading') {
+		document.addEventListener('DOMContentLoaded', hb2030BindJoinSandbox);
+	} else {
+		hb2030BindJoinSandbox();
+	}
+})();
+</script>

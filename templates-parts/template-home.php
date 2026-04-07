@@ -1,11 +1,4 @@
 <?php get_header(); ?>
-<?php
-$hb_two_qr_href = home_url( '/two-qrcode/' );
-$hb_two_qr_page = get_page_by_path( 'two-qrcode' );
-if ( $hb_two_qr_page instanceof WP_Post ) {
-	$hb_two_qr_href = get_permalink( $hb_two_qr_page );
-}
-?>
 
   <style>
     /* =========================================================
@@ -256,11 +249,12 @@ if ( $hb_two_qr_page instanceof WP_Post ) {
       }
     }
     
-    /* Sidebar menu - mobile/tablet only; hidden on desktop */
+    /* Sidebar menu - mobile/tablet; left:100% closed, translateX(-100%) open (matches header.php) */
     .sidebar-menu{
       position: fixed;
       top: 0;
-      right: -100%;
+      left: 100%;
+      right: auto;
       width: 320px;
       max-width: 85vw;
       height: 100vh;
@@ -269,21 +263,24 @@ if ( $hb_two_qr_page instanceof WP_Post ) {
       border-left: 1px solid rgba(232,238,252,.12);
       z-index: 9999;
       overflow-y: auto;
-      transition: right 0.3s ease;
       padding: 20px;
       display: flex;
       flex-direction: column;
       gap: 20px;
+      transform: translateX(0);
+      transition: transform 0.3s ease;
+      pointer-events: none;
     }
     @media (min-width: 901px){
       .sidebar-menu{
         display: none !important;
-        right: -100% !important;
-        pointer-events: none;
+        transform: none !important;
+        pointer-events: none !important;
       }
     }
     .sidebar-menu.active{
-      right: 0;
+      transform: translateX(-100%);
+      pointer-events: auto;
     }
     @media (min-width: 901px){
       .sidebar-menu.active{
@@ -466,388 +463,11 @@ if ( $hb_two_qr_page instanceof WP_Post ) {
       align-items:center;
     }
 
-    /* ============ ENTRY MODAL OVERLAY ============ */
-    .entry-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.75);
-      backdrop-filter: blur(8px);
-      display: grid;
-      place-items: center;
-      z-index: 10000;
-      opacity: 0;
-      visibility: hidden;
-      transition: opacity 0.3s ease, visibility 0.3s ease;
-      padding: 18px;
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
-    }
-    
-    /* Lock body scroll when modal is active */
-    body:has(.entry-overlay.active),
+    /* Lock body scroll when POD gate modal is active */
     body:has(.pod-gate-overlay.active) {
       overflow: hidden;
       position: fixed;
       width: 100%;
-    }
-
-    .entry-overlay.active {
-      opacity: 1;
-      visibility: visible;
-    }
-
-    .entry-overlay .overlay {
-      width: min(720px, 100%);
-      max-width: 100%;
-      max-height: calc(100vh - 36px);
-      background: rgba(11,18,32,.35);
-      border: 1px solid rgba(232,238,252,.10);
-      border-radius: calc(var(--radius) + 6px);
-      padding: 10px;
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(10px);
-      transform: scale(0.95);
-      transition: transform 0.3s ease;
-      margin: auto;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .entry-overlay.active .overlay {
-      transform: scale(1);
-    }
-
-    .entry-overlay .modal {
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      padding: 20px;
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
-      max-height: 100%;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .entry-overlay .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 10px;
-    }
-
-    .entry-overlay .logo {
-      width: 40px;
-      height: 40px;
-      border-radius: 14px;
-      background: linear-gradient(135deg, rgba(125,211,252,.95), rgba(167,139,250,.95));
-      box-shadow: 0 12px 24px rgba(0,0,0,.28);
-      flex: 0 0 auto;
-    }
-
-    .entry-overlay .brand b {
-      letter-spacing: .3px;
-    }
-
-    .entry-overlay .brand .sub {
-      font-size: 12px;
-      color: var(--muted);
-      margin-top: 2px;
-    }
-
-    .entry-overlay h1 {
-      font-size: 26px;
-      line-height: 1.15;
-      margin: 8px 0 8px;
-      letter-spacing: -.3px;
-    }
-
-    .entry-overlay p {
-      margin: 0 0 12px;
-      color: var(--muted);
-      line-height: 1.45;
-    }
-
-    .entry-overlay .pillrow {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin: 10px 0 14px;
-    }
-
-    .entry-overlay .pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      background: rgba(232,238,252,.08);
-      border: 1px solid rgba(232,238,252,.12);
-      font-size: 12px;
-      color: var(--muted);
-    }
-
-    .entry-overlay .dot {
-      width: 9px;
-      height: 9px;
-      border-radius: 999px;
-      background: var(--accent);
-      box-shadow: 0 0 0 4px rgba(125,211,252,.10);
-    }
-
-    .entry-overlay .dot.good {
-      background: var(--good);
-      box-shadow: 0 0 0 4px rgba(134,239,172,.10);
-    }
-
-    .entry-overlay .dot.warn {
-      background: var(--warn);
-      box-shadow: 0 0 0 4px rgba(251,191,36,.12);
-    }
-
-    .entry-overlay .cta {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 12px;
-    }
-
-    .entry-overlay .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      padding: 12px 14px;
-      border-radius: 14px;
-      border: 1px solid rgba(232,238,252,.16);
-      background: rgba(232,238,252,.06);
-      color: var(--text);
-      font-weight: 900;
-      cursor: pointer;
-      text-decoration: none;
-      transition: transform .08s ease, background .12s ease, filter .08s ease;
-    }
-
-    .entry-overlay .btn:hover {
-      background: rgba(232,238,252,.10);
-      transform: translateY(-1px);
-    }
-
-    .entry-overlay .btn:active {
-      transform: translateY(0px);
-      filter: brightness(.98);
-    }
-
-    .entry-overlay .btn.primary {
-      border-color: transparent;
-      background: linear-gradient(135deg, rgba(125,211,252,.95), rgba(167,139,250,.95));
-      color: #071024;
-    }
-
-    .entry-overlay .btn.primary:hover {
-      filter: brightness(1.05);
-    }
-
-    .entry-overlay .btn.ghost {
-      background: transparent;
-    }
-
-    .entry-overlay .divider {
-      height: 1px;
-      background: rgba(232,238,252,.12);
-      margin: 14px 0;
-    }
-
-    .entry-overlay .top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      margin-bottom: 10px;
-      flex-wrap: wrap;
-    }
-    .entry-overlay .q {
-      margin-top: 14px;
-      padding: 14px;
-      border-radius: 16px;
-      border: 1px solid var(--line);
-      background: rgba(0,0,0,.18);
-    }
-    .entry-overlay .q h2 { margin: 0 0 6px; font-size: 14px; }
-    .entry-overlay .q p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.45; }
-    .entry-overlay .pillRow {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 10px;
-    }
-    .entry-overlay .pillRow .pill {
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      padding: 8px 12px;
-      background: rgba(255,255,255,.04);
-      cursor: pointer;
-      font-weight: 800;
-      font-size: 13px;
-      appearance: none;
-    }
-    .entry-overlay .pillRow .pill[aria-pressed="true"] {
-      outline: 2px solid rgba(125,211,252,.55);
-    }
-    .entry-overlay .fine {
-      margin-top: 12px;
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.5;
-    }
-    .entry-overlay .note {
-      font-size: 12px;
-      color: var(--muted);
-      line-height: 1.5;
-      margin: 8px 0 0;
-    }
-
-    .entry-overlay .list {
-      display: grid;
-      gap: 10px;
-      margin-top: 12px;
-    }
-
-    .entry-overlay .item {
-      display: flex;
-      gap: 10px;
-      align-items: flex-start;
-      padding: 12px;
-      border-radius: 16px;
-      background: rgba(232,238,252,.05);
-      border: 1px solid rgba(232,238,252,.10);
-    }
-
-    .entry-overlay .item b {
-      color: var(--text);
-      font-size: 13px;
-    }
-
-    .entry-overlay .item span {
-      display: block;
-      font-size: 12px;
-      color: var(--muted);
-      margin-top: 2px;
-    }
-
-    .entry-overlay .legal {
-      margin-top: 12px;
-      font-size: 12px;
-      color: var(--muted);
-    }
-
-    @media (max-width: 768px) {
-      .entry-overlay {
-        padding: 0;
-        align-items: stretch;
-        padding-top: 0;
-        padding-bottom: 0;
-        display: flex;
-        flex-direction: column;
-      }
-      .entry-overlay .overlay {
-        max-height: 100vh;
-        width: 100%;
-        padding: 0;
-        border-radius: 0;
-        margin: 0;
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        min-height: 0;
-      }
-      .entry-overlay .modal {
-        padding: 20px 16px;
-        max-height: 100vh;
-        border-radius: 0;
-        overflow-y: auto;
-        flex: 1;
-        min-height: 0;
-        -webkit-overflow-scrolling: touch;
-      }
-      .entry-overlay h1 {
-        font-size: 22px;
-        margin: 4px 0 8px;
-      }
-      .entry-overlay .brand {
-        margin-bottom: 8px;
-      }
-      .entry-overlay .logo {
-        width: 36px;
-        height: 36px;
-      }
-      .entry-overlay .brand b {
-        font-size: 16px;
-      }
-      .entry-overlay .brand .sub {
-        font-size: 11px;
-      }
-      .entry-overlay p {
-        font-size: 14px;
-        line-height: 1.5;
-      }
-      .entry-overlay .btn {
-        width: 100%;
-        min-height: 48px;
-        font-size: 15px;
-        padding: 12px 16px;
-      }
-      .entry-overlay .cta {
-        margin-top: 16px;
-        flex-direction: column;
-        gap: 10px;
-      }
-      .entry-overlay .legal {
-        margin-top: 16px;
-        font-size: 11px;
-        line-height: 1.5;
-      }
-      .entry-overlay .list {
-        gap: 8px;
-        margin-top: 10px;
-      }
-      .entry-overlay .item {
-        padding: 10px;
-      }
-      .entry-overlay .item b {
-        font-size: 12px;
-      }
-      .entry-overlay .item span {
-        font-size: 11px;
-      }
-      .entry-overlay .pillrow {
-        gap: 6px;
-        margin: 8px 0 12px;
-      }
-      .entry-overlay .pill {
-        font-size: 11px;
-        padding: 5px 8px;
-      }
-    }
-    
-    @media (max-width: 480px) {
-      .entry-overlay .modal {
-        padding: 16px 12px;
-      }
-      .entry-overlay h1 {
-        font-size: 20px;
-      }
-      .entry-overlay .logo {
-        width: 32px;
-        height: 32px;
-      }
-      .entry-overlay .brand b {
-        font-size: 15px;
-      }
-      .entry-overlay .btn {
-        min-height: 44px;
-        font-size: 14px;
-      }
     }
 
     /* ============ POD GATE MODAL ============ */
@@ -1394,62 +1014,6 @@ if ( $hb_two_qr_page instanceof WP_Post ) {
     .home-register-modal .hidden{display:none !important}
   </style>
 
-  <!-- ================= ENTRY MODAL (Enter Website protocol) ================= -->
-  <div class="entry-overlay" id="enterOverlay" role="dialog" aria-modal="true" aria-labelledby="enterTitle">
-    <div class="overlay">
-      <div class="modal">
-        <div class="top">
-          <div class="brand">
-            <?php echo hb_get_site_logo( 'medium', array( 'class' => 'logo', 'aria-hidden' => 'true' ) ); ?>
-            <div>
-              <h1 id="enterTitle"><?php echo esc_html( get_bloginfo( 'name' ) ); ?> • Enter Website</h1>
-              <div class="sub">Two quick prompts. Then you choose the path.</div>
-            </div>
-          </div>
-          <div class="cta" style="margin-top:0">
-            <button type="button" class="btn" id="entryHomeBtn">Home</button>
-            <a class="btn" href="<?php echo esc_url( home_url( '/faq' ) ); ?>">What is this?</a>
-          </div>
-        </div>
-
-        <div class="q" id="q1">
-          <h2>Prompt 1 — Is this Proof of Delivery?</h2>
-          <p>Choose <strong>Yes</strong> only if you're confirming a delivery event (voucher attached / proof recorded).</p>
-          <div class="pillRow">
-            <button type="button" class="pill" id="podYes" aria-pressed="false">Yes</button>
-            <button type="button" class="pill" id="podNo" aria-pressed="false">No</button>
-          </div>
-        </div>
-
-        <div class="q" id="q2">
-          <h2>Prompt 2 — Is this the Final Destination?</h2>
-          <p>Choose <strong>Yes</strong> only if the package arrived at its intended final destination.</p>
-          <div class="pillRow">
-            <button type="button" class="pill" id="fdYes" aria-pressed="false">Yes</button>
-            <button type="button" class="pill" id="fdNo" aria-pressed="false">No</button>
-          </div>
-        </div>
-
-        <div class="divider" role="separator"></div>
-
-        <div class="cta">
-          <button type="button" class="btn primary" id="enterWebsite">Enter Website</button>
-          <a class="btn" href="<?php echo esc_url( $hb_two_qr_href ); ?>" id="entryHowBtn">How it works</a>
-        </div>
-
-        <p class="fine">
-          Your responses are recorded for reputation outcomes ("Kalshi Mirror" style metrics) at individual / group / guild levels.
-          Demo storage key: <code>hb_last_scan</code>.
-        </p>
-
-        <p class="note">
-          If <strong>Proof of Delivery = Yes</strong>, you'll be routed to the <strong>WooCommerce Backorder routine</strong>.
-          If <strong>No</strong>, you'll be routed into the onboarding funnel (device registration → membership → Discord).
-        </p>
-      </div>
-    </div>
-  </div>
-
   <!-- ================= POD GATE MODAL ================= -->
   <div class="pod-gate-overlay" id="podOverlay">
     <div class="pod-gate-modal" id="podGate">
@@ -1746,7 +1310,7 @@ if ( $hb_two_qr_page instanceof WP_Post ) {
     </div>
   </div>
 
-  <main>
+  <main id="content" tabindex="-1">
     <section class="hero">
       <div class="wrap">
         <div class="grid" style="grid-template-columns:1.2fr .8fr;margin-top:0">
@@ -1976,66 +1540,7 @@ if ( $hb_two_qr_page instanceof WP_Post ) {
         document.addEventListener('keydown', function(e) { if (e.key === 'Escape' && modalBg && modalBg.classList.contains('show')) closeRegisterModal(); });
       })();
 
-      // Entry Modal (Enter Website protocol) - Show on page load
-      const enterOverlay = document.getElementById("enterOverlay");
-      const podOverlay = document.getElementById("podOverlay");
-      const enterWebsiteBtn = document.getElementById("enterWebsite");
-      const podGateYes = document.getElementById("podGateYes");
-      const podGateNo = document.getElementById("podGateNo");
-
-      var scanState = { pod: null, final: null };
-      var WOO_BACKORDER_URL = "<?php echo esc_url( home_url( '/backorder' ) ); ?>";
-      var HOME_REGISTER = "<?php echo esc_url( home_url( '/' ) ); ?>#register";
-
-      function setPressed(idYes, idNo, yesPressed) {
-        var y = document.getElementById(idYes), n = document.getElementById(idNo);
-        if (y) y.setAttribute("aria-pressed", yesPressed ? "true" : "false");
-        if (n) n.setAttribute("aria-pressed", yesPressed ? "false" : "true");
-      }
-      function setAnswer(which, val) {
-        scanState[which] = val;
-        if (which === "pod") setPressed("podYes", "podNo", val === "YES");
-        if (which === "final") setPressed("fdYes", "fdNo", val === "YES");
-      }
-      function persistScan() {
-        var payload = {
-          ts: new Date().toISOString(),
-          pod: scanState.pod,
-          final: scanState.final,
-          geo: "client_geo_if_enabled",
-          device: "device_hash_if_registered"
-        };
-        try { localStorage.setItem("hb_last_scan", JSON.stringify(payload)); } catch (e) {}
-        console.log("Saved hb_last_scan:", payload);
-      }
-      function enterWebsiteFromOverlay() {
-        if (!scanState.pod || !scanState.final) {
-          alert("Please answer both prompts (PoD + Final Destination).");
-          return;
-        }
-        persistScan();
-        if (scanState.pod === "YES") {
-          // Show role popup first, then redirect to backorder after user selects role
-          enterOverlay.classList.remove("active");
-          try { sessionStorage.setItem("hb_redirect_to_backorder", "1"); } catch (e) {}
-          showRolePopupFromEntry();
-        } else {
-          enterOverlay.classList.remove("active");
-          document.body.style.overflow = "";
-          if (typeof openRegisterModal === "function") openRegisterModal();
-          else window.location.href = HOME_REGISTER;
-        }
-      }
-
-      function showRolePopupFromEntry() {
-        var rolePopup = document.getElementById('hb-role-popup-overlay');
-        if (rolePopup) {
-          rolePopup.style.display = 'flex';
-          document.body.style.overflow = 'hidden';
-        }
-      }
-
-      // Show entry modal on page load (skip if opening device / membership registration from #register)
+      // Open registration modal when URL has #register (e.g. deep link from Two QR Codes)
       window.addEventListener("load", function() {
         if (window.location.hash === "#register") {
           if (typeof openRegisterModal === "function") {
@@ -2044,24 +1549,13 @@ if ( $hb_two_qr_page instanceof WP_Post ) {
           if (history.replaceState) {
             history.replaceState(null, "", window.location.pathname + window.location.search);
           }
-          return;
-        }
-        if (enterOverlay) {
-          enterOverlay.classList.add("active");
-          document.body.style.overflow = "hidden";
         }
       });
 
-      if (enterWebsiteBtn) enterWebsiteBtn.addEventListener("click", function(e) { e.preventDefault(); enterWebsiteFromOverlay(); });
-      var entryHomeBtn = document.getElementById("entryHomeBtn");
-      if (entryHomeBtn) entryHomeBtn.addEventListener("click", function() { enterOverlay.classList.remove("active"); document.body.style.overflow = ""; });
-
-      var podYes = document.getElementById("podYes"), podNo = document.getElementById("podNo");
-      var fdYes = document.getElementById("fdYes"), fdNo = document.getElementById("fdNo");
-      if (podYes) podYes.addEventListener("click", function() { setAnswer("pod", "YES"); });
-      if (podNo) podNo.addEventListener("click", function() { setAnswer("pod", "NO"); });
-      if (fdYes) fdYes.addEventListener("click", function() { setAnswer("final", "YES"); });
-      if (fdNo) fdNo.addEventListener("click", function() { setAnswer("final", "NO"); });
+      const podOverlay = document.getElementById("podOverlay");
+      const podGateYes = document.getElementById("podGateYes");
+      const podGateNo = document.getElementById("podGateNo");
+      var WOO_BACKORDER_URL = "<?php echo esc_url( home_url( '/backorder' ) ); ?>";
 
       // Role popup - Close and Continue handlers (use event delegation - popup is after this script)
       function hideRolePopup() {
@@ -2099,7 +1593,7 @@ if ( $hb_two_qr_page instanceof WP_Post ) {
         }
       });
 
-      // POD Gate - Yes button (shows role popup, same as Enter Website flow)
+      // POD Gate - Yes button (shows role popup, then optional backorder redirect)
       if (podGateYes) podGateYes.addEventListener("click", function() {
         podOverlay.classList.remove("active");
         document.body.style.overflow = "";
@@ -2313,79 +1807,10 @@ if ( $hb_two_qr_page instanceof WP_Post ) {
         }
       }
 
-      // Sidebar toggle functionality
-      function toggleSidebar(open) {
-        const overlay = document.querySelector('.sidebar-overlay');
-        const sidebar = document.querySelector('.sidebar-menu');
-        const navToggle = document.getElementById('navtoggle');
-        
-        if (overlay && sidebar && navToggle) {
-          if (open) {
-            overlay.classList.add('active');
-            sidebar.classList.add('active');
-            document.body.classList.add('sidebar-open');
-            navToggle.checked = true;
-          } else {
-            overlay.classList.remove('active');
-            sidebar.classList.remove('active');
-            document.body.classList.remove('sidebar-open');
-            navToggle.checked = false;
-          }
-        }
-      }
-      
+      // Mobile sidebar: hb-mobile-sidebar.js (header hamburger) + window.toggleSidebar for register modal
       // Check device status when page loads
       document.addEventListener('DOMContentLoaded', function() {
         checkDeviceActive();
-        
-        const navToggle = document.getElementById('navtoggle');
-        const overlay = document.querySelector('.sidebar-overlay');
-        const sidebar = document.querySelector('.sidebar-menu');
-        
-        // Toggle sidebar when checkbox changes
-        if (navToggle) {
-          navToggle.addEventListener('change', function() {
-            toggleSidebar(this.checked);
-          });
-        }
-        
-        // Close sidebar when clicking overlay
-        if (overlay) {
-          overlay.addEventListener('click', function() {
-            toggleSidebar(false);
-          });
-        }
-        
-        // Close sidebar when clicking a menu link
-        const sidebarLinks = document.querySelectorAll('.sidebar-menu-links a');
-        sidebarLinks.forEach(link => {
-          link.addEventListener('click', function() {
-            toggleSidebar(false);
-          });
-        });
-        
-        // Close sidebar when clicking PoD Mode button
-        const podModeBtn = document.querySelector('.sidebar-buttons .btn');
-        if (podModeBtn) {
-          podModeBtn.addEventListener('click', function() {
-            toggleSidebar(false);
-          });
-        }
-        
-        // Close sidebar when clicking activate device button
-        const activateBtn = document.getElementById('activate-device-sidebar');
-        if (activateBtn) {
-          activateBtn.addEventListener('click', function() {
-            toggleSidebar(false);
-          });
-        }
-        
-        // Close sidebar when resizing to desktop (sidebar is mobile/tablet only)
-        window.addEventListener('resize', function() {
-          if (window.innerWidth >= 901) {
-            toggleSidebar(false);
-          }
-        });
       });
 
       // ============ JOIN POC MODAL ============
@@ -2494,7 +1919,7 @@ if ( $hb_two_qr_page instanceof WP_Post ) {
     </script>
   </footer>
   
-  <!-- ================= ROLE POPUP (shown when Enter Website clicked with Yes/Yes) ================= -->
+  <!-- ================= ROLE POPUP (POD gate Yes flow → Seller/Buyer, optional backorder) ================= -->
   <div id="hb-role-popup-overlay" class="hb-role-popup-overlay" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="hb-role-popup-title">
     <div class="hb-popup-container">
       <span class="hb-popup-close" id="hb-role-popup-close" aria-label="Close">&times;</span>
