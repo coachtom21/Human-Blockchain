@@ -292,6 +292,8 @@ if ( function_exists( 'wc_get_page_permalink' ) ) {
 		}
 		.editor-content :where(p,ul,ol){ color: rgba(238,242,255,.92); line-height: 1.65; }
 		.editor-content a{ color: var(--accent); }
+		.hb-cpm-hb-backorders{ margin-top: 18px; }
+		.hb-cpm-hb-backorders :where(p,ul,ol,table){ color: rgba(238,242,255,.92); }
 	</style>
 	<link rel="stylesheet" href="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/css/responsive.css' ); ?>" />
 </head>
@@ -402,6 +404,9 @@ while ( have_posts() ) :
 								<li><?php esc_html_e( 'Complete checkout like any other order; fulfillment may queue until inventory or routing is assigned.', 'hello-elementor-child' ); ?></li>
 								<li><?php esc_html_e( 'Device registration and PoD Mode connect your scans when you participate as buyer or seller on the network.', 'hello-elementor-child' ); ?></li>
 							</ul>
+							<div class="hb-cpm-hb-backorders">
+								<?php echo do_shortcode( '[cpm_hb_backorders]' ); ?>
+							</div>
 						</div>
 						<div class="callout">
 							<b><?php esc_html_e( 'Heads-up', 'hello-elementor-child' ); ?></b>
