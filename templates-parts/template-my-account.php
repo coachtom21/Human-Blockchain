@@ -58,26 +58,42 @@ if ( class_exists( 'Cpm_Humanblockchain_Xp_Ledger' ) ) {
 
 $refresh_url = wp_nonce_url( add_query_arg( 'hb_refresh_membership', '1', get_permalink() ), 'hb_my_account_refresh_membership' );
 
-$xp_to_scientific = static function ( $value, $precision = 4 ) {
+$hb_xp_allowed_html = array(
+	'span' => array(
+		'class'       => true,
+		'aria-hidden' => true,
+	),
+	'sup'  => array(),
+);
+
+/**
+ * Format a positive integer digit-string as "a × 10^n XP" (superscript n), without float overflow.
+ *
+ * @param string|int $value Raw xp_units or total string.
+ * @return string Safe HTML (coefficient and exponent escaped).
+ */
+$hb_xp_display_html = static function ( $value ) {
 	$digits = preg_replace( '/\D/', '', (string) $value );
-	if ( ! is_string( $digits ) ) {
-		$digits = '0';
-	}
 	$digits = ltrim( $digits, '0' );
 	if ( $digits === '' ) {
-		return '0';
+		return '<span class="xp-sci">0 XP</span>';
 	}
-	$precision = max( 0, (int) $precision );
-	$exp       = strlen( $digits ) - 1;
-	$lead      = substr( $digits, 0, 1 );
-	$tail      = substr( $digits, 1, $precision );
-	if ( $tail !== '' ) {
-		$mantissa = $lead . '.' . rtrim( $tail, '0' );
-		$mantissa = rtrim( $mantissa, '.' );
+	$tz = 0;
+	while ( strlen( $digits ) > 1 && substr( $digits, -1 ) === '0' ) {
+		$digits = substr( $digits, 0, -1 );
+		$tz++;
+	}
+	$L    = strlen( $digits );
+	$frac = substr( $digits, 1 );
+	if ( $frac === '' ) {
+		$coeff   = $digits;
+		$exp_str = (string) $tz;
 	} else {
-		$mantissa = $lead;
+		$coeff   = $digits[0] . '.' . rtrim( $frac, '0' );
+		$coeff   = rtrim( $coeff, '.' );
+		$exp_str = (string) ( $tz + $L - 1 );
 	}
-	return $mantissa . 'e' . $exp;
+	return '<span class="xp-sci"><span class="xp-sci-coeff">' . esc_html( $coeff ) . '</span> <span class="xp-sci-times" aria-hidden="true">&times;</span> 10<sup>' . esc_html( $exp_str ) . '</sup> XP</span>';
 };
 ?>
 <!DOCTYPE html>
@@ -143,6 +159,22 @@ $xp_to_scientific = static function ( $value, $precision = 4 ) {
 		th{color:var(--muted);font-weight:600;font-size:.72rem;text-transform:uppercase;letter-spacing:.04em;background:rgba(0,0,0,.2)}
 		tr:last-child td{border-bottom:0}
 		code.xp{font-size:.72rem;word-break:break-all;color:#c7d2fe}
+		.xp-sci{
+			display:inline-block;
+			white-space:nowrap;
+			font-size:.88rem;
+			font-weight:700;
+			color:#e8c4a0;
+			letter-spacing:.02em;
+		}
+		.xp-sci sup{
+			font-size:.72em;
+			font-weight:700;
+			vertical-align:super;
+			line-height:0;
+			margin-left:.06em;
+		}
+		.xp-sci-times{font-weight:700;margin:0 .12em;color:#f0dcc4}
 		.empty{color:var(--muted);font-size:.9rem;margin:8px 0 0}
 	</style>
 </head>
@@ -220,10 +252,10 @@ $xp_to_scientific = static function ( $value, $precision = 4 ) {
 						<dd><?php echo esc_html( (string) (int) $xp_summary['row_count'] ); ?></dd>
 					</div>
 					<div>
-						<dt><?php esc_html_e( 'Total XP (scientific)', 'hello-elementor-child' ); ?></dt>
+						<dt><?php esc_html_e( 'Total XP', 'hello-elementor-child' ); ?></dt>
 						<dd>
 							<?php if ( ! empty( $xp_summary['total_exact'] ) ) : ?>
-								<code class="xp"><?php echo esc_html( $xp_to_scientific( (string) $xp_summary['total_xp'] ) ); ?></code>
+								<?php echo wp_kses( $hb_xp_display_html( (string) $xp_summary['total_xp'] ), $hb_xp_allowed_html ); ?>
 							<?php else : ?>
 								<span class="empty" style="margin:0"><?php esc_html_e( 'Exact total requires the PHP BCMath extension (bcadd). Per-row values are still listed below.', 'hello-elementor-child' ); ?></span>
 							<?php endif; ?>
@@ -241,7 +273,7 @@ $xp_to_scientific = static function ( $value, $precision = 4 ) {
 									<th><?php esc_html_e( 'ID', 'hello-elementor-child' ); ?></th>
 									<th><?php esc_html_e( 'Type', 'hello-elementor-child' ); ?></th>
 									<th><?php esc_html_e( 'Transaction', 'hello-elementor-child' ); ?></th>
-									<th><?php esc_html_e( 'XP (scientific)', 'hello-elementor-child' ); ?></th>
+									<th><?php esc_html_e( 'XP', 'hello-elementor-child' ); ?></th>
 									<th><?php esc_html_e( 'Status', 'hello-elementor-child' ); ?></th>
 									<th><?php esc_html_e( 'Remote', 'hello-elementor-child' ); ?></th>
 									<th><?php esc_html_e( 'Ledger date', 'hello-elementor-child' ); ?></th>
@@ -253,7 +285,7 @@ $xp_to_scientific = static function ( $value, $precision = 4 ) {
 										<td><?php echo isset( $row->id ) ? esc_html( (string) (int) $row->id ) : ''; ?></td>
 										<td><?php echo isset( $row->scan_type ) ? esc_html( (string) $row->scan_type ) : ''; ?></td>
 										<td><code class="xp"><?php echo isset( $row->transaction_id ) ? esc_html( (string) $row->transaction_id ) : ''; ?></code></td>
-										<td><code class="xp"><?php echo isset( $row->xp_units ) ? esc_html( $xp_to_scientific( (string) $row->xp_units ) ) : ''; ?></code></td>
+										<td><?php echo isset( $row->xp_units ) ? wp_kses( $hb_xp_display_html( (string) $row->xp_units ), $hb_xp_allowed_html ) : ''; ?></td>
 										<td><?php echo isset( $row->scan_status ) ? esc_html( (string) $row->scan_status ) : ''; ?></td>
 										<td><?php echo isset( $row->remote_sync_status ) ? esc_html( (string) $row->remote_sync_status ) : ''; ?></td>
 										<td><?php echo isset( $row->ledger_date ) ? esc_html( (string) $row->ledger_date ) : ''; ?></td>
