@@ -318,6 +318,11 @@ function hb_create_registration_pages() {
 			'slug' => 'activate-device-complete',
 			'template' => 'templates-parts/template-activate-device-complete.php',
 		),
+		array(
+			'title'    => 'My Account',
+			'slug'     => 'my-account',
+			'template' => 'templates-parts/template-my-account.php',
+		),
 	);
 	
 	$created = 0;
