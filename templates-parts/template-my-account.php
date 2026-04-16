@@ -57,6 +57,28 @@ if ( class_exists( 'Cpm_Humanblockchain_Xp_Ledger' ) ) {
 }
 
 $refresh_url = wp_nonce_url( add_query_arg( 'hb_refresh_membership', '1', get_permalink() ), 'hb_my_account_refresh_membership' );
+
+$xp_to_scientific = static function ( $value, $precision = 4 ) {
+	$digits = preg_replace( '/\D/', '', (string) $value );
+	if ( ! is_string( $digits ) ) {
+		$digits = '0';
+	}
+	$digits = ltrim( $digits, '0' );
+	if ( $digits === '' ) {
+		return '0';
+	}
+	$precision = max( 0, (int) $precision );
+	$exp       = strlen( $digits ) - 1;
+	$lead      = substr( $digits, 0, 1 );
+	$tail      = substr( $digits, 1, $precision );
+	if ( $tail !== '' ) {
+		$mantissa = $lead . '.' . rtrim( $tail, '0' );
+		$mantissa = rtrim( $mantissa, '.' );
+	} else {
+		$mantissa = $lead;
+	}
+	return $mantissa . 'e' . $exp;
+};
 ?>
 <!DOCTYPE html>
 <html <?php language_attributes(); ?>>
@@ -198,10 +220,10 @@ $refresh_url = wp_nonce_url( add_query_arg( 'hb_refresh_membership', '1', get_pe
 						<dd><?php echo esc_html( (string) (int) $xp_summary['row_count'] ); ?></dd>
 					</div>
 					<div>
-						<dt><?php esc_html_e( 'Total XP (units string)', 'hello-elementor-child' ); ?></dt>
+						<dt><?php esc_html_e( 'Total XP (scientific)', 'hello-elementor-child' ); ?></dt>
 						<dd>
 							<?php if ( ! empty( $xp_summary['total_exact'] ) ) : ?>
-								<code class="xp"><?php echo esc_html( (string) $xp_summary['total_xp'] ); ?></code>
+								<code class="xp"><?php echo esc_html( $xp_to_scientific( (string) $xp_summary['total_xp'] ) ); ?></code>
 							<?php else : ?>
 								<span class="empty" style="margin:0"><?php esc_html_e( 'Exact total requires the PHP BCMath extension (bcadd). Per-row values are still listed below.', 'hello-elementor-child' ); ?></span>
 							<?php endif; ?>
@@ -219,7 +241,7 @@ $refresh_url = wp_nonce_url( add_query_arg( 'hb_refresh_membership', '1', get_pe
 									<th><?php esc_html_e( 'ID', 'hello-elementor-child' ); ?></th>
 									<th><?php esc_html_e( 'Type', 'hello-elementor-child' ); ?></th>
 									<th><?php esc_html_e( 'Transaction', 'hello-elementor-child' ); ?></th>
-									<th><?php esc_html_e( 'XP units', 'hello-elementor-child' ); ?></th>
+									<th><?php esc_html_e( 'XP (scientific)', 'hello-elementor-child' ); ?></th>
 									<th><?php esc_html_e( 'Status', 'hello-elementor-child' ); ?></th>
 									<th><?php esc_html_e( 'Remote', 'hello-elementor-child' ); ?></th>
 									<th><?php esc_html_e( 'Ledger date', 'hello-elementor-child' ); ?></th>
@@ -231,19 +253,11 @@ $refresh_url = wp_nonce_url( add_query_arg( 'hb_refresh_membership', '1', get_pe
 										<td><?php echo isset( $row->id ) ? esc_html( (string) (int) $row->id ) : ''; ?></td>
 										<td><?php echo isset( $row->scan_type ) ? esc_html( (string) $row->scan_type ) : ''; ?></td>
 										<td><code class="xp"><?php echo isset( $row->transaction_id ) ? esc_html( (string) $row->transaction_id ) : ''; ?></code></td>
-										<td><code class="xp"><?php echo isset( $row->xp_units ) ? esc_html( (string) $row->xp_units ) : ''; ?></code></td>
+										<td><code class="xp"><?php echo isset( $row->xp_units ) ? esc_html( $xp_to_scientific( (string) $row->xp_units ) ) : ''; ?></code></td>
 										<td><?php echo isset( $row->scan_status ) ? esc_html( (string) $row->scan_status ) : ''; ?></td>
 										<td><?php echo isset( $row->remote_sync_status ) ? esc_html( (string) $row->remote_sync_status ) : ''; ?></td>
 										<td><?php echo isset( $row->ledger_date ) ? esc_html( (string) $row->ledger_date ) : ''; ?></td>
 									</tr>
-									<?php if ( ! empty( $row->entry_json ) ) : ?>
-										<tr>
-											<td colspan="7" style="background:rgba(0,0,0,.15)">
-												<strong style="display:block;color:var(--muted);font-size:.72rem;margin-bottom:6px;text-transform:uppercase;letter-spacing:.04em"><?php esc_html_e( 'Entry JSON', 'hello-elementor-child' ); ?></strong>
-												<code class="xp"><?php echo esc_html( wp_strip_all_tags( (string) $row->entry_json ) ); ?></code>
-											</td>
-										</tr>
-									<?php endif; ?>
 								<?php endforeach; ?>
 							</tbody>
 						</table>
