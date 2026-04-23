@@ -1,0 +1,2467 @@
+<?php
+/**
+ * Template Name: NWP Landing
+ */
+?>
+<!DOCTYPE html>
+<html <?php language_attributes(); ?>>
+<head>
+  <meta charset="<?php bloginfo( 'charset' ); ?>" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NWP Processing Center | humanblockchain.info</title>
+  <style>
+    :root {
+      --bg: #08111f;
+      --panel: #0f1b2d;
+      --panel-2: #13233b;
+      --text: #eef4ff;
+      --muted: #b6c4dc;
+      --accent: #f5b942;
+      --accent-2: #64d2ff;
+      --green: #51d38a;
+      --border: rgba(255,255,255,0.12);
+      --shadow: 0 20px 60px rgba(0,0,0,0.35);
+      --radius: 24px;
+      --max: 1180px;
+    }
+
+    * { box-sizing: border-box; }
+    html {
+      scroll-behavior: smooth;
+      overflow-x: hidden;
+    }
+    body.nwp-landing {
+      margin: 0;
+      overflow-x: hidden;
+      -webkit-text-size-adjust: 100%;
+      text-size-adjust: 100%;
+      padding-left: max(0px, env(safe-area-inset-left, 0px));
+      padding-right: max(0px, env(safe-area-inset-right, 0px));
+    }
+    body {
+      margin: 0;
+      font-family: Inter, Arial, Helvetica, sans-serif;
+      background:
+        radial-gradient(circle at top right, rgba(100,210,255,0.14), transparent 28%),
+        radial-gradient(circle at top left, rgba(245,185,66,0.12), transparent 22%),
+        linear-gradient(180deg, #07101c 0%, #0b1627 100%);
+      color: var(--text);
+      line-height: 1.55;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    img { max-width: 100%; display: block; }
+
+    .container {
+      width: min(var(--max), calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      backdrop-filter: blur(16px);
+      background: rgba(7, 16, 28, 0.72);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 16px 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .brand:focus-visible {
+      outline: 2px solid var(--accent-2);
+      outline-offset: 4px;
+      border-radius: 8px;
+    }
+
+    .brand-site-title {
+      color: #fff;
+    }
+
+    .brand-badge {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--accent), #ffdf7c);
+      color: #08111f;
+      font-weight: 900;
+      box-shadow: var(--shadow);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      color: #fff;
+      font-size: 0.96rem;
+    }
+
+    .nav-links a {
+      color: #fff;
+    }
+
+    .nav-links a:hover {
+      color: var(--accent-2);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 14px 20px;
+      border-radius: 999px;
+      font-weight: 700;
+      border: 1px solid transparent;
+      transition: 0.25s ease;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), #ffd16c);
+      color: #08111f;
+      box-shadow: 0 18px 40px rgba(245,185,66,0.28);
+    }
+
+    .btn-primary:hover { transform: translateY(-1px); }
+
+    .btn-secondary {
+      background: rgba(255,255,255,0.04);
+      border-color: var(--border);
+      color: var(--text);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255,255,255,0.08);
+      transform: translateY(-1px);
+    }
+
+    .hero {
+      padding: 84px 0 56px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 32px;
+      align-items: center;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(100,210,255,0.10);
+      border: 1px solid rgba(100,210,255,0.18);
+      color: #d8f6ff;
+      font-size: 0.9rem;
+      margin-bottom: 18px;
+    }
+
+    h1, h2, h3 { line-height: 1.1; margin: 0 0 16px; color: #fff; }
+    h1 {
+      font-size: 4.6rem;
+      font-weight: 600;
+      letter-spacing: -0.04em;
+      max-width: 13ch;
+    }
+
+    .hero p {
+      color: var(--muted);
+      font-size: 1.1rem;
+      max-width: 60ch;
+      margin: 0 0 24px;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .hero-meta span {
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .hero-card {
+      background: linear-gradient(180deg, rgba(19,35,59,0.95), rgba(11,22,39,0.95));
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      padding: 26px;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-card::after {
+      content: "";
+      position: absolute;
+      inset: auto -20% -30% auto;
+      width: 240px;
+      height: 240px;
+      background: radial-gradient(circle, rgba(245,185,66,0.25), transparent 65%);
+      pointer-events: none;
+    }
+
+    .phone {
+      border-radius: 28px;
+      padding: 18px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: linear-gradient(180deg, #0c1627, #101c30);
+    }
+
+    .phone-screen {
+      border-radius: 22px;
+      padding: 20px;
+      background: linear-gradient(180deg, #132542, #0d1728);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .phone-top {
+      display: flex;
+      justify-content: space-between;
+      color: #dbe7fb;
+      font-size: 0.88rem;
+      margin-bottom: 18px;
+    }
+
+    .scan-badge {
+      display: inline-block;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(81,211,138,0.14);
+      border: 1px solid rgba(81,211,138,0.3);
+      color: #bdf3d2;
+      font-size: 0.84rem;
+      font-weight: 700;
+      margin-bottom: 14px;
+    }
+
+    .formula-card, .card, .step, .tier, .cta-panel {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .section {
+      padding: 40px 0;
+    }
+
+    .section-head {
+      max-width: 760px;
+      margin-bottom: 24px;
+    }
+
+    .section-head p {
+      color: var(--muted);
+      margin: 0;
+    }
+
+    .formula-grid,
+    .cards,
+    .steps,
+    .tier-grid,
+    .cta-grid,
+    .feature-grid {
+      display: grid;
+      gap: 20px;
+    }
+
+    .formula-grid,
+    .cards,
+    .tier-grid,
+    .feature-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .steps {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    .card, .formula-card, .step, .tier {
+      padding: 24px;
+    }
+
+    .card h3, .formula-card h3, .step h3, .tier h3 {
+      font-size: 1.2rem;
+      margin-bottom: 10px;
+    }
+
+    .card p, .formula-card p, .step p, .tier p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .kicker {
+      display: inline-block;
+      font-size: 0.78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      color: var(--accent-2);
+      margin-bottom: 10px;
+    }
+
+    .big-number {
+      font-size: 2.2rem;
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      margin: 8px 0 10px;
+      color: #fff;
+    }
+
+    .step-number {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      background: rgba(245,185,66,0.14);
+      color: var(--accent);
+      font-weight: 900;
+      margin-bottom: 14px;
+    }
+
+    .feature-grid .card {
+      min-height: 100%;
+    }
+
+    .tier ul {
+      margin: 14px 0 0;
+      padding-left: 18px;
+      color: var(--muted);
+    }
+
+    .tier li + li { margin-top: 8px; }
+
+    .tier-highlight {
+      border-color: rgba(245,185,66,0.35);
+      background: linear-gradient(180deg, rgba(245,185,66,0.10), rgba(255,255,255,0.04));
+    }
+
+    .cta-panel {
+      padding: 30px;
+      background: linear-gradient(135deg, rgba(100,210,255,0.08), rgba(245,185,66,0.10));
+    }
+
+    .cta-grid {
+      grid-template-columns: 1.2fr 0.8fr;
+      align-items: center;
+    }
+
+    .cta-panel p {
+      color: var(--muted);
+      margin: 0 0 20px;
+      max-width: 58ch;
+    }
+
+    .mini-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .mini-item {
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.10);
+      color: var(--muted);
+    }
+
+    footer {
+      padding: 34px 0 60px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .footer-box {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      flex-wrap: wrap;
+      padding-top: 24px;
+      border-top: 1px solid rgba(255,255,255,0.10);
+    }
+
+    @media (max-width: 1024px) {
+      .hero-grid,
+      .formula-grid,
+      .cards,
+      .steps,
+      .tier-grid,
+      .feature-grid,
+      .cta-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .hero-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .nav-inner {
+        flex-wrap: wrap;
+        row-gap: 10px;
+        padding: 12px 0;
+        align-items: center;
+      }
+      .brand {
+        flex: 1 1 auto;
+        min-width: 0;
+        max-width: calc(100% - 160px);
+      }
+      .brand > div:last-child {
+        min-width: 0;
+      }
+      .brand-site-title {
+        font-size: clamp(0.8rem, 3.2vw, 1rem);
+        line-height: 1.2;
+      }
+      .nav-links {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 6px 12px;
+        width: 100%;
+        order: 3;
+        margin: 0;
+        padding: 12px 0 0;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        font-size: 0.75rem;
+      }
+      .nav-cta {
+        flex: 0 0 auto;
+        margin-left: auto;
+        padding: 12px 16px;
+        font-size: 0.85rem;
+        white-space: nowrap;
+      }
+      .hero {
+        padding: 48px 0 40px;
+      }
+      .hero-grid,
+      .formula-grid,
+      .cards,
+      .steps,
+      .tier-grid,
+      .feature-grid,
+      .cta-grid {
+        grid-template-columns: 1fr;
+      }
+      h1 { max-width: none; }
+      .footer-box {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        width: min(var(--max), calc(100% - 24px));
+      }
+      .eyebrow {
+        font-size: 0.8rem;
+        padding: 6px 12px;
+        line-height: 1.35;
+      }
+      .hero p {
+        font-size: 1rem;
+      }
+      .hero-actions {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .hero-actions .btn {
+        width: 100%;
+        max-width: 100%;
+        min-height: 48px;
+      }
+      .hero-meta {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .hero-meta span {
+        text-align: center;
+      }
+    }
+
+    .how-it-works {
+      padding: 80px 20px;
+      background: linear-gradient(180deg, #0b1627 0%, #10203a 100%);
+      color: #eef4ff;
+      scroll-margin-top: 88px;
+    }
+
+    .hiw-container {
+      width: min(1180px, 100%);
+      margin: 0 auto;
+    }
+
+    .hiw-header {
+      max-width: 760px;
+      margin-bottom: 40px;
+    }
+
+    .hiw-kicker {
+      display: inline-block;
+      margin-bottom: 12px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(100, 210, 255, 0.12);
+      border: 1px solid rgba(100, 210, 255, 0.2);
+      color: #d7f6ff;
+      font-size: 0.8rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .hiw-header h2 {
+      margin: 0 0 14px;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+    }
+
+    .hiw-header p {
+      margin: 0;
+      color: #b8c6dc;
+      font-size: 1.05rem;
+      line-height: 1.7;
+    }
+
+    .hiw-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 22px;
+    }
+
+    .hiw-step {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 24px;
+      padding: 26px;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.22);
+      transition: transform 0.25s ease, border-color 0.25s ease;
+    }
+
+    .hiw-step:hover {
+      transform: translateY(-4px);
+      border-color: rgba(245, 185, 66, 0.35);
+    }
+
+    .hiw-number {
+      width: 48px;
+      height: 48px;
+      display: grid;
+      place-items: center;
+      margin-bottom: 16px;
+      border-radius: 14px;
+      background: rgba(245, 185, 66, 0.14);
+      color: #f5b942;
+      font-weight: 900;
+      font-size: 1.1rem;
+    }
+
+    .hiw-step h3 {
+      margin: 0 0 10px;
+      font-size: 1.2rem;
+      line-height: 1.25;
+    }
+
+    .hiw-step p {
+      margin: 0;
+      color: #b8c6dc;
+      line-height: 1.65;
+      font-size: 0.98rem;
+    }
+
+    @media (max-width: 980px) {
+      .hiw-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 640px) {
+      .how-it-works {
+        padding: 64px 16px;
+      }
+
+      .hiw-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hiw-step {
+        padding: 22px;
+      }
+    }
+
+    .seller-types {
+      padding: 88px 20px;
+      background:
+        radial-gradient(circle at top right, rgba(245, 185, 66, 0.08), transparent 24%),
+        radial-gradient(circle at bottom left, rgba(100, 210, 255, 0.08), transparent 26%),
+        linear-gradient(180deg, #091321 0%, #0f1d34 100%);
+      color: #eef4ff;
+      scroll-margin-top: 88px;
+    }
+
+    .seller-container {
+      width: min(1200px, 100%);
+      margin: 0 auto;
+    }
+
+    .seller-header {
+      max-width: 830px;
+      margin-bottom: 42px;
+    }
+
+    .seller-kicker {
+      display: inline-block;
+      margin-bottom: 12px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(245, 185, 66, 0.12);
+      border: 1px solid rgba(245, 185, 66, 0.24);
+      color: #ffe39f;
+      font-size: 0.8rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .seller-header h2 {
+      margin: 0 0 14px;
+      font-size: clamp(2.1rem, 4vw, 3.35rem);
+      line-height: 1.08;
+      letter-spacing: -0.035em;
+    }
+
+    .seller-header p {
+      margin: 0;
+      color: #b9c8df;
+      font-size: 1.06rem;
+      line-height: 1.75;
+    }
+
+    .seller-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-bottom: 28px;
+    }
+
+    .seller-card {
+      display: flex;
+      flex-direction: column;
+      min-height: 100%;
+      padding: 30px;
+      border-radius: 28px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.04);
+      box-shadow: 0 20px 44px rgba(0, 0, 0, 0.22);
+      transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .seller-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 26px 52px rgba(0, 0, 0, 0.28);
+    }
+
+    .seller-card-personal {
+      background: linear-gradient(
+        180deg,
+        rgba(245, 185, 66, 0.13),
+        rgba(255, 255, 255, 0.04)
+      );
+      border-color: rgba(245, 185, 66, 0.34);
+    }
+
+    .seller-card-poc {
+      background: linear-gradient(
+        180deg,
+        rgba(81, 211, 138, 0.1),
+        rgba(255, 255, 255, 0.04)
+      );
+      border-color: rgba(81, 211, 138, 0.26);
+    }
+
+    .seller-card-guild {
+      background: linear-gradient(
+        180deg,
+        rgba(100, 210, 255, 0.1),
+        rgba(255, 255, 255, 0.04)
+      );
+      border-color: rgba(100, 210, 255, 0.26);
+    }
+
+    .seller-badge {
+      display: inline-block;
+      align-self: flex-start;
+      margin-bottom: 14px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      border: 1px solid transparent;
+    }
+
+    .seller-badge-personal {
+      background: rgba(245, 185, 66, 0.12);
+      border-color: rgba(245, 185, 66, 0.25);
+      color: #ffe19a;
+    }
+
+    .seller-badge-poc {
+      background: rgba(81, 211, 138, 0.12);
+      border-color: rgba(81, 211, 138, 0.24);
+      color: #c9f7db;
+    }
+
+    .seller-badge-guild {
+      background: rgba(100, 210, 255, 0.12);
+      border-color: rgba(100, 210, 255, 0.22);
+      color: #d9f7ff;
+    }
+
+    .seller-card h3 {
+      margin: 0 0 12px;
+      font-size: 1.42rem;
+      line-height: 1.2;
+    }
+
+    .seller-lead {
+      margin: 0 0 18px;
+      color: #c0cde2;
+      font-size: 1rem;
+      line-height: 1.72;
+    }
+
+    .seller-message-box {
+      margin-bottom: 18px;
+      padding: 18px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .seller-message-label {
+      display: inline-block;
+      margin-bottom: 8px;
+      color: #ffffff;
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .seller-message-box p {
+      margin: 0;
+      color: #b9c8df;
+      line-height: 1.7;
+    }
+
+    .seller-list {
+      margin: 0;
+      padding-left: 18px;
+      color: #d7e3f4;
+      line-height: 1.7;
+      flex-grow: 1;
+    }
+
+    .seller-list li + li {
+      margin-top: 8px;
+    }
+
+    .seller-footer {
+      margin-top: 24px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .seller-footer span {
+      display: block;
+      margin-bottom: 6px;
+      color: #8ea3c2;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .seller-footer strong {
+      color: #ffffff;
+      font-size: 0.97rem;
+      line-height: 1.5;
+    }
+
+    .seller-summary-band {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 24px;
+      align-items: center;
+      padding: 30px;
+      border-radius: 28px;
+      background: linear-gradient(
+        135deg,
+        rgba(245, 185, 66, 0.1),
+        rgba(100, 210, 255, 0.08)
+      );
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    .seller-summary-kicker {
+      display: inline-block;
+      margin-bottom: 10px;
+      color: #ffe39f;
+      font-size: 0.8rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .seller-summary-intro h3 {
+      margin: 0 0 12px;
+      font-size: clamp(1.55rem, 3vw, 2.3rem);
+      line-height: 1.15;
+    }
+
+    .seller-summary-intro p {
+      margin: 0;
+      color: #bccade;
+      line-height: 1.75;
+    }
+
+    .seller-summary-stack {
+      display: grid;
+      gap: 14px;
+    }
+
+    .seller-summary-item {
+      padding: 16px 18px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .seller-summary-item strong {
+      display: block;
+      margin-bottom: 6px;
+      color: #ffffff;
+      font-size: 1rem;
+    }
+
+    .seller-summary-item span {
+      color: #b9c8df;
+      font-size: 0.95rem;
+    }
+
+    .seller-summary-item-highlight {
+      border-color: rgba(245, 185, 66, 0.32);
+      background: rgba(245, 185, 66, 0.12);
+    }
+
+    @media (max-width: 1024px) {
+      .seller-grid,
+      .seller-summary-band {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .seller-types {
+        padding: 68px 16px;
+      }
+
+      .seller-card,
+      .seller-summary-band {
+        padding: 24px;
+      }
+    }
+
+    .trade-value {
+      padding: 80px 20px;
+      background: linear-gradient(180deg, #091321 0%, #10203a 100%);
+      color: #eef4ff;
+      scroll-margin-top: 88px;
+    }
+
+    .trade-container {
+      width: min(1180px, 100%);
+      margin: 0 auto;
+    }
+
+    .trade-header {
+      max-width: 780px;
+      margin-bottom: 40px;
+    }
+
+    .trade-kicker {
+      display: inline-block;
+      margin-bottom: 12px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(81, 211, 138, 0.12);
+      border: 1px solid rgba(81, 211, 138, 0.22);
+      color: #cbf6dc;
+      font-size: 0.8rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .trade-header h2 {
+      margin: 0 0 14px;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+    }
+
+    .trade-header p {
+      margin: 0;
+      color: #b8c6dc;
+      font-size: 1.05rem;
+      line-height: 1.7;
+    }
+
+    .trade-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 22px;
+      margin-bottom: 28px;
+    }
+
+    .trade-card {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 26px;
+      padding: 28px;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.22);
+      transition: transform 0.25s ease, border-color 0.25s ease;
+    }
+
+    .trade-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(100, 210, 255, 0.32);
+    }
+
+    .trade-card-primary {
+      background: linear-gradient(
+        180deg,
+        rgba(100, 210, 255, 0.1),
+        rgba(255, 255, 255, 0.04)
+      );
+      border-color: rgba(100, 210, 255, 0.28);
+    }
+
+    .trade-label {
+      display: inline-block;
+      margin-bottom: 14px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(245, 185, 66, 0.12);
+      border: 1px solid rgba(245, 185, 66, 0.22);
+      color: #ffe19a;
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .trade-card h3 {
+      margin: 0 0 12px;
+      font-size: 1.35rem;
+      line-height: 1.2;
+    }
+
+    .trade-card p {
+      margin: 0 0 18px;
+      color: #b8c6dc;
+      line-height: 1.7;
+      font-size: 1rem;
+    }
+
+    .trade-tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .trade-tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: #d9e6f8;
+      font-size: 0.88rem;
+      font-weight: 600;
+    }
+
+    .trade-band {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 22px;
+      align-items: stretch;
+      background: linear-gradient(
+        135deg,
+        rgba(245, 185, 66, 0.1),
+        rgba(100, 210, 255, 0.08)
+      );
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 28px;
+      padding: 30px;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    .trade-mini-kicker {
+      display: inline-block;
+      margin-bottom: 10px;
+      color: #ffe19a;
+      font-size: 0.82rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .trade-band-left h3 {
+      margin: 0 0 12px;
+      font-size: clamp(1.5rem, 3vw, 2.2rem);
+      line-height: 1.15;
+    }
+
+    .trade-band-left p {
+      margin: 0;
+      color: #b8c6dc;
+      line-height: 1.7;
+    }
+
+    .trade-band-right {
+      display: grid;
+      gap: 14px;
+    }
+
+    .trade-metric {
+      padding: 16px 18px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .trade-metric strong {
+      display: block;
+      margin-bottom: 6px;
+      color: #ffffff;
+      font-size: 1rem;
+    }
+
+    .trade-metric span {
+      color: #b8c6dc;
+      font-size: 0.95rem;
+    }
+
+    @media (max-width: 980px) {
+      .trade-grid,
+      .trade-band {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .trade-value {
+        padding: 64px 16px;
+      }
+
+      .trade-card,
+      .trade-band {
+        padding: 24px;
+      }
+    }
+
+    .processing-flow {
+      padding: 88px 20px;
+      background:
+        radial-gradient(circle at top left, rgba(100, 210, 255, 0.08), transparent 24%),
+        radial-gradient(circle at bottom right, rgba(245, 185, 66, 0.08), transparent 24%),
+        linear-gradient(180deg, #08111f 0%, #10203a 100%);
+      color: #eef4ff;
+      scroll-margin-top: 88px;
+    }
+
+    .flow-container {
+      width: min(1200px, 100%);
+      margin: 0 auto;
+    }
+
+    .flow-header {
+      max-width: 820px;
+      margin-bottom: 44px;
+    }
+
+    .flow-kicker {
+      display: inline-block;
+      margin-bottom: 12px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(100, 210, 255, 0.12);
+      border: 1px solid rgba(100, 210, 255, 0.22);
+      color: #d8f7ff;
+      font-size: 0.8rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .flow-header h2 {
+      margin: 0 0 14px;
+      font-size: clamp(2.1rem, 4vw, 3.4rem);
+      line-height: 1.08;
+      letter-spacing: -0.035em;
+    }
+
+    .flow-header p {
+      margin: 0;
+      color: #b9c8df;
+      font-size: 1.05rem;
+      line-height: 1.75;
+    }
+
+    .flow-timeline {
+      position: relative;
+      display: grid;
+      gap: 24px;
+      margin-bottom: 30px;
+    }
+
+    .flow-line {
+      position: absolute;
+      left: 28px;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      border-radius: 999px;
+      background: linear-gradient(
+        180deg,
+        rgba(100, 210, 255, 0.3),
+        rgba(245, 185, 66, 0.3)
+      );
+    }
+
+    .flow-step {
+      position: relative;
+      display: grid;
+      grid-template-columns: 72px 1fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .flow-icon {
+      position: relative;
+      z-index: 2;
+      width: 56px;
+      height: 56px;
+      display: grid;
+      place-items: center;
+      border-radius: 18px;
+      background: linear-gradient(135deg, #f5b942, #ffd673);
+      color: #08111f;
+      font-weight: 900;
+      font-size: 1.1rem;
+      box-shadow: 0 16px 30px rgba(245, 185, 66, 0.25);
+    }
+
+    .flow-card {
+      padding: 26px 28px;
+      border-radius: 26px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.22);
+      transition: transform 0.25s ease, border-color 0.25s ease;
+    }
+
+    .flow-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(100, 210, 255, 0.3);
+    }
+
+    .flow-label {
+      display: inline-block;
+      margin-bottom: 10px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(245, 185, 66, 0.12);
+      border: 1px solid rgba(245, 185, 66, 0.2);
+      color: #ffe19a;
+      font-size: 0.76rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .flow-card h3 {
+      margin: 0 0 10px;
+      font-size: 1.35rem;
+      line-height: 1.2;
+    }
+
+    .flow-card p {
+      margin: 0 0 16px;
+      color: #b9c8df;
+      line-height: 1.7;
+      font-size: 1rem;
+    }
+
+    .flow-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .flow-tags span {
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: #dce8f8;
+      font-size: 0.88rem;
+      font-weight: 600;
+    }
+
+    .flow-summary {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 24px;
+      align-items: center;
+      padding: 30px;
+      border-radius: 28px;
+      background: linear-gradient(
+        135deg,
+        rgba(100, 210, 255, 0.08),
+        rgba(245, 185, 66, 0.1)
+      );
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    .flow-summary-kicker {
+      display: inline-block;
+      margin-bottom: 10px;
+      color: #d8f7ff;
+      font-size: 0.8rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .flow-summary-left h3 {
+      margin: 0 0 12px;
+      font-size: clamp(1.5rem, 3vw, 2.25rem);
+      line-height: 1.15;
+    }
+
+    .flow-summary-left p {
+      margin: 0;
+      color: #bccade;
+      line-height: 1.75;
+    }
+
+    .flow-summary-right {
+      display: grid;
+      gap: 14px;
+    }
+
+    .flow-mini-card {
+      padding: 16px 18px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .flow-mini-card strong {
+      display: block;
+      margin-bottom: 6px;
+      color: #ffffff;
+      font-size: 1rem;
+    }
+
+    .flow-mini-card span {
+      color: #b9c8df;
+      font-size: 0.94rem;
+    }
+
+    .flow-mini-card-highlight {
+      border-color: rgba(245, 185, 66, 0.32);
+      background: rgba(245, 185, 66, 0.12);
+    }
+
+    @media (max-width: 980px) {
+      .flow-summary {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .processing-flow {
+        padding: 68px 16px;
+      }
+
+      .flow-step {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      .flow-line {
+        display: none;
+      }
+
+      .flow-card,
+      .flow-summary {
+        padding: 24px;
+      }
+    }
+
+    .why-register {
+      padding: 88px 20px;
+      background:
+        radial-gradient(circle at top right, rgba(100, 210, 255, 0.08), transparent 24%),
+        radial-gradient(circle at bottom left, rgba(245, 185, 66, 0.08), transparent 24%),
+        linear-gradient(180deg, #091321 0%, #10203a 100%);
+      color: #eef4ff;
+      scroll-margin-top: 88px;
+    }
+
+    .why-register-container {
+      width: min(1200px, 100%);
+      margin: 0 auto;
+    }
+
+    .why-register-header {
+      max-width: 860px;
+      margin-bottom: 42px;
+    }
+
+    .why-register-kicker,
+    .why-register-mini-kicker {
+      display: inline-block;
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .why-register-kicker {
+      margin-bottom: 12px;
+      background: rgba(100, 210, 255, 0.12);
+      border: 1px solid rgba(100, 210, 255, 0.22);
+      color: #d9f7ff;
+    }
+
+    .why-register-mini-kicker {
+      margin-bottom: 10px;
+      background: rgba(245, 185, 66, 0.12);
+      border: 1px solid rgba(245, 185, 66, 0.24);
+      color: #ffe39f;
+    }
+
+    .why-register-header h2 {
+      margin: 0 0 14px;
+      font-size: clamp(2.15rem, 4vw, 3.5rem);
+      line-height: 1.08;
+      letter-spacing: -0.035em;
+    }
+
+    .why-register-header p {
+      margin: 0;
+      color: #b9c8df;
+      font-size: 1.06rem;
+      line-height: 1.78;
+    }
+
+    .why-register-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-bottom: 30px;
+    }
+
+    .why-register-card {
+      padding: 28px;
+      border-radius: 28px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 20px 44px rgba(0, 0, 0, 0.22);
+      transition: transform 0.25s ease, border-color 0.25s ease;
+    }
+
+    .why-register-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(100, 210, 255, 0.3);
+    }
+
+    .why-register-card-highlight {
+      background: linear-gradient(
+        180deg,
+        rgba(245, 185, 66, 0.12),
+        rgba(255, 255, 255, 0.04)
+      );
+      border-color: rgba(245, 185, 66, 0.3);
+    }
+
+    .why-register-icon {
+      width: 52px;
+      height: 52px;
+      display: grid;
+      place-items: center;
+      margin-bottom: 16px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #f5b942, #ffd673);
+      color: #08111f;
+      font-weight: 900;
+      font-size: 1.05rem;
+      box-shadow: 0 16px 30px rgba(245, 185, 66, 0.24);
+    }
+
+    .why-register-card h3 {
+      margin: 0 0 12px;
+      font-size: 1.35rem;
+      line-height: 1.2;
+    }
+
+    .why-register-card p {
+      margin: 0;
+      color: #bccade;
+      line-height: 1.72;
+    }
+
+    .why-register-band {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 24px;
+      align-items: center;
+      padding: 30px;
+      border-radius: 28px;
+      background: linear-gradient(
+        135deg,
+        rgba(100, 210, 255, 0.08),
+        rgba(245, 185, 66, 0.1)
+      );
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.2);
+      margin-bottom: 30px;
+    }
+
+    .why-register-band-copy h3 {
+      margin: 0 0 12px;
+      font-size: clamp(1.5rem, 3vw, 2.3rem);
+      line-height: 1.15;
+    }
+
+    .why-register-band-copy p {
+      margin: 0;
+      color: #bccade;
+      line-height: 1.75;
+    }
+
+    .why-register-band-points {
+      display: grid;
+      gap: 14px;
+    }
+
+    .why-register-point {
+      padding: 16px 18px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .why-register-point strong {
+      display: block;
+      margin-bottom: 6px;
+      color: #ffffff;
+      font-size: 1rem;
+    }
+
+    .why-register-point span {
+      color: #b9c8df;
+      font-size: 0.95rem;
+    }
+
+    .why-register-point-highlight {
+      border-color: rgba(245, 185, 66, 0.32);
+      background: rgba(245, 185, 66, 0.12);
+    }
+
+    .why-register-steps {
+      margin-bottom: 30px;
+    }
+
+    .why-register-steps-header {
+      max-width: 700px;
+      margin-bottom: 22px;
+    }
+
+    .why-register-steps-header h3 {
+      margin: 0;
+      font-size: clamp(1.45rem, 2.8vw, 2.2rem);
+      line-height: 1.15;
+    }
+
+    .why-register-step-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+    }
+
+    .why-register-step {
+      padding: 24px;
+      border-radius: 24px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 18px 36px rgba(0, 0, 0, 0.18);
+    }
+
+    .why-register-step-number {
+      width: 44px;
+      height: 44px;
+      display: grid;
+      place-items: center;
+      margin-bottom: 14px;
+      border-radius: 14px;
+      background: rgba(100, 210, 255, 0.14);
+      color: #d9f7ff;
+      font-weight: 900;
+    }
+
+    .why-register-step h4 {
+      margin: 0 0 10px;
+      font-size: 1.1rem;
+      line-height: 1.25;
+    }
+
+    .why-register-step p {
+      margin: 0;
+      color: #bccade;
+      line-height: 1.68;
+      font-size: 0.97rem;
+    }
+
+    .why-register-cta {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 24px;
+      align-items: center;
+      padding: 30px;
+      border-radius: 28px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.18);
+    }
+
+    .why-register-cta-copy h3 {
+      margin: 0 0 12px;
+      font-size: clamp(1.45rem, 3vw, 2.2rem);
+      line-height: 1.15;
+    }
+
+    .why-register-cta-copy p {
+      margin: 0;
+      color: #bccade;
+      line-height: 1.75;
+    }
+
+    .why-register-cta-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      justify-content: flex-start;
+    }
+
+    .why-register-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px 20px;
+      border-radius: 999px;
+      font-weight: 800;
+      text-decoration: none;
+      transition: 0.25s ease;
+      border: 1px solid transparent;
+    }
+
+    .why-register-btn-primary {
+      background: linear-gradient(135deg, #f5b942, #ffd673);
+      color: #08111f;
+      box-shadow: 0 16px 30px rgba(245, 185, 66, 0.24);
+    }
+
+    .why-register-btn-primary:hover {
+      transform: translateY(-2px);
+    }
+
+    .why-register-btn-secondary {
+      background: rgba(255, 255, 255, 0.05);
+      color: #eef4ff;
+      border-color: rgba(255, 255, 255, 0.12);
+    }
+
+    .why-register-btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.08);
+      transform: translateY(-2px);
+    }
+
+    #register-vcard {
+      scroll-margin-top: 88px;
+      height: 0;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    @media (max-width: 1024px) {
+      .why-register-grid,
+      .why-register-band,
+      .why-register-step-grid,
+      .why-register-cta {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .why-register {
+        padding: 68px 16px;
+      }
+
+      .why-register-card,
+      .why-register-band,
+      .why-register-step,
+      .why-register-cta {
+        padding: 24px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .how-it-works,
+      .trade-value,
+      .processing-flow,
+      .seller-types,
+      .why-register {
+        scroll-margin-top: 72px;
+      }
+      #register-vcard {
+        scroll-margin-top: 72px;
+      }
+      #join {
+        scroll-margin-top: 72px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .why-register-cta-actions {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .why-register-btn {
+        width: 100%;
+        min-height: 48px;
+        justify-content: center;
+      }
+    }
+  </style>
+  <?php wp_head(); ?>
+  <style id="nwp-landing-headings">
+    /* After wp_head: theme/Elementor rules load earlier and were washing out titles */
+    body.nwp-landing h1 {
+      font-size: 4.6rem !important;
+      font-weight: 600 !important;
+    }
+    @media (max-width: 1200px) {
+      body.nwp-landing h1 {
+        font-size: clamp(2.5rem, 5.5vw, 4.6rem) !important;
+      }
+    }
+    @media (max-width: 640px) {
+      body.nwp-landing h1 {
+        font-size: clamp(1.7rem, 6.2vw, 2.35rem) !important;
+        line-height: 1.12 !important;
+      }
+    }
+    body.nwp-landing h1,
+    body.nwp-landing h2,
+    body.nwp-landing h3,
+    body.nwp-landing h4 {
+      color: #ffffff !important;
+    }
+    body.nwp-landing .big-number {
+      color: #ffffff !important;
+    }
+    body.nwp-landing .nav-links,
+    body.nwp-landing .nav-links a {
+      color: #ffffff !important;
+    }
+    body.nwp-landing .nav-links a:hover {
+      color: #64d2ff !important;
+    }
+    body.nwp-landing .brand-site-title {
+      color: #ffffff !important;
+    }
+  </style>
+</head>
+<body <?php body_class( 'nwp-landing' ); ?>>
+  <nav class="nav">
+    <div class="container nav-inner">
+      <a class="brand" href="<?php echo esc_url( home_url( '/' ) ); ?>">
+        <div class="brand-badge">NWP</div>
+        <div>
+          <div class="brand-site-title">humanblockchain.info</div>
+          <small style="color: var(--muted); font-weight: 600;">NWP Processing Center</small>
+        </div>
+      </a>
+      <div class="nav-links">
+        <a href="#how-it-works">How It Works</a>
+        <a href="#seller-types">Seller Types</a>
+        <a href="#trade-value">Trade Value</a>
+        <a href="#join">Join Gracebook</a>
+      </div>
+      <a class="btn btn-primary nav-cta" href="#join">Activate Your Phone</a>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="container hero-grid">
+      <div>
+        <div class="eyebrow">NWP turns your smartphone into a member-owned processing center</div>
+        <h1>Process YAM JAM trade value like a Visa or Mastercard rail.</h1>
+        <p>
+          The New World Penny processing layer allows an <strong>individual</strong>, a <strong>Patron Organizing Community</strong>, or a <strong>guild</strong> to establish seller trade value through a smartphone, a QRtiger v-card, proof of delivery, and time-based maturity. Every verified encounter becomes part of a human blockchain built on real people, real time, and real place.
+        </p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#join">Join Gracebook</a>
+          <a class="btn btn-secondary" href="#processing-flow">See the Processing Flow</a>
+        </div>
+        <div class="hero-meta">
+          <span>Register your QRtiger v-card</span>
+          <span>Face-to-face validation first</span>
+          <span>Proof of delivery + maturity</span>
+        </div>
+      </div>
+
+      <div class="hero-card">
+        <div class="phone">
+          <div class="phone-screen">
+            <div class="phone-top">
+              <span>humanblockchain.info</span>
+              <span>Live Processing</span>
+            </div>
+            <div class="scan-badge">First NWP Scan Detected</div>
+            <h3 style="font-size: 1.7rem; margin-bottom: 10px;">Activate Device</h3>
+            <p style="margin: 0 0 18px; color: var(--muted);">
+              Accept your first NWP, register your device, join Gracebook, and unlock your QRtiger v-card gateway.
+            </p>
+            <div class="mini-list">
+              <div class="mini-item"><strong>Seller type:</strong> Individual / POC / Guild</div>
+              <div class="mini-item"><strong>Validation:</strong> Time + Geo + Proof of Delivery</div>
+              <div class="mini-item"><strong>Maturity:</strong> Trade value becomes eligible after maturity rules are satisfied</div>
+            </div>
+            <div style="display:flex; gap:12px; margin-top:20px; flex-wrap:wrap;">
+              <a class="btn btn-primary" href="#join">Register v-card</a>
+              <a class="btn btn-secondary" href="#seller-types">Seller Paths</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section class="trade-value" id="trade-value">
+    <div class="trade-container">
+      <div class="trade-header">
+        <span class="trade-kicker">Trade Value</span>
+        <h2>How NWP processing establishes YAM JAM trade value</h2>
+        <p>
+          NWP is the first processing event that turns a smartphone into a
+          member-owned value gateway. When a seller transaction is backed by
+          <strong>proof of delivery</strong> and allowed <strong>time for maturity</strong>,
+          the event becomes eligible to carry YAM JAM trade value through the
+          human blockchain.
+        </p>
+      </div>
+
+      <div class="trade-grid">
+        <article class="trade-card trade-card-primary">
+          <div class="trade-label">Activation Layer</div>
+          <h3>1. First NWP scan</h3>
+          <p>
+            The first scan creates a seller-side activation moment. A smartphone,
+            a member relationship, a timestamp, and geo-location come together to
+            begin the processing trail.
+          </p>
+          <div class="trade-tag-row">
+            <span class="trade-tag">Device to device</span>
+            <span class="trade-tag">Face to face</span>
+            <span class="trade-tag">Timestamped</span>
+          </div>
+        </article>
+
+        <article class="trade-card">
+          <div class="trade-label">Verification Layer</div>
+          <h3>2. Proof of delivery</h3>
+          <p>
+            Trade value gains weight when delivery is confirmed in the real world.
+            This endorsement shows that value was actually moved, received, or
+            fulfilled rather than merely promised.
+          </p>
+          <div class="trade-tag-row">
+            <span class="trade-tag">Verified event</span>
+            <span class="trade-tag">Seller endorsed</span>
+          </div>
+        </article>
+
+        <article class="trade-card">
+          <div class="trade-label">Maturity Layer</div>
+          <h3>3. Time for maturity</h3>
+          <p>
+            The trade event is not treated as instantly settled. It matures over
+            time, which gives the record accountability, patience, and economic
+            structure before YAM JAM value is processed.
+          </p>
+          <div class="trade-tag-row">
+            <span class="trade-tag">Time-based</span>
+            <span class="trade-tag">Accountable value</span>
+          </div>
+        </article>
+      </div>
+
+      <div class="trade-band">
+        <div class="trade-band-left">
+          <span class="trade-mini-kicker">Simple Formula</span>
+          <h3>NWP Scan + Proof of Delivery + Maturity = Trade Value</h3>
+          <p>
+            This is how a phone begins functioning like a community-owned payment
+            rail. Instead of relying only on centralized card rails, the member
+            processes value through verified participation.
+          </p>
+        </div>
+        <div class="trade-band-right">
+          <div class="trade-metric">
+            <strong>Seller Types</strong>
+            <span>Individual · POC · Guild</span>
+          </div>
+          <div class="trade-metric">
+            <strong>Validation</strong>
+            <span>Time · Geo · Delivery</span>
+          </div>
+          <div class="trade-metric">
+            <strong>Purpose</strong>
+            <span>YAM JAM processing</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="how-it-works" id="how-it-works">
+    <div class="hiw-container">
+      <div class="hiw-header">
+        <span class="hiw-kicker">How It Works</span>
+        <h2>Turn your smartphone into a YAM JAM processing center</h2>
+        <p>
+          The NWP processing flow helps members establish trade value through
+          face-to-face activation, QRtiger v-card registration, proof of delivery,
+          and time for maturity. It works like a community-owned alternative to a
+          card processing network.
+        </p>
+      </div>
+
+      <div class="hiw-grid">
+        <div class="hiw-step">
+          <div class="hiw-number">1</div>
+          <h3>Accept your first NWP</h3>
+          <p>
+            A member introduces you to the network through a face-to-face encounter.
+            Your first NWP scan begins the activation process.
+          </p>
+        </div>
+
+        <div class="hiw-step">
+          <div class="hiw-number">2</div>
+          <h3>Register your device</h3>
+          <p>
+            Your smartphone becomes part of the human blockchain through timestamp,
+            geo-location, and seller referral validation.
+          </p>
+        </div>
+
+        <div class="hiw-step">
+          <div class="hiw-number">3</div>
+          <h3>Link your QRtiger v-card</h3>
+          <p>
+            Register your digital or printed QRtiger v-card so your phone can act
+            as your member-owned seller gateway.
+          </p>
+        </div>
+
+        <div class="hiw-step">
+          <div class="hiw-number">4</div>
+          <h3>Endorse with proof of delivery</h3>
+          <p>
+            Verified delivery confirms that value moved in the real world and gives
+            the transaction social and economic credibility.
+          </p>
+        </div>
+
+        <div class="hiw-step">
+          <div class="hiw-number">5</div>
+          <h3>Allow time for maturity</h3>
+          <p>
+            Once the maturity window is satisfied, the endorsed trade value becomes
+            eligible for YAM JAM processing.
+          </p>
+        </div>
+
+        <div class="hiw-step">
+          <div class="hiw-number">6</div>
+          <h3>Process like a payment rail</h3>
+          <p>
+            Your smartphone now functions like a Visa/Mastercard-style community
+            processing center for individual, POC, or guild seller activity.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="processing-flow" id="processing-flow">
+    <div class="flow-container">
+      <div class="flow-header">
+        <span class="flow-kicker">See the Processing Flow</span>
+        <h2>How a smartphone becomes an NWP processing center</h2>
+        <p>
+          The processing flow begins with a face-to-face NWP encounter and moves
+          through registration, seller identity, proof of delivery, and time for
+          maturity. This is how a member-owned smartphone starts functioning like a
+          Visa or Mastercard-style community processing rail for YAM JAM trade value.
+        </p>
+      </div>
+
+      <div class="flow-timeline">
+        <div class="flow-line"></div>
+
+        <article class="flow-step">
+          <div class="flow-icon">1</div>
+          <div class="flow-card">
+            <span class="flow-label">Activation</span>
+            <h3>Accept your first NWP face to face</h3>
+            <p>
+              A member, POC seller, or guild representative introduces you to the
+              network through a real-world encounter. The first NWP scan begins the
+              device-to-device activation process.
+            </p>
+            <div class="flow-tags">
+              <span>Real person</span>
+              <span>Real place</span>
+              <span>Real time</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="flow-step">
+          <div class="flow-icon">2</div>
+          <div class="flow-card">
+            <span class="flow-label">Registration</span>
+            <h3>Register your smartphone and identity</h3>
+            <p>
+              Your phone becomes part of the human blockchain through device
+              registration, timestamp validation, geo-location, and referral linkage.
+            </p>
+            <div class="flow-tags">
+              <span>Device linked</span>
+              <span>Geo validated</span>
+              <span>Timestamped</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="flow-step">
+          <div class="flow-icon">3</div>
+          <div class="flow-card">
+            <span class="flow-label">Gateway</span>
+            <h3>Connect your QRtiger v-card</h3>
+            <p>
+              Your QRtiger v-card becomes your portable seller gateway in digital or
+              printed form, allowing your phone to act as your visible processing identity.
+            </p>
+            <div class="flow-tags">
+              <span>Digital</span>
+              <span>Printed</span>
+              <span>Seller identity</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="flow-step">
+          <div class="flow-icon">4</div>
+          <div class="flow-card">
+            <span class="flow-label">Endorsement</span>
+            <h3>Confirm proof of delivery</h3>
+            <p>
+              Proof of delivery shows that value actually moved in the real world.
+              This endorsement gives the transaction credibility beyond simple intent.
+            </p>
+            <div class="flow-tags">
+              <span>Verified movement</span>
+              <span>Seller endorsed</span>
+              <span>Human blockchain record</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="flow-step">
+          <div class="flow-icon">5</div>
+          <div class="flow-card">
+            <span class="flow-label">Maturity</span>
+            <h3>Allow time for maturity</h3>
+            <p>
+              The trade record matures over time before becoming eligible for YAM JAM
+              processing. Time gives the transaction accountability and economic discipline.
+            </p>
+            <div class="flow-tags">
+              <span>Patience</span>
+              <span>Accountability</span>
+              <span>Eligible value</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="flow-step">
+          <div class="flow-icon">6</div>
+          <div class="flow-card">
+            <span class="flow-label">Processing</span>
+            <h3>Process trade value like a community payment rail</h3>
+            <p>
+              Once validated and matured, your smartphone can serve as a member-owned
+              processing center for individual, POC, or guild seller activity inside
+              the YAM JAM system.
+            </p>
+            <div class="flow-tags">
+              <span>Individual</span>
+              <span>POC</span>
+              <span>Guild</span>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <div class="flow-summary">
+        <div class="flow-summary-left">
+          <span class="flow-summary-kicker">Simple View</span>
+          <h3>NWP Scan → Registration → Delivery Proof → Maturity → Trade Value</h3>
+          <p>
+            The smartphone becomes more than a communication device. It becomes a
+            trusted instrument for onboarding, validation, and community commerce.
+          </p>
+        </div>
+
+        <div class="flow-summary-right">
+          <div class="flow-mini-card">
+            <strong>Join Gracebook</strong>
+            <span>Enter the member network</span>
+          </div>
+          <div class="flow-mini-card">
+            <strong>Register QRtiger v-card</strong>
+            <span>Activate your seller gateway</span>
+          </div>
+          <div class="flow-mini-card flow-mini-card-highlight">
+            <strong>Build trade value</strong>
+            <span>Process YAM JAM through maturity</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="seller-types" id="seller-types">
+    <div class="seller-container">
+      <div class="seller-header">
+        <span class="seller-kicker">Seller Types</span>
+        <h2>Three seller paths. Three meanings of thanks. One human blockchain.</h2>
+        <p>
+          NWP processing is not only about seller identity. It also communicates
+          the <strong>meaning of appreciation</strong>. A guild-issued NWP reflects
+          community thanks at the default level. A Patron Organizing Community
+          reflects the benefit of coordinated 5-seller participation. The
+          <strong>highest human value remains personal</strong>: when an individual
+          issues an NWP directly, the message is simple —
+          <strong>“you mean something to me.”</strong>
+        </p>
+      </div>
+
+      <div class="seller-grid">
+        <article class="seller-card seller-card-personal">
+          <div class="seller-badge seller-badge-personal">Highest Human Value</div>
+          <h3>Individual Seller</h3>
+          <p class="seller-lead">
+            An individually issued NWP is the most personal form of recognition.
+            It says, directly and clearly, <strong>“you mean something to me.”</strong>
+            This is not generic gratitude. It is a human-to-human acknowledgment.
+          </p>
+
+          <div class="seller-message-box">
+            <span class="seller-message-label">Meaning</span>
+            <p>
+              Personal issuance turns a penny into a human treasure. Over time,
+              collected individual pennies become a record of meaningful encounters,
+              kindness, and remembered value.
+            </p>
+          </div>
+
+          <ul class="seller-list">
+            <li>Most personal seller endorsement</li>
+            <li>Direct device-to-device appreciation</li>
+            <li>Strongest emotional and relational value</li>
+            <li>Individual pennies become human treasures</li>
+          </ul>
+
+          <div class="seller-footer">
+            <span>Use case</span>
+            <strong>direct relationships, personal recognition, cherished encounters</strong>
+          </div>
+        </article>
+
+        <article class="seller-card seller-card-poc">
+          <div class="seller-badge seller-badge-poc">5-Seller Benefit Layer</div>
+          <h3>Patron Organizing Community</h3>
+          <p class="seller-lead">
+            A Patron Organizing Community is a <strong>group of 5 sellers</strong>
+            working together. A POC-issued NWP means your participation benefits
+            the group and helps strengthen the shared value created by the seller circle.
+          </p>
+
+          <div class="seller-message-box">
+            <span class="seller-message-label">Meaning</span>
+            <p>
+              This form of issuance says that your involvement matters to a local
+              team. Your presence supports a coordinated structure where five sellers
+              benefit from participation and shared activity.
+            </p>
+          </div>
+
+          <ul class="seller-list">
+            <li>Built around a 5-seller organizing structure</li>
+            <li>Your participation benefits the group</li>
+            <li>Community recognition with local social meaning</li>
+            <li>Ideal for organized grassroots activity</li>
+          </ul>
+
+          <div class="seller-footer">
+            <span>Use case</span>
+            <strong>local group coordination, shared rewards, organized participation</strong>
+          </div>
+        </article>
+
+        <article class="seller-card seller-card-guild">
+          <div class="seller-badge seller-badge-guild">Default Community Thanks</div>
+          <h3>Guild Seller</h3>
+          <p class="seller-lead">
+            A guild-issued NWP represents <strong>community thanks in its default form</strong>.
+            It is broad, inclusive appreciation from the wider network rather than a deeply
+            personal one-to-one expression.
+          </p>
+
+          <div class="seller-message-box">
+            <span class="seller-message-label">Meaning</span>
+            <p>
+              Guild issuance says: the community sees you, values your presence,
+              and thanks you as part of the larger whole. It is the standard layer
+              of appreciation that helps scale the network.
+            </p>
+          </div>
+
+          <ul class="seller-list">
+            <li>Default issuance for wider community appreciation</li>
+            <li>Broadest recognition across the network</li>
+            <li>Scales gratitude beyond one person or one local group</li>
+            <li>Best for campaigns, teams, and shared identity</li>
+          </ul>
+
+          <div class="seller-footer">
+            <span>Use case</span>
+            <strong>network-wide thanks, guild identity, broad participation</strong>
+          </div>
+        </article>
+      </div>
+
+      <div class="seller-summary-band">
+        <div class="seller-summary-intro">
+          <span class="seller-summary-kicker">Value Hierarchy</span>
+          <h3>Guild thanks is default. POC thanks is group benefit. Personal thanks is highest.</h3>
+          <p>
+            The NWP seller path teaches members that not all gratitude carries the
+            same meaning. Guild-issued NWP expresses community-wide thanks. POC-issued
+            NWP reflects benefit flowing through a 5-seller structure. Individual
+            issuance remains the rarest and most treasured form because it says,
+            plainly, <strong>you matter to me personally</strong>.
+          </p>
+        </div>
+
+        <div class="seller-summary-stack">
+          <div class="seller-summary-item">
+            <strong>Guild</strong>
+            <span>Default community thanks</span>
+          </div>
+          <div class="seller-summary-item">
+            <strong>POC</strong>
+            <span>5-seller group benefit</span>
+          </div>
+          <div class="seller-summary-item seller-summary-item-highlight">
+            <strong>Individual</strong>
+            <span>Highest-value personal meaning</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <div class="kicker">Why It Matters</div>
+        <h2>A smartphone processing center instead of a card terminal</h2>
+        <p>
+          This model teaches members to see their phones as instruments of verification, onboarding, and community commerce. Rather than relying only on distant financial institutions, members learn how to process trade value through visible, ethical, and time-stamped participation.
+        </p>
+      </div>
+
+      <div class="feature-grid">
+        <div class="card">
+          <h3>Visa/Mastercard-like logic</h3>
+          <p>Your phone acts like a payment endpoint, except the processing basis is proof of participation, delivery confirmation, and maturity rather than only card authorization.</p>
+        </div>
+        <div class="card">
+          <h3>Human blockchain ethos</h3>
+          <p>Every first activation starts with face-to-face accountability. Even digital credentials remain grounded in time, place, and validated member identity.</p>
+        </div>
+        <div class="card">
+          <h3>QRtiger identity rail</h3>
+          <p>Your QRtiger v-card serves as the portable seller gateway for digital or printed credential use across NWP and future YAM JAM flows.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="why-register" id="why-register">
+    <div class="why-register-container">
+      <div class="why-register-header">
+        <span class="why-register-kicker">Why Register?</span>
+        <h2>Your phone is not becoming a machine. It is becoming a tool that proves your participation mattered.</h2>
+        <p>
+          Most people hesitate when asked to register a v-card, download Discord,
+          or “become a processing device.” That hesitation is normal. YAM JAM —
+          <strong>You And Me, Just Alternative Money</strong> — is a proof of concept
+          designed to show something simple: your presence, your delivery, and your
+          participation have value.
+        </p>
+      </div>
+
+      <div class="why-register-grid">
+        <article class="why-register-card why-register-card-highlight">
+          <div class="why-register-icon">1</div>
+          <h3>Claim your place in the network</h3>
+          <p>
+            Registration is not about surrendering control. It is about claiming a
+            visible place in a people-powered value network where your activity can
+            be recognized and remembered.
+          </p>
+        </article>
+
+        <article class="why-register-card">
+          <div class="why-register-icon">2</div>
+          <h3>Create your personal QR gateway</h3>
+          <p>
+            Your QRtiger v-card is your identity gateway. It allows others to
+            recognize you, thank you, and connect future NWP and YAM JAM activity
+            to your real participation.
+          </p>
+        </article>
+
+        <article class="why-register-card">
+          <div class="why-register-icon">3</div>
+          <h3>Join Gracebook, not “just another app”</h3>
+          <p>
+            Discord becomes Gracebook in this proof of concept: a gathering place
+            where participation is seen, relationships are formed, and the community
+            around your activity becomes visible.
+          </p>
+        </article>
+      </div>
+
+      <div class="why-register-band">
+        <div class="why-register-band-copy">
+          <span class="why-register-mini-kicker">What This Really Means</span>
+          <h3>Most systems track spending. YAM JAM tracks participation.</h3>
+          <p>
+            Your smartphone already connects you to money, messages, and markets.
+            YAM JAM adds one more possibility: it helps your phone record that you
+            showed up, helped, delivered, received, supported, or mattered in a real
+            human encounter.
+          </p>
+        </div>
+
+        <div class="why-register-band-points">
+          <div class="why-register-point">
+            <strong>QRtiger v-card</strong>
+            <span>Claim your personal identity gateway</span>
+          </div>
+          <div class="why-register-point">
+            <strong>Gracebook</strong>
+            <span>Join the community where participation lives</span>
+          </div>
+          <div class="why-register-point why-register-point-highlight">
+            <strong>YAM JAM</strong>
+            <span>Use your phone to prove human value</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="why-register-steps">
+        <div class="why-register-steps-header">
+          <span class="why-register-mini-kicker">Simple Onboarding</span>
+          <h3>Start small. One scan at a time.</h3>
+        </div>
+
+        <div class="why-register-step-grid">
+          <article class="why-register-step">
+            <div class="why-register-step-number">1</div>
+            <h4>Accept your first NWP</h4>
+            <p>
+              Start with one face-to-face encounter. No heavy commitment up front.
+            </p>
+          </article>
+
+          <article class="why-register-step">
+            <div class="why-register-step-number">2</div>
+            <h4>See why it matters</h4>
+            <p>
+              Understand that the message behind the scan is simple: your participation has value.
+            </p>
+          </article>
+
+          <article class="why-register-step">
+            <div class="why-register-step-number">3</div>
+            <h4>Register your QR gateway</h4>
+            <p>
+              Create your QRtiger v-card so your identity can travel with you.
+            </p>
+          </article>
+
+          <article class="why-register-step">
+            <div class="why-register-step-number">4</div>
+            <h4>Join Gracebook</h4>
+            <p>
+              Connect to the member network where your activity can grow into something bigger.
+            </p>
+          </article>
+        </div>
+      </div>
+
+      <div class="why-register-cta">
+        <div class="why-register-cta-copy">
+          <span class="why-register-mini-kicker">The Real Promise</span>
+          <h3>We are not asking you to become technology.</h3>
+          <p>
+            We are asking you to use technology to show that your human value can
+            be seen, shared, and appreciated.
+          </p>
+        </div>
+
+        <div class="why-register-cta-actions">
+          <a href="#join" class="why-register-btn why-register-btn-primary">Join Gracebook</a>
+          <a href="#register-vcard" class="why-register-btn why-register-btn-secondary">Register QRtiger v-card</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="join">
+    <div class="container">
+      <div id="register-vcard" aria-hidden="true"></div>
+      <div class="cta-panel">
+        <div class="cta-grid">
+          <div>
+            <div class="kicker">Join the Network</div>
+            <h2>Join Gracebook. Register your QRtiger v-card. Activate your processing role.</h2>
+            <p>
+              Start with your first NWP encounter. Join the Gracebook community, connect your QRtiger v-card, and prepare your smartphone to serve as a trusted processing center for YAM JAM trade value. Whether you serve as an individual seller, a Patron Organizing Community member, or part of a guild, your device becomes part of a shared economic rail endorsed by proof of delivery and time for maturity.
+            </p>
+            <div class="hero-actions">
+              <a class="btn btn-primary" href="#">Join Gracebook Now</a>
+              <a class="btn btn-secondary" href="#">Register QRtiger v-card</a>
+            </div>
+          </div>
+          <div class="mini-list">
+            <div class="mini-item"><strong>1.</strong> Accept your first NWP face to face</div>
+            <div class="mini-item"><strong>2.</strong> Register your device and seller identity</div>
+            <div class="mini-item"><strong>3.</strong> Link your QRtiger v-card gateway</div>
+            <div class="mini-item"><strong>4.</strong> Build matured, proof-of-delivery-backed trade value</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container footer-box">
+      <div>
+        <strong>humanblockchain.info</strong><br />
+        NWP Processing Center for YAM JAM trade value
+      </div>
+      <div>
+        Built around device registration, QRtiger v-card identity, proof of delivery, and time-based maturity.
+      </div>
+    </div>
+  </footer>
+  <?php wp_footer(); ?>
+</body>
+</html>
