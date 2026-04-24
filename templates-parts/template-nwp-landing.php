@@ -326,20 +326,6 @@ $hb_nwp_gratitude_audio_url = apply_filters(
       min-height: 44px;
     }
 
-    .nwp-media-audio-wrap {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      padding: 18px;
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(100, 210, 255, 0.22);
-      border-radius: 16px;
-    }
-
-    .nwp-media-audio-wrap .nwp-audio-title {
-      margin-bottom: 0;
-    }
-
     .hero-card-cta {
       position: relative;
       z-index: 1;
@@ -474,27 +460,6 @@ $hb_nwp_gratitude_audio_url = apply_filters(
       min-height: 100%;
     }
 
-    .nwp-media-row {
-      display: grid;
-      grid-template-columns: 1.4fr 1fr;
-      gap: 20px;
-      margin-bottom: 32px;
-      align-items: stretch;
-    }
-
-    .nwp-media-placeholder {
-      background: rgba(255,255,255,0.03);
-      border: 1px dashed rgba(100, 210, 255, 0.35);
-      border-radius: var(--radius);
-      padding: 24px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      min-height: 0;
-    }
-
     .nwp-media-video-wrap {
       width: 100%;
       border-radius: var(--radius);
@@ -509,10 +474,6 @@ $hb_nwp_gratitude_audio_url = apply_filters(
       width: 100%;
       height: auto;
       vertical-align: middle;
-    }
-
-    .nwp-media-placeholder--audio {
-      min-height: 140px;
     }
 
     .nwp-media-kind {
@@ -530,29 +491,6 @@ $hb_nwp_gratitude_audio_url = apply_filters(
       font-size: 0.9rem;
       color: var(--muted);
     }
-
-    .nwp-audio-bars {
-      display: flex;
-      align-items: flex-end;
-      justify-content: center;
-      gap: 4px;
-      height: 40px;
-      margin-top: 16px;
-      opacity: 0.45;
-    }
-
-    .nwp-audio-bars span {
-      width: 4px;
-      border-radius: 2px;
-      background: var(--accent-2);
-    }
-
-    .nwp-audio-bars span:nth-child(1) { height: 30%; }
-    .nwp-audio-bars span:nth-child(2) { height: 60%; }
-    .nwp-audio-bars span:nth-child(3) { height: 45%; }
-    .nwp-audio-bars span:nth-child(4) { height: 80%; }
-    .nwp-audio-bars span:nth-child(5) { height: 35%; }
-    .nwp-audio-bars span:nth-child(6) { height: 55%; }
 
     .tier ul {
       margin: 14px 0 0;
@@ -621,9 +559,6 @@ $hb_nwp_gratitude_audio_url = apply_filters(
       .cta-grid {
         grid-template-columns: 1fr 1fr;
       }
-      .nwp-media-row {
-        grid-template-columns: 1fr 1fr;
-      }
     }
 
     @media (max-width: 900px) {
@@ -679,8 +614,7 @@ $hb_nwp_gratitude_audio_url = apply_filters(
       .steps,
       .tier-grid,
       .feature-grid,
-      .cta-grid,
-      .nwp-media-row {
+      .cta-grid {
         grid-template-columns: 1fr;
       }
       h1 { max-width: none; }
@@ -2507,37 +2441,6 @@ $hb_nwp_gratitude_audio_url = apply_filters(
         <p>
           This model teaches members to see their phones as instruments of verification, onboarding, and community commerce. Rather than relying only on distant financial institutions, members learn how to process trade value through visible, ethical, and time-stamped participation.
         </p>
-      </div>
-
-      <div class="nwp-media-row" aria-label="NWP explainer video and audio">
-        <div class="nwp-media-video-wrap">
-          <video
-            class="nwp-media-video"
-            controls
-            playsinline
-            preload="metadata"
-            title="<?php echo esc_attr__( 'Activating Your NWP Processing Center', 'hello-elementor-child' ); ?>"
-          >
-            <source
-              src="<?php echo esc_url( $hb_nwp_activating_video_url ); ?>"
-              type="video/mp4"
-            />
-            <p class="nwp-media-hint" style="padding: 1rem;"><?php echo esc_html__( 'Your browser does not support embedded video.', 'hello-elementor-child' ); ?></p>
-          </video>
-        </div>
-        <div class="nwp-media-audio-wrap" aria-label="<?php echo esc_attr__( 'Gratitude audio', 'hello-elementor-child' ); ?>">
-          <span class="nwp-media-kind"><?php echo esc_html__( 'Audio', 'hello-elementor-child' ); ?></span>
-          <p class="nwp-audio-title"><?php echo esc_html__( 'Turning human gratitude into economic value', 'hello-elementor-child' ); ?></p>
-          <audio
-            class="nwp-gratitude-audio"
-            controls
-            playsinline
-            preload="metadata"
-            title="<?php echo esc_attr__( 'Turning human gratitude into economic value', 'hello-elementor-child' ); ?>"
-          >
-            <source src="<?php echo esc_url( $hb_nwp_gratitude_audio_url ); ?>" type="audio/mp4" />
-          </audio>
-        </div>
       </div>
 
       <div class="feature-grid">
