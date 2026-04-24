@@ -2,6 +2,14 @@
 /**
  * Template Name: NWP Landing
  */
+$hb_nwp_activating_video_url = apply_filters(
+	'hb_nwp_activating_video_url',
+	'https://humanblockchain.info/wp-content/uploads/2026/04/Activating_Your_NWP_Processing_Center.mp4'
+);
+$hb_nwp_gratitude_audio_url = apply_filters(
+	'hb_nwp_gratitude_audio_url',
+	'https://humanblockchain.info/wp-content/uploads/2026/04/Turning_human_gratitude_into_economic_value.mp4'
+);
 ?>
 <!DOCTYPE html>
 <html <?php language_attributes(); ?>>
@@ -235,6 +243,113 @@
       pointer-events: none;
     }
 
+    .hero-card--video {
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .hero-card--video::after {
+      z-index: 0;
+    }
+
+    .hero-video-chrome {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 18px 12px;
+      background: linear-gradient(180deg, #132542, #0d1728);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      color: #dbe7fb;
+      font-size: 0.88rem;
+    }
+
+    .hero-card--video .nwp-media-video-wrap {
+      position: relative;
+      z-index: 1;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: none;
+      margin: 0 0 16px;
+    }
+
+    .hero-card-body {
+      position: relative;
+      z-index: 1;
+      padding: 20px 22px 22px;
+    }
+
+    .hero-card-title {
+      font-size: 1.7rem;
+      font-weight: 600;
+      margin: 0 0 10px;
+      color: #fff;
+      line-height: 1.2;
+    }
+
+    .hero-card-lead {
+      margin: 0 0 18px;
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.5;
+    }
+
+    .hero-card-audio {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      text-align: left;
+      padding: 16px 18px;
+      margin: 0 0 20px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(100, 210, 255, 0.22);
+      border-radius: 16px;
+    }
+
+    .hero-card-audio .nwp-media-kind {
+      margin-bottom: 4px;
+    }
+
+    .nwp-audio-title {
+      margin: 0 0 12px;
+      font-size: 0.92rem;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    .nwp-gratitude-audio {
+      display: block;
+      width: 100%;
+      min-height: 44px;
+    }
+
+    .nwp-media-audio-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 18px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(100, 210, 255, 0.22);
+      border-radius: 16px;
+    }
+
+    .nwp-media-audio-wrap .nwp-audio-title {
+      margin-bottom: 0;
+    }
+
+    .hero-card-cta {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding: 0;
+      margin-top: 4px;
+    }
+
     .phone {
       border-radius: 28px;
       padding: 18px;
@@ -359,6 +474,86 @@
       min-height: 100%;
     }
 
+    .nwp-media-row {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 20px;
+      margin-bottom: 32px;
+      align-items: stretch;
+    }
+
+    .nwp-media-placeholder {
+      background: rgba(255,255,255,0.03);
+      border: 1px dashed rgba(100, 210, 255, 0.35);
+      border-radius: var(--radius);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      min-height: 0;
+    }
+
+    .nwp-media-video-wrap {
+      width: 100%;
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: #050a12;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+    }
+
+    .nwp-media-video {
+      display: block;
+      width: 100%;
+      height: auto;
+      vertical-align: middle;
+    }
+
+    .nwp-media-placeholder--audio {
+      min-height: 140px;
+    }
+
+    .nwp-media-kind {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--accent-2);
+      margin-bottom: 10px;
+    }
+
+    .nwp-media-hint {
+      margin: 0;
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    .nwp-audio-bars {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 4px;
+      height: 40px;
+      margin-top: 16px;
+      opacity: 0.45;
+    }
+
+    .nwp-audio-bars span {
+      width: 4px;
+      border-radius: 2px;
+      background: var(--accent-2);
+    }
+
+    .nwp-audio-bars span:nth-child(1) { height: 30%; }
+    .nwp-audio-bars span:nth-child(2) { height: 60%; }
+    .nwp-audio-bars span:nth-child(3) { height: 45%; }
+    .nwp-audio-bars span:nth-child(4) { height: 80%; }
+    .nwp-audio-bars span:nth-child(5) { height: 35%; }
+    .nwp-audio-bars span:nth-child(6) { height: 55%; }
+
     .tier ul {
       margin: 14px 0 0;
       padding-left: 18px;
@@ -426,6 +621,9 @@
       .cta-grid {
         grid-template-columns: 1fr 1fr;
       }
+      .nwp-media-row {
+        grid-template-columns: 1fr 1fr;
+      }
     }
 
     @media (max-width: 900px) {
@@ -481,7 +679,8 @@
       .steps,
       .tier-grid,
       .feature-grid,
-      .cta-grid {
+      .cta-grid,
+      .nwp-media-row {
         grid-template-columns: 1fr;
       }
       h1 { max-width: none; }
@@ -1788,27 +1987,63 @@
         </div>
       </div>
 
-      <div class="hero-card">
-        <div class="phone">
-          <div class="phone-screen">
-            <div class="phone-top">
-              <span>humanblockchain.info</span>
-              <span>Live Processing</span>
+      <div class="hero-card hero-card--video">
+        <div class="hero-video-chrome">
+          <span>humanblockchain.info</span>
+          <span>Live Processing</span>
+        </div>
+        <div class="hero-card-body">
+          <div class="scan-badge"><?php echo esc_html__( 'First NWP Scan Detected', 'hello-elementor-child' ); ?></div>
+          <h3 class="hero-card-title"><?php echo esc_html__( 'Activate Device', 'hello-elementor-child' ); ?></h3>
+          <p class="hero-card-lead">
+            <?php echo esc_html__( 'Accept your first NWP, register your device, join Gracebook, and unlock your QRtiger v-card gateway.', 'hello-elementor-child' ); ?>
+          </p>
+
+          <div class="nwp-media-video-wrap">
+            <video
+              class="nwp-media-video"
+              controls
+              playsinline
+              preload="metadata"
+              title="<?php echo esc_attr__( 'Activating Your NWP Processing Center', 'hello-elementor-child' ); ?>"
+            >
+              <source src="<?php echo esc_url( $hb_nwp_activating_video_url ); ?>" type="video/mp4" />
+              <p class="nwp-media-hint" style="padding: 1rem;"><?php echo esc_html__( 'Your browser does not support embedded video.', 'hello-elementor-child' ); ?></p>
+            </video>
+          </div>
+
+          <div class="hero-card-audio" aria-label="<?php echo esc_attr__( 'Gratitude audio', 'hello-elementor-child' ); ?>">
+            <span class="nwp-media-kind"><?php echo esc_html__( 'Audio', 'hello-elementor-child' ); ?></span>
+            <p class="nwp-audio-title"><?php echo esc_html__( 'Turning human gratitude into economic value', 'hello-elementor-child' ); ?></p>
+            <audio
+              class="nwp-gratitude-audio"
+              controls
+              playsinline
+              preload="metadata"
+              title="<?php echo esc_attr__( 'Turning human gratitude into economic value', 'hello-elementor-child' ); ?>"
+            >
+              <source src="<?php echo esc_url( $hb_nwp_gratitude_audio_url ); ?>" type="audio/mp4" />
+            </audio>
+          </div>
+
+          <div class="mini-list">
+            <div class="mini-item">
+              <strong><?php echo esc_html__( 'Seller type:', 'hello-elementor-child' ); ?></strong>
+              <?php echo esc_html__( 'Individual / POC / Guild', 'hello-elementor-child' ); ?>
             </div>
-            <div class="scan-badge">First NWP Scan Detected</div>
-            <h3 style="font-size: 1.7rem; margin-bottom: 10px;">Activate Device</h3>
-            <p style="margin: 0 0 18px; color: var(--muted);">
-              Accept your first NWP, register your device, join Gracebook, and unlock your QRtiger v-card gateway.
-            </p>
-            <div class="mini-list">
-              <div class="mini-item"><strong>Seller type:</strong> Individual / POC / Guild</div>
-              <div class="mini-item"><strong>Validation:</strong> Time + Geo + Proof of Delivery</div>
-              <div class="mini-item"><strong>Maturity:</strong> Trade value becomes eligible after maturity rules are satisfied</div>
+            <div class="mini-item">
+              <strong><?php echo esc_html__( 'Validation:', 'hello-elementor-child' ); ?></strong>
+              <?php echo esc_html__( 'Time + Geo + Proof of Delivery', 'hello-elementor-child' ); ?>
             </div>
-            <div style="display:flex; gap:12px; margin-top:20px; flex-wrap:wrap;">
-              <a class="btn btn-primary" href="#join">Register v-card</a>
-              <a class="btn btn-secondary" href="#seller-types">Seller Paths</a>
+            <div class="mini-item">
+              <strong><?php echo esc_html__( 'Maturity:', 'hello-elementor-child' ); ?></strong>
+              <?php echo esc_html__( 'Trade value becomes eligible after maturity rules are satisfied', 'hello-elementor-child' ); ?>
             </div>
+          </div>
+
+          <div class="hero-card-cta">
+            <a class="btn btn-primary" href="#join"><?php echo esc_html__( 'Register v-card', 'hello-elementor-child' ); ?></a>
+            <a class="btn btn-secondary" href="#seller-types"><?php echo esc_html__( 'Seller Paths', 'hello-elementor-child' ); ?></a>
           </div>
         </div>
       </div>
@@ -2264,7 +2499,7 @@
     </div>
   </section>
 
-  <section class="section">
+  <section class="section" id="why-it-matters">
     <div class="container">
       <div class="section-head">
         <div class="kicker">Why It Matters</div>
@@ -2272,6 +2507,37 @@
         <p>
           This model teaches members to see their phones as instruments of verification, onboarding, and community commerce. Rather than relying only on distant financial institutions, members learn how to process trade value through visible, ethical, and time-stamped participation.
         </p>
+      </div>
+
+      <div class="nwp-media-row" aria-label="NWP explainer video and audio">
+        <div class="nwp-media-video-wrap">
+          <video
+            class="nwp-media-video"
+            controls
+            playsinline
+            preload="metadata"
+            title="<?php echo esc_attr__( 'Activating Your NWP Processing Center', 'hello-elementor-child' ); ?>"
+          >
+            <source
+              src="<?php echo esc_url( $hb_nwp_activating_video_url ); ?>"
+              type="video/mp4"
+            />
+            <p class="nwp-media-hint" style="padding: 1rem;"><?php echo esc_html__( 'Your browser does not support embedded video.', 'hello-elementor-child' ); ?></p>
+          </video>
+        </div>
+        <div class="nwp-media-audio-wrap" aria-label="<?php echo esc_attr__( 'Gratitude audio', 'hello-elementor-child' ); ?>">
+          <span class="nwp-media-kind"><?php echo esc_html__( 'Audio', 'hello-elementor-child' ); ?></span>
+          <p class="nwp-audio-title"><?php echo esc_html__( 'Turning human gratitude into economic value', 'hello-elementor-child' ); ?></p>
+          <audio
+            class="nwp-gratitude-audio"
+            controls
+            playsinline
+            preload="metadata"
+            title="<?php echo esc_attr__( 'Turning human gratitude into economic value', 'hello-elementor-child' ); ?>"
+          >
+            <source src="<?php echo esc_url( $hb_nwp_gratitude_audio_url ); ?>" type="audio/mp4" />
+          </audio>
+        </div>
       </div>
 
       <div class="feature-grid">
