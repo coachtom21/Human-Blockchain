@@ -4,7 +4,7 @@
  */
 $hb_nwp_activating_video_url = apply_filters(
 	'hb_nwp_activating_video_url',
-	'https://humanblockchain.info/wp-content/uploads/2026/04/Activating_Your_NWP_Processing_Center.mp4'
+	'https://humanblockchain.info/wp-content/uploads/2026/04/One-Sky-One-World-%E2%86%92-Detente-2030-2026-04-241.mp4'
 );
 $hb_nwp_gratitude_audio_url = apply_filters(
 	'hb_nwp_gratitude_audio_url',
@@ -654,114 +654,194 @@ $hb_nwp_gratitude_audio_url = apply_filters(
       }
     }
 
-    .how-it-works {
-      padding: 80px 20px;
-      background: linear-gradient(180deg, #0b1627 0%, #10203a 100%);
+    .yamjam-tutorial {
+      padding: 90px 20px;
+      background: linear-gradient(180deg, #08111f 0%, #0f1f38 100%);
       color: #eef4ff;
       scroll-margin-top: 88px;
     }
 
-    .hiw-container {
+    .yamjam-container {
       width: min(1180px, 100%);
       margin: 0 auto;
     }
 
-    .hiw-header {
-      max-width: 760px;
+    .yamjam-header {
+      max-width: 820px;
       margin-bottom: 40px;
     }
 
-    .hiw-kicker {
+    .yamjam-kicker,
+    .yamjam-mini-kicker {
       display: inline-block;
-      margin-bottom: 12px;
       padding: 8px 14px;
       border-radius: 999px;
-      background: rgba(100, 210, 255, 0.12);
-      border: 1px solid rgba(100, 210, 255, 0.2);
-      color: #d7f6ff;
       font-size: 0.8rem;
       font-weight: 800;
-      letter-spacing: 0.08em;
       text-transform: uppercase;
+      letter-spacing: 0.08em;
     }
 
-    .hiw-header h2 {
+    .yamjam-kicker {
+      margin-bottom: 12px;
+      background: rgba(100, 210, 255, 0.12);
+      border: 1px solid rgba(100, 210, 255, 0.2);
+      color: #d9f7ff;
+    }
+
+    .yamjam-mini-kicker {
+      margin-bottom: 10px;
+      background: rgba(245, 185, 66, 0.12);
+      border: 1px solid rgba(245, 185, 66, 0.22);
+      color: #ffe39f;
+    }
+
+    .yamjam-header h2 {
+      font-size: clamp(2.2rem, 4vw, 3.4rem);
       margin: 0 0 14px;
-      font-size: clamp(2rem, 4vw, 3.2rem);
       line-height: 1.1;
-      letter-spacing: -0.03em;
     }
 
-    .hiw-header p {
-      margin: 0;
+    .yamjam-header p {
       color: #b8c6dc;
-      font-size: 1.05rem;
       line-height: 1.7;
+      margin: 0;
     }
 
-    .hiw-grid {
+    .yamjam-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 22px;
+      margin-bottom: 30px;
     }
 
-    .hiw-step {
+    .yamjam-card {
+      padding: 26px;
+      border-radius: 24px;
       background: rgba(255, 255, 255, 0.04);
       border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 24px;
-      padding: 26px;
-      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.22);
-      transition: transform 0.25s ease, border-color 0.25s ease;
     }
 
-    .hiw-step:hover {
-      transform: translateY(-4px);
-      border-color: rgba(245, 185, 66, 0.35);
+    .yamjam-card-highlight {
+      border-color: rgba(100, 210, 255, 0.3);
     }
 
-    .hiw-number {
-      width: 48px;
-      height: 48px;
-      display: grid;
-      place-items: center;
-      margin-bottom: 16px;
-      border-radius: 14px;
-      background: rgba(245, 185, 66, 0.14);
-      color: #f5b942;
-      font-weight: 900;
-      font-size: 1.1rem;
-    }
-
-    .hiw-step h3 {
+    .yamjam-card h3 {
       margin: 0 0 10px;
-      font-size: 1.2rem;
-      line-height: 1.25;
+      font-size: 1.25rem;
+      line-height: 1.2;
     }
 
-    .hiw-step p {
+    .yamjam-card p {
       margin: 0;
       color: #b8c6dc;
       line-height: 1.65;
-      font-size: 0.98rem;
+    }
+
+    .yamjam-number {
+      width: 44px;
+      height: 44px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      background: rgba(245, 185, 66, 0.15);
+      margin-bottom: 12px;
+      font-weight: 900;
+    }
+
+    .yamjam-flow,
+    .yamjam-nwp,
+    .yamjam-summary {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 24px;
+      margin-bottom: 30px;
+      padding: 28px;
+      border-radius: 26px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      align-items: start;
+    }
+
+    .yamjam-flow-left h3,
+    .yamjam-nwp-copy h3,
+    .yamjam-summary-copy h3 {
+      margin: 0 0 10px;
+      font-size: clamp(1.35rem, 2.5vw, 1.9rem);
+      line-height: 1.2;
+    }
+
+    .yamjam-flow-left p,
+    .yamjam-nwp-copy p,
+    .yamjam-summary-copy p {
+      margin: 0 0 12px;
+      color: #b8c6dc;
+      line-height: 1.7;
+    }
+
+    .yamjam-nwp-copy p:last-of-type {
+      margin-bottom: 0;
+    }
+
+    .yamjam-nwp-copy ul {
+      margin: 12px 0 0;
+      padding-left: 1.2em;
+      color: #b8c6dc;
+      line-height: 1.65;
+    }
+
+    .yamjam-step,
+    .yamjam-point,
+    .yamjam-summary-item {
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.05);
+      margin-bottom: 10px;
+    }
+
+    .yamjam-step:last-child,
+    .yamjam-point:last-child {
+      margin-bottom: 0;
+    }
+
+    .yamjam-step strong,
+    .yamjam-point strong,
+    .yamjam-summary-item strong {
+      display: block;
+      margin-bottom: 4px;
+      color: #fff;
+    }
+
+    .yamjam-step span,
+    .yamjam-point span,
+    .yamjam-summary-item span {
+      color: #b8c6dc;
+      font-size: 0.95rem;
+    }
+
+    .yamjam-step-highlight,
+    .yamjam-summary-item-highlight {
+      border: 1px solid rgba(245, 185, 66, 0.3);
+    }
+
+    .yamjam-summary-box {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
     }
 
     @media (max-width: 980px) {
-      .hiw-grid {
-        grid-template-columns: repeat(2, 1fr);
+      .yamjam-grid,
+      .yamjam-flow,
+      .yamjam-nwp,
+      .yamjam-summary {
+        grid-template-columns: 1fr;
       }
     }
 
     @media (max-width: 640px) {
-      .how-it-works {
+      .yamjam-tutorial {
         padding: 64px 16px;
-      }
-
-      .hiw-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .hiw-step {
-        padding: 22px;
       }
     }
 
@@ -1816,7 +1896,7 @@ $hb_nwp_gratitude_audio_url = apply_filters(
     }
 
     @media (max-width: 640px) {
-      .how-it-works,
+      .yamjam-tutorial,
       .trade-value,
       .processing-flow,
       .seller-types,
@@ -2071,74 +2151,142 @@ $hb_nwp_gratitude_audio_url = apply_filters(
     </div>
   </section>
 
-  <section class="how-it-works" id="how-it-works">
-    <div class="hiw-container">
-      <div class="hiw-header">
-        <span class="hiw-kicker">How It Works</span>
-        <h2>Turn your smartphone into a YAM JAM processing center</h2>
+  <section class="yamjam-tutorial" id="how-it-works">
+    <div class="yamjam-container">
+
+      <div class="yamjam-header">
+        <span class="yamjam-kicker">How Money Works (Tutorial)</span>
+        <h2>Separate money from trade value — and everything becomes clear</h2>
         <p>
-          The NWP processing flow helps members establish trade value through
-          face-to-face activation, QRtiger v-card registration, proof of delivery,
-          and time for maturity. It works like a community-owned alternative to a
-          card processing network.
+          Most people think money and value are the same thing. They are not.
+          <strong>YAM JAM — You And Me, Just Alternative Money</strong> is a simple
+          game that uses your smartphone to show how <strong>community value is built
+          first</strong>, and money comes later.
         </p>
       </div>
 
-      <div class="hiw-grid">
-        <div class="hiw-step">
-          <div class="hiw-number">1</div>
-          <h3>Accept your first NWP</h3>
+      <div class="yamjam-grid">
+        <article class="yamjam-card">
+          <div class="yamjam-number">1</div>
+          <h3>Trade value happens first</h3>
           <p>
-            A member introduces you to the network through a face-to-face encounter.
-            Your first NWP scan begins the activation process.
+            When people exchange goods, services, time, or presence, value is created.
+            This happens whether or not money moves. Trade value is real-world activity.
+          </p>
+        </article>
+
+        <article class="yamjam-card">
+          <div class="yamjam-number">2</div>
+          <h3>Money is just a settlement layer</h3>
+          <p>
+            Fiat and crypto are tools used later to settle value. They do not create
+            the value itself. They only measure and transfer it after the fact.
+          </p>
+        </article>
+
+        <article class="yamjam-card yamjam-card-highlight">
+          <div class="yamjam-number">3</div>
+          <h3>YAM JAM tracks value without moving money</h3>
+          <p>
+            The YAM JAM game separates these two layers. Your smartphone records
+            participation and trade activity without requiring fiat or crypto to move.
+          </p>
+        </article>
+      </div>
+
+      <div class="yamjam-flow">
+        <div class="yamjam-flow-left">
+          <span class="yamjam-mini-kicker">The Game Mechanic</span>
+          <h3>Smartphone + NWP + Time = Community Value</h3>
+          <p>
+            Instead of paying instantly, YAM JAM uses a futures-style model.
+            Trade value is recorded today and becomes economically meaningful
+            after an <strong>8–12 week maturity period</strong>.
           </p>
         </div>
 
-        <div class="hiw-step">
-          <div class="hiw-number">2</div>
-          <h3>Register your device</h3>
-          <p>
-            Your smartphone becomes part of the human blockchain through timestamp,
-            geo-location, and seller referral validation.
-          </p>
-        </div>
-
-        <div class="hiw-step">
-          <div class="hiw-number">3</div>
-          <h3>Link your QRtiger v-card</h3>
-          <p>
-            Register your digital or printed QRtiger v-card so your phone can act
-            as your member-owned seller gateway.
-          </p>
-        </div>
-
-        <div class="hiw-step">
-          <div class="hiw-number">4</div>
-          <h3>Endorse with proof of delivery</h3>
-          <p>
-            Verified delivery confirms that value moved in the real world and gives
-            the transaction social and economic credibility.
-          </p>
-        </div>
-
-        <div class="hiw-step">
-          <div class="hiw-number">5</div>
-          <h3>Allow time for maturity</h3>
-          <p>
-            Once the maturity window is satisfied, the endorsed trade value becomes
-            eligible for YAM JAM processing.
-          </p>
-        </div>
-
-        <div class="hiw-step">
-          <div class="hiw-number">6</div>
-          <h3>Process like a payment rail</h3>
-          <p>
-            Your smartphone now functions like a Visa/Mastercard-style community
-            processing center for individual, POC, or guild seller activity.
-          </p>
+        <div class="yamjam-flow-right">
+          <div class="yamjam-step">
+            <strong>Step 1</strong>
+            <span>Scan NWP (New World Penny)</span>
+          </div>
+          <div class="yamjam-step">
+            <strong>Step 2</strong>
+            <span>Record participation (proof of delivery)</span>
+          </div>
+          <div class="yamjam-step">
+            <strong>Step 3</strong>
+            <span>Hold as future value (8–12 weeks)</span>
+          </div>
+          <div class="yamjam-step yamjam-step-highlight">
+            <strong>Step 4</strong>
+            <span>Becomes usable trade value</span>
+          </div>
         </div>
       </div>
+
+      <div class="yamjam-nwp">
+        <div class="yamjam-nwp-copy">
+          <span class="yamjam-mini-kicker">Human Value Layer</span>
+          <h3>NWP is privately issued gratitude + validation</h3>
+          <p>
+            A <strong>New World Penny (NWP)</strong> is not money. It is a signal.
+            It says: <strong>“this happened”</strong> and <strong>“this mattered.”</strong>
+          </p>
+          <p>
+            When issued, it performs two roles:
+          </p>
+          <ul>
+            <li><strong>Gratitude:</strong> human acknowledgment of value</li>
+            <li><strong>Validation:</strong> proof that a real exchange occurred</li>
+          </ul>
+        </div>
+
+        <div class="yamjam-nwp-points">
+          <div class="yamjam-point">
+            <strong>Individual NWP</strong>
+            <span>“You mean something to me” — highest value</span>
+          </div>
+          <div class="yamjam-point">
+            <strong>POC NWP</strong>
+            <span>5-seller group benefits from participation</span>
+          </div>
+          <div class="yamjam-point">
+            <strong>Guild NWP</strong>
+            <span>Default community-wide thanks</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="yamjam-summary">
+        <div class="yamjam-summary-copy">
+          <span class="yamjam-mini-kicker">What You Learn</span>
+          <h3>This is a futures-based model of how economies really work</h3>
+          <p>
+            In traditional finance, futures trading allows value today to settle later.
+            YAM JAM applies the same principle to human activity:
+          </p>
+          <p>
+            <strong>Participation today becomes collateral for value tomorrow.</strong>
+          </p>
+        </div>
+
+        <div class="yamjam-summary-box">
+          <div class="yamjam-summary-item">
+            <strong>No fiat required</strong>
+            <span>Value tracked without cash movement</span>
+          </div>
+          <div class="yamjam-summary-item">
+            <strong>No crypto required</strong>
+            <span>Device-driven validation instead</span>
+          </div>
+          <div class="yamjam-summary-item yamjam-summary-item-highlight">
+            <strong>Human-first economics</strong>
+            <span>Participation becomes measurable value</span>
+          </div>
+        </div>
+      </div>
+
     </div>
   </section>
 
@@ -2605,8 +2753,8 @@ $hb_nwp_gratitude_audio_url = apply_filters(
               Start with your first NWP encounter. Join the Gracebook community, connect your QRtiger v-card, and prepare your smartphone to serve as a trusted processing center for YAM JAM trade value. Whether you serve as an individual seller, a Patron Organizing Community member, or part of a guild, your device becomes part of a shared economic rail endorsed by proof of delivery and time for maturity.
             </p>
             <div class="hero-actions">
-              <a class="btn btn-primary" href="#">Join Gracebook Now</a>
-              <a class="btn btn-secondary" href="#">Register QRtiger v-card</a>
+              <a class="btn btn-primary" href="#join">Join Gracebook Now</a>
+              <a class="btn btn-secondary" href="#register-vcard">Register QRtiger v-card</a>
             </div>
           </div>
           <div class="mini-list">
