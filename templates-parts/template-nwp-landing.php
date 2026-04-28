@@ -122,12 +122,68 @@ $hb_nwp_gratitude_audio_url = apply_filters(
       font-size: 0.96rem;
     }
 
+    .nav-links .nav-menu {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
     .nav-links a {
       color: #fff;
     }
 
     .nav-links a:hover {
       color: var(--accent-2);
+    }
+
+    .nav-links .nav-menu > li > a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      line-height: 1;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+    }
+
+    .nav-links .nav-menu > li:nth-last-child(2) > a {
+      padding: 10px 16px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #2f95ff 0%, #4ea9ff 100%);
+      border: 1px solid rgba(144, 206, 255, 0.9);
+      box-shadow: 0 10px 26px rgba(40, 130, 255, 0.28);
+      color: #f6fbff !important;
+    }
+
+    .nav-links .nav-menu > li:nth-last-child(2) > a:hover {
+      background: linear-gradient(135deg, #1884f5 0%, #3a9cf7 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 14px 30px rgba(33, 118, 247, 0.34);
+      color: #ffffff !important;
+    }
+
+    .nav-links .nav-menu > li:last-child > a {
+      padding: 10px 14px;
+      font-weight: 700;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      color: #eaf4ff !important;
+    }
+
+    .nav-links .nav-menu > li:last-child > a:hover {
+      background: rgba(255, 255, 255, 0.18);
+      border-color: rgba(255, 255, 255, 0.45);
+      transform: translateY(-1px);
+      box-shadow: 0 10px 24px rgba(5, 13, 27, 0.3);
+      color: #ffffff !important;
+    }
+
+    .nav-links .nav-menu > li:nth-last-child(2) > a:focus-visible,
+    .nav-links .nav-menu > li:last-child > a:focus-visible {
+      outline: 2px solid #64d2ff;
+      outline-offset: 2px;
     }
 
     .btn {
@@ -597,6 +653,16 @@ $hb_nwp_gratitude_audio_url = apply_filters(
         padding: 12px 0 0;
         border-top: 1px solid rgba(255, 255, 255, 0.08);
         font-size: 0.75rem;
+      }
+      .nav-links .nav-menu {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 6px 12px;
+      }
+      .nav-links .nav-menu > li:nth-last-child(2) > a,
+      .nav-links .nav-menu > li:last-child > a {
+        padding: 9px 12px;
+        font-size: 0.74rem;
       }
       .nav-cta {
         flex: 0 0 auto;
@@ -1973,10 +2039,27 @@ $hb_nwp_gratitude_audio_url = apply_filters(
         </div>
       </a>
       <div class="nav-links">
-        <a href="#how-it-works">How It Works</a>
-        <a href="#seller-types">Seller Types</a>
-        <a href="#trade-value">Trade Value</a>
-        <a href="#join">Join Gracebook</a>
+        <?php
+        $new_menu = wp_get_nav_menu_object( 'New Menu' );
+
+        if ( $new_menu ) {
+          wp_nav_menu(
+            array(
+              'menu'        => 'New Menu',
+              'container'   => false,
+              'menu_class'  => 'nav-menu',
+              'fallback_cb' => false,
+            )
+          );
+        } else {
+          ?>
+          <a href="#how-it-works">How It Works</a>
+          <a href="#seller-types">Seller Types</a>
+          <a href="#trade-value">Trade Value</a>
+          <a href="#join">Join Gracebook</a>
+          <?php
+        }
+        ?>
       </div>
       <a class="btn btn-primary nav-cta" href="#join">Activate Your Phone</a>
     </div>
