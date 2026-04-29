@@ -36,11 +36,13 @@ $hb_nwp_gratitude_audio_url = apply_filters(
     * { box-sizing: border-box; }
     html {
       scroll-behavior: smooth;
-      overflow-x: hidden;
+      overflow-x: hidden; /* older engines */
+      overflow-x: clip; /* keeps X overflow contained without breaking position: sticky on the nav */
     }
     body.nwp-landing {
       margin: 0;
       overflow-x: hidden;
+      overflow-x: clip;
       -webkit-text-size-adjust: 100%;
       text-size-adjust: 100%;
       padding-left: max(0px, env(safe-area-inset-left, 0px));
@@ -63,127 +65,6 @@ $hb_nwp_gratitude_audio_url = apply_filters(
     .container {
       width: min(var(--max), calc(100% - 32px));
       margin: 0 auto;
-    }
-
-    .nav {
-      position: sticky;
-      top: 0;
-      z-index: 40;
-      backdrop-filter: blur(16px);
-      background: rgba(7, 16, 28, 0.72);
-      border-bottom: 1px solid rgba(255,255,255,0.08);
-    }
-
-    .nav-inner {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 20px;
-      padding: 16px 0;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-weight: 800;
-      letter-spacing: 0.02em;
-      text-decoration: none;
-      color: inherit;
-    }
-
-    .brand:focus-visible {
-      outline: 2px solid var(--accent-2);
-      outline-offset: 4px;
-      border-radius: 8px;
-    }
-
-    .brand-site-title {
-      color: #fff;
-    }
-
-    .brand-badge {
-      width: 42px;
-      height: 42px;
-      border-radius: 14px;
-      display: grid;
-      place-items: center;
-      background: linear-gradient(135deg, var(--accent), #ffdf7c);
-      color: #08111f;
-      font-weight: 900;
-      box-shadow: var(--shadow);
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 20px;
-      align-items: center;
-      color: #fff;
-      font-size: 0.96rem;
-    }
-
-    .nav-links .nav-menu {
-      display: flex;
-      gap: 20px;
-      align-items: center;
-      margin: 0;
-      padding: 0;
-      list-style: none;
-    }
-
-    .nav-links a {
-      color: #fff;
-    }
-
-    .nav-links a:hover {
-      color: var(--accent-2);
-    }
-
-    .nav-links .nav-menu > li > a {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 999px;
-      line-height: 1;
-      transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, color 0.2s ease;
-    }
-
-    .nav-links .nav-menu > li:nth-last-child(2) > a {
-      padding: 10px 16px;
-      font-weight: 700;
-      background: linear-gradient(135deg, #2f95ff 0%, #4ea9ff 100%);
-      border: 1px solid rgba(144, 206, 255, 0.9);
-      box-shadow: 0 10px 26px rgba(40, 130, 255, 0.28);
-      color: #f6fbff !important;
-    }
-
-    .nav-links .nav-menu > li:nth-last-child(2) > a:hover {
-      background: linear-gradient(135deg, #1884f5 0%, #3a9cf7 100%);
-      transform: translateY(-1px);
-      box-shadow: 0 14px 30px rgba(33, 118, 247, 0.34);
-      color: #ffffff !important;
-    }
-
-    .nav-links .nav-menu > li:last-child > a {
-      padding: 10px 14px;
-      font-weight: 700;
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.24);
-      color: #eaf4ff !important;
-    }
-
-    .nav-links .nav-menu > li:last-child > a:hover {
-      background: rgba(255, 255, 255, 0.18);
-      border-color: rgba(255, 255, 255, 0.45);
-      transform: translateY(-1px);
-      box-shadow: 0 10px 24px rgba(5, 13, 27, 0.3);
-      color: #ffffff !important;
-    }
-
-    .nav-links .nav-menu > li:nth-last-child(2) > a:focus-visible,
-    .nav-links .nav-menu > li:last-child > a:focus-visible {
-      outline: 2px solid #64d2ff;
-      outline-offset: 2px;
     }
 
     .btn {
@@ -624,53 +505,6 @@ $hb_nwp_gratitude_audio_url = apply_filters(
     }
 
     @media (max-width: 720px) {
-      .nav-inner {
-        flex-wrap: wrap;
-        row-gap: 10px;
-        padding: 12px 0;
-        align-items: center;
-      }
-      .brand {
-        flex: 1 1 auto;
-        min-width: 0;
-        max-width: calc(100% - 160px);
-      }
-      .brand > div:last-child {
-        min-width: 0;
-      }
-      .brand-site-title {
-        font-size: clamp(0.8rem, 3.2vw, 1rem);
-        line-height: 1.2;
-      }
-      .nav-links {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 6px 12px;
-        width: 100%;
-        order: 3;
-        margin: 0;
-        padding: 12px 0 0;
-        border-top: 1px solid rgba(255, 255, 255, 0.08);
-        font-size: 0.75rem;
-      }
-      .nav-links .nav-menu {
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 6px 12px;
-      }
-      .nav-links .nav-menu > li:nth-last-child(2) > a,
-      .nav-links .nav-menu > li:last-child > a {
-        padding: 9px 12px;
-        font-size: 0.74rem;
-      }
-      .nav-cta {
-        flex: 0 0 auto;
-        margin-left: auto;
-        padding: 12px 16px;
-        font-size: 0.85rem;
-        white-space: nowrap;
-      }
       .hero {
         padding: 48px 0 40px;
       }
@@ -2016,54 +1850,30 @@ $hb_nwp_gratitude_audio_url = apply_filters(
     body.nwp-landing .big-number {
       color: #ffffff !important;
     }
-    body.nwp-landing .nav-links,
-    body.nwp-landing .nav-links a {
+    body.nwp-landing .nwp-site-header .nav-links,
+    body.nwp-landing .nwp-site-header .nav-links a {
       color: #ffffff !important;
     }
-    body.nwp-landing .nav-links a:hover {
+    body.nwp-landing .nwp-site-header .nav-links a:hover {
       color: #64d2ff !important;
     }
-    body.nwp-landing .brand-site-title {
+    body.nwp-landing .nwp-site-header .brand-site-title {
       color: #ffffff !important;
+    }
+    /* cpm-hb: membership “branches” — load after theme + wp_head() so the three cards stay a grid */
+    #cpm-hb-membership-modal .cpm-hb-membership-grid {
+      display: grid !important;
+      grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    }
+    @media (max-width: 1100px) {
+      #cpm-hb-membership-modal .cpm-hb-membership-grid {
+        grid-template-columns: 1fr !important;
+      }
     }
   </style>
 </head>
 <body <?php body_class( 'nwp-landing' ); ?>>
-  <nav class="nav">
-    <div class="container nav-inner">
-      <a class="brand" href="<?php echo esc_url( home_url( '/' ) ); ?>">
-        <div class="brand-badge">NWP</div>
-        <div>
-          <div class="brand-site-title">humanblockchain.info</div>
-          <small style="color: var(--muted); font-weight: 600;">NWP Processing Center</small>
-        </div>
-      </a>
-      <div class="nav-links">
-        <?php
-        $new_menu = wp_get_nav_menu_object( 'New Menu' );
-
-        if ( $new_menu ) {
-          wp_nav_menu(
-            array(
-              'menu'        => 'New Menu',
-              'container'   => false,
-              'menu_class'  => 'nav-menu',
-              'fallback_cb' => false,
-            )
-          );
-        } else {
-          ?>
-          <a href="#how-it-works">How It Works</a>
-          <a href="#seller-types">Seller Types</a>
-          <a href="#trade-value">Trade Value</a>
-          <a href="#join">Join Gracebook</a>
-          <?php
-        }
-        ?>
-      </div>
-      <a class="btn btn-primary nav-cta" href="#join">Activate Your Phone</a>
-    </div>
-  </nav>
+  <?php get_template_part( 'templates-parts/part', 'nwp-site-header' ); ?>
 
   <header class="hero">
     <div class="container hero-grid">

@@ -17,6 +17,40 @@ if ( ! defined( 'ABSPATH' ) ) {
 define( 'HELLO_ELEMENTOR_CHILD_VERSION', '2.0.0' );
 
 /**
+ * Permalink of the page using the NWP Landing template, or home.
+ *
+ * @return string
+ */
+function hb_get_nwp_landing_permalink() {
+	static $cached = null;
+	if ( null !== $cached ) {
+		return $cached;
+	}
+	$pages = get_pages(
+		array(
+			'meta_key'   => '_wp_page_template',
+			'meta_value' => 'templates-parts/template-nwp-landing.php',
+			'number'     => 1,
+		)
+	);
+	$cached = ( ! empty( $pages[0] ) ) ? get_permalink( $pages[0]->ID ) : home_url( '/' );
+	return $cached;
+}
+
+/**
+ * URL to a section on the NWP landing page.
+ *
+ * @param string $section_id Hash id without #, e.g. how-it-works.
+ * @return string
+ */
+function hb_nwp_landing_section_url( $section_id ) {
+	$base = hb_get_nwp_landing_permalink();
+	$base = rtrim( (string) $base, '/' );
+	$hash = ltrim( (string) $section_id, '#' );
+	return esc_url( $base . '/#' . $hash );
+}
+
+/**
  * Load child theme scripts & styles.
  *
  * @return void
@@ -37,6 +71,23 @@ function hello_elementor_child_scripts_styles() {
 		get_stylesheet_directory_uri() . '/assets/css/responsive.css',
 		array( 'hello-elementor-child-style' ),
 		HELLO_ELEMENTOR_CHILD_VERSION
+	);
+
+	$nwp_header_path = get_stylesheet_directory() . '/assets/css/nwp-site-header.css';
+	wp_enqueue_style(
+		'hb-nwp-site-header',
+		get_stylesheet_directory_uri() . '/assets/css/nwp-site-header.css',
+		array( 'hello-elementor-child-style' ),
+		file_exists( $nwp_header_path ) ? filemtime( $nwp_header_path ) : HELLO_ELEMENTOR_CHILD_VERSION
+	);
+
+	$nwp_header_js = get_stylesheet_directory() . '/assets/js/nwp-site-header.js';
+	wp_enqueue_script(
+		'hb-nwp-site-header',
+		get_stylesheet_directory_uri() . '/assets/js/nwp-site-header.js',
+		array(),
+		file_exists( $nwp_header_js ) ? filemtime( $nwp_header_js ) : HELLO_ELEMENTOR_CHILD_VERSION,
+		true
 	);
 
 	// Enqueue OTP Popup styles - use filemtime for cache busting
