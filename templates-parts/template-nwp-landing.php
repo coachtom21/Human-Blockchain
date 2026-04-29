@@ -1847,6 +1847,14 @@ $hb_nwp_gratitude_audio_url = apply_filters(
     body.nwp-landing h4 {
       color: #ffffff !important;
     }
+    /* cpm-humanblockchain “activate” modals: white card — h2 was invisible (white on white) */
+    body.nwp-landing .cpm-nwp-modal--activate .cpm-nwp-activate-title,
+    body.nwp-landing .cpm-nwp-modal--activate h2.cpm-nwp-activate-title {
+      color: #111111 !important;
+    }
+    body.nwp-landing .cpm-nwp-modal--activate .cpm-nwp-verify-subtitle {
+      color: #6b7280 !important;
+    }
     body.nwp-landing .big-number {
       color: #ffffff !important;
     }
