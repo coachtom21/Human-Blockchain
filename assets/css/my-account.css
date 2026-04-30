@@ -159,3 +159,9 @@ body.woocommerce-account .woocommerce-MyAccount-content textarea:focus {
 		flex-basis: auto;
 	}
 }
+
+/* Custom page template: templates-parts/template-my-account.php (loads via wp_head) */
+body.hb-my-account-page .hb-xp-ledger-table-wrap table tr.hb-xp-row--pending td {
+	background: rgba(255, 231, 133, 0.2);
+	color: #fff6cf;
+}

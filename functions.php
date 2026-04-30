@@ -488,6 +488,72 @@ function hb_add_xp_ledger_account_menu_item( $items ) {
 add_filter( 'woocommerce_account_menu_items', 'hb_add_xp_ledger_account_menu_item', 40 );
 
 /**
+ * Sum XP analytics from ledger rows. Pending is tracked separately; total/buyer/seller exclude pending.
+ *
+ * @param array<int, object> $xp_rows Rows from Cpm_Humanblockchain_Xp_Ledger::get_ledger_rows_for_user.
+ * @return array{total:string,pending:string,buyer:string,seller:string}
+ */
+function hb_xp_ledger_sum_analytics_from_rows( $xp_rows ) {
+	$analytics = array(
+		'total'   => '0',
+		'pending' => '0',
+		'buyer'   => '0',
+		'seller'  => '0',
+	);
+	if ( ! is_array( $xp_rows ) ) {
+		return $analytics;
+	}
+
+	$add_bigints = static function ( $a, $b ) {
+		$a = ltrim( preg_replace( '/\D/', '', (string) $a ), '0' );
+		$b = ltrim( preg_replace( '/\D/', '', (string) $b ), '0' );
+		if ( $a === '' ) {
+			$a = '0';
+		}
+		if ( $b === '' ) {
+			$b = '0';
+		}
+		if ( function_exists( 'bcadd' ) ) {
+			return bcadd( $a, $b, 0 );
+		}
+		$carry = 0;
+		$out   = '';
+		$i     = strlen( $a ) - 1;
+		$j     = strlen( $b ) - 1;
+		while ( $i >= 0 || $j >= 0 || $carry > 0 ) {
+			$da    = $i >= 0 ? (int) $a[ $i ] : 0;
+			$db    = $j >= 0 ? (int) $b[ $j ] : 0;
+			$sum   = $da + $db + $carry;
+			$out   = (string) ( $sum % 10 ) . $out;
+			$carry = (int) floor( $sum / 10 );
+			$i--;
+			$j--;
+		}
+		$out = ltrim( $out, '0' );
+		return $out === '' ? '0' : $out;
+	};
+
+	foreach ( $xp_rows as $row ) {
+		$units       = isset( $row->xp_units ) ? (string) $row->xp_units : '0';
+		$scan_type   = isset( $row->scan_type ) ? (string) $row->scan_type : '';
+		$scan_status = isset( $row->scan_status ) ? (string) $row->scan_status : '';
+		if ( $scan_status === 'pending' ) {
+			$analytics['pending'] = $add_bigints( $analytics['pending'], $units );
+		} else {
+			$analytics['total'] = $add_bigints( $analytics['total'], $units );
+			if ( $scan_type === 'buyer_scan' ) {
+				$analytics['buyer'] = $add_bigints( $analytics['buyer'], $units );
+			}
+			if ( $scan_type === 'seller_scan' ) {
+				$analytics['seller'] = $add_bigints( $analytics['seller'], $units );
+			}
+		}
+	}
+
+	return $analytics;
+}
+
+/**
  * Render XP Ledger endpoint content on Woo My Account.
  */
 function hb_render_xp_ledger_account_endpoint() {
@@ -529,57 +595,7 @@ function hb_render_xp_ledger_account_endpoint() {
 		return esc_html( $coeff ) . ' x 10^' . esc_html( $exp ) . ' XP';
 	};
 
-	$add_bigints = static function ( $a, $b ) {
-		$a = ltrim( preg_replace( '/\D/', '', (string) $a ), '0' );
-		$b = ltrim( preg_replace( '/\D/', '', (string) $b ), '0' );
-		if ( $a === '' ) {
-			$a = '0';
-		}
-		if ( $b === '' ) {
-			$b = '0';
-		}
-		if ( function_exists( 'bcadd' ) ) {
-			return bcadd( $a, $b, 0 );
-		}
-		$carry  = 0;
-		$out    = '';
-		$i      = strlen( $a ) - 1;
-		$j      = strlen( $b ) - 1;
-		while ( $i >= 0 || $j >= 0 || $carry > 0 ) {
-			$da    = $i >= 0 ? (int) $a[ $i ] : 0;
-			$db    = $j >= 0 ? (int) $b[ $j ] : 0;
-			$sum   = $da + $db + $carry;
-			$out   = (string) ( $sum % 10 ) . $out;
-			$carry = (int) floor( $sum / 10 );
-			$i--;
-			$j--;
-		}
-		$out = ltrim( $out, '0' );
-		return $out === '' ? '0' : $out;
-	};
-
-	$analytics = array(
-		'total'   => '0',
-		'pending' => '0',
-		'buyer'   => '0',
-		'seller'  => '0',
-	);
-	foreach ( $xp_rows as $row ) {
-		$units                 = isset( $row->xp_units ) ? (string) $row->xp_units : '0';
-		$scan_type             = isset( $row->scan_type ) ? (string) $row->scan_type : '';
-		$scan_status           = isset( $row->scan_status ) ? (string) $row->scan_status : '';
-		if ( $scan_status === 'pending' ) {
-			$analytics['pending'] = $add_bigints( $analytics['pending'], $units );
-		} else {
-			$analytics['total'] = $add_bigints( $analytics['total'], $units );
-			if ( $scan_type === 'buyer_scan' ) {
-				$analytics['buyer'] = $add_bigints( $analytics['buyer'], $units );
-			}
-			if ( $scan_type === 'seller_scan' ) {
-				$analytics['seller'] = $add_bigints( $analytics['seller'], $units );
-			}
-		}
-	}
+	$analytics = hb_xp_ledger_sum_analytics_from_rows( $xp_rows );
 
 	echo '<h3>' . esc_html__( 'XP Ledger', 'hello-elementor-child' ) . '</h3>';
 	echo '<p>' . esc_html__( 'Your scan ledger history from HumanBlockchain.', 'hello-elementor-child' ) . '</p>';

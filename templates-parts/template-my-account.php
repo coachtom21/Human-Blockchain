@@ -56,6 +56,16 @@ if ( class_exists( 'Cpm_Humanblockchain_Xp_Ledger' ) ) {
 	$xp_summary = Cpm_Humanblockchain_Xp_Ledger::get_xp_summary_for_user( $uid );
 }
 
+$xp_analytics = array(
+	'total'   => '0',
+	'pending' => '0',
+	'buyer'   => '0',
+	'seller'  => '0',
+);
+if ( function_exists( 'hb_xp_ledger_sum_analytics_from_rows' ) ) {
+	$xp_analytics = hb_xp_ledger_sum_analytics_from_rows( $xp_rows );
+}
+
 $refresh_url = wp_nonce_url( add_query_arg( 'hb_refresh_membership', '1', get_permalink() ), 'hb_my_account_refresh_membership' );
 
 $hb_xp_allowed_html = array(
@@ -176,9 +186,14 @@ $hb_xp_display_html = static function ( $value ) {
 		}
 		.xp-sci-times{font-weight:700;margin:0 .12em;color:#f0dcc4}
 		.empty{color:var(--muted);font-size:.9rem;margin:8px 0 0}
+		.hb-xp-analytics-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin:14px 0 16px}
+		.hb-xp-analytics-card{padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.04)}
+		.hb-xp-analytics-card .hb-xp-analytics-label{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin:0 0 6px}
+		.hb-xp-analytics-card .hb-xp-analytics-value{font-size:1rem;font-weight:700;margin:0;line-height:1.35}
 	</style>
+	<?php wp_head(); ?>
 </head>
-<body>
+<body <?php body_class( 'hb-my-account-page' ); ?>>
 	<div class="wrap">
 		<h1><?php esc_html_e( 'My account', 'hello-elementor-child' ); ?></h1>
 		<p class="sub"><?php echo esc_html( sprintf( /* translators: %s: display name */ __( 'Signed in as %s', 'hello-elementor-child' ), $current_user->display_name ) ); ?></p>
@@ -241,33 +256,44 @@ $hb_xp_display_html = static function ( $value ) {
 			</div>
 		</div>
 
-		<div class="card" style="margin-top:18px">
-			<h2><?php esc_html_e( 'XP & ledger', 'hello-elementor-child' ); ?></h2>
+		<div class="card hb-xp-ledger-card" style="margin-top:18px">
+			<h2><?php esc_html_e( 'XP Ledger', 'hello-elementor-child' ); ?></h2>
+			<p class="empty" style="margin-top:0"><?php esc_html_e( 'Your scan ledger history from HumanBlockchain.', 'hello-elementor-child' ); ?></p>
 			<?php if ( ! class_exists( 'Cpm_Humanblockchain_Xp_Ledger' ) ) : ?>
 				<p class="empty"><?php esc_html_e( 'XP ledger plugin is not active.', 'hello-elementor-child' ); ?></p>
 			<?php else : ?>
-				<dl style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr));display:grid;gap:12px">
+				<dl style="margin:0 0 4px;display:grid;gap:8px">
 					<div>
 						<dt><?php esc_html_e( 'Ledger rows', 'hello-elementor-child' ); ?></dt>
 						<dd><?php echo esc_html( (string) (int) $xp_summary['row_count'] ); ?></dd>
 					</div>
-					<div>
-						<dt><?php esc_html_e( 'Total XP', 'hello-elementor-child' ); ?></dt>
-						<dd>
-							<?php if ( ! empty( $xp_summary['total_exact'] ) ) : ?>
-								<?php echo wp_kses( $hb_xp_display_html( (string) $xp_summary['total_xp'] ), $hb_xp_allowed_html ); ?>
-							<?php else : ?>
-								<span class="empty" style="margin:0"><?php esc_html_e( 'Exact total requires the PHP BCMath extension (bcadd). Per-row values are still listed below.', 'hello-elementor-child' ); ?></span>
-							<?php endif; ?>
-						</dd>
-					</div>
 				</dl>
+
+				<div class="hb-xp-analytics-grid" role="group" aria-label="<?php esc_attr_e( 'XP summary', 'hello-elementor-child' ); ?>">
+					<div class="hb-xp-analytics-card">
+						<p class="hb-xp-analytics-label"><?php esc_html_e( 'Total XP', 'hello-elementor-child' ); ?></p>
+						<p class="hb-xp-analytics-value"><?php echo wp_kses( $hb_xp_display_html( (string) $xp_analytics['total'] ), $hb_xp_allowed_html ); ?></p>
+					</div>
+					<div class="hb-xp-analytics-card">
+						<p class="hb-xp-analytics-label"><?php esc_html_e( 'Pending XP', 'hello-elementor-child' ); ?></p>
+						<p class="hb-xp-analytics-value"><?php echo wp_kses( $hb_xp_display_html( (string) $xp_analytics['pending'] ), $hb_xp_allowed_html ); ?></p>
+					</div>
+					<div class="hb-xp-analytics-card">
+						<p class="hb-xp-analytics-label"><?php esc_html_e( 'Buyer XP', 'hello-elementor-child' ); ?></p>
+						<p class="hb-xp-analytics-value"><?php echo wp_kses( $hb_xp_display_html( (string) $xp_analytics['buyer'] ), $hb_xp_allowed_html ); ?></p>
+					</div>
+					<div class="hb-xp-analytics-card">
+						<p class="hb-xp-analytics-label"><?php esc_html_e( 'Seller XP', 'hello-elementor-child' ); ?></p>
+						<p class="hb-xp-analytics-value"><?php echo wp_kses( $hb_xp_display_html( (string) $xp_analytics['seller'] ), $hb_xp_allowed_html ); ?></p>
+					</div>
+				</div>
+				<p class="empty" style="margin:-6px 0 10px;font-size:.82rem"><?php esc_html_e( 'Total, buyer, and seller sums count only completed rows; pending is shown separately.', 'hello-elementor-child' ); ?></p>
 
 				<?php if ( empty( $xp_rows ) ) : ?>
 					<p class="empty"><?php esc_html_e( 'No XP ledger transactions for this user yet.', 'hello-elementor-child' ); ?></p>
 				<?php else : ?>
-					<div class="table-wrap">
-						<table>
+					<div class="table-wrap hb-xp-ledger-table-wrap">
+						<table class="hb-xp-ledger-table">
 							<thead>
 								<tr>
 									<th><?php esc_html_e( 'ID', 'hello-elementor-child' ); ?></th>
@@ -281,7 +307,11 @@ $hb_xp_display_html = static function ( $value ) {
 							</thead>
 							<tbody>
 								<?php foreach ( $xp_rows as $row ) : ?>
-									<tr>
+									<?php
+									$row_status   = isset( $row->scan_status ) ? (string) $row->scan_status : '';
+									$row_pending  = ( 'pending' === $row_status );
+									?>
+									<tr<?php echo $row_pending ? ' class="hb-xp-row--pending"' : ''; ?>>
 										<td><?php echo isset( $row->id ) ? esc_html( (string) (int) $row->id ) : ''; ?></td>
 										<td><?php echo isset( $row->scan_type ) ? esc_html( (string) $row->scan_type ) : ''; ?></td>
 										<td><code class="xp"><?php echo isset( $row->transaction_id ) ? esc_html( (string) $row->transaction_id ) : ''; ?></code></td>
@@ -302,5 +332,6 @@ $hb_xp_display_html = static function ( $value ) {
 			<a class="btn secondary" href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php esc_html_e( 'Home', 'hello-elementor-child' ); ?></a>
 		</p>
 	</div>
+	<?php wp_footer(); ?>
 </body>
 </html>
