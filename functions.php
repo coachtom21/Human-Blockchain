@@ -144,6 +144,23 @@ function hello_elementor_child_scripts_styles() {
 		);
 	}
 
+	if ( function_exists( 'is_checkout' ) && is_checkout() && ! is_order_received_page() ) {
+		$checkout_css = get_stylesheet_directory() . '/assets/css/checkout.css';
+		$checkout_deps = array( 'hello-elementor-child-style' );
+		if ( wp_style_is( 'wc-blocks-packages-style', 'registered' ) ) {
+			$checkout_deps[] = 'wc-blocks-packages-style';
+		}
+		if ( wp_style_is( 'wc-blocks-style-checkout', 'registered' ) ) {
+			$checkout_deps[] = 'wc-blocks-style-checkout';
+		}
+		wp_enqueue_style(
+			'hb-checkout-ui',
+			get_stylesheet_directory_uri() . '/assets/css/checkout.css',
+			$checkout_deps,
+			file_exists( $checkout_css ) ? filemtime( $checkout_css ) : HELLO_ELEMENTOR_CHILD_VERSION
+		);
+	}
+
 }
 add_action( 'wp_enqueue_scripts', 'hello_elementor_child_scripts_styles', 20 );
 
