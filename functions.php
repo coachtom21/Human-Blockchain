@@ -196,6 +196,35 @@ function hb_enqueue_pmpro_login_ui_styles() {
 add_action( 'wp_enqueue_scripts', 'hb_enqueue_pmpro_login_ui_styles', 101 );
 
 /**
+ * Thank-you / order-received page UI — after WooCommerce blocks + Elementor when present.
+ *
+ * @return void
+ */
+function hb_enqueue_order_received_ui_styles() {
+	if ( ! function_exists( 'is_order_received_page' ) || ! is_order_received_page() ) {
+		return;
+	}
+	$thanks_css  = get_stylesheet_directory() . '/assets/css/order-received.css';
+	$thanks_deps = array( 'hello-elementor-child-style' );
+	if ( wp_style_is( 'wc-blocks-packages-style', 'registered' ) ) {
+		$thanks_deps[] = 'wc-blocks-packages-style';
+	}
+	if ( wp_style_is( 'wc-blocks-style-checkout', 'registered' ) ) {
+		$thanks_deps[] = 'wc-blocks-style-checkout';
+	}
+	if ( wp_style_is( 'elementor-frontend', 'registered' ) ) {
+		$thanks_deps[] = 'elementor-frontend';
+	}
+	wp_enqueue_style(
+		'hb-order-received-ui',
+		get_stylesheet_directory_uri() . '/assets/css/order-received.css',
+		$thanks_deps,
+		file_exists( $thanks_css ) ? filemtime( $thanks_css ) : HELLO_ELEMENTOR_CHILD_VERSION
+	);
+}
+add_action( 'wp_enqueue_scripts', 'hb_enqueue_order_received_ui_styles', 102 );
+
+/**
  * Load child theme scripts & styles.
  *
  * @return void
