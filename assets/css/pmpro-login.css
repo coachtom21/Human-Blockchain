@@ -1,0 +1,276 @@
+/**
+ * PMPro membership login — wp_login_form() inside .pmpro_login_wrap (not WooCommerce).
+ * Scoped to body.pmpro-login or embedded .pmpro_login_wrap when this file is enqueued.
+ */
+
+body.pmpro-login:not(.logged-in) {
+	--hb-pmpro-accent: #d946ef;
+	--hb-pmpro-accent-hover: #c026d3;
+	--hb-pmpro-accent-soft: rgba(217, 70, 239, 0.28);
+	background:
+		radial-gradient(1000px 650px at 20% 10%, rgba(120, 160, 255, 0.18), transparent 60%),
+		radial-gradient(900px 650px at 80% 85%, rgba(52, 211, 153, 0.12), transparent 65%),
+		#0b1020;
+	color: #eef2ff;
+}
+
+body.pmpro-login:not(.logged-in) .site-main,
+body.pmpro-login:not(.logged-in) #content.site-main {
+	background: transparent;
+}
+
+body.pmpro-login:not(.logged-in) .page-content,
+body.pmpro-login:not(.logged-in) .entry-content {
+	background: transparent !important;
+}
+
+body.pmpro-login:not(.logged-in) .elementor-section .elementor-container,
+body.pmpro-login:not(.logged-in) .elementor-column > .elementor-element-populated,
+body.pmpro-login:not(.logged-in) .elementor-widget-wrap {
+	background-color: transparent !important;
+	background-image: none !important;
+}
+
+body.pmpro-login:not(.logged-in) h1.entry-title,
+body.pmpro-login:not(.logged-in) .elementor-widget-heading .elementor-heading-title {
+	color: #fff !important;
+	text-align: center;
+}
+
+body.pmpro-login:not(.logged-in) .elementor-widget-shortcode {
+	max-width: 480px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+/* Notices above the card */
+body.pmpro-login:not(.logged-in) .pmpro_message {
+	max-width: 440px;
+	margin: 0 auto 16px;
+	padding: 12px 14px;
+	border-radius: 12px;
+	font-size: 0.95rem;
+	line-height: 1.45;
+	border: 1px solid rgba(255, 255, 255, 0.14);
+	background: rgba(16, 26, 52, 0.85);
+}
+
+body.pmpro-login:not(.logged-in) .pmpro_message.pmpro_error {
+	border-color: rgba(248, 113, 113, 0.45);
+	background: rgba(248, 113, 113, 0.12);
+	color: #fecaca;
+}
+
+body.pmpro-login:not(.logged-in) .pmpro_message.pmpro_success {
+	border-color: rgba(52, 211, 153, 0.4);
+	background: rgba(52, 211, 153, 0.1);
+	color: #d1fae5;
+}
+
+/* Card (+ CSS vars when body.pmpro-login shell is absent, e.g. embedded shortcode) */
+.pmpro_login_wrap,
+.pmpro_lost_password_wrap,
+.pmpro_reset_password_wrap {
+	--hb-pmpro-accent: #d946ef;
+	--hb-pmpro-accent-hover: #c026d3;
+	--hb-pmpro-accent-soft: rgba(217, 70, 239, 0.28);
+	box-sizing: border-box;
+	width: 100%;
+	max-width: 440px;
+	margin-left: auto;
+	margin-right: auto;
+	padding: 28px 26px 30px;
+	background: rgba(16, 26, 52, 0.92);
+	border: 1px solid rgba(255, 255, 255, 0.14);
+	border-radius: 18px;
+	box-shadow: 0 22px 55px rgba(0, 0, 0, 0.45);
+	color: #eef2ff;
+}
+
+.pmpro_login_wrap > h2,
+.pmpro_lost_password_wrap > h2,
+.pmpro_reset_password_wrap > h2 {
+	text-align: center;
+	margin: 0 0 22px;
+	font-size: clamp(1.35rem, 3vw, 1.6rem);
+	font-weight: 650;
+	letter-spacing: -0.02em;
+	color: #fff;
+}
+
+.pmpro_lost_password-instructions {
+	margin: 0 0 18px;
+	color: #c9d4f5;
+	font-size: 0.95rem;
+	line-height: 1.5;
+}
+
+/* Core wp_login_form */
+.pmpro_login_wrap #loginform,
+.pmpro_login_wrap form[name="loginform"] {
+	margin: 0;
+	padding: 0;
+	border: none;
+	background: transparent;
+}
+
+.pmpro_login_wrap #loginform .login-username,
+.pmpro_login_wrap #loginform .login-password,
+.pmpro_login_wrap #loginform .login-remember {
+	margin: 0 0 18px;
+}
+
+.pmpro_login_wrap #loginform label {
+	display: block;
+	font-size: 0.875rem;
+	font-weight: 600;
+	color: #c9d4f5;
+	margin-bottom: 8px;
+}
+
+.pmpro_login_wrap #loginform input[type="text"],
+.pmpro_login_wrap #loginform input[type="password"] {
+	width: 100%;
+	box-sizing: border-box;
+	padding: 12px 14px;
+	font-size: 1rem;
+	line-height: 1.4;
+	background: rgba(6, 10, 20, 0.75);
+	border: 1px solid rgba(255, 255, 255, 0.22);
+	border-radius: 12px;
+	color: #eef2ff;
+	transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.pmpro_login_wrap #loginform input[type="text"]:focus,
+.pmpro_login_wrap #loginform input[type="password"]:focus {
+	outline: none;
+	border-color: var(--hb-pmpro-accent);
+	box-shadow: 0 0 0 3px var(--hb-pmpro-accent-soft);
+}
+
+.pmpro_login_wrap #loginform .login-remember label {
+	display: inline;
+	font-weight: 500;
+	color: #d8def8;
+	margin: 0;
+	cursor: pointer;
+}
+
+.pmpro_login_wrap #loginform .login-submit {
+	margin: 8px 0 0;
+}
+
+.pmpro_login_wrap #loginform #wp-submit {
+	width: 100%;
+	box-sizing: border-box;
+	padding: 14px 18px;
+	font-size: 1rem;
+	font-weight: 700;
+	line-height: 1.25;
+	color: #fff !important;
+	background: linear-gradient(180deg, var(--hb-pmpro-accent) 0%, var(--hb-pmpro-accent-hover) 100%) !important;
+	border: none !important;
+	border-radius: 12px;
+	box-shadow: 0 6px 22px rgba(217, 70, 239, 0.38);
+	cursor: pointer;
+	transition: transform 0.12s ease, box-shadow 0.15s ease, filter 0.15s ease;
+}
+
+.pmpro_login_wrap #loginform #wp-submit:hover {
+	filter: brightness(1.06);
+	box-shadow: 0 8px 28px rgba(217, 70, 239, 0.45);
+}
+
+.pmpro_login_wrap #loginform #wp-submit:active {
+	transform: translateY(1px);
+}
+
+.pmpro_login_wrap hr {
+	border: none;
+	border-top: 1px solid rgba(255, 255, 255, 0.12);
+	margin: 22px 0 18px;
+}
+
+.pmpro_login_wrap .pmpro_actions_nav {
+	text-align: center;
+	margin: 0;
+	font-size: 0.95rem;
+	line-height: 1.6;
+}
+
+.pmpro_login_wrap .pmpro_actions_nav a {
+	color: var(--hb-pmpro-accent);
+	font-weight: 600;
+	text-decoration: none;
+	border-bottom: 1px solid transparent;
+	transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.pmpro_login_wrap .pmpro_actions_nav a:hover {
+	color: #f0abfc;
+	border-bottom-color: rgba(240, 171, 252, 0.55);
+}
+
+/* Lost password + reset (PMPro .pmpro_form) */
+.pmpro_lost_password_wrap .pmpro_form .pmpro_lost_password-field label,
+.pmpro_reset_password_wrap .pmpro_form label {
+	display: block;
+	font-size: 0.875rem;
+	font-weight: 600;
+	color: #c9d4f5;
+	margin-bottom: 8px;
+}
+
+.pmpro_lost_password_wrap input[type="text"],
+.pmpro_reset_password_wrap input[type="text"],
+.pmpro_reset_password_wrap input[type="password"] {
+	width: 100%;
+	box-sizing: border-box;
+	padding: 12px 14px;
+	font-size: 1rem;
+	background: rgba(6, 10, 20, 0.75);
+	border: 1px solid rgba(255, 255, 255, 0.22);
+	border-radius: 12px;
+	color: #eef2ff;
+}
+
+.pmpro_lost_password_wrap .pmpro_submit,
+.pmpro_reset_password_wrap .pmpro_submit {
+	margin-top: 18px;
+}
+
+.pmpro_lost_password_wrap .pmpro_btn-submit,
+.pmpro_reset_password_wrap .pmpro_btn-submit {
+	width: 100%;
+	padding: 14px 18px !important;
+	font-weight: 700 !important;
+	border-radius: 12px !important;
+	border: none !important;
+	background: linear-gradient(180deg, var(--hb-pmpro-accent) 0%, var(--hb-pmpro-accent-hover) 100%) !important;
+	color: #fff !important;
+	box-shadow: 0 6px 22px rgba(217, 70, 239, 0.38);
+	cursor: pointer;
+}
+
+.pmpro_lost_password_wrap .pmpro_actions_nav,
+.pmpro_reset_password_wrap .pmpro_actions_nav {
+	text-align: center;
+	margin-top: 18px;
+}
+
+.pmpro_lost_password_wrap .pmpro_actions_nav a,
+.pmpro_reset_password_wrap .pmpro_actions_nav a {
+	color: var(--hb-pmpro-accent);
+	font-weight: 600;
+	text-decoration: none;
+}
+
+@media (max-width: 480px) {
+	.pmpro_login_wrap,
+	.pmpro_lost_password_wrap,
+	.pmpro_reset_password_wrap {
+		padding: 22px 18px 24px;
+		border-radius: 16px;
+	}
+}

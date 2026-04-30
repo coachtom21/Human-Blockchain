@@ -51,6 +51,151 @@ function hb_nwp_landing_section_url( $section_id ) {
 }
 
 /**
+ * Whether the current singular page needs WooCommerce My Account UI assets.
+ * Detects shortcode in post content and in Elementor JSON (common cause of missing styles).
+ *
+ * @param int $post_id Post ID.
+ * @return bool
+ */
+function hb_post_uses_woocommerce_my_account( $post_id ) {
+	$post_id = (int) $post_id;
+	if ( $post_id <= 0 ) {
+		return false;
+	}
+	$content = (string) get_post_field( 'post_content', $post_id );
+	if ( function_exists( 'has_shortcode' ) && has_shortcode( $content, 'woocommerce_my_account' ) ) {
+		return true;
+	}
+	if ( strpos( $content, 'woocommerce_my_account' ) !== false ) {
+		return true;
+	}
+	$elementor = get_post_meta( $post_id, '_elementor_data', true );
+	if ( is_string( $elementor ) && $elementor !== '' ) {
+		if ( strpos( $elementor, 'woocommerce_my_account' ) !== false ) {
+			return true;
+		}
+		if ( strpos( $elementor, '[woocommerce_my_account]' ) !== false ) {
+			return true;
+		}
+	}
+	return false;
+}
+
+/**
+ * Load My Account / login polish CSS when on the account page or when the page embeds the WC account shortcode.
+ *
+ * @return bool
+ */
+function hb_should_enqueue_my_account_styles() {
+	if ( ! class_exists( 'WooCommerce' ) ) {
+		return false;
+	}
+	if ( apply_filters( 'hb_enqueue_my_account_styles', false ) ) {
+		return true;
+	}
+	if ( function_exists( 'is_account_page' ) && is_account_page() ) {
+		return true;
+	}
+	if ( is_page_template( 'templates-parts/template-my-account.php' ) ) {
+		return true;
+	}
+	if ( is_singular() ) {
+		$post_id = get_queried_object_id();
+		if ( $post_id && hb_post_uses_woocommerce_my_account( $post_id ) ) {
+			return true;
+		}
+	}
+	return false;
+}
+
+/**
+ * Detect PMPro login shortcode/block in post content or Elementor JSON.
+ *
+ * @param int $post_id Post ID.
+ * @return bool
+ */
+function hb_post_uses_pmpro_login( $post_id ) {
+	$post_id = (int) $post_id;
+	if ( $post_id <= 0 ) {
+		return false;
+	}
+	$content = (string) get_post_field( 'post_content', $post_id );
+	if ( function_exists( 'has_shortcode' ) && has_shortcode( $content, 'pmpro_login' ) ) {
+		return true;
+	}
+	if ( strpos( $content, '[pmpro_login' ) !== false ) {
+		return true;
+	}
+	if ( function_exists( 'has_block' ) && has_block( 'pmpro/login-form', $post_id ) ) {
+		return true;
+	}
+	if ( strpos( $content, 'pmpro/login-form' ) !== false ) {
+		return true;
+	}
+	$elementor = get_post_meta( $post_id, '_elementor_data', true );
+	if ( is_string( $elementor ) && $elementor !== '' ) {
+		if ( strpos( $elementor, 'pmpro_login' ) !== false || strpos( $elementor, 'pmpro/login-form' ) !== false ) {
+			return true;
+		}
+	}
+	return false;
+}
+
+/**
+ * Load PMPro membership login page / form styles.
+ *
+ * @return bool
+ */
+function hb_should_enqueue_pmpro_login_styles() {
+	if ( ! defined( 'PMPRO_VERSION' ) ) {
+		return false;
+	}
+	if ( apply_filters( 'hb_enqueue_pmpro_login_styles', false ) ) {
+		return true;
+	}
+	if ( function_exists( 'pmpro_is_login_page' ) && pmpro_is_login_page() ) {
+		return true;
+	}
+	$login_page_id = (int) get_option( 'pmpro_login_page_id' );
+	if ( $login_page_id && is_page( $login_page_id ) ) {
+		return true;
+	}
+	if ( is_singular() ) {
+		$post_id = get_queried_object_id();
+		if ( $post_id && hb_post_uses_pmpro_login( $post_id ) ) {
+			return true;
+		}
+	}
+	return false;
+}
+
+/**
+ * Paid Memberships Pro login UI — loads after Elementor when active.
+ *
+ * @return void
+ */
+function hb_enqueue_pmpro_login_ui_styles() {
+	if ( ! hb_should_enqueue_pmpro_login_styles() ) {
+		return;
+	}
+	$pmpro_login_css = get_stylesheet_directory() . '/assets/css/pmpro-login.css';
+	$deps            = array( 'hello-elementor-child-style' );
+	if ( wp_style_is( 'pmpro_frontend', 'registered' ) ) {
+		$deps[] = 'pmpro_frontend';
+	}
+	if ( wp_style_is( 'elementor-frontend', 'registered' ) ) {
+		$deps[] = 'elementor-frontend';
+	}
+	wp_enqueue_style(
+		'hb-pmpro-login-ui',
+		get_stylesheet_directory_uri() . '/assets/css/pmpro-login.css',
+		$deps,
+		file_exists( $pmpro_login_css ) ? filemtime( $pmpro_login_css ) : HELLO_ELEMENTOR_CHILD_VERSION
+	);
+}
+add_action( 'wp_enqueue_scripts', 'hb_enqueue_pmpro_login_ui_styles', 101 );
+
+/**
  * Load child theme scripts & styles.
  *
  * @return void
@@ -136,22 +281,6 @@ function hello_elementor_child_scripts_styles() {
 		true
 	);
 
-	$is_account_ui = false;
-	if ( function_exists( 'is_account_page' ) && is_account_page() ) {
-		$is_account_ui = true;
-	} elseif ( is_page_template( 'templates-parts/template-my-account.php' ) ) {
-		$is_account_ui = true;
-	}
-	if ( $is_account_ui ) {
-		$my_account_css = get_stylesheet_directory() . '/assets/css/my-account.css';
-		wp_enqueue_style(
-			'hb-my-account-ui',
-			get_stylesheet_directory_uri() . '/assets/css/my-account.css',
-			array( 'hello-elementor-child-style' ),
-			file_exists( $my_account_css ) ? filemtime( $my_account_css ) : HELLO_ELEMENTOR_CHILD_VERSION
-		);
-	}
-
 	if ( function_exists( 'is_checkout' ) && is_checkout() && ! is_order_received_page() ) {
 		$checkout_css = get_stylesheet_directory() . '/assets/css/checkout.css';
 		$checkout_deps = array( 'hello-elementor-child-style' );
@@ -188,6 +317,29 @@ function hello_elementor_child_scripts_styles() {
 
 }
 add_action( 'wp_enqueue_scripts', 'hello_elementor_child_scripts_styles', 20 );
+
+/**
+ * Account / login UI loads late so Elementor frontend is registered (dependency order).
+ *
+ * @return void
+ */
+function hb_enqueue_my_account_ui_styles() {
+	if ( ! hb_should_enqueue_my_account_styles() ) {
+		return;
+	}
+	$my_account_css  = get_stylesheet_directory() . '/assets/css/my-account.css';
+	$my_account_deps = array( 'hello-elementor-child-style' );
+	if ( wp_style_is( 'elementor-frontend', 'registered' ) ) {
+		$my_account_deps[] = 'elementor-frontend';
+	}
+	wp_enqueue_style(
+		'hb-my-account-ui',
+		get_stylesheet_directory_uri() . '/assets/css/my-account.css',
+		$my_account_deps,
+		file_exists( $my_account_css ) ? filemtime( $my_account_css ) : HELLO_ELEMENTOR_CHILD_VERSION
+	);
+}
+add_action( 'wp_enqueue_scripts', 'hb_enqueue_my_account_ui_styles', 100 );
 
 
 /**
