@@ -1,0 +1,63 @@
+/**
+ * NWP site footer — aligned with nwp-site-header palette.
+ */
+.nwp-site-footer {
+	--nwp-max: 1180px;
+	margin-top: clamp(2rem, 5vw, 3.5rem);
+	background: rgba(7, 16, 28, 0.94);
+	border-top: 1px solid rgba(255, 255, 255, 0.08);
+	color: #b6c4dc;
+	padding: 22px 0;
+	padding-left: max(0px, env(safe-area-inset-left, 0px));
+	padding-right: max(0px, env(safe-area-inset-right, 0px));
+}
+
+.nwp-site-footer .container {
+	width: min(var(--nwp-max), calc(100% - 32px));
+	margin: 0 auto;
+}
+
+.nwp-site-footer__inner {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px 20px;
+}
+
+.nwp-site-footer__copy {
+	margin: 0;
+	font-size: 0.875rem;
+	line-height: 1.45;
+}
+
+.nwp-site-footer__nav {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 12px 20px;
+	font-size: 0.875rem;
+}
+
+.nwp-site-footer__nav a {
+	color: #eef4ff;
+	text-decoration: none;
+	border-bottom: 1px solid transparent;
+	transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.nwp-site-footer__nav a:hover,
+.nwp-site-footer__nav a:focus-visible {
+	color: #fff;
+	border-bottom-color: rgba(245, 185, 66, 0.55);
+}
+
+@media (max-width: 480px) {
+	.nwp-site-footer .container {
+		width: min(var(--nwp-max), calc(100% - 24px));
+	}
+
+	.nwp-site-footer__inner {
+		flex-direction: column;
+		align-items: flex-start;
+	}
+}

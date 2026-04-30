@@ -421,3 +421,11 @@ body.admin-bar .nwp-site-header {
 		max-width: 100%;
 	}
 }
+
+/*
+ * Breathing room below the sticky NWP header (cart, checkout, theme pages).
+ */
+body:has(.nwp-site-header) #content.site-main,
+body:has(.nwp-site-header) main.site-main {
+	padding-top: clamp(1.25rem, 3.5vw, 2.5rem);
+}

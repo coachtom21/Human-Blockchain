@@ -332,6 +332,7 @@ $hb_xp_display_html = static function ( $value ) {
 			<a class="btn secondary" href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php esc_html_e( 'Home', 'hello-elementor-child' ); ?></a>
 		</p>
 	</div>
+	<?php get_template_part( 'templates-parts/part', 'nwp-site-footer' ); ?>
 	<?php wp_footer(); ?>
 </body>
 </html>

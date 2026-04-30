@@ -81,6 +81,14 @@ function hello_elementor_child_scripts_styles() {
 		file_exists( $nwp_header_path ) ? filemtime( $nwp_header_path ) : HELLO_ELEMENTOR_CHILD_VERSION
 	);
 
+	$nwp_footer_path = get_stylesheet_directory() . '/assets/css/nwp-site-footer.css';
+	wp_enqueue_style(
+		'hb-nwp-site-footer',
+		get_stylesheet_directory_uri() . '/assets/css/nwp-site-footer.css',
+		array( 'hb-nwp-site-header' ),
+		file_exists( $nwp_footer_path ) ? filemtime( $nwp_footer_path ) : HELLO_ELEMENTOR_CHILD_VERSION
+	);
+
 	$nwp_header_js = get_stylesheet_directory() . '/assets/js/nwp-site-header.js';
 	wp_enqueue_script(
 		'hb-nwp-site-header',
@@ -158,6 +166,23 @@ function hello_elementor_child_scripts_styles() {
 			get_stylesheet_directory_uri() . '/assets/css/checkout.css',
 			$checkout_deps,
 			file_exists( $checkout_css ) ? filemtime( $checkout_css ) : HELLO_ELEMENTOR_CHILD_VERSION
+		);
+	}
+
+	if ( function_exists( 'is_cart' ) && is_cart() ) {
+		$cart_css = get_stylesheet_directory() . '/assets/css/cart.css';
+		$cart_deps = array( 'hello-elementor-child-style' );
+		if ( wp_style_is( 'wc-blocks-packages-style', 'registered' ) ) {
+			$cart_deps[] = 'wc-blocks-packages-style';
+		}
+		if ( wp_style_is( 'wc-blocks-style-cart', 'registered' ) ) {
+			$cart_deps[] = 'wc-blocks-style-cart';
+		}
+		wp_enqueue_style(
+			'hb-cart-ui',
+			get_stylesheet_directory_uri() . '/assets/css/cart.css',
+			$cart_deps,
+			file_exists( $cart_css ) ? filemtime( $cart_css ) : HELLO_ELEMENTOR_CHILD_VERSION
 		);
 	}
 

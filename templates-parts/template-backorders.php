@@ -27,6 +27,7 @@ while ( have_posts() ) :
 	// Add page body via editor or template (e.g. the_content(), shortcodes).
 endwhile;
 ?>
+<?php get_template_part( 'templates-parts/part', 'nwp-site-footer' ); ?>
 <?php wp_footer(); ?>
 </body>
 </html>

@@ -38,7 +38,7 @@ body.woocommerce-checkout .woocommerce-checkout-header .title {
 }
 
 body.woocommerce-checkout .wp-block-woocommerce-checkout {
-	padding-top: 12px;
+	padding-top: 0;
 }
 
 /* Layout: breathing room + wider usable width */
@@ -155,10 +155,66 @@ body.woocommerce-checkout .wc-block-components-order-summary .wc-block-component
 	padding-bottom: 10px;
 }
 
-body.woocommerce-checkout .wc-block-components-totals-footer-item {
+/* Remove divider between “Order summary” title and first line item */
+body.woocommerce-checkout .wc-block-checkout__sidebar .wc-block-components-order-summary.wc-block-components-panel.has-border::after {
+	border-top-width: 0 !important;
+}
+
+body.woocommerce-checkout .wc-block-checkout__sidebar .wc-block-components-order-summary .wc-block-components-panel__content {
+	border-top: none !important;
+	box-shadow: none !important;
+	margin-top: 0 !important;
+	padding-top: 4px !important;
+}
+
+body.woocommerce-checkout .wc-block-checkout__sidebar .wc-block-components-order-summary .wc-block-components-panel > h2 {
+	border-bottom: none !important;
+	box-shadow: none !important;
+}
+
+body.woocommerce-checkout .wc-block-checkout__sidebar .wc-block-components-order-summary .wc-block-components-panel__button {
+	border-bottom: none !important;
+	box-shadow: none !important;
+}
+
+body.woocommerce-checkout .wc-block-checkout__sidebar .wc-block-components-order-summary .wc-block-components-order-summary__content {
+	border-top: none !important;
+}
+
+body.woocommerce-checkout .wc-block-checkout__sidebar .wc-block-components-order-summary > .wc-block-components-totals-wrapper:first-child {
+	border-top: none !important;
+}
+
+/*
+ * Order summary: Woo totals wrappers + our footer border-top stacked into a double line
+ * before Total. Keep a single divider for both sibling and nested footer layouts.
+ */
+body.woocommerce-checkout .wc-block-checkout__sidebar .wc-block-components-totals-footer-item {
 	padding: 16px 20px 8px;
-	border-top: 1px solid var(--hb-checkout-border);
-	margin-top: 8px;
+	margin-top: 0 !important;
+	border-top: none !important;
+}
+
+body.woocommerce-checkout .wc-block-checkout__sidebar .wc-block-components-totals-wrapper + .wc-block-components-totals-footer-item {
+	border-top: 1px solid var(--hb-checkout-border) !important;
+	padding-top: 16px;
+}
+
+body.woocommerce-checkout .wc-block-checkout__sidebar .wc-block-components-totals-wrapper:has(+ .wc-block-components-totals-footer-item) {
+	border-bottom: none !important;
+}
+
+body.woocommerce-checkout .wc-block-checkout__sidebar .wc-block-components-totals-wrapper:has(+ .wc-block-components-totals-footer-item).slot-wrapper > * > * {
+	border-bottom: none !important;
+}
+
+body.woocommerce-checkout .wc-block-checkout__sidebar .wc-block-components-totals-wrapper:has(> .wc-block-components-totals-footer-item) {
+	border-top: none !important;
+}
+
+body.woocommerce-checkout .wc-block-checkout__sidebar .wc-block-components-totals-wrapper:has(> .wc-block-components-totals-footer-item) > .wc-block-components-totals-footer-item {
+	border-top: 1px solid var(--hb-checkout-border) !important;
+	padding-top: 16px;
 }
 
 body.woocommerce-checkout .wc-block-components-totals-footer-item .wc-block-components-totals-item__label,

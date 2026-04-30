@@ -471,21 +471,6 @@ $hb_nwp_gratitude_audio_url = apply_filters(
       color: var(--muted);
     }
 
-    footer {
-      padding: 34px 0 60px;
-      color: var(--muted);
-      font-size: 0.95rem;
-    }
-
-    .footer-box {
-      display: flex;
-      justify-content: space-between;
-      gap: 18px;
-      flex-wrap: wrap;
-      padding-top: 24px;
-      border-top: 1px solid rgba(255,255,255,0.10);
-    }
-
     @media (max-width: 1024px) {
       .hero-grid,
       .formula-grid,
@@ -518,10 +503,6 @@ $hb_nwp_gratitude_audio_url = apply_filters(
         grid-template-columns: 1fr;
       }
       h1 { max-width: none; }
-      .footer-box {
-        flex-direction: column;
-        align-items: flex-start;
-      }
     }
 
     @media (max-width: 480px) {
@@ -2669,17 +2650,7 @@ $hb_nwp_gratitude_audio_url = apply_filters(
     </div>
   </section>
 
-  <footer>
-    <div class="container footer-box">
-      <div>
-        <strong>humanblockchain.info</strong><br />
-        NWP Processing Center for YAM JAM trade value
-      </div>
-      <div>
-        Built around device registration, QRtiger v-card identity, proof of delivery, and time-based maturity.
-      </div>
-    </div>
-  </footer>
+  <?php get_template_part( 'templates-parts/part', 'nwp-site-footer' ); ?>
   <?php wp_footer(); ?>
 </body>
 </html>
