@@ -1,0 +1,161 @@
+/* My Account UI polish (Woo + custom account endpoint) */
+body.woocommerce-account {
+	background:
+		radial-gradient(1000px 650px at 20% 10%, rgba(120,160,255,.18), transparent 60%),
+		radial-gradient(900px 650px at 80% 85%, rgba(52,211,153,.12), transparent 65%),
+		#0b1020;
+	color: #eef2ff;
+}
+
+body.woocommerce-account .site-main,
+body.woocommerce-account .entry-content,
+body.woocommerce-account .woocommerce {
+	color: #eef2ff;
+}
+
+body.woocommerce-account .woocommerce {
+	max-width: 1120px;
+	margin: 0 auto;
+	padding: 22px 18px 42px;
+	display: flex;
+	align-items: flex-start;
+	gap: 18px;
+}
+
+body.woocommerce-account .woocommerce::before,
+body.woocommerce-account .woocommerce::after {
+	display: none;
+}
+
+body.woocommerce-account .woocommerce a {
+	color: #9dd4ff;
+}
+
+body.woocommerce-account .woocommerce-MyAccount-navigation,
+body.woocommerce-account .woocommerce-MyAccount-content {
+	background: rgba(16, 26, 52, .9);
+	border: 1px solid rgba(255,255,255,.14);
+	border-radius: 16px;
+	box-shadow: 0 18px 50px rgba(0,0,0,.35);
+}
+
+body.woocommerce-account .woocommerce-MyAccount-navigation {
+	padding: 10px;
+	flex: 0 0 260px;
+	width: 260px;
+	float: none;
+	margin: 0;
+	align-self: flex-start;
+}
+
+body.woocommerce-account .woocommerce-MyAccount-navigation ul {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+body.woocommerce-account .woocommerce-MyAccount-navigation ul li {
+	margin: 0;
+}
+
+body.woocommerce-account .woocommerce-MyAccount-navigation ul li a {
+	display: block;
+	padding: 11px 12px;
+	border-radius: 10px;
+	text-decoration: none;
+	font-weight: 600;
+	color: #d8def8;
+}
+
+body.woocommerce-account .woocommerce-MyAccount-navigation ul li a:hover {
+	background: rgba(255,255,255,.08);
+	color: #fff;
+}
+
+body.woocommerce-account .woocommerce-MyAccount-navigation ul li.is-active a {
+	background: rgba(52,211,153,.2);
+	border: 1px solid rgba(52,211,153,.4);
+	color: #ecfffa;
+}
+
+body.woocommerce-account .woocommerce-MyAccount-content {
+	padding: 20px 22px;
+	line-height: 1.6;
+	flex: 1 1 auto;
+	min-width: 0;
+	float: none;
+	width: auto;
+	margin: 0 !important;
+	clear: none;
+}
+
+body.woocommerce-account .woocommerce-MyAccount-content h2,
+body.woocommerce-account .woocommerce-MyAccount-content h3 {
+	margin: 0 0 10px;
+	color: #fff;
+}
+
+body.woocommerce-account .woocommerce-MyAccount-content .button,
+body.woocommerce-account .woocommerce-MyAccount-content .woocommerce-Button,
+body.woocommerce-account .woocommerce-MyAccount-content button {
+	background: rgba(52,211,153,.18);
+	border: 1px solid rgba(52,211,153,.45);
+	color: #ecfffa;
+	border-radius: 10px;
+}
+
+body.woocommerce-account .woocommerce-MyAccount-content .button:hover,
+body.woocommerce-account .woocommerce-MyAccount-content .woocommerce-Button:hover,
+body.woocommerce-account .woocommerce-MyAccount-content button:hover {
+	background: rgba(52,211,153,.28);
+}
+
+body.woocommerce-account .woocommerce-MyAccount-content table {
+	background: rgba(9, 15, 31, .55);
+	border: 1px solid rgba(255,255,255,.12);
+	border-radius: 12px;
+	overflow: hidden;
+}
+
+body.woocommerce-account .woocommerce-MyAccount-content table th {
+	background: rgba(255,255,255,.04);
+	color: #b8c1e3;
+}
+
+body.woocommerce-account .woocommerce-MyAccount-content table th,
+body.woocommerce-account .woocommerce-MyAccount-content table td {
+	border-color: rgba(255,255,255,.12);
+}
+
+/* Highlight pending ledger rows in a soft yellow tone */
+body.woocommerce-account .woocommerce-MyAccount-content table tr.hb-xp-row--pending td {
+	background: rgba(255, 231, 133, 0.2);
+	color: #fff6cf;
+}
+
+body.woocommerce-account .woocommerce-MyAccount-content input,
+body.woocommerce-account .woocommerce-MyAccount-content select,
+body.woocommerce-account .woocommerce-MyAccount-content textarea {
+	background: rgba(6, 10, 20, .7);
+	border: 1px solid rgba(255,255,255,.2);
+	color: #eef2ff;
+	border-radius: 8px;
+}
+
+body.woocommerce-account .woocommerce-MyAccount-content input:focus,
+body.woocommerce-account .woocommerce-MyAccount-content select:focus,
+body.woocommerce-account .woocommerce-MyAccount-content textarea:focus {
+	outline: none;
+	border-color: rgba(52,211,153,.6);
+}
+
+@media (max-width: 960px) {
+	body.woocommerce-account .woocommerce {
+		flex-direction: column;
+	}
+	body.woocommerce-account .woocommerce-MyAccount-navigation,
+	body.woocommerce-account .woocommerce-MyAccount-content {
+		width: 100%;
+		flex-basis: auto;
+	}
+}

@@ -128,6 +128,22 @@ function hello_elementor_child_scripts_styles() {
 		true
 	);
 
+	$is_account_ui = false;
+	if ( function_exists( 'is_account_page' ) && is_account_page() ) {
+		$is_account_ui = true;
+	} elseif ( is_page_template( 'templates-parts/template-my-account.php' ) ) {
+		$is_account_ui = true;
+	}
+	if ( $is_account_ui ) {
+		$my_account_css = get_stylesheet_directory() . '/assets/css/my-account.css';
+		wp_enqueue_style(
+			'hb-my-account-ui',
+			get_stylesheet_directory_uri() . '/assets/css/my-account.css',
+			array( 'hello-elementor-child-style' ),
+			file_exists( $my_account_css ) ? filemtime( $my_account_css ) : HELLO_ELEMENTOR_CHILD_VERSION
+		);
+	}
+
 }
 add_action( 'wp_enqueue_scripts', 'hello_elementor_child_scripts_styles', 20 );
 
@@ -433,3 +449,179 @@ function hb_include_otp_popup() {
 	}
 }
 add_action( 'wp_footer', 'hb_include_otp_popup' );
+
+/**
+ * Register WooCommerce My Account endpoint for XP Ledger.
+ */
+function hb_register_xp_ledger_endpoint() {
+	add_rewrite_endpoint( 'xp-ledger', EP_ROOT | EP_PAGES );
+}
+add_action( 'init', 'hb_register_xp_ledger_endpoint' );
+
+/**
+ * Add XP Ledger tab to WooCommerce My Account menu.
+ *
+ * @param array<string, string> $items Menu items.
+ * @return array<string, string>
+ */
+function hb_add_xp_ledger_account_menu_item( $items ) {
+	if ( ! is_array( $items ) ) {
+		return $items;
+	}
+
+	$new_items = array();
+	$inserted  = false;
+	foreach ( $items as $key => $label ) {
+		$new_items[ $key ] = $label;
+		if ( 'orders' === $key ) {
+			$new_items['xp-ledger'] = __( 'XP Ledger', 'hello-elementor-child' );
+			$inserted               = true;
+		}
+	}
+
+	if ( ! $inserted ) {
+		$new_items['xp-ledger'] = __( 'XP Ledger', 'hello-elementor-child' );
+	}
+
+	return $new_items;
+}
+add_filter( 'woocommerce_account_menu_items', 'hb_add_xp_ledger_account_menu_item', 40 );
+
+/**
+ * Render XP Ledger endpoint content on Woo My Account.
+ */
+function hb_render_xp_ledger_account_endpoint() {
+	if ( ! is_user_logged_in() ) {
+		echo '<p>' . esc_html__( 'Please log in to view your XP ledger.', 'hello-elementor-child' ) . '</p>';
+		return;
+	}
+
+	if ( ! class_exists( 'Cpm_Humanblockchain_Xp_Ledger' ) ) {
+		echo '<p>' . esc_html__( 'XP ledger module is not active.', 'hello-elementor-child' ) . '</p>';
+		return;
+	}
+
+	$user_id    = (int) get_current_user_id();
+	$xp_rows    = Cpm_Humanblockchain_Xp_Ledger::get_ledger_rows_for_user( $user_id, 200 );
+	$xp_summary = Cpm_Humanblockchain_Xp_Ledger::get_xp_summary_for_user( $user_id );
+
+	$xp_display_html = static function ( $value ) {
+		$digits = preg_replace( '/\D/', '', (string) $value );
+		$digits = ltrim( $digits, '0' );
+		if ( $digits === '' ) {
+			return '0 XP';
+		}
+		$tz = 0;
+		while ( strlen( $digits ) > 1 && substr( $digits, -1 ) === '0' ) {
+			$digits = substr( $digits, 0, -1 );
+			$tz++;
+		}
+		$len  = strlen( $digits );
+		$frac = substr( $digits, 1 );
+		if ( $frac === '' ) {
+			$coeff = $digits;
+			$exp   = (string) $tz;
+		} else {
+			$coeff = $digits[0] . '.' . rtrim( $frac, '0' );
+			$coeff = rtrim( $coeff, '.' );
+			$exp   = (string) ( $tz + $len - 1 );
+		}
+		return esc_html( $coeff ) . ' x 10^' . esc_html( $exp ) . ' XP';
+	};
+
+	$add_bigints = static function ( $a, $b ) {
+		$a = ltrim( preg_replace( '/\D/', '', (string) $a ), '0' );
+		$b = ltrim( preg_replace( '/\D/', '', (string) $b ), '0' );
+		if ( $a === '' ) {
+			$a = '0';
+		}
+		if ( $b === '' ) {
+			$b = '0';
+		}
+		if ( function_exists( 'bcadd' ) ) {
+			return bcadd( $a, $b, 0 );
+		}
+		$carry  = 0;
+		$out    = '';
+		$i      = strlen( $a ) - 1;
+		$j      = strlen( $b ) - 1;
+		while ( $i >= 0 || $j >= 0 || $carry > 0 ) {
+			$da    = $i >= 0 ? (int) $a[ $i ] : 0;
+			$db    = $j >= 0 ? (int) $b[ $j ] : 0;
+			$sum   = $da + $db + $carry;
+			$out   = (string) ( $sum % 10 ) . $out;
+			$carry = (int) floor( $sum / 10 );
+			$i--;
+			$j--;
+		}
+		$out = ltrim( $out, '0' );
+		return $out === '' ? '0' : $out;
+	};
+
+	$analytics = array(
+		'total'   => '0',
+		'pending' => '0',
+		'buyer'   => '0',
+		'seller'  => '0',
+	);
+	foreach ( $xp_rows as $row ) {
+		$units                 = isset( $row->xp_units ) ? (string) $row->xp_units : '0';
+		$scan_type             = isset( $row->scan_type ) ? (string) $row->scan_type : '';
+		$scan_status           = isset( $row->scan_status ) ? (string) $row->scan_status : '';
+		if ( $scan_status === 'pending' ) {
+			$analytics['pending'] = $add_bigints( $analytics['pending'], $units );
+		} else {
+			$analytics['total'] = $add_bigints( $analytics['total'], $units );
+			if ( $scan_type === 'buyer_scan' ) {
+				$analytics['buyer'] = $add_bigints( $analytics['buyer'], $units );
+			}
+			if ( $scan_type === 'seller_scan' ) {
+				$analytics['seller'] = $add_bigints( $analytics['seller'], $units );
+			}
+		}
+	}
+
+	echo '<h3>' . esc_html__( 'XP Ledger', 'hello-elementor-child' ) . '</h3>';
+	echo '<p>' . esc_html__( 'Your scan ledger history from HumanBlockchain.', 'hello-elementor-child' ) . '</p>';
+	echo '<p><strong>' . esc_html__( 'Rows:', 'hello-elementor-child' ) . '</strong> ' . esc_html( (string) (int) $xp_summary['row_count'] ) . '</p>';
+	echo '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:12px 0 14px;">';
+	echo '<div style="padding:12px;border:1px solid rgba(255,255,255,.14);border-radius:12px;background:rgba(255,255,255,.03);"><div style="font-size:.72rem;opacity:.8;text-transform:uppercase;letter-spacing:.04em;">' . esc_html__( 'Total XP', 'hello-elementor-child' ) . '</div><div style="font-size:1rem;font-weight:700;margin-top:5px;">' . $xp_display_html( $analytics['total'] ) . '</div></div>';
+	echo '<div style="padding:12px;border:1px solid rgba(255,255,255,.14);border-radius:12px;background:rgba(255,255,255,.03);"><div style="font-size:.72rem;opacity:.8;text-transform:uppercase;letter-spacing:.04em;">' . esc_html__( 'Pending XP', 'hello-elementor-child' ) . '</div><div style="font-size:1rem;font-weight:700;margin-top:5px;">' . $xp_display_html( $analytics['pending'] ) . '</div></div>';
+	echo '<div style="padding:12px;border:1px solid rgba(255,255,255,.14);border-radius:12px;background:rgba(255,255,255,.03);"><div style="font-size:.72rem;opacity:.8;text-transform:uppercase;letter-spacing:.04em;">' . esc_html__( 'Buyer XP', 'hello-elementor-child' ) . '</div><div style="font-size:1rem;font-weight:700;margin-top:5px;">' . $xp_display_html( $analytics['buyer'] ) . '</div></div>';
+	echo '<div style="padding:12px;border:1px solid rgba(255,255,255,.14);border-radius:12px;background:rgba(255,255,255,.03);"><div style="font-size:.72rem;opacity:.8;text-transform:uppercase;letter-spacing:.04em;">' . esc_html__( 'Seller XP', 'hello-elementor-child' ) . '</div><div style="font-size:1rem;font-weight:700;margin-top:5px;">' . $xp_display_html( $analytics['seller'] ) . '</div></div>';
+	echo '</div>';
+
+	if ( empty( $xp_rows ) ) {
+		echo '<p>' . esc_html__( 'No XP ledger transactions yet.', 'hello-elementor-child' ) . '</p>';
+		return;
+	}
+
+	echo '<div style="overflow:auto;border:1px solid #ddd;border-radius:8px;">';
+	echo '<table style="width:100%;border-collapse:collapse;">';
+	echo '<thead><tr>';
+	echo '<th style="text-align:left;padding:8px;border-bottom:1px solid #ddd;">' . esc_html__( 'ID', 'hello-elementor-child' ) . '</th>';
+	echo '<th style="text-align:left;padding:8px;border-bottom:1px solid #ddd;">' . esc_html__( 'Type', 'hello-elementor-child' ) . '</th>';
+	echo '<th style="text-align:left;padding:8px;border-bottom:1px solid #ddd;">' . esc_html__( 'Transaction', 'hello-elementor-child' ) . '</th>';
+	echo '<th style="text-align:left;padding:8px;border-bottom:1px solid #ddd;">' . esc_html__( 'XP', 'hello-elementor-child' ) . '</th>';
+	echo '<th style="text-align:left;padding:8px;border-bottom:1px solid #ddd;">' . esc_html__( 'Status', 'hello-elementor-child' ) . '</th>';
+	echo '<th style="text-align:left;padding:8px;border-bottom:1px solid #ddd;">' . esc_html__( 'Remote', 'hello-elementor-child' ) . '</th>';
+	echo '<th style="text-align:left;padding:8px;border-bottom:1px solid #ddd;">' . esc_html__( 'Date', 'hello-elementor-child' ) . '</th>';
+	echo '</tr></thead><tbody>';
+
+	foreach ( $xp_rows as $row ) {
+		$row_status = isset( $row->scan_status ) ? (string) $row->scan_status : '';
+		$row_class  = ( 'pending' === $row_status ) ? ' class="hb-xp-row--pending"' : '';
+		echo '<tr' . $row_class . '>';
+		echo '<td style="padding:8px;border-bottom:1px solid #eee;">' . esc_html( isset( $row->id ) ? (string) (int) $row->id : '' ) . '</td>';
+		echo '<td style="padding:8px;border-bottom:1px solid #eee;">' . esc_html( isset( $row->scan_type ) ? (string) $row->scan_type : '' ) . '</td>';
+		echo '<td style="padding:8px;border-bottom:1px solid #eee;word-break:break-all;">' . esc_html( isset( $row->transaction_id ) ? (string) $row->transaction_id : '' ) . '</td>';
+		echo '<td style="padding:8px;border-bottom:1px solid #eee;">' . $xp_display_html( isset( $row->xp_units ) ? (string) $row->xp_units : '0' ) . '</td>';
+		echo '<td style="padding:8px;border-bottom:1px solid #eee;">' . esc_html( isset( $row->scan_status ) ? (string) $row->scan_status : '' ) . '</td>';
+		echo '<td style="padding:8px;border-bottom:1px solid #eee;">' . esc_html( isset( $row->remote_sync_status ) ? (string) $row->remote_sync_status : '' ) . '</td>';
+		echo '<td style="padding:8px;border-bottom:1px solid #eee;">' . esc_html( isset( $row->ledger_date ) ? (string) $row->ledger_date : '' ) . '</td>';
+		echo '</tr>';
+	}
+
+	echo '</tbody></table></div>';
+}
+add_action( 'woocommerce_account_xp-ledger_endpoint', 'hb_render_xp_ledger_account_endpoint' );
