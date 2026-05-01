@@ -10,6 +10,10 @@ $hb_nwp_gratitude_audio_url = apply_filters(
 	'hb_nwp_gratitude_audio_url',
 	'https://humanblockchain.info/wp-content/uploads/2026/04/Turning_human_gratitude_into_economic_value.mp4'
 );
+$hb_nwp_discord_invite_url = apply_filters(
+	'cpm_nwp_discord_invite_url',
+	get_option( 'cpm_nwp_discord_invite_url', 'https://discord.com/invite/g5jreAPbra' )
+);
 ?>
 <!DOCTYPE html>
 <html <?php language_attributes(); ?>>
@@ -2635,7 +2639,7 @@ $hb_nwp_gratitude_audio_url = apply_filters(
               Start with your first NWP encounter. Join the Gracebook community, connect your QRtiger v-card, and prepare your smartphone to serve as a trusted processing center for YAM JAM trade value. Whether you serve as an individual seller, a Patron Organizing Community member, or part of a guild, your device becomes part of a shared economic rail endorsed by proof of delivery and time for maturity.
             </p>
             <div class="hero-actions">
-              <a class="btn btn-primary" href="#join">Join Gracebook Now</a>
+              <a class="btn btn-primary" href="<?php echo esc_url( $hb_nwp_discord_invite_url ); ?>" target="_blank" rel="noopener noreferrer">Join Gracebook Now</a>
               <a class="btn btn-secondary" href="#register-vcard">Register QRtiger v-card</a>
             </div>
           </div>
