@@ -131,7 +131,7 @@ body.woocommerce-account .ledger-definitions-inner {
 }
 
 .ledger-definitions-disclosure {
-	margin: 0;
+	margin: 28px 0 0;
 	padding: 16px 18px;
 	border-radius: 16px;
 	background: rgba(0, 0, 0, 0.25);
@@ -139,6 +139,116 @@ body.woocommerce-account .ledger-definitions-inner {
 	color: #9fb4d6;
 	font-size: 0.88rem;
 	line-height: 1.6;
+}
+
+/* Verification authority Y/Y/Y vs 2-scan */
+.ledger-definitions-verify {
+	margin-top: 32px;
+	padding-top: 28px;
+	border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.ledger-definitions-verify-title {
+	margin: 0 0 12px;
+	font-size: clamp(1.25rem, 2.5vw, 1.5rem);
+	line-height: 1.2;
+	font-weight: 700;
+	color: #fff;
+}
+
+.ledger-definitions-verify-title--secondary {
+	margin-top: 28px;
+}
+
+.ledger-definitions-verify-lead {
+	margin: 0 0 18px;
+	color: #b8c6dc;
+	font-size: 1rem;
+	line-height: 1.65;
+	max-width: 85ch;
+}
+
+.ledger-definitions-verify-subtitle {
+	margin: 24px 0 8px;
+	font-size: 1.05rem;
+	font-weight: 800;
+	letter-spacing: 0.02em;
+	color: #cbf6dc;
+}
+
+.ledger-definitions-verify-note {
+	margin: 0 0 12px;
+	color: #9fb4d6;
+	font-size: 0.92rem;
+	line-height: 1.6;
+	max-width: 85ch;
+}
+
+.ledger-yyy-prompts {
+	margin: 0 0 24px;
+	padding-left: 1.35rem;
+	color: #d5deef;
+	line-height: 1.65;
+	max-width: 85ch;
+	border-left: 3px solid rgba(81, 211, 138, 0.35);
+	padding-left: 1.15rem;
+	margin-left: 0;
+	list-style-position: outside;
+}
+
+.ledger-yyy-prompts li {
+	margin-bottom: 14px;
+}
+
+.ledger-yyy-prompts strong {
+	color: #fff;
+}
+
+.ledger-verify-flow {
+	margin: 0 0 22px;
+	padding-left: 1.35rem;
+	color: #d5deef;
+	line-height: 1.65;
+	max-width: 85ch;
+}
+
+.ledger-verify-flow li {
+	margin-bottom: 12px;
+}
+
+.ledger-verify-flow strong {
+	color: #fff;
+}
+
+.ledger-verify-caption {
+	padding-top: 0;
+	padding-bottom: 8px;
+}
+
+.ledger-definitions-table-wrap--verify {
+	margin-bottom: 0;
+}
+
+.ledger-definitions-table--verify {
+	min-width: 560px;
+}
+
+.ledger-definitions-table--verify th[scope='row'],
+.ledger-definitions-table--verify th[scope="row"] {
+	white-space: normal;
+	min-width: 8rem;
+}
+
+.ledger-verify-partial {
+	margin: 0 0 8px;
+	padding-left: 1.25rem;
+	color: #d5deef;
+	line-height: 1.65;
+	max-width: 85ch;
+}
+
+.ledger-verify-partial li {
+	margin-bottom: 10px;
 }
 
 @media (max-width: 640px) {

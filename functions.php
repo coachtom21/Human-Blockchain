@@ -446,6 +446,10 @@ function hb_load_core_files() {
 	if ( file_exists( $includes_dir . '/class-hb-rest-api.php' ) ) {
 		require_once $includes_dir . '/class-hb-rest-api.php';
 	}
+
+	if ( file_exists( $includes_dir . '/class-hb-yamjam-verification-model.php' ) ) {
+		require_once $includes_dir . '/class-hb-yamjam-verification-model.php';
+	}
 }
 add_action( 'after_setup_theme', 'hb_load_core_files' );
 
