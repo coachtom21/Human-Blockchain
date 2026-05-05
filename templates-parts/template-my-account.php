@@ -256,6 +256,19 @@ $hb_xp_display_html = static function ( $value ) {
 			</div>
 		</div>
 
+		<div class="card ledger-definitions-account-card" style="margin-top:18px">
+			<?php
+			get_template_part(
+				'templates-parts/part',
+				'yamjam-ledger-definitions',
+				array(
+					'embed'      => true,
+					'section_id' => 'ledger-definitions-account',
+				)
+			);
+			?>
+		</div>
+
 		<div class="card hb-xp-ledger-card" style="margin-top:18px">
 			<h2><?php esc_html_e( 'XP Ledger', 'hello-elementor-child' ); ?></h2>
 			<p class="empty" style="margin-top:0"><?php esc_html_e( 'Your scan ledger history from HumanBlockchain.', 'hello-elementor-child' ); ?></p>

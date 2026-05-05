@@ -370,6 +370,55 @@ function hb_enqueue_my_account_ui_styles() {
 }
 add_action( 'wp_enqueue_scripts', 'hb_enqueue_my_account_ui_styles', 100 );
 
+/**
+ * YAM JAM ledger definitions table styles (NWP landing + My Account / Woo account pages).
+ *
+ * @return void
+ */
+function hb_enqueue_yamjam_ledger_definitions_css() {
+	$nwp_landing    = function_exists( 'is_page_template' ) && is_page_template( 'templates-parts/template-nwp-landing.php' );
+	$standalone_acc = function_exists( 'is_page_template' ) && is_page_template( 'templates-parts/template-my-account.php' );
+	if ( ! $nwp_landing && ! $standalone_acc && ! hb_should_enqueue_my_account_styles() ) {
+		return;
+	}
+	$ledger_css = get_stylesheet_directory() . '/assets/css/yamjam-ledger-definitions.css';
+	if ( ! file_exists( $ledger_css ) ) {
+		return;
+	}
+
+	$deps = array();
+	if ( wp_style_is( 'hb-my-account-ui', 'enqueued' ) || wp_style_is( 'hb-my-account-ui', 'registered' ) ) {
+		$deps[] = 'hb-my-account-ui';
+	}
+	if ( empty( $deps ) && wp_style_is( 'hello-elementor-child-style', 'registered' ) ) {
+		$deps[] = 'hello-elementor-child-style';
+	}
+
+	wp_enqueue_style(
+		'hb-yamjam-ledger-definitions',
+		get_stylesheet_directory_uri() . '/assets/css/yamjam-ledger-definitions.css',
+		$deps,
+		filemtime( $ledger_css )
+	);
+}
+add_action( 'wp_enqueue_scripts', 'hb_enqueue_yamjam_ledger_definitions_css', 102 );
+
+/**
+ * Render dual-ledger definitions on WooCommerce My Account Dashboard (embedded).
+ *
+ * @return void
+ */
+function hb_render_yamjam_ledger_definitions_embed_on_wc_dashboard() {
+	get_template_part(
+		'templates-parts/part',
+		'yamjam-ledger-definitions',
+		array(
+			'embed'      => true,
+			'section_id' => 'ledger-definitions-account',
+		)
+	);
+}
+add_action( 'woocommerce_account_dashboard', 'hb_render_yamjam_ledger_definitions_embed_on_wc_dashboard', 4 );
 
 /**
  * Load HumanBlockchain core files

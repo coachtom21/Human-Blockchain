@@ -1,0 +1,148 @@
+/**
+ * YAM JAM ledger definitions section — NWP landing + My Account/Woo contexts.
+ */
+
+.ledger-definitions {
+	padding: 64px 20px 32px;
+	background: linear-gradient(180deg, #0d1829 0%, #091321 100%);
+	color: #eef4ff;
+	scroll-margin-top: 88px;
+}
+
+.ledger-definitions--embed {
+	padding: 0;
+	background: transparent;
+	scroll-margin-top: 0;
+}
+
+.ledger-definitions-inner {
+	width: min(1180px, 100%);
+	margin: 0 auto;
+}
+
+.hb-my-account-page .ledger-definitions-inner,
+body.woocommerce-account .ledger-definitions-inner {
+	max-width: 100%;
+}
+
+.ledger-definitions-head {
+	max-width: 820px;
+	margin-bottom: 28px;
+}
+
+.ledger-definitions-kicker {
+	display: inline-block;
+	margin-bottom: 12px;
+	padding: 8px 14px;
+	border-radius: 999px;
+	background: rgba(100, 210, 255, 0.1);
+	border: 1px solid rgba(100, 210, 255, 0.22);
+	color: #9fe8ff;
+	font-size: 0.8rem;
+	font-weight: 800;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+
+.ledger-definitions-head h2 {
+	margin: 0 0 12px;
+	font-size: clamp(1.65rem, 3.2vw, 2.4rem);
+	line-height: 1.15;
+	letter-spacing: -0.03em;
+	color: #fff;
+}
+
+.ledger-definitions-head > p {
+	margin: 0;
+	color: #b8c6dc;
+	font-size: 1.05rem;
+	line-height: 1.65;
+}
+
+.ledger-definitions-table-wrap {
+	overflow-x: auto;
+	border-radius: 20px;
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	background: rgba(255, 255, 255, 0.03);
+	margin-bottom: 20px;
+}
+
+.ledger-definitions-table {
+	width: 100%;
+	min-width: 640px;
+	border-collapse: collapse;
+	font-size: 0.95rem;
+	line-height: 1.5;
+}
+
+.ledger-definitions-table caption {
+	padding: 16px 18px 0;
+	text-align: left;
+	color: #9fb4d6;
+	font-size: 0.88rem;
+	font-weight: 600;
+}
+
+.ledger-definitions-table th,
+.ledger-definitions-table td {
+	padding: 14px 18px;
+	text-align: left;
+	vertical-align: top;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.ledger-definitions-table thead th {
+	font-size: 0.75rem;
+	font-weight: 800;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	color: #8ea3c4;
+	background: rgba(0, 0, 0, 0.2);
+}
+
+.ledger-definitions-table tbody tr:last-child th,
+.ledger-definitions-table tbody tr:last-child td {
+	border-bottom: none;
+}
+
+.ledger-definitions-table th[scope="row"] {
+	color: #fff;
+	font-weight: 700;
+	width: 22%;
+	white-space: nowrap;
+}
+
+.ledger-definitions--embed .ledger-definitions-table th[scope="row"] {
+	white-space: normal;
+}
+
+.ledger-definitions-term-note {
+	display: block;
+	margin-top: 8px;
+	font-size: 0.82rem;
+	font-weight: 600;
+	color: #f5b942;
+	font-style: italic;
+}
+
+.ledger-definitions-cash {
+	color: #b8c6dc;
+	font-size: 0.88rem;
+}
+
+.ledger-definitions-disclosure {
+	margin: 0;
+	padding: 16px 18px;
+	border-radius: 16px;
+	background: rgba(0, 0, 0, 0.25);
+	border: 1px solid rgba(255, 255, 255, 0.08);
+	color: #9fb4d6;
+	font-size: 0.88rem;
+	line-height: 1.6;
+}
+
+@media (max-width: 640px) {
+	.ledger-definitions:not(.ledger-definitions--embed) {
+		padding: 48px 16px 24px;
+	}
+}

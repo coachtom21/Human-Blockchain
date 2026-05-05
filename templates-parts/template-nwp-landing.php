@@ -2056,6 +2056,17 @@ $hb_nwp_discord_invite_url = apply_filters(
     </div>
   </div>
 
+  <?php
+	get_template_part(
+		'templates-parts/part',
+		'yamjam-ledger-definitions',
+		array(
+			'embed'      => false,
+			'section_id' => 'ledger-definitions',
+		)
+	);
+	?>
+
   <section class="trade-value" id="trade-value">
     <div class="trade-container">
       <div class="trade-header">
