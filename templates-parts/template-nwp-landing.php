@@ -1863,6 +1863,89 @@ $hb_nwp_discord_invite_url = apply_filters(
         grid-template-columns: 1fr !important;
       }
     }
+
+    /* Detente 2030 modal (hero CTA) */
+    .d2030-trigger {
+      padding: 12px 18px;
+      border-radius: 999px;
+      background: #1d4ed8;
+      color: #fff;
+      font-weight: 800;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 1rem;
+    }
+    .d2030-modal {
+      display: none;
+      position: fixed;
+      z-index: 9999;
+      inset: 0;
+      background: rgba(16, 24, 40, 0.7);
+      backdrop-filter: blur(6px);
+    }
+    .d2030-modal-content {
+      position: relative;
+      max-width: 520px;
+      margin: 10% auto;
+      padding: 32px;
+      border-radius: 24px;
+      background: #fff;
+      text-align: center;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.25);
+    }
+    .d2030-close {
+      position: absolute;
+      top: 16px;
+      right: 20px;
+      font-size: 24px;
+      line-height: 1;
+      cursor: pointer;
+      color: #101828;
+    }
+    .d2030-kicker {
+      font-size: 12px;
+      font-weight: 800;
+      color: #1d4ed8;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .d2030-modal-content h2 {
+      margin: 0 0 12px;
+      font-size: 32px;
+      color: #101828;
+    }
+    .d2030-modal-content p {
+      color: #475467;
+      margin-bottom: 20px;
+    }
+    .d2030-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .d2030-btn-primary {
+      padding: 12px 18px;
+      border-radius: 999px;
+      background: #1d4ed8;
+      color: #fff;
+      text-decoration: none;
+      font-weight: 800;
+    }
+    .d2030-btn-secondary {
+      padding: 12px 18px;
+      border-radius: 999px;
+      border: 1px solid #d0d5dd;
+      color: #101828;
+      text-decoration: none;
+      font-weight: 800;
+    }
+    @media (max-width: 520px) {
+      .d2030-modal-content {
+        margin: 20% 16px;
+      }
+    }
   </style>
 </head>
 <body <?php body_class( 'nwp-landing' ); ?>>
@@ -1879,6 +1962,9 @@ $hb_nwp_discord_invite_url = apply_filters(
         <div class="hero-actions">
           <a class="btn btn-primary" href="#join">Join Gracebook</a>
           <a class="btn btn-secondary" href="#processing-flow">See the Processing Flow</a>
+          <button type="button" class="d2030-trigger" onclick="openD2030Modal()">
+            Explore Detente 2030 Research
+          </button>
         </div>
         <div class="hero-meta">
           <span>Register your QRtiger v-card</span>
@@ -1949,6 +2035,26 @@ $hb_nwp_discord_invite_url = apply_filters(
       </div>
     </div>
   </header>
+
+  <div id="d2030-modal" class="d2030-modal" role="dialog" aria-modal="true" aria-labelledby="d2030-modal-title" hidden>
+    <div class="d2030-modal-content">
+      <button type="button" class="d2030-close" onclick="closeD2030Modal()" aria-label="<?php echo esc_attr__( 'Close', 'hello-elementor-child' ); ?>">×</button>
+      <p class="d2030-kicker">Detente 2030</p>
+      <h2 id="d2030-modal-title">Can Peace Be Measured?</h2>
+      <p>
+        A 15-minute classroom experiment testing whether
+        human interaction can be verified as value.
+      </p>
+      <div class="d2030-actions">
+        <a href="<?php echo esc_url( 'http://humanblockchain.info/wp-content/uploads/2026/05/Detente-2030_-A-Classroom-Experiment-2026-04-271.mp4' ); ?>" class="d2030-btn-primary" target="_blank" rel="noopener noreferrer">
+          ▶ Watch Video
+        </a>
+        <a href="<?php echo esc_url( 'https://drive.google.com/file/d/18gtYk7vIn-XLTxg6QLsY4mmu-sG-FxCA/view' ); ?>" class="d2030-btn-secondary" target="_blank" rel="noopener noreferrer">
+          ⬇ Download Script
+        </a>
+      </div>
+    </div>
+  </div>
 
   <section class="trade-value" id="trade-value">
     <div class="trade-container">
@@ -2655,6 +2761,33 @@ $hb_nwp_discord_invite_url = apply_filters(
   </section>
 
   <?php get_template_part( 'templates-parts/part', 'nwp-site-footer' ); ?>
+  <script>
+    function openD2030Modal() {
+      var el = document.getElementById('d2030-modal');
+      if (!el) return;
+      el.style.display = 'block';
+      el.removeAttribute('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeD2030Modal() {
+      var el = document.getElementById('d2030-modal');
+      if (!el) return;
+      el.style.display = 'none';
+      el.setAttribute('hidden', 'hidden');
+      document.body.style.overflow = '';
+    }
+    document.addEventListener('click', function (event) {
+      var modal = document.getElementById('d2030-modal');
+      if (modal && event.target === modal) {
+        closeD2030Modal();
+      }
+    });
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape') {
+        closeD2030Modal();
+      }
+    });
+  </script>
   <?php wp_footer(); ?>
 </body>
 </html>

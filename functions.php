@@ -843,7 +843,6 @@ function hb_render_xp_ledger_account_endpoint() {
 	echo '<th style="text-align:left;padding:8px;border-bottom:1px solid #ddd;">' . esc_html__( 'Transaction', 'hello-elementor-child' ) . '</th>';
 	echo '<th style="text-align:left;padding:8px;border-bottom:1px solid #ddd;">' . esc_html__( 'XP', 'hello-elementor-child' ) . '</th>';
 	echo '<th style="text-align:left;padding:8px;border-bottom:1px solid #ddd;">' . esc_html__( 'Status', 'hello-elementor-child' ) . '</th>';
-	echo '<th style="text-align:left;padding:8px;border-bottom:1px solid #ddd;">' . esc_html__( 'Remote', 'hello-elementor-child' ) . '</th>';
 	echo '<th style="text-align:left;padding:8px;border-bottom:1px solid #ddd;">' . esc_html__( 'Date', 'hello-elementor-child' ) . '</th>';
 	echo '</tr></thead><tbody>';
 
@@ -856,7 +855,6 @@ function hb_render_xp_ledger_account_endpoint() {
 		echo '<td style="padding:8px;border-bottom:1px solid #eee;word-break:break-all;">' . esc_html( isset( $row->transaction_id ) ? (string) $row->transaction_id : '' ) . '</td>';
 		echo '<td style="padding:8px;border-bottom:1px solid #eee;">' . $xp_display_html( isset( $row->xp_units ) ? (string) $row->xp_units : '0' ) . '</td>';
 		echo '<td style="padding:8px;border-bottom:1px solid #eee;">' . esc_html( isset( $row->scan_status ) ? (string) $row->scan_status : '' ) . '</td>';
-		echo '<td style="padding:8px;border-bottom:1px solid #eee;">' . esc_html( isset( $row->remote_sync_status ) ? (string) $row->remote_sync_status : '' ) . '</td>';
 		echo '<td style="padding:8px;border-bottom:1px solid #eee;">' . esc_html( isset( $row->ledger_date ) ? (string) $row->ledger_date : '' ) . '</td>';
 		echo '</tr>';
 	}

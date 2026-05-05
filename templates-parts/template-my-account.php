@@ -301,7 +301,6 @@ $hb_xp_display_html = static function ( $value ) {
 									<th><?php esc_html_e( 'Transaction', 'hello-elementor-child' ); ?></th>
 									<th><?php esc_html_e( 'XP', 'hello-elementor-child' ); ?></th>
 									<th><?php esc_html_e( 'Status', 'hello-elementor-child' ); ?></th>
-									<th><?php esc_html_e( 'Remote', 'hello-elementor-child' ); ?></th>
 									<th><?php esc_html_e( 'Ledger date', 'hello-elementor-child' ); ?></th>
 								</tr>
 							</thead>
@@ -317,7 +316,6 @@ $hb_xp_display_html = static function ( $value ) {
 										<td><code class="xp"><?php echo isset( $row->transaction_id ) ? esc_html( (string) $row->transaction_id ) : ''; ?></code></td>
 										<td><?php echo isset( $row->xp_units ) ? wp_kses( $hb_xp_display_html( (string) $row->xp_units ), $hb_xp_allowed_html ) : ''; ?></td>
 										<td><?php echo isset( $row->scan_status ) ? esc_html( (string) $row->scan_status ) : ''; ?></td>
-										<td><?php echo isset( $row->remote_sync_status ) ? esc_html( (string) $row->remote_sync_status ) : ''; ?></td>
 										<td><?php echo isset( $row->ledger_date ) ? esc_html( (string) $row->ledger_date ) : ''; ?></td>
 									</tr>
 								<?php endforeach; ?>
