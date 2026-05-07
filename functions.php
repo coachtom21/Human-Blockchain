@@ -1216,7 +1216,7 @@ function hb_build_qrtiger_vcard_campaign_payload( $vcard_url, $overrides = array
 		'eye_outer'         => 'eyeOuter11',
 		'eye_inner'         => 'eyeInner9',
 		'qrData'            => 'pattern0',
-		'frame'             => 15,
+		'frame'             => 16, // Multi-ring concentric circle (matches the QR Tiger "master" preview).
 		'frameText'         => 'Profit Sharing',
 		'frameColor'        => '#054080',
 		'frameColorType'    => 'linear',
@@ -1267,7 +1267,7 @@ function hb_get_vcard_qr_templates() {
 				'eye_outer'      => 'eyeOuter11',
 				'eye_inner'      => 'eyeInner9',
 				'qrData'         => 'pattern0',
-				'frame'          => 15,
+				'frame'          => 16, // Multi-ring concentric circle.
 				'frameText'      => 'Profit Sharing',
 				'frameColor'     => '#054080',
 				'frameColorType' => 'linear',
@@ -1313,7 +1313,7 @@ function hb_get_vcard_qr_templates() {
 				'eye_outer'      => 'eyeOuter11',
 				'eye_inner'      => 'eyeInner9',
 				'qrData'         => 'pattern0',
-				'frame'          => 15,
+				'frame'          => 16, // Multi-ring concentric circle.
 				'frameText'      => 'Scan me',
 				'frameColor'     => '#7e22ce',
 				'frameColorType' => 'linear',
