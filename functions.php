@@ -1058,6 +1058,96 @@ function hb_get_qrtiger_credentials() {
 }
 
 /**
+ * Public raster image URL for the center logo on vCard QRs (QR Tiger fetches this URL).
+ *
+ * Priority: filter hb_qrtiger_vcard_logo_url, option hb_qrtiger_vcard_logo_url,
+ * Customizer site logo (non-SVG), then site icon.
+ *
+ * @return string Empty string if none.
+ */
+function hb_get_qrtiger_vcard_logo_url() {
+	$filtered = apply_filters( 'hb_qrtiger_vcard_logo_url', null );
+	if ( is_string( $filtered ) && $filtered !== '' ) {
+		return esc_url_raw( $filtered );
+	}
+
+	$from_option = trim( (string) get_option( 'hb_qrtiger_vcard_logo_url', '' ) );
+	if ( $from_option !== '' ) {
+		return esc_url_raw( $from_option );
+	}
+
+	$logo_id = (int) get_theme_mod( 'custom_logo' );
+	if ( $logo_id ) {
+		$mime = get_post_mime_type( $logo_id );
+		if ( is_string( $mime ) && strpos( strtolower( $mime ), 'svg' ) !== false ) {
+			return '';
+		}
+		$src = wp_get_attachment_image_url( $logo_id, 'medium' );
+		if ( is_string( $src ) && $src !== '' ) {
+			$path = (string) wp_parse_url( $src, PHP_URL_PATH );
+			if ( ! preg_match( '/\.svgz?(\?|$)/i', $path ) ) {
+				return esc_url_raw( $src );
+			}
+		}
+	}
+
+	$icon = get_site_icon_url( 256 );
+	return is_string( $icon ) && $icon !== '' ? esc_url_raw( $icon ) : '';
+}
+
+/**
+ * Build QR Tiger /api/campaign/ payload for branded HumanBlockchain vCard QRs.
+ *
+ * Defaults match the dashboard “master” design (gradient, circular frame, pattern0).
+ * Override shape IDs via filters hb_qrtiger_vcard_qr_defaults / hb_qrtiger_vcard_campaign_payload if needed.
+ *
+ * @param string $vcard_url Public .vcf URL.
+ * @return array<string, mixed>
+ */
+function hb_build_qrtiger_vcard_campaign_payload( $vcard_url ) {
+	$logo = hb_get_qrtiger_vcard_logo_url();
+
+	$defaults = array(
+		'size'              => 800,
+		'logo'              => $logo,
+		'colorDark'         => '#054080',
+		'backgroundColor'   => '#ffffff',
+		'transparentBkg'    => false,
+		'gradient'          => true,
+		'grdType'           => 'linear',
+		'color01'           => '#054080',
+		'color02'           => '#f30505',
+		'eye_color'         => true,
+		'eye_color01'       => '#054080',
+		'eye_color02'       => '#f30505',
+		'eye_outer'         => 'eyeOuter11',
+		'eye_inner'         => 'eyeInner9',
+		'qrData'            => 'pattern0',
+		'frame'             => 15,
+		'frameText'         => 'Profit Sharing',
+		'frameColor'        => '#054080',
+		'frameColorType'    => 'linear',
+	);
+
+	$defaults = apply_filters( 'hb_qrtiger_vcard_qr_defaults', $defaults, $vcard_url );
+
+	if ( isset( $defaults['logo'] ) && is_string( $defaults['logo'] ) && $defaults['logo'] !== '' ) {
+		$defaults['logo'] = esc_url_raw( $defaults['logo'] );
+	} else {
+		$defaults['logo'] = '';
+	}
+
+	$payload = array(
+		'qr'         => $defaults,
+		'qrUrl'      => esc_url_raw( $vcard_url ),
+		'qrType'     => 'qr2',
+		'qrCategory' => 'url',
+	);
+
+	return apply_filters( 'hb_qrtiger_vcard_campaign_payload', $payload, $vcard_url );
+}
+
+/**
  * Generate a QR image for a vCard URL via QRTiger.
  *
  * @param string $vcard_url Public VCard file URL.
@@ -1070,18 +1160,7 @@ function hb_generate_qrtiger_qr_for_vcard( $vcard_url ) {
 	}
 
 	$endpoint = $creds['url'] . '/api/campaign/';
-	$payload  = array(
-		'qr'         => array(
-			'size'           => 500,
-			'logo'           => '',
-			'colorDark'      => '#1D2F6F',
-			'backgroundColor'=> '#FFFFFF',
-			'transparentBkg' => false,
-		),
-		'qrUrl'      => esc_url_raw( $vcard_url ),
-		'qrType'     => 'qr2',
-		'qrCategory' => 'url',
-	);
+	$payload  = hb_build_qrtiger_vcard_campaign_payload( $vcard_url );
 
 	$response = wp_remote_post(
 		$endpoint,
