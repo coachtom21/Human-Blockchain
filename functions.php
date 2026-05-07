@@ -1061,7 +1061,7 @@ function hb_get_qrtiger_credentials() {
  * Public raster image URL for the center logo on vCard QRs (QR Tiger fetches this URL).
  *
  * Priority: filter hb_qrtiger_vcard_logo_url, option hb_qrtiger_vcard_logo_url,
- * Customizer site logo (non-SVG), then site icon.
+ * Customizer site logo (non-SVG). Site icon fallback is disabled by default.
  *
  * @return string Empty string if none.
  */
@@ -1089,6 +1089,11 @@ function hb_get_qrtiger_vcard_logo_url() {
 				return esc_url_raw( $src );
 			}
 		}
+	}
+
+	$allow_site_icon_fallback = (bool) apply_filters( 'hb_qrtiger_vcard_allow_site_icon_fallback', false );
+	if ( ! $allow_site_icon_fallback ) {
+		return '';
 	}
 
 	$icon = get_site_icon_url( 256 );
