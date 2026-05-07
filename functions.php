@@ -1326,6 +1326,127 @@ function hb_get_vcard_qr_templates() {
 }
 
 /**
+ * Catalog of QR Tiger eye-outer styles (the big square-ish ring of each finder pattern).
+ *
+ * Map of API value => human label. Filterable.
+ *
+ * @return array<string, string>
+ */
+function hb_get_qr_eye_outer_options() {
+	$options = array(
+		'eyeOuter0'  => __( 'Classic square', 'hello-elementor-child' ),
+		'eyeOuter1'  => __( 'Rounded square', 'hello-elementor-child' ),
+		'eyeOuter2'  => __( 'Pill', 'hello-elementor-child' ),
+		'eyeOuter3'  => __( 'Leaf top-left', 'hello-elementor-child' ),
+		'eyeOuter4'  => __( 'Leaf top-right', 'hello-elementor-child' ),
+		'eyeOuter5'  => __( 'Soft square', 'hello-elementor-child' ),
+		'eyeOuter6'  => __( 'Round outer corners', 'hello-elementor-child' ),
+		'eyeOuter7'  => __( 'Inner round corners', 'hello-elementor-child' ),
+		'eyeOuter8'  => __( 'Diamond', 'hello-elementor-child' ),
+		'eyeOuter9'  => __( 'Cushion', 'hello-elementor-child' ),
+		'eyeOuter10' => __( 'Notched square', 'hello-elementor-child' ),
+		'eyeOuter11' => __( 'Star square', 'hello-elementor-child' ),
+		'eyeOuter12' => __( 'Soft pill', 'hello-elementor-child' ),
+		'eyeOuter13' => __( 'Petal', 'hello-elementor-child' ),
+		'eyeOuter14' => __( 'Concentric ring', 'hello-elementor-child' ),
+		'eyeOuter15' => __( 'Octagon', 'hello-elementor-child' ),
+	);
+	$filtered = apply_filters( 'hb_vcard_qr_eye_outer_options', $options );
+	return is_array( $filtered ) ? $filtered : $options;
+}
+
+/**
+ * Catalog of QR Tiger eye-inner styles (the small dot inside each finder pattern).
+ *
+ * @return array<string, string>
+ */
+function hb_get_qr_eye_inner_options() {
+	$options = array(
+		'eyeInner0'  => __( 'Classic square', 'hello-elementor-child' ),
+		'eyeInner1'  => __( 'Rounded square', 'hello-elementor-child' ),
+		'eyeInner2'  => __( 'Soft square', 'hello-elementor-child' ),
+		'eyeInner3'  => __( 'Diamond', 'hello-elementor-child' ),
+		'eyeInner4'  => __( 'Pill horizontal', 'hello-elementor-child' ),
+		'eyeInner5'  => __( 'Pill vertical', 'hello-elementor-child' ),
+		'eyeInner6'  => __( 'Leaf top-left', 'hello-elementor-child' ),
+		'eyeInner7'  => __( 'Leaf top-right', 'hello-elementor-child' ),
+		'eyeInner8'  => __( 'Circle', 'hello-elementor-child' ),
+		'eyeInner9'  => __( 'Star', 'hello-elementor-child' ),
+		'eyeInner10' => __( 'Plus', 'hello-elementor-child' ),
+		'eyeInner11' => __( 'Petal', 'hello-elementor-child' ),
+		'eyeInner12' => __( 'Cushion', 'hello-elementor-child' ),
+		'eyeInner13' => __( 'Octagon', 'hello-elementor-child' ),
+		'eyeInner14' => __( 'Hexagon', 'hello-elementor-child' ),
+		'eyeInner15' => __( 'Tilted square', 'hello-elementor-child' ),
+		'eyeInner16' => __( 'Concentric', 'hello-elementor-child' ),
+		'eyeInner17' => __( 'Spiral', 'hello-elementor-child' ),
+	);
+	$filtered = apply_filters( 'hb_vcard_qr_eye_inner_options', $options );
+	return is_array( $filtered ) ? $filtered : $options;
+}
+
+/**
+ * Catalog of QR Tiger frame styles (decorative wrapper around the QR).
+ *
+ * @return array<int, string> Map of frame ID => label.
+ */
+function hb_get_qr_frame_options() {
+	$options = array(
+		0  => __( 'No frame', 'hello-elementor-child' ),
+		1  => __( 'Top text — rectangle', 'hello-elementor-child' ),
+		2  => __( 'Bottom text — rectangle', 'hello-elementor-child' ),
+		3  => __( 'Both top + bottom rectangles', 'hello-elementor-child' ),
+		4  => __( 'Bottom text — rounded rectangle', 'hello-elementor-child' ),
+		5  => __( 'Bottom text — pill', 'hello-elementor-child' ),
+		6  => __( 'Bottom text — banner', 'hello-elementor-child' ),
+		7  => __( 'Bottom text — ribbon', 'hello-elementor-child' ),
+		8  => __( 'Bottom text — torn paper', 'hello-elementor-child' ),
+		9  => __( 'Bottom text — pin', 'hello-elementor-child' ),
+		10 => __( 'Bottom text — speech bubble', 'hello-elementor-child' ),
+		11 => __( 'Bottom text — tag', 'hello-elementor-child' ),
+		12 => __( 'Bottom text — arrow', 'hello-elementor-child' ),
+		13 => __( 'Bottom text — flag', 'hello-elementor-child' ),
+		14 => __( 'Bottom text — chevron', 'hello-elementor-child' ),
+		15 => __( 'Single-ring circle', 'hello-elementor-child' ),
+		16 => __( 'Multi-ring concentric circle', 'hello-elementor-child' ),
+		17 => __( 'Double-ring circle', 'hello-elementor-child' ),
+		18 => __( 'Round badge — bottom text', 'hello-elementor-child' ),
+		19 => __( 'Round badge — top text', 'hello-elementor-child' ),
+	);
+	$filtered = apply_filters( 'hb_vcard_qr_frame_options', $options );
+	return is_array( $filtered ) ? $filtered : $options;
+}
+
+/**
+ * Catalog of QR Tiger body patterns (how the QR data dots are drawn).
+ *
+ * @return array<string, string>
+ */
+function hb_get_qr_pattern_options() {
+	$options = array(
+		'pattern0'  => __( 'Classic square', 'hello-elementor-child' ),
+		'pattern1'  => __( 'Rounded square', 'hello-elementor-child' ),
+		'pattern2'  => __( 'Dots', 'hello-elementor-child' ),
+		'pattern3'  => __( 'Stars', 'hello-elementor-child' ),
+		'pattern4'  => __( 'Diamond', 'hello-elementor-child' ),
+		'pattern5'  => __( 'Wave', 'hello-elementor-child' ),
+		'pattern6'  => __( 'Crystal', 'hello-elementor-child' ),
+		'pattern7'  => __( 'Petal', 'hello-elementor-child' ),
+		'pattern8'  => __( 'Leaf', 'hello-elementor-child' ),
+		'pattern9'  => __( 'Plus', 'hello-elementor-child' ),
+		'pattern10' => __( 'Hexagon', 'hello-elementor-child' ),
+		'pattern11' => __( 'Heart', 'hello-elementor-child' ),
+		'pattern12' => __( 'Mosaic', 'hello-elementor-child' ),
+		'pattern13' => __( 'Stripes', 'hello-elementor-child' ),
+		'pattern14' => __( 'Soft dots', 'hello-elementor-child' ),
+		'pattern15' => __( 'Connected', 'hello-elementor-child' ),
+		'pattern16' => __( 'Pixel', 'hello-elementor-child' ),
+	);
+	$filtered = apply_filters( 'hb_vcard_qr_pattern_options', $options );
+	return is_array( $filtered ) ? $filtered : $options;
+}
+
+/**
  * Read and sanitise QR style overrides from the current AJAX request.
  *
  * Recognised inputs (POST):
@@ -1334,6 +1455,10 @@ function hb_get_vcard_qr_templates() {
  *  - size:      256..4096 (clamped).
  *  - color01, color02, colorDark, eye_color01, eye_color02, frameColor: '#rrggbb'.
  *  - frameText: string up to 30 chars.
+ *  - eye_outer: one of hb_get_qr_eye_outer_options() keys.
+ *  - eye_inner: one of hb_get_qr_eye_inner_options() keys.
+ *  - frame:     one of hb_get_qr_frame_options() keys (int).
+ *  - qrData:    one of hb_get_qr_pattern_options() keys.
  *
  * @return array<string, mixed>
  */
@@ -1374,6 +1499,34 @@ function hb_get_vcard_qr_overrides_from_request() {
 	if ( isset( $_POST['frameText'] ) ) {
 		$text                   = sanitize_text_field( wp_unslash( $_POST['frameText'] ) );
 		$overrides['frameText'] = function_exists( 'mb_substr' ) ? mb_substr( $text, 0, 30 ) : substr( $text, 0, 30 );
+	}
+
+	if ( isset( $_POST['eye_outer'] ) ) {
+		$value = sanitize_text_field( wp_unslash( $_POST['eye_outer'] ) );
+		if ( preg_match( '/^eyeOuter\d{1,3}$/', $value ) && array_key_exists( $value, hb_get_qr_eye_outer_options() ) ) {
+			$overrides['eye_outer'] = $value;
+		}
+	}
+
+	if ( isset( $_POST['eye_inner'] ) ) {
+		$value = sanitize_text_field( wp_unslash( $_POST['eye_inner'] ) );
+		if ( preg_match( '/^eyeInner\d{1,3}$/', $value ) && array_key_exists( $value, hb_get_qr_eye_inner_options() ) ) {
+			$overrides['eye_inner'] = $value;
+		}
+	}
+
+	if ( isset( $_POST['frame'] ) ) {
+		$value = (int) $_POST['frame'];
+		if ( array_key_exists( $value, hb_get_qr_frame_options() ) ) {
+			$overrides['frame'] = $value;
+		}
+	}
+
+	if ( isset( $_POST['qrData'] ) ) {
+		$value = sanitize_text_field( wp_unslash( $_POST['qrData'] ) );
+		if ( preg_match( '/^pattern\d{1,3}$/', $value ) && array_key_exists( $value, hb_get_qr_pattern_options() ) ) {
+			$overrides['qrData'] = $value;
+		}
 	}
 
 	return $overrides;
@@ -1818,12 +1971,25 @@ function hb_render_vcard_account_endpoint() {
 		$ajax_url
 	);
 
-	$selected_template = isset( $saved_over['__template'] ) ? (string) $saved_over['__template'] : 'profit_sharing';
-	$selected_format   = isset( $saved_over['qrFormat'] ) ? (string) $saved_over['qrFormat'] : 'png';
-	$selected_size     = isset( $saved_over['size'] ) ? (int) $saved_over['size'] : 800;
-	$selected_color01  = isset( $saved_over['color01'] ) ? (string) $saved_over['color01'] : '#054080';
-	$selected_color02  = isset( $saved_over['color02'] ) ? (string) $saved_over['color02'] : '#f30505';
-	$selected_frametxt = isset( $saved_over['frameText'] ) ? (string) $saved_over['frameText'] : 'Profit Sharing';
+	$eye_outer_options = hb_get_qr_eye_outer_options();
+	$eye_inner_options = hb_get_qr_eye_inner_options();
+	$frame_options     = hb_get_qr_frame_options();
+	$pattern_options   = hb_get_qr_pattern_options();
+
+	$selected_template  = isset( $saved_over['__template'] ) ? (string) $saved_over['__template'] : 'profit_sharing';
+	$selected_format    = isset( $saved_over['qrFormat'] ) ? (string) $saved_over['qrFormat'] : 'png';
+	$selected_size      = isset( $saved_over['size'] ) ? (int) $saved_over['size'] : 800;
+	$selected_color01   = isset( $saved_over['color01'] ) ? (string) $saved_over['color01'] : '#054080';
+	$selected_color02   = isset( $saved_over['color02'] ) ? (string) $saved_over['color02'] : '#f30505';
+	$selected_frametxt  = isset( $saved_over['frameText'] ) ? (string) $saved_over['frameText'] : 'Profit Sharing';
+	$selected_eye_outer = isset( $saved_over['eye_outer'] ) && array_key_exists( $saved_over['eye_outer'], $eye_outer_options )
+		? (string) $saved_over['eye_outer'] : 'eyeOuter11';
+	$selected_eye_inner = isset( $saved_over['eye_inner'] ) && array_key_exists( $saved_over['eye_inner'], $eye_inner_options )
+		? (string) $saved_over['eye_inner'] : 'eyeInner9';
+	$selected_frame     = isset( $saved_over['frame'] ) && array_key_exists( (int) $saved_over['frame'], $frame_options )
+		? (int) $saved_over['frame'] : 16;
+	$selected_pattern   = isset( $saved_over['qrData'] ) && array_key_exists( $saved_over['qrData'], $pattern_options )
+		? (string) $saved_over['qrData'] : 'pattern0';
 	?>
 	<div id="hb-vcard-tools"
 		data-ajax-url="<?php echo esc_attr( $ajax_url ); ?>"
@@ -1927,6 +2093,24 @@ function hb_render_vcard_account_endpoint() {
 			}
 			#hb-vcard-tools input[type="radio"] { accent-color:#3b82f6 !important; }
 
+			#hb-vcard-tools select {
+				padding:6px 8px !important;
+				border:1px solid rgba(255,255,255,.25) !important;
+				border-radius:6px !important;
+				background:#0f172a !important;
+				color:#f9fafb !important;
+				font-size:13px !important;
+				min-width:200px !important;
+				appearance:auto;
+			}
+			#hb-vcard-tools select:focus {
+				outline:none !important;
+				border-color:#3b82f6 !important;
+				box-shadow:0 0 0 2px rgba(59,130,246,.35) !important;
+			}
+			/* Make options readable in the native popup on dark sites. */
+			#hb-vcard-tools select option { background:#0f172a !important; color:#f9fafb !important; }
+
 			#hb-vcard-tools .hb-vcf-actions .button { margin-right:6px !important; }
 			#hb-vcard-tools #hb-vcard-status { margin-left:8px !important; font-size:13px !important; }
 		</style>
@@ -1981,6 +2165,59 @@ function hb_render_vcard_account_endpoint() {
 						<input type="range" name="size" min="256" max="4096" step="128" value="<?php echo (int) $selected_size; ?>">
 					</label>
 				</div>
+			</fieldset>
+
+			<fieldset>
+				<legend><?php esc_html_e( 'Style', 'hello-elementor-child' ); ?></legend>
+				<div class="hb-vcf-row">
+					<label>
+						<?php esc_html_e( 'Eye outer (finder ring)', 'hello-elementor-child' ); ?>
+						<select name="eye_outer">
+							<?php foreach ( $eye_outer_options as $value => $label ) : ?>
+								<option value="<?php echo esc_attr( $value ); ?>" <?php selected( $selected_eye_outer, $value ); ?>>
+									<?php echo esc_html( $label ); ?>
+								</option>
+							<?php endforeach; ?>
+						</select>
+					</label>
+					<label>
+						<?php esc_html_e( 'Eye inner (finder dot)', 'hello-elementor-child' ); ?>
+						<select name="eye_inner">
+							<?php foreach ( $eye_inner_options as $value => $label ) : ?>
+								<option value="<?php echo esc_attr( $value ); ?>" <?php selected( $selected_eye_inner, $value ); ?>>
+									<?php echo esc_html( $label ); ?>
+								</option>
+							<?php endforeach; ?>
+						</select>
+					</label>
+				</div>
+				<div class="hb-vcf-row">
+					<label>
+						<?php esc_html_e( 'Frame style', 'hello-elementor-child' ); ?>
+						<select name="frame">
+							<?php foreach ( $frame_options as $value => $label ) : ?>
+								<option value="<?php echo esc_attr( (string) $value ); ?>" <?php selected( $selected_frame, $value ); ?>>
+									<?php /* translators: 1: frame ID, 2: human label */
+										echo esc_html( sprintf( __( '#%1$d — %2$s', 'hello-elementor-child' ), $value, $label ) );
+									?>
+								</option>
+							<?php endforeach; ?>
+						</select>
+					</label>
+					<label>
+						<?php esc_html_e( 'Body pattern', 'hello-elementor-child' ); ?>
+						<select name="qrData">
+							<?php foreach ( $pattern_options as $value => $label ) : ?>
+								<option value="<?php echo esc_attr( $value ); ?>" <?php selected( $selected_pattern, $value ); ?>>
+									<?php echo esc_html( $label ); ?>
+								</option>
+							<?php endforeach; ?>
+						</select>
+					</label>
+				</div>
+				<p style="font-size:12px;color:#cbd5e1 !important;margin:6px 0 0 !important;">
+					<?php esc_html_e( 'Tip: pick options here, then click Preview to see the result. Names are friendly approximations — actual look comes from QR Tiger.', 'hello-elementor-child' ); ?>
+				</p>
 			</fieldset>
 
 			<p class="hb-vcf-actions">
