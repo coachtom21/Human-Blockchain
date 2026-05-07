@@ -915,3 +915,575 @@ function hb_render_xp_ledger_account_endpoint() {
 	echo '</tbody></table></div>';
 }
 add_action( 'woocommerce_account_xp-ledger_endpoint', 'hb_render_xp_ledger_account_endpoint' );
+
+/**
+ * Register WooCommerce My Account endpoint for VCard.
+ */
+function hb_register_vcard_endpoint() {
+	add_rewrite_endpoint( 'vcard', EP_ROOT | EP_PAGES );
+}
+add_action( 'init', 'hb_register_vcard_endpoint' );
+
+/**
+ * Add VCard tab to WooCommerce My Account menu.
+ *
+ * @param array<string, string> $items Menu items.
+ * @return array<string, string>
+ */
+function hb_add_vcard_account_menu_item( $items ) {
+	if ( ! is_array( $items ) ) {
+		return $items;
+	}
+
+	$new_items = array();
+	$inserted  = false;
+	foreach ( $items as $key => $label ) {
+		$new_items[ $key ] = $label;
+		if ( 'xp-ledger' === $key ) {
+			$new_items['vcard'] = __( 'VCard', 'hello-elementor-child' );
+			$inserted           = true;
+		}
+	}
+
+	if ( ! $inserted ) {
+		$new_items['vcard'] = __( 'VCard', 'hello-elementor-child' );
+	}
+
+	return $new_items;
+}
+add_filter( 'woocommerce_account_menu_items', 'hb_add_vcard_account_menu_item', 41 );
+
+/**
+ * Build vCard 3.0 body for current user.
+ *
+ * @param int $user_id User ID.
+ * @return string
+ */
+function hb_build_user_vcard_body( $user_id ) {
+	$user = get_userdata( $user_id );
+	if ( ! $user ) {
+		return '';
+	}
+
+	$first  = (string) get_user_meta( $user_id, 'first_name', true );
+	$last   = (string) get_user_meta( $user_id, 'last_name', true );
+	$email  = (string) $user->user_email;
+	$phone  = (string) get_user_meta( $user_id, 'billing_phone', true );
+	$phone2 = (string) get_user_meta( $user_id, 'mega-mobile', true );
+	if ( '' === $phone ) {
+		$phone = $phone2;
+	}
+	$name = trim( trim( $first . ' ' . $last ) );
+	if ( '' === $name ) {
+		$name = (string) $user->display_name;
+	}
+	if ( '' === $name ) {
+		$name = (string) $user->user_login;
+	}
+
+	$esc = static function ( $value ) {
+		$value = str_replace( array( "\r\n", "\r", "\n" ), '\\n', (string) $value );
+		return str_replace(
+			array( '\\', ';', ',' ),
+			array( '\\\\', '\;', '\,' ),
+			$value
+		);
+	};
+
+	$lines   = array();
+	$lines[] = 'BEGIN:VCARD';
+	$lines[] = 'VERSION:3.0';
+	$lines[] = 'PRODID:-//HumanBlockchain//VCard//EN';
+	$lines[] = 'FN:' . $esc( $name );
+	$lines[] = 'N:' . $esc( $last ) . ';' . $esc( $first ) . ';;;';
+	if ( '' !== $email ) {
+		$lines[] = 'EMAIL;TYPE=INTERNET:' . $esc( $email );
+	}
+	if ( '' !== $phone ) {
+		$lines[] = 'TEL;TYPE=CELL:' . $esc( preg_replace( '/\s+/', '', $phone ) );
+	}
+	$lines[] = 'URL:' . esc_url_raw( home_url( '/my-account/' ) );
+	$lines[] = 'END:VCARD';
+
+	return implode( "\r\n", $lines ) . "\r\n";
+}
+
+/**
+ * Save generated vCard file in uploads and return URL.
+ *
+ * @param int    $user_id User ID.
+ * @param string $body    VCard content.
+ * @return string|WP_Error
+ */
+function hb_save_user_vcard_file( $user_id, $body ) {
+	$upload = wp_upload_dir();
+	if ( ! empty( $upload['error'] ) || empty( $upload['basedir'] ) || empty( $upload['baseurl'] ) ) {
+		return new WP_Error( 'upload_dir', __( 'Upload directory is not available.', 'hello-elementor-child' ) );
+	}
+
+	$dir = trailingslashit( $upload['basedir'] ) . 'hb-vcards';
+	if ( ! wp_mkdir_p( $dir ) ) {
+		return new WP_Error( 'mkdir', __( 'Could not create vCard storage folder.', 'hello-elementor-child' ) );
+	}
+
+	$file = wp_unique_filename( $dir, 'user-' . (int) $user_id . '-contact.vcf' );
+	$path = trailingslashit( $dir ) . $file;
+	$ok   = file_put_contents( $path, $body );
+	if ( false === $ok ) {
+		return new WP_Error( 'write', __( 'Could not write vCard file.', 'hello-elementor-child' ) );
+	}
+
+	return trailingslashit( $upload['baseurl'] ) . 'hb-vcards/' . rawurlencode( $file );
+}
+
+/**
+ * Resolve QRTiger credentials from NWP settings.
+ *
+ * @return array{key:string,url:string}
+ */
+function hb_get_qrtiger_credentials() {
+	$key = trim( (string) get_option( 'cpm_nwp_qrtiger_api_key', '' ) );
+	$url = trim( (string) get_option( 'cpm_nwp_qrtiger_api_url', '' ) );
+	if ( '' === $url ) {
+		$url = 'https://api.qrtiger.com';
+	}
+	$host = strtolower( (string) wp_parse_url( $url, PHP_URL_HOST ) );
+	if ( in_array( $host, array( 'qrtiger.com', 'www.qrtiger.com' ), true ) ) {
+		$url = 'https://api.qrtiger.com';
+	}
+	return array(
+		'key' => $key,
+		'url' => untrailingslashit( esc_url_raw( $url ) ),
+	);
+}
+
+/**
+ * Generate a QR image for a vCard URL via QRTiger.
+ *
+ * @param string $vcard_url Public VCard file URL.
+ * @return array|WP_Error
+ */
+function hb_generate_qrtiger_qr_for_vcard( $vcard_url ) {
+	$creds = hb_get_qrtiger_credentials();
+	if ( '' === $creds['key'] ) {
+		return new WP_Error( 'missing_key', __( 'QRTiger API key is missing in NWP Gateway settings.', 'hello-elementor-child' ) );
+	}
+
+	$endpoint = $creds['url'] . '/api/campaign/';
+	$payload  = array(
+		'qr'         => array(
+			'size'           => 500,
+			'logo'           => '',
+			'colorDark'      => '#1D2F6F',
+			'backgroundColor'=> '#FFFFFF',
+			'transparentBkg' => false,
+		),
+		'qrUrl'      => esc_url_raw( $vcard_url ),
+		'qrType'     => 'qr2',
+		'qrCategory' => 'url',
+	);
+
+	$response = wp_remote_post(
+		$endpoint,
+		array(
+			'timeout' => 30,
+			'headers' => array(
+				'Authorization' => 'Bearer ' . $creds['key'],
+				'Content-Type'  => 'application/json',
+				'Accept'        => 'application/json',
+			),
+			'body'    => wp_json_encode( $payload ),
+		)
+	);
+
+	if ( is_wp_error( $response ) ) {
+		return $response;
+	}
+
+	$code = (int) wp_remote_retrieve_response_code( $response );
+	$body = (string) wp_remote_retrieve_body( $response );
+	$data = json_decode( $body );
+
+	$qr_image = '';
+	$qr_id    = '';
+	if ( is_object( $data ) ) {
+		// Most common QR Tiger structure.
+		if ( ! empty( $data->data->qrImage ) && is_string( $data->data->qrImage ) ) {
+			$qr_image = $data->data->qrImage;
+		}
+		if ( ! empty( $data->data->qrId ) && is_string( $data->data->qrId ) ) {
+			$qr_id = $data->data->qrId;
+		}
+		// Tolerate alternative structure returned by some clients/proxies.
+		if ( '' === $qr_image && ! empty( $data->qrImage ) && is_string( $data->qrImage ) ) {
+			$qr_image = $data->qrImage;
+		}
+		if ( '' === $qr_id && ! empty( $data->qrId ) && is_string( $data->qrId ) ) {
+			$qr_id = $data->qrId;
+		}
+	}
+
+	if ( $code < 200 || $code > 299 || '' === $qr_image ) {
+		$msg = __( 'QRTiger did not return a valid QR image.', 'hello-elementor-child' );
+
+		$json_status = null;
+		if ( is_object( $data ) && isset( $data->status ) && is_numeric( $data->status ) ) {
+			$json_status = (int) $data->status;
+		}
+
+		// QR Tiger often returns HTTP 200 with {"status":403} for invalid key or missing API access.
+		if ( 403 === $json_status ) {
+			$msg = __( 'QR Tiger rejected the request (forbidden). Check the QRTiger API key in NWP Gateway settings: it must be active, copied correctly, and your QR Tiger plan must allow API / dynamic QR creation.', 'hello-elementor-child' );
+		} elseif ( null !== $json_status && $json_status >= 400 ) {
+			$msg = sprintf(
+				/* translators: %d: status code from QR Tiger JSON body */
+				__( 'QR Tiger returned an error status in the response body (%d). Check API credentials and account limits.', 'hello-elementor-child' ),
+				$json_status
+			);
+		} elseif ( is_object( $data ) ) {
+			if ( ! empty( $data->message ) && is_string( $data->message ) ) {
+				$msg = $data->message;
+			} elseif ( ! empty( $data->error ) && is_string( $data->error ) ) {
+				$msg = $data->error;
+			} elseif ( ! empty( $data->data->message ) && is_string( $data->data->message ) ) {
+				$msg = $data->data->message;
+			} elseif ( '' !== trim( $body ) ) {
+				$snippet = sanitize_text_field( substr( trim( $body ), 0, 220 ) );
+				if ( '' !== $snippet ) {
+					$msg = sprintf(
+						/* translators: 1: HTTP code, 2: response snippet */
+						__( 'QRTiger response (%1$d): %2$s', 'hello-elementor-child' ),
+						$code,
+						$snippet
+					);
+				}
+			}
+		} elseif ( '' !== trim( $body ) ) {
+			$snippet = sanitize_text_field( substr( trim( $body ), 0, 220 ) );
+			if ( '' !== $snippet ) {
+				$msg = sprintf(
+					/* translators: 1: HTTP code, 2: response snippet */
+					__( 'QRTiger response error (%1$d): %2$s', 'hello-elementor-child' ),
+					$code,
+					$snippet
+				);
+			}
+		} elseif ( 0 !== $code ) {
+			$msg = sprintf(
+				/* translators: %d: HTTP response code */
+				__( 'QRTiger response error (HTTP %d).', 'hello-elementor-child' ),
+				$code
+			);
+		}
+		return new WP_Error( 'qrtiger_response', $msg );
+	}
+
+	return array(
+		'image_url' => esc_url_raw( (string) $qr_image ),
+		'qr_id'     => '' !== $qr_id ? sanitize_text_field( (string) $qr_id ) : '',
+	);
+}
+
+/**
+ * AJAX: Generate VCard + QRTiger QR for logged-in user.
+ */
+function hb_ajax_generate_vcard_qr() {
+	if ( ! is_user_logged_in() ) {
+		wp_send_json_error( array( 'message' => __( 'You must be logged in.', 'hello-elementor-child' ) ), 401 );
+	}
+	check_ajax_referer( 'hb_generate_vcard_qr', 'nonce' );
+
+	$user_id = (int) get_current_user_id();
+	$body    = hb_build_user_vcard_body( $user_id );
+	if ( '' === $body ) {
+		wp_send_json_error( array( 'message' => __( 'Could not build vCard from profile.', 'hello-elementor-child' ) ) );
+	}
+
+	$file_url = hb_save_user_vcard_file( $user_id, $body );
+	if ( is_wp_error( $file_url ) ) {
+		wp_send_json_error( array( 'message' => $file_url->get_error_message() ) );
+	}
+
+	$qr = hb_generate_qrtiger_qr_for_vcard( $file_url );
+	if ( is_wp_error( $qr ) ) {
+		wp_send_json_error(
+			array(
+				'message' => $qr->get_error_message(),
+				'url'     => $file_url,
+			)
+		);
+	}
+
+	update_user_meta( $user_id, 'hb_vcard_file_url', esc_url_raw( $file_url ) );
+	update_user_meta( $user_id, 'hb_vcard_qr_image_url', $qr['image_url'] );
+	update_user_meta( $user_id, 'hb_vcard_qr_id', $qr['qr_id'] );
+
+	wp_send_json_success(
+		array(
+			'url'          => esc_url_raw( $file_url ),
+			'qr_image_url' => $qr['image_url'],
+			'message'      => __( 'VCard generated successfully.', 'hello-elementor-child' ),
+		)
+	);
+}
+add_action( 'wp_ajax_hb_generate_vcard_qr', 'hb_ajax_generate_vcard_qr' );
+
+/**
+ * AJAX: Delete saved VCard and QR references.
+ */
+function hb_ajax_delete_vcard_qr() {
+	if ( ! is_user_logged_in() ) {
+		wp_send_json_error( array( 'message' => __( 'You must be logged in.', 'hello-elementor-child' ) ), 401 );
+	}
+	check_ajax_referer( 'hb_delete_vcard_qr', 'nonce' );
+
+	$user_id  = (int) get_current_user_id();
+	$file_url = (string) get_user_meta( $user_id, 'hb_vcard_file_url', true );
+	if ( $file_url !== '' ) {
+		$upload = wp_upload_dir();
+		if ( ! empty( $upload['basedir'] ) && preg_match( '#/hb-vcards/([^?#]+\.vcf)$#i', $file_url, $m ) ) {
+			$path = trailingslashit( $upload['basedir'] ) . 'hb-vcards/' . wp_basename( $m[1] );
+			if ( is_file( $path ) ) {
+				if ( function_exists( 'wp_delete_file' ) ) {
+					wp_delete_file( $path );
+				} else {
+					@unlink( $path );
+				}
+			}
+		}
+	}
+
+	delete_user_meta( $user_id, 'hb_vcard_file_url' );
+	delete_user_meta( $user_id, 'hb_vcard_qr_image_url' );
+	delete_user_meta( $user_id, 'hb_vcard_qr_id' );
+
+	wp_send_json_success( array( 'message' => __( 'VCard and QR removed.', 'hello-elementor-child' ) ) );
+}
+add_action( 'wp_ajax_hb_delete_vcard_qr', 'hb_ajax_delete_vcard_qr' );
+
+/**
+ * Download generated QR image for current user (PNG/JPG).
+ */
+function hb_ajax_download_vcard_qr() {
+	nocache_headers();
+	if ( ! is_user_logged_in() ) {
+		status_header( 403 );
+		wp_die( esc_html__( 'Forbidden.', 'hello-elementor-child' ) );
+	}
+	if ( ! isset( $_GET['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['nonce'] ) ), 'hb_download_vcard_qr' ) ) {
+		status_header( 403 );
+		wp_die( esc_html__( 'Invalid security token.', 'hello-elementor-child' ) );
+	}
+	$format = isset( $_GET['format'] ) ? strtolower( sanitize_key( wp_unslash( $_GET['format'] ) ) ) : 'png';
+	if ( 'jpeg' === $format ) {
+		$format = 'jpg';
+	}
+	if ( ! in_array( $format, array( 'png', 'jpg' ), true ) ) {
+		$format = 'png';
+	}
+
+	$user_id = (int) get_current_user_id();
+	$img_url = (string) get_user_meta( $user_id, 'hb_vcard_qr_image_url', true );
+	if ( '' === $img_url ) {
+		status_header( 404 );
+		wp_die( esc_html__( 'No QR image available.', 'hello-elementor-child' ) );
+	}
+
+	$response = wp_remote_get(
+		$img_url,
+		array(
+			'timeout' => 25,
+			'headers' => array( 'Accept' => 'image/*,*/*;q=0.8' ),
+		)
+	);
+	if ( is_wp_error( $response ) || (int) wp_remote_retrieve_response_code( $response ) !== 200 ) {
+		status_header( 502 );
+		wp_die( esc_html__( 'Could not fetch QR image.', 'hello-elementor-child' ) );
+	}
+	$binary = wp_remote_retrieve_body( $response );
+	if ( '' === $binary ) {
+		status_header( 502 );
+		wp_die( esc_html__( 'Empty image response.', 'hello-elementor-child' ) );
+	}
+
+	$filename = 'vcard-qr-' . $user_id;
+	if ( 'jpg' === $format ) {
+		if ( ! function_exists( 'imagecreatefromstring' ) || ! function_exists( 'imagejpeg' ) ) {
+			status_header( 501 );
+			wp_die( esc_html__( 'JPG export needs PHP GD. Use PNG instead.', 'hello-elementor-child' ) );
+		}
+		$im = @imagecreatefromstring( $binary );
+		if ( ! $im ) {
+			status_header( 500 );
+			wp_die( esc_html__( 'Could not convert image to JPG.', 'hello-elementor-child' ) );
+		}
+		header( 'Content-Type: image/jpeg' );
+		header( 'Content-Disposition: attachment; filename="' . sanitize_file_name( $filename . '.jpg' ) . '"' );
+		header( 'X-Content-Type-Options: nosniff' );
+		imagejpeg( $im, null, 92 );
+		imagedestroy( $im );
+		exit;
+	}
+
+	header( 'Content-Type: image/png' );
+	header( 'Content-Disposition: attachment; filename="' . sanitize_file_name( $filename . '.png' ) . '"' );
+	header( 'X-Content-Type-Options: nosniff' );
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	echo $binary;
+	exit;
+}
+add_action( 'wp_ajax_hb_download_vcard_qr', 'hb_ajax_download_vcard_qr' );
+
+/**
+ * Render VCard endpoint content on Woo My Account.
+ */
+function hb_render_vcard_account_endpoint() {
+	if ( ! is_user_logged_in() ) {
+		echo '<p>' . esc_html__( 'Please log in to manage your VCard.', 'hello-elementor-child' ) . '</p>';
+		return;
+	}
+
+	$user_id      = (int) get_current_user_id();
+	$saved_vcard  = (string) get_user_meta( $user_id, 'hb_vcard_file_url', true );
+	$saved_qr_img = (string) get_user_meta( $user_id, 'hb_vcard_qr_image_url', true );
+	$ajax_url     = admin_url( 'admin-ajax.php' );
+	$gen_nonce    = wp_create_nonce( 'hb_generate_vcard_qr' );
+	$del_nonce    = wp_create_nonce( 'hb_delete_vcard_qr' );
+	$dl_nonce     = wp_create_nonce( 'hb_download_vcard_qr' );
+	$png_href     = add_query_arg(
+		array(
+			'action' => 'hb_download_vcard_qr',
+			'format' => 'png',
+			'nonce'  => $dl_nonce,
+		),
+		$ajax_url
+	);
+	$jpg_href     = add_query_arg(
+		array(
+			'action' => 'hb_download_vcard_qr',
+			'format' => 'jpg',
+			'nonce'  => $dl_nonce,
+		),
+		$ajax_url
+	);
+
+	echo '<div id="hb-vcard-tools" data-ajax-url="' . esc_attr( $ajax_url ) . '" data-generate-nonce="' . esc_attr( $gen_nonce ) . '" data-delete-nonce="' . esc_attr( $del_nonce ) . '" data-download-nonce="' . esc_attr( $dl_nonce ) . '">';
+	echo '<h3>' . esc_html__( 'VCard', 'hello-elementor-child' ) . '</h3>';
+	echo '<p>' . esc_html__( 'Generate your QR Tiger vCard from your account profile.', 'hello-elementor-child' ) . '</p>';
+	echo '<p><button type="button" class="button alt" id="hb-vcard-generate-btn">' . esc_html__( 'Generate VCard', 'hello-elementor-child' ) . '</button> <span id="hb-vcard-status" role="status" aria-live="polite"></span></p>';
+	echo '<p><label for="hb-vcard-url"><strong>' . esc_html__( 'VCard URL', 'hello-elementor-child' ) . '</strong></label><br><input type="url" id="hb-vcard-url" value="' . esc_attr( $saved_vcard ) . '" readonly style="width:100%;max-width:760px;"></p>';
+	echo '<p><button type="button" class="button" id="hb-vcard-copy-url-btn">' . esc_html__( 'Copy vCard URL', 'hello-elementor-child' ) . '</button></p>';
+	echo '<div id="hb-vcard-qr-section"' . ( $saved_qr_img === '' ? ' style="display:none;"' : '' ) . '>';
+	echo '<h4>' . esc_html__( 'Generated QR', 'hello-elementor-child' ) . '</h4>';
+	echo '<p><img id="hb-vcard-qr-img" src="' . esc_url( $saved_qr_img ) . '" alt="' . esc_attr__( 'VCard QR code', 'hello-elementor-child' ) . '" style="max-width:320px;height:auto;border-radius:8px;"></p>';
+	echo '<p><a class="button" id="hb-vcard-download-png" href="' . esc_url( $png_href ) . '">' . esc_html__( 'Download QR (PNG)', 'hello-elementor-child' ) . '</a> ';
+	echo '<a class="button" id="hb-vcard-download-jpg" href="' . esc_url( $jpg_href ) . '">' . esc_html__( 'Download QR (JPG)', 'hello-elementor-child' ) . '</a> ';
+	echo '<button type="button" class="button" id="hb-vcard-copy-image-btn">' . esc_html__( 'Copy image URL', 'hello-elementor-child' ) . '</button> ';
+	echo '<button type="button" class="button" id="hb-vcard-delete-btn">' . esc_html__( 'Delete', 'hello-elementor-child' ) . '</button></p>';
+	echo '</div>';
+	echo '</div>';
+	?>
+	<script>
+	(function () {
+		var root = document.getElementById("hb-vcard-tools");
+		if (!root || root.dataset.ready === "1") { return; }
+		root.dataset.ready = "1";
+		var statusEl = document.getElementById("hb-vcard-status");
+		var urlInput = document.getElementById("hb-vcard-url");
+		var qrImg = document.getElementById("hb-vcard-qr-img");
+		var qrSection = document.getElementById("hb-vcard-qr-section");
+		var ajaxUrl = root.getAttribute("data-ajax-url") || "";
+		function setStatus(msg, isError) {
+			if (!statusEl) { return; }
+			statusEl.textContent = msg || "";
+			statusEl.style.color = isError ? "#ff6b6b" : "";
+		}
+		function post(action, nonce) {
+			var body = new URLSearchParams();
+			body.append("action", action);
+			body.append("nonce", nonce);
+			return fetch(ajaxUrl, {
+				method: "POST",
+				credentials: "same-origin",
+				headers: { "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8" },
+				body: body.toString()
+			}).then(function (r) { return r.json(); });
+		}
+		function copyText(value) {
+			if (!value) { return Promise.reject(new Error("Missing value")); }
+			if (navigator.clipboard && navigator.clipboard.writeText) { return navigator.clipboard.writeText(value); }
+			var t = document.createElement("textarea");
+			t.value = value;
+			document.body.appendChild(t);
+			t.select();
+			document.execCommand("copy");
+			document.body.removeChild(t);
+			return Promise.resolve();
+		}
+		document.addEventListener("click", function (ev) {
+			var gen = ev.target.closest("#hb-vcard-generate-btn");
+			if (gen) {
+				ev.preventDefault();
+				gen.disabled = true;
+				setStatus("Generating...", false);
+				post("hb_generate_vcard_qr", root.getAttribute("data-generate-nonce") || "")
+					.then(function (res) {
+						var data = (res && res.data) ? res.data : {};
+						if (!res || !res.success) {
+							setStatus((data && data.message) ? data.message : "Could not generate VCard.", true);
+							return;
+						}
+						if (urlInput && data.url) { urlInput.value = data.url; }
+						if (qrImg && data.qr_image_url) { qrImg.src = data.qr_image_url; }
+						if (qrSection) { qrSection.style.display = ""; }
+						setStatus(data.message || "Generated.", false);
+					})
+					.catch(function () { setStatus("Could not generate VCard.", true); })
+					.finally(function () { gen.disabled = false; });
+				return;
+			}
+			var del = ev.target.closest("#hb-vcard-delete-btn");
+			if (del) {
+				ev.preventDefault();
+				del.disabled = true;
+				setStatus("Removing...", false);
+				post("hb_delete_vcard_qr", root.getAttribute("data-delete-nonce") || "")
+					.then(function (res) {
+						if (res && res.success) {
+							if (urlInput) { urlInput.value = ""; }
+							if (qrImg) { qrImg.src = ""; }
+							if (qrSection) { qrSection.style.display = "none"; }
+							setStatus((res.data && res.data.message) ? res.data.message : "Removed.", false);
+						} else {
+							setStatus((res && res.data && res.data.message) ? res.data.message : "Could not remove.", true);
+						}
+					})
+					.catch(function () { setStatus("Could not remove.", true); })
+					.finally(function () { del.disabled = false; });
+				return;
+			}
+			var copyUrl = ev.target.closest("#hb-vcard-copy-url-btn");
+			if (copyUrl) {
+				ev.preventDefault();
+				copyText(urlInput ? urlInput.value : "").then(function () {
+					setStatus("vCard URL copied.", false);
+				}).catch(function () {
+					setStatus("Could not copy URL.", true);
+				});
+				return;
+			}
+			var copyImg = ev.target.closest("#hb-vcard-copy-image-btn");
+			if (copyImg) {
+				ev.preventDefault();
+				copyText(qrImg ? qrImg.src : "").then(function () {
+					setStatus("Image URL copied.", false);
+				}).catch(function () {
+					setStatus("Could not copy image URL.", true);
+				});
+			}
+		});
+	})();
+	</script>
+	<?php
+}
+add_action( 'woocommerce_account_vcard_endpoint', 'hb_render_vcard_account_endpoint' );
