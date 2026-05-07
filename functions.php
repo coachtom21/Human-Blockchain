@@ -1109,6 +1109,7 @@ function hb_build_qrtiger_vcard_campaign_payload( $vcard_url ) {
 
 	$defaults = array(
 		'size'              => 800,
+		'qrFormat'          => 'png',
 		'logo'              => $logo,
 		'colorDark'         => '#054080',
 		'backgroundColor'   => '#ffffff',
