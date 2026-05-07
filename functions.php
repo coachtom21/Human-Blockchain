@@ -1833,41 +1833,102 @@ function hb_render_vcard_account_endpoint() {
 		data-download-nonce="<?php echo esc_attr( $dl_nonce ); ?>">
 
 		<style>
-			#hb-vcard-tools { color:#e5e7eb; }
-			#hb-vcard-tools h3, #hb-vcard-tools h4, #hb-vcard-tools p, #hb-vcard-tools label, #hb-vcard-tools legend { color:#e5e7eb; }
-			#hb-vcard-tools fieldset { border:1px solid rgba(255,255,255,.15); border-radius:10px; padding:12px 16px; margin:12px 0; background:rgba(255,255,255,.03); }
-			#hb-vcard-tools legend { font-weight:600; padding:0 6px; color:#f9fafb; }
+			/* Self-contained dark-on-dark customizer; forces colours with !important so the
+			   parent (Hello Elementor / WooCommerce / Astra-style) themes can't override them. */
+			#hb-vcard-tools, #hb-vcard-tools * { box-sizing:border-box; }
+			#hb-vcard-tools { color:#e5e7eb !important; }
+			#hb-vcard-tools h3,
+			#hb-vcard-tools h4,
+			#hb-vcard-tools p,
+			#hb-vcard-tools label,
+			#hb-vcard-tools legend,
+			#hb-vcard-tools span { color:#e5e7eb !important; }
 
-			#hb-vcard-tools .hb-vcf-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(170px,1fr)); gap:12px; margin:8px 0 4px; }
-			#hb-vcard-tools .hb-vcf-tpl  { display:flex; align-items:center; gap:8px; padding:10px 12px; border:1px solid rgba(255,255,255,.18); border-radius:8px; cursor:pointer; background:rgba(255,255,255,.06); color:#f9fafb; font-size:13px; line-height:1.2; transition:.15s ease; }
-			#hb-vcard-tools .hb-vcf-tpl:hover { border-color:#3b82f6; background:rgba(59,130,246,.12); }
-			#hb-vcard-tools .hb-vcf-tpl input { margin:0; accent-color:#3b82f6; }
-			#hb-vcard-tools .hb-vcf-tpl.is-active { border-color:#3b82f6; background:rgba(59,130,246,.18); color:#fff; }
-
-			#hb-vcard-tools .hb-vcf-row { display:flex; flex-wrap:wrap; gap:16px 24px; align-items:flex-end; margin-bottom:14px; }
-			#hb-vcard-tools .hb-vcf-row label { display:flex; flex-direction:column; font-size:13px; gap:4px; color:#e5e7eb; }
-			#hb-vcard-tools .hb-vcf-row input[type="color"] { width:48px; height:32px; padding:0; border:1px solid rgba(255,255,255,.25); border-radius:6px; background:#fff; cursor:pointer; }
-			#hb-vcard-tools .hb-vcf-row input[type="range"] { min-width:200px; accent-color:#3b82f6; }
-			#hb-vcard-tools .hb-vcf-row input[type="text"],
-			#hb-vcard-tools input[type="url"] { padding:6px 8px; border:1px solid rgba(255,255,255,.25); border-radius:6px; background:#0f172a; color:#f9fafb; }
-			#hb-vcard-tools .hb-vcf-row input[type="text"]:focus,
-			#hb-vcard-tools input[type="url"]:focus { outline:none; border-color:#3b82f6; box-shadow:0 0 0 2px rgba(59,130,246,.35); }
-			#hb-vcard-tools input[type="radio"] { accent-color:#3b82f6; }
-
-			#hb-vcard-tools .hb-vcf-actions .button { margin-right:6px; }
-			#hb-vcard-tools #hb-vcard-status { margin-left:8px; font-size:13px; }
-
-			@media (prefers-color-scheme: light) {
-				#hb-vcard-tools { color:#111827; }
-				#hb-vcard-tools h3, #hb-vcard-tools h4, #hb-vcard-tools p, #hb-vcard-tools label, #hb-vcard-tools legend { color:#111827; }
-				#hb-vcard-tools fieldset { border-color:#e5e7eb; background:#fff; }
-				#hb-vcard-tools legend { color:#111827; }
-				#hb-vcard-tools .hb-vcf-tpl { background:#fff; color:#111827; border-color:#d0d7de; }
-				#hb-vcard-tools .hb-vcf-tpl:hover { border-color:#054080; background:#f1f6ff; }
-				#hb-vcard-tools .hb-vcf-tpl.is-active { border-color:#054080; background:#f1f6ff; color:#054080; }
-				#hb-vcard-tools .hb-vcf-row input[type="text"],
-				#hb-vcard-tools input[type="url"] { background:#fff; color:#111827; border-color:#d0d7de; }
+			#hb-vcard-tools fieldset {
+				border:1px solid rgba(255,255,255,.18) !important;
+				border-radius:10px !important;
+				padding:12px 16px !important;
+				margin:12px 0 !important;
+				background:rgba(255,255,255,.04) !important;
 			}
+			#hb-vcard-tools legend {
+				font-weight:600 !important;
+				padding:0 6px !important;
+				color:#ffffff !important;
+				background:transparent !important;
+			}
+
+			#hb-vcard-tools .hb-vcf-grid {
+				display:grid !important;
+				grid-template-columns:repeat(auto-fill,minmax(170px,1fr)) !important;
+				gap:12px !important;
+				margin:8px 0 4px !important;
+			}
+			#hb-vcard-tools .hb-vcf-tpl {
+				display:flex !important;
+				align-items:center !important;
+				gap:8px !important;
+				padding:10px 12px !important;
+				border:1px solid rgba(255,255,255,.22) !important;
+				border-radius:8px !important;
+				cursor:pointer !important;
+				background:#1f2937 !important;
+				color:#f9fafb !important;
+				font-size:13px !important;
+				line-height:1.2 !important;
+				transition:.15s ease !important;
+			}
+			#hb-vcard-tools .hb-vcf-tpl:hover { border-color:#3b82f6 !important; background:#243245 !important; }
+			#hb-vcard-tools .hb-vcf-tpl input { margin:0 !important; accent-color:#3b82f6 !important; }
+			#hb-vcard-tools .hb-vcf-tpl.is-active {
+				border-color:#3b82f6 !important;
+				background:#1d3a6e !important;
+				color:#ffffff !important;
+				box-shadow:0 0 0 1px rgba(59,130,246,.4) inset !important;
+			}
+
+			#hb-vcard-tools .hb-vcf-row {
+				display:flex !important;
+				flex-wrap:wrap !important;
+				gap:16px 24px !important;
+				align-items:flex-end !important;
+				margin-bottom:14px !important;
+			}
+			#hb-vcard-tools .hb-vcf-row label {
+				display:flex !important;
+				flex-direction:column !important;
+				font-size:13px !important;
+				gap:4px !important;
+				color:#e5e7eb !important;
+			}
+			#hb-vcard-tools .hb-vcf-row input[type="color"] {
+				width:48px !important;
+				height:32px !important;
+				padding:0 !important;
+				border:1px solid rgba(255,255,255,.25) !important;
+				border-radius:6px !important;
+				background:#ffffff !important;
+				cursor:pointer !important;
+			}
+			#hb-vcard-tools .hb-vcf-row input[type="range"] { min-width:200px !important; accent-color:#3b82f6 !important; }
+			#hb-vcard-tools input[type="text"],
+			#hb-vcard-tools input[type="url"] {
+				padding:6px 8px !important;
+				border:1px solid rgba(255,255,255,.25) !important;
+				border-radius:6px !important;
+				background:#0f172a !important;
+				color:#f9fafb !important;
+			}
+			#hb-vcard-tools input[type="text"]:focus,
+			#hb-vcard-tools input[type="url"]:focus {
+				outline:none !important;
+				border-color:#3b82f6 !important;
+				box-shadow:0 0 0 2px rgba(59,130,246,.35) !important;
+			}
+			#hb-vcard-tools input[type="radio"] { accent-color:#3b82f6 !important; }
+
+			#hb-vcard-tools .hb-vcf-actions .button { margin-right:6px !important; }
+			#hb-vcard-tools #hb-vcard-status { margin-left:8px !important; font-size:13px !important; }
 		</style>
 
 		<h3><?php esc_html_e( 'VCard', 'hello-elementor-child' ); ?></h3>
