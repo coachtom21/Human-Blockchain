@@ -1833,19 +1833,41 @@ function hb_render_vcard_account_endpoint() {
 		data-download-nonce="<?php echo esc_attr( $dl_nonce ); ?>">
 
 		<style>
-			#hb-vcard-tools .hb-vcf-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:12px; margin:8px 0 16px; }
-			#hb-vcard-tools .hb-vcf-tpl  { display:block; padding:10px 12px; border:1px solid #d0d7de; border-radius:8px; cursor:pointer; background:#fff; transition:.15s ease; }
-			#hb-vcard-tools .hb-vcf-tpl:hover { border-color:#054080; }
-			#hb-vcard-tools .hb-vcf-tpl input { margin-right:6px; }
-			#hb-vcard-tools .hb-vcf-tpl.is-active { border-color:#054080; background:#f1f6ff; }
+			#hb-vcard-tools { color:#e5e7eb; }
+			#hb-vcard-tools h3, #hb-vcard-tools h4, #hb-vcard-tools p, #hb-vcard-tools label, #hb-vcard-tools legend { color:#e5e7eb; }
+			#hb-vcard-tools fieldset { border:1px solid rgba(255,255,255,.15); border-radius:10px; padding:12px 16px; margin:12px 0; background:rgba(255,255,255,.03); }
+			#hb-vcard-tools legend { font-weight:600; padding:0 6px; color:#f9fafb; }
+
+			#hb-vcard-tools .hb-vcf-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(170px,1fr)); gap:12px; margin:8px 0 4px; }
+			#hb-vcard-tools .hb-vcf-tpl  { display:flex; align-items:center; gap:8px; padding:10px 12px; border:1px solid rgba(255,255,255,.18); border-radius:8px; cursor:pointer; background:rgba(255,255,255,.06); color:#f9fafb; font-size:13px; line-height:1.2; transition:.15s ease; }
+			#hb-vcard-tools .hb-vcf-tpl:hover { border-color:#3b82f6; background:rgba(59,130,246,.12); }
+			#hb-vcard-tools .hb-vcf-tpl input { margin:0; accent-color:#3b82f6; }
+			#hb-vcard-tools .hb-vcf-tpl.is-active { border-color:#3b82f6; background:rgba(59,130,246,.18); color:#fff; }
+
 			#hb-vcard-tools .hb-vcf-row { display:flex; flex-wrap:wrap; gap:16px 24px; align-items:flex-end; margin-bottom:14px; }
-			#hb-vcard-tools .hb-vcf-row label { display:flex; flex-direction:column; font-size:13px; gap:4px; }
-			#hb-vcard-tools .hb-vcf-row input[type="color"] { width:48px; height:32px; padding:0; border:1px solid #d0d7de; border-radius:6px; background:#fff; }
-			#hb-vcard-tools .hb-vcf-row input[type="range"] { min-width:200px; }
-			#hb-vcard-tools .hb-vcf-row input[type="text"] { padding:6px 8px; }
-			#hb-vcard-tools fieldset { border:1px solid #e5e7eb; border-radius:10px; padding:12px 16px; margin:12px 0; }
-			#hb-vcard-tools legend { font-weight:600; padding:0 6px; }
+			#hb-vcard-tools .hb-vcf-row label { display:flex; flex-direction:column; font-size:13px; gap:4px; color:#e5e7eb; }
+			#hb-vcard-tools .hb-vcf-row input[type="color"] { width:48px; height:32px; padding:0; border:1px solid rgba(255,255,255,.25); border-radius:6px; background:#fff; cursor:pointer; }
+			#hb-vcard-tools .hb-vcf-row input[type="range"] { min-width:200px; accent-color:#3b82f6; }
+			#hb-vcard-tools .hb-vcf-row input[type="text"],
+			#hb-vcard-tools input[type="url"] { padding:6px 8px; border:1px solid rgba(255,255,255,.25); border-radius:6px; background:#0f172a; color:#f9fafb; }
+			#hb-vcard-tools .hb-vcf-row input[type="text"]:focus,
+			#hb-vcard-tools input[type="url"]:focus { outline:none; border-color:#3b82f6; box-shadow:0 0 0 2px rgba(59,130,246,.35); }
+			#hb-vcard-tools input[type="radio"] { accent-color:#3b82f6; }
+
 			#hb-vcard-tools .hb-vcf-actions .button { margin-right:6px; }
+			#hb-vcard-tools #hb-vcard-status { margin-left:8px; font-size:13px; }
+
+			@media (prefers-color-scheme: light) {
+				#hb-vcard-tools { color:#111827; }
+				#hb-vcard-tools h3, #hb-vcard-tools h4, #hb-vcard-tools p, #hb-vcard-tools label, #hb-vcard-tools legend { color:#111827; }
+				#hb-vcard-tools fieldset { border-color:#e5e7eb; background:#fff; }
+				#hb-vcard-tools legend { color:#111827; }
+				#hb-vcard-tools .hb-vcf-tpl { background:#fff; color:#111827; border-color:#d0d7de; }
+				#hb-vcard-tools .hb-vcf-tpl:hover { border-color:#054080; background:#f1f6ff; }
+				#hb-vcard-tools .hb-vcf-tpl.is-active { border-color:#054080; background:#f1f6ff; color:#054080; }
+				#hb-vcard-tools .hb-vcf-row input[type="text"],
+				#hb-vcard-tools input[type="url"] { background:#fff; color:#111827; border-color:#d0d7de; }
+			}
 		</style>
 
 		<h3><?php esc_html_e( 'VCard', 'hello-elementor-child' ); ?></h3>
