@@ -1196,46 +1196,17 @@ function hb_get_qrtiger_vcard_logo_url() {
  * @param array<string, mixed>  $overrides Per-call overrides (e.g. from the customizer UI).
  * @return array<string, mixed>
  */
-function hb_build_qrtiger_vcard_campaign_payload( $vcard_url, $overrides = array() ) {
-	$logo = hb_get_qrtiger_vcard_logo_url();
+function hb_build_qrtiger_vcard_campaign_payload( $vcard_url ) {
+	$styling = hb_get_qrtiger_vcard_master_styling();
 
-	$defaults = array(
-		'size'              => 800,
-		'qrFormat'          => 'png',
-		'logo'              => $logo,
-		'colorDark'         => '#054080',
-		'backgroundColor'   => '#ffffff',
-		'transparentBkg'    => false,
-		'gradient'          => true,
-		'grdType'           => 'linear',
-		'color01'           => '#054080',
-		'color02'           => '#f30505',
-		'eye_color'         => true,
-		'eye_color01'       => '#054080',
-		'eye_color02'       => '#f30505',
-		'eye_outer'         => 'eyeOuter11',
-		'eye_inner'         => 'eyeInner9',
-		'qrData'            => 'pattern0',
-		'frame'             => 16, // Multi-ring concentric circle (matches the QR Tiger "master" preview).
-		'frameText'         => 'Profit Sharing',
-		'frameColor'        => '#054080',
-		'frameColorType'    => 'linear',
-	);
-
-	$defaults = apply_filters( 'hb_qrtiger_vcard_qr_defaults', $defaults, $vcard_url );
-
-	if ( is_array( $overrides ) && ! empty( $overrides ) ) {
-		$defaults = array_merge( $defaults, $overrides );
-	}
-
-	if ( isset( $defaults['logo'] ) && is_string( $defaults['logo'] ) && $defaults['logo'] !== '' ) {
-		$defaults['logo'] = esc_url_raw( $defaults['logo'] );
+	if ( isset( $styling['logo'] ) && is_string( $styling['logo'] ) && $styling['logo'] !== '' ) {
+		$styling['logo'] = esc_url_raw( $styling['logo'] );
 	} else {
-		$defaults['logo'] = '';
+		$styling['logo'] = '';
 	}
 
 	$payload = array(
-		'qr'         => $defaults,
+		'qr'         => $styling,
 		'qrUrl'      => esc_url_raw( $vcard_url ),
 		'qrType'     => 'qr2',
 		'qrCategory' => 'url',
@@ -1245,308 +1216,68 @@ function hb_build_qrtiger_vcard_campaign_payload( $vcard_url, $overrides = array
 }
 
 /**
- * Predefined QR style presets for the My Account → VCard customizer.
+ * Single source of truth for the QR design used across every user's vCard.
  *
- * Each entry returns a *partial* payload that gets merged on top of the defaults.
- * Filter via `hb_vcard_qr_templates` to add/remove templates.
+ * To change the look site-wide, override via the `hb_qrtiger_vcard_master_styling`
+ * filter (recommended) or `hb_qrtiger_vcard_qr_defaults` (kept for back-compat).
  *
- * @return array<string, array{label:string, payload:array<string, mixed>}>
- */
-function hb_get_vcard_qr_templates() {
-	$templates = array(
-		'profit_sharing' => array(
-			'label'   => __( 'Profit Sharing (default)', 'hello-elementor-child' ),
-			'payload' => array(
-				'gradient'       => true,
-				'grdType'        => 'linear',
-				'color01'        => '#054080',
-				'color02'        => '#f30505',
-				'eye_color'      => true,
-				'eye_color01'    => '#054080',
-				'eye_color02'    => '#f30505',
-				'eye_outer'      => 'eyeOuter11',
-				'eye_inner'      => 'eyeInner9',
-				'qrData'         => 'pattern0',
-				'frame'          => 16, // Multi-ring concentric circle.
-				'frameText'      => 'Profit Sharing',
-				'frameColor'     => '#054080',
-				'frameColorType' => 'linear',
-			),
-		),
-		'corporate_blue' => array(
-			'label'   => __( 'Corporate Blue', 'hello-elementor-child' ),
-			'payload' => array(
-				'gradient'       => false,
-				'colorDark'      => '#054080',
-				'eye_color'      => false,
-				'eye_outer'      => 'eyeOuter0',
-				'eye_inner'      => 'eyeInner0',
-				'qrData'         => 'pattern0',
-				'frame'          => 0,
-				'frameText'      => '',
-			),
-		),
-		'minimal_black'  => array(
-			'label'   => __( 'Minimal Black', 'hello-elementor-child' ),
-			'payload' => array(
-				'gradient'       => false,
-				'colorDark'      => '#000000',
-				'logo'           => '',
-				'eye_color'      => false,
-				'eye_outer'      => 'eyeOuter0',
-				'eye_inner'      => 'eyeInner0',
-				'qrData'         => 'pattern0',
-				'frame'          => 0,
-				'frameText'      => '',
-			),
-		),
-		'vibrant'        => array(
-			'label'   => __( 'Vibrant', 'hello-elementor-child' ),
-			'payload' => array(
-				'gradient'       => true,
-				'grdType'        => 'linear',
-				'color01'        => '#7e22ce',
-				'color02'        => '#0ea5e9',
-				'eye_color'      => true,
-				'eye_color01'    => '#7e22ce',
-				'eye_color02'    => '#0ea5e9',
-				'eye_outer'      => 'eyeOuter11',
-				'eye_inner'      => 'eyeInner9',
-				'qrData'         => 'pattern0',
-				'frame'          => 16, // Multi-ring concentric circle.
-				'frameText'      => 'Scan me',
-				'frameColor'     => '#7e22ce',
-				'frameColorType' => 'linear',
-			),
-		),
-	);
-
-	$filtered = apply_filters( 'hb_vcard_qr_templates', $templates );
-	return is_array( $filtered ) ? $filtered : $templates;
-}
-
-/**
- * Catalog of QR Tiger eye-outer styles (the big square-ish ring of each finder pattern).
- *
- * Map of API value => human label. Filterable.
- *
- * @return array<string, string>
- */
-function hb_get_qr_eye_outer_options() {
-	$options = array(
-		'eyeOuter0'  => __( 'Classic square', 'hello-elementor-child' ),
-		'eyeOuter1'  => __( 'Rounded square', 'hello-elementor-child' ),
-		'eyeOuter2'  => __( 'Pill', 'hello-elementor-child' ),
-		'eyeOuter3'  => __( 'Leaf top-left', 'hello-elementor-child' ),
-		'eyeOuter4'  => __( 'Leaf top-right', 'hello-elementor-child' ),
-		'eyeOuter5'  => __( 'Soft square', 'hello-elementor-child' ),
-		'eyeOuter6'  => __( 'Round outer corners', 'hello-elementor-child' ),
-		'eyeOuter7'  => __( 'Inner round corners', 'hello-elementor-child' ),
-		'eyeOuter8'  => __( 'Diamond', 'hello-elementor-child' ),
-		'eyeOuter9'  => __( 'Cushion', 'hello-elementor-child' ),
-		'eyeOuter10' => __( 'Notched square', 'hello-elementor-child' ),
-		'eyeOuter11' => __( 'Star square', 'hello-elementor-child' ),
-		'eyeOuter12' => __( 'Soft pill', 'hello-elementor-child' ),
-		'eyeOuter13' => __( 'Petal', 'hello-elementor-child' ),
-		'eyeOuter14' => __( 'Concentric ring', 'hello-elementor-child' ),
-		'eyeOuter15' => __( 'Octagon', 'hello-elementor-child' ),
-	);
-	$filtered = apply_filters( 'hb_vcard_qr_eye_outer_options', $options );
-	return is_array( $filtered ) ? $filtered : $options;
-}
-
-/**
- * Catalog of QR Tiger eye-inner styles (the small dot inside each finder pattern).
- *
- * @return array<string, string>
- */
-function hb_get_qr_eye_inner_options() {
-	$options = array(
-		'eyeInner0'  => __( 'Classic square', 'hello-elementor-child' ),
-		'eyeInner1'  => __( 'Rounded square', 'hello-elementor-child' ),
-		'eyeInner2'  => __( 'Soft square', 'hello-elementor-child' ),
-		'eyeInner3'  => __( 'Diamond', 'hello-elementor-child' ),
-		'eyeInner4'  => __( 'Pill horizontal', 'hello-elementor-child' ),
-		'eyeInner5'  => __( 'Pill vertical', 'hello-elementor-child' ),
-		'eyeInner6'  => __( 'Leaf top-left', 'hello-elementor-child' ),
-		'eyeInner7'  => __( 'Leaf top-right', 'hello-elementor-child' ),
-		'eyeInner8'  => __( 'Circle', 'hello-elementor-child' ),
-		'eyeInner9'  => __( 'Star', 'hello-elementor-child' ),
-		'eyeInner10' => __( 'Plus', 'hello-elementor-child' ),
-		'eyeInner11' => __( 'Petal', 'hello-elementor-child' ),
-		'eyeInner12' => __( 'Cushion', 'hello-elementor-child' ),
-		'eyeInner13' => __( 'Octagon', 'hello-elementor-child' ),
-		'eyeInner14' => __( 'Hexagon', 'hello-elementor-child' ),
-		'eyeInner15' => __( 'Tilted square', 'hello-elementor-child' ),
-		'eyeInner16' => __( 'Concentric', 'hello-elementor-child' ),
-		'eyeInner17' => __( 'Spiral', 'hello-elementor-child' ),
-	);
-	$filtered = apply_filters( 'hb_vcard_qr_eye_inner_options', $options );
-	return is_array( $filtered ) ? $filtered : $options;
-}
-
-/**
- * Catalog of QR Tiger frame styles (decorative wrapper around the QR).
- *
- * @return array<int, string> Map of frame ID => label.
- */
-function hb_get_qr_frame_options() {
-	$options = array(
-		0  => __( 'No frame', 'hello-elementor-child' ),
-		1  => __( 'Top text — rectangle', 'hello-elementor-child' ),
-		2  => __( 'Bottom text — rectangle', 'hello-elementor-child' ),
-		3  => __( 'Both top + bottom rectangles', 'hello-elementor-child' ),
-		4  => __( 'Bottom text — rounded rectangle', 'hello-elementor-child' ),
-		5  => __( 'Bottom text — pill', 'hello-elementor-child' ),
-		6  => __( 'Bottom text — banner', 'hello-elementor-child' ),
-		7  => __( 'Bottom text — ribbon', 'hello-elementor-child' ),
-		8  => __( 'Bottom text — torn paper', 'hello-elementor-child' ),
-		9  => __( 'Bottom text — pin', 'hello-elementor-child' ),
-		10 => __( 'Bottom text — speech bubble', 'hello-elementor-child' ),
-		11 => __( 'Bottom text — tag', 'hello-elementor-child' ),
-		12 => __( 'Bottom text — arrow', 'hello-elementor-child' ),
-		13 => __( 'Bottom text — flag', 'hello-elementor-child' ),
-		14 => __( 'Bottom text — chevron', 'hello-elementor-child' ),
-		15 => __( 'Single-ring circle', 'hello-elementor-child' ),
-		16 => __( 'Multi-ring concentric circle', 'hello-elementor-child' ),
-		17 => __( 'Double-ring circle', 'hello-elementor-child' ),
-		18 => __( 'Round badge — bottom text', 'hello-elementor-child' ),
-		19 => __( 'Round badge — top text', 'hello-elementor-child' ),
-	);
-	$filtered = apply_filters( 'hb_vcard_qr_frame_options', $options );
-	return is_array( $filtered ) ? $filtered : $options;
-}
-
-/**
- * Catalog of QR Tiger body patterns (how the QR data dots are drawn).
- *
- * @return array<string, string>
- */
-function hb_get_qr_pattern_options() {
-	$options = array(
-		'pattern0'  => __( 'Classic square', 'hello-elementor-child' ),
-		'pattern1'  => __( 'Rounded square', 'hello-elementor-child' ),
-		'pattern2'  => __( 'Dots', 'hello-elementor-child' ),
-		'pattern3'  => __( 'Stars', 'hello-elementor-child' ),
-		'pattern4'  => __( 'Diamond', 'hello-elementor-child' ),
-		'pattern5'  => __( 'Wave', 'hello-elementor-child' ),
-		'pattern6'  => __( 'Crystal', 'hello-elementor-child' ),
-		'pattern7'  => __( 'Petal', 'hello-elementor-child' ),
-		'pattern8'  => __( 'Leaf', 'hello-elementor-child' ),
-		'pattern9'  => __( 'Plus', 'hello-elementor-child' ),
-		'pattern10' => __( 'Hexagon', 'hello-elementor-child' ),
-		'pattern11' => __( 'Heart', 'hello-elementor-child' ),
-		'pattern12' => __( 'Mosaic', 'hello-elementor-child' ),
-		'pattern13' => __( 'Stripes', 'hello-elementor-child' ),
-		'pattern14' => __( 'Soft dots', 'hello-elementor-child' ),
-		'pattern15' => __( 'Connected', 'hello-elementor-child' ),
-		'pattern16' => __( 'Pixel', 'hello-elementor-child' ),
-	);
-	$filtered = apply_filters( 'hb_vcard_qr_pattern_options', $options );
-	return is_array( $filtered ) ? $filtered : $options;
-}
-
-/**
- * Read and sanitise QR style overrides from the current AJAX request.
- *
- * Recognised inputs (POST):
- *  - template:  one of hb_get_vcard_qr_templates() keys (applied as base).
- *  - format:    'png' | 'svg'.
- *  - size:      256..4096 (clamped).
- *  - color01, color02, colorDark, eye_color01, eye_color02, frameColor: '#rrggbb'.
- *  - frameText: string up to 30 chars.
- *  - eye_outer: one of hb_get_qr_eye_outer_options() keys.
- *  - eye_inner: one of hb_get_qr_eye_inner_options() keys.
- *  - frame:     one of hb_get_qr_frame_options() keys (int).
- *  - qrData:    one of hb_get_qr_pattern_options() keys.
+ * Field reference (QR Tiger API):
+ *  - size, qrFormat ('png'|'svg'), logo (URL)
+ *  - colorDark, backgroundColor, transparentBkg
+ *  - gradient (bool), grdType ('linear'|'radial'), color01, color02
+ *  - eye_color (bool), eye_color01, eye_color02
+ *  - eye_outer ('eyeOuter0'..'eyeOuter15'), eye_inner ('eyeInner0'..'eyeInner17')
+ *  - qrData ('pattern0'..'pattern16')
+ *  - frame (int 0..19), frameText, frameColor, frameColorType
  *
  * @return array<string, mixed>
  */
-function hb_get_vcard_qr_overrides_from_request() {
-	$overrides = array();
+function hb_get_qrtiger_vcard_master_styling() {
+	$styling = array(
+		'size'           => 800,
+		'qrFormat'       => 'png',
+		'logo'           => hb_get_qrtiger_vcard_logo_url(),
+		'colorDark'      => '#054080',
+		'backgroundColor' => '#ffffff',
+		'transparentBkg' => false,
+		'gradient'       => true,
+		'grdType'        => 'linear',
+		'color01'        => '#054080',
+		'color02'        => '#f30505',
+		'eye_color'      => true,
+		'eye_color01'    => '#054080',
+		'eye_color02'    => '#f30505',
+		'eye_outer'      => 'eyeOuter11',
+		'eye_inner'      => 'eyeInner9',
+		'qrData'         => 'pattern0',
+		'frame'          => 16,
+		'frameText'      => 'Profit Sharing',
+		'frameColor'     => '#054080',
+		'frameColorType' => 'linear',
+	);
 
-	if ( isset( $_POST['template'] ) ) {
-		$template_key = sanitize_key( wp_unslash( $_POST['template'] ) );
-		$templates    = hb_get_vcard_qr_templates();
-		if ( isset( $templates[ $template_key ]['payload'] ) && is_array( $templates[ $template_key ]['payload'] ) ) {
-			$overrides = $templates[ $template_key ]['payload'];
-		}
-	}
+	$styling = apply_filters( 'hb_qrtiger_vcard_qr_defaults', $styling, '' );
+	$styling = apply_filters( 'hb_qrtiger_vcard_master_styling', $styling );
 
-	if ( isset( $_POST['format'] ) ) {
-		$fmt = strtolower( sanitize_key( wp_unslash( $_POST['format'] ) ) );
-		if ( in_array( $fmt, array( 'png', 'svg' ), true ) ) {
-			$overrides['qrFormat'] = $fmt;
-		}
-	}
-
-	if ( isset( $_POST['size'] ) ) {
-		$size              = (int) $_POST['size'];
-		$size              = max( 256, min( 4096, $size ) );
-		$overrides['size'] = $size;
-	}
-
-	$color_keys = array( 'color01', 'color02', 'colorDark', 'eye_color01', 'eye_color02', 'frameColor' );
-	foreach ( $color_keys as $key ) {
-		if ( isset( $_POST[ $key ] ) ) {
-			$color = sanitize_text_field( wp_unslash( $_POST[ $key ] ) );
-			if ( preg_match( '/^#[a-f0-9]{6}$/i', $color ) ) {
-				$overrides[ $key ] = strtolower( $color );
-			}
-		}
-	}
-
-	if ( isset( $_POST['frameText'] ) ) {
-		$text                   = sanitize_text_field( wp_unslash( $_POST['frameText'] ) );
-		$overrides['frameText'] = function_exists( 'mb_substr' ) ? mb_substr( $text, 0, 30 ) : substr( $text, 0, 30 );
-	}
-
-	if ( isset( $_POST['eye_outer'] ) ) {
-		$value = sanitize_text_field( wp_unslash( $_POST['eye_outer'] ) );
-		if ( preg_match( '/^eyeOuter\d{1,3}$/', $value ) && array_key_exists( $value, hb_get_qr_eye_outer_options() ) ) {
-			$overrides['eye_outer'] = $value;
-		}
-	}
-
-	if ( isset( $_POST['eye_inner'] ) ) {
-		$value = sanitize_text_field( wp_unslash( $_POST['eye_inner'] ) );
-		if ( preg_match( '/^eyeInner\d{1,3}$/', $value ) && array_key_exists( $value, hb_get_qr_eye_inner_options() ) ) {
-			$overrides['eye_inner'] = $value;
-		}
-	}
-
-	if ( isset( $_POST['frame'] ) ) {
-		$value = (int) $_POST['frame'];
-		if ( array_key_exists( $value, hb_get_qr_frame_options() ) ) {
-			$overrides['frame'] = $value;
-		}
-	}
-
-	if ( isset( $_POST['qrData'] ) ) {
-		$value = sanitize_text_field( wp_unslash( $_POST['qrData'] ) );
-		if ( preg_match( '/^pattern\d{1,3}$/', $value ) && array_key_exists( $value, hb_get_qr_pattern_options() ) ) {
-			$overrides['qrData'] = $value;
-		}
-	}
-
-	return $overrides;
+	return is_array( $styling ) ? $styling : array();
 }
 
 /**
  * Generate a QR image for a vCard URL via QRTiger.
  *
- * @param string               $vcard_url Public VCard file URL.
- * @param array<string, mixed> $overrides Customizer overrides applied on top of defaults.
+ * Always uses the site-wide master styling (see hb_get_qrtiger_vcard_master_styling).
+ *
+ * @param string $vcard_url Public VCard file URL.
  * @return array|WP_Error
  */
-function hb_generate_qrtiger_qr_for_vcard( $vcard_url, $overrides = array() ) {
+function hb_generate_qrtiger_qr_for_vcard( $vcard_url ) {
 	$creds = hb_get_qrtiger_credentials();
 	if ( '' === $creds['key'] ) {
 		return new WP_Error( 'missing_key', __( 'QRTiger API key is missing in NWP Gateway settings.', 'hello-elementor-child' ) );
 	}
 
 	$endpoint = $creds['url'] . '/api/campaign/';
-	$payload  = hb_build_qrtiger_vcard_campaign_payload( $vcard_url, $overrides );
+	$payload  = hb_build_qrtiger_vcard_campaign_payload( $vcard_url );
 
 	$response = wp_remote_post(
 		$endpoint,
@@ -1662,8 +1393,7 @@ function hb_ajax_generate_vcard_qr() {
 	}
 	check_ajax_referer( 'hb_generate_vcard_qr', 'nonce' );
 
-	$user_id   = (int) get_current_user_id();
-	$overrides = hb_get_vcard_qr_overrides_from_request();
+	$user_id = (int) get_current_user_id();
 
 	$body = hb_build_user_vcard_body( $user_id );
 	if ( '' === $body ) {
@@ -1675,7 +1405,7 @@ function hb_ajax_generate_vcard_qr() {
 		wp_send_json_error( array( 'message' => $file_url->get_error_message() ) );
 	}
 
-	$qr = hb_generate_qrtiger_qr_for_vcard( $file_url, $overrides );
+	$qr = hb_generate_qrtiger_qr_for_vcard( $file_url );
 	if ( is_wp_error( $qr ) ) {
 		wp_send_json_error(
 			array(
@@ -1696,7 +1426,6 @@ function hb_ajax_generate_vcard_qr() {
 	update_user_meta( $user_id, 'hb_vcard_file_url', esc_url_raw( $file_url ) );
 	update_user_meta( $user_id, 'hb_vcard_qr_image_url', esc_url_raw( $persisted ) );
 	update_user_meta( $user_id, 'hb_vcard_qr_id', $qr['qr_id'] );
-	update_user_meta( $user_id, 'hb_vcard_qr_overrides', $overrides );
 
 	wp_send_json_success(
 		array(
@@ -1707,49 +1436,6 @@ function hb_ajax_generate_vcard_qr() {
 	);
 }
 add_action( 'wp_ajax_hb_generate_vcard_qr', 'hb_ajax_generate_vcard_qr' );
-
-/**
- * AJAX: Preview a styled QR without persisting anything to user meta or filesystem.
- *
- * Returns the raw QR Tiger payload so the browser can render it inline.
- * Useful for the customizer's "Preview" button.
- */
-function hb_ajax_preview_vcard_qr() {
-	if ( ! is_user_logged_in() ) {
-		wp_send_json_error( array( 'message' => __( 'You must be logged in.', 'hello-elementor-child' ) ), 401 );
-	}
-	check_ajax_referer( 'hb_preview_vcard_qr', 'nonce' );
-
-	$user_id   = (int) get_current_user_id();
-	$overrides = hb_get_vcard_qr_overrides_from_request();
-
-	$file_url = (string) get_user_meta( $user_id, 'hb_vcard_file_url', true );
-	if ( '' === $file_url ) {
-		$body = hb_build_user_vcard_body( $user_id );
-		if ( '' === $body ) {
-			wp_send_json_error( array( 'message' => __( 'Could not build vCard from profile.', 'hello-elementor-child' ) ) );
-		}
-		$file_url = hb_save_user_vcard_file( $user_id, $body );
-		if ( is_wp_error( $file_url ) ) {
-			wp_send_json_error( array( 'message' => $file_url->get_error_message() ) );
-		}
-		update_user_meta( $user_id, 'hb_vcard_file_url', esc_url_raw( $file_url ) );
-	}
-
-	$qr = hb_generate_qrtiger_qr_for_vcard( $file_url, $overrides );
-	if ( is_wp_error( $qr ) ) {
-		wp_send_json_error( array( 'message' => $qr->get_error_message() ) );
-	}
-
-	wp_send_json_success(
-		array(
-			'qr_image_url' => $qr['image_url'],
-			'url'          => esc_url_raw( $file_url ),
-			'message'      => __( 'Preview generated. Save vCard to enable downloads.', 'hello-elementor-child' ),
-		)
-	);
-}
-add_action( 'wp_ajax_hb_preview_vcard_qr', 'hb_ajax_preview_vcard_qr' );
 
 /**
  * AJAX: Delete saved VCard and QR references.
@@ -1782,7 +1468,7 @@ function hb_ajax_delete_vcard_qr() {
 	delete_user_meta( $user_id, 'hb_vcard_file_url' );
 	delete_user_meta( $user_id, 'hb_vcard_qr_image_url' );
 	delete_user_meta( $user_id, 'hb_vcard_qr_id' );
-	delete_user_meta( $user_id, 'hb_vcard_qr_overrides' );
+	delete_user_meta( $user_id, 'hb_vcard_qr_overrides' ); // Legacy from removed customizer; safe to clean up.
 
 	wp_send_json_success( array( 'message' => __( 'VCard and QR removed.', 'hello-elementor-child' ) ) );
 }
@@ -1925,8 +1611,9 @@ add_action( 'wp_ajax_hb_download_vcard_qr', 'hb_ajax_download_vcard_qr' );
 /**
  * Render VCard endpoint content on Woo My Account.
  *
- * Includes a small customizer (template + colors + size + format + frame text)
- * with a Preview button (no DB write) and a Save vCard button (persists + enables downloads).
+ * Single Generate button. Design comes from the site-wide master styling
+ * (see hb_get_qrtiger_vcard_master_styling) so every user's QR has the same look.
+ * After generation, shows the vCard URL, the QR image, and download / copy / delete actions.
  */
 function hb_render_vcard_account_endpoint() {
 	if ( ! is_user_logged_in() ) {
@@ -1937,14 +1624,12 @@ function hb_render_vcard_account_endpoint() {
 	$user_id      = (int) get_current_user_id();
 	$saved_vcard  = (string) get_user_meta( $user_id, 'hb_vcard_file_url', true );
 	$saved_qr_img = (string) get_user_meta( $user_id, 'hb_vcard_qr_image_url', true );
-	$saved_over   = (array) get_user_meta( $user_id, 'hb_vcard_qr_overrides', true );
-	$templates    = hb_get_vcard_qr_templates();
+	$is_saved     = ( $saved_vcard !== '' && $saved_qr_img !== '' );
 
-	$ajax_url      = admin_url( 'admin-ajax.php' );
-	$gen_nonce     = wp_create_nonce( 'hb_generate_vcard_qr' );
-	$preview_nonce = wp_create_nonce( 'hb_preview_vcard_qr' );
-	$del_nonce     = wp_create_nonce( 'hb_delete_vcard_qr' );
-	$dl_nonce      = wp_create_nonce( 'hb_download_vcard_qr' );
+	$ajax_url  = admin_url( 'admin-ajax.php' );
+	$gen_nonce = wp_create_nonce( 'hb_generate_vcard_qr' );
+	$del_nonce = wp_create_nonce( 'hb_delete_vcard_qr' );
+	$dl_nonce  = wp_create_nonce( 'hb_download_vcard_qr' );
 
 	$png_href = add_query_arg(
 		array(
@@ -1962,288 +1647,83 @@ function hb_render_vcard_account_endpoint() {
 		),
 		$ajax_url
 	);
-	$svg_href = add_query_arg(
-		array(
-			'action' => 'hb_download_vcard_qr',
-			'format' => 'svg',
-			'nonce'  => $dl_nonce,
-		),
-		$ajax_url
-	);
 
-	$eye_outer_options = hb_get_qr_eye_outer_options();
-	$eye_inner_options = hb_get_qr_eye_inner_options();
-	$frame_options     = hb_get_qr_frame_options();
-	$pattern_options   = hb_get_qr_pattern_options();
-
-	$selected_template  = isset( $saved_over['__template'] ) ? (string) $saved_over['__template'] : 'profit_sharing';
-	$selected_format    = isset( $saved_over['qrFormat'] ) ? (string) $saved_over['qrFormat'] : 'png';
-	$selected_size      = isset( $saved_over['size'] ) ? (int) $saved_over['size'] : 800;
-	$selected_color01   = isset( $saved_over['color01'] ) ? (string) $saved_over['color01'] : '#054080';
-	$selected_color02   = isset( $saved_over['color02'] ) ? (string) $saved_over['color02'] : '#f30505';
-	$selected_frametxt  = isset( $saved_over['frameText'] ) ? (string) $saved_over['frameText'] : 'Profit Sharing';
-	$selected_eye_outer = isset( $saved_over['eye_outer'] ) && array_key_exists( $saved_over['eye_outer'], $eye_outer_options )
-		? (string) $saved_over['eye_outer'] : 'eyeOuter11';
-	$selected_eye_inner = isset( $saved_over['eye_inner'] ) && array_key_exists( $saved_over['eye_inner'], $eye_inner_options )
-		? (string) $saved_over['eye_inner'] : 'eyeInner9';
-	$selected_frame     = isset( $saved_over['frame'] ) && array_key_exists( (int) $saved_over['frame'], $frame_options )
-		? (int) $saved_over['frame'] : 16;
-	$selected_pattern   = isset( $saved_over['qrData'] ) && array_key_exists( $saved_over['qrData'], $pattern_options )
-		? (string) $saved_over['qrData'] : 'pattern0';
+	$generate_label = $is_saved
+		? __( 'Regenerate vCard', 'hello-elementor-child' )
+		: __( 'Generate vCard', 'hello-elementor-child' );
 	?>
 	<div id="hb-vcard-tools"
 		data-ajax-url="<?php echo esc_attr( $ajax_url ); ?>"
 		data-generate-nonce="<?php echo esc_attr( $gen_nonce ); ?>"
-		data-preview-nonce="<?php echo esc_attr( $preview_nonce ); ?>"
-		data-delete-nonce="<?php echo esc_attr( $del_nonce ); ?>"
-		data-download-nonce="<?php echo esc_attr( $dl_nonce ); ?>">
+		data-delete-nonce="<?php echo esc_attr( $del_nonce ); ?>">
 
 		<style>
-			/* Self-contained dark-on-dark customizer; forces colours with !important so the
-			   parent (Hello Elementor / WooCommerce / Astra-style) themes can't override them. */
+			/* Self-contained styles; force colours with !important so the parent
+			   theme (Hello Elementor / Woo / Astra-style) can't override them. */
 			#hb-vcard-tools, #hb-vcard-tools * { box-sizing:border-box; }
 			#hb-vcard-tools { color:#e5e7eb !important; }
 			#hb-vcard-tools h3,
 			#hb-vcard-tools h4,
 			#hb-vcard-tools p,
 			#hb-vcard-tools label,
-			#hb-vcard-tools legend,
 			#hb-vcard-tools span { color:#e5e7eb !important; }
-
-			#hb-vcard-tools fieldset {
-				border:1px solid rgba(255,255,255,.18) !important;
-				border-radius:10px !important;
-				padding:12px 16px !important;
-				margin:12px 0 !important;
-				background:rgba(255,255,255,.04) !important;
-			}
-			#hb-vcard-tools legend {
-				font-weight:600 !important;
-				padding:0 6px !important;
-				color:#ffffff !important;
-				background:transparent !important;
-			}
-
-			#hb-vcard-tools .hb-vcf-grid {
-				display:grid !important;
-				grid-template-columns:repeat(auto-fill,minmax(170px,1fr)) !important;
-				gap:12px !important;
-				margin:8px 0 4px !important;
-			}
-			#hb-vcard-tools .hb-vcf-tpl {
-				display:flex !important;
-				align-items:center !important;
-				gap:8px !important;
-				padding:10px 12px !important;
-				border:1px solid rgba(255,255,255,.22) !important;
-				border-radius:8px !important;
-				cursor:pointer !important;
-				background:#1f2937 !important;
-				color:#f9fafb !important;
-				font-size:13px !important;
-				line-height:1.2 !important;
-				transition:.15s ease !important;
-			}
-			#hb-vcard-tools .hb-vcf-tpl:hover { border-color:#3b82f6 !important; background:#243245 !important; }
-			#hb-vcard-tools .hb-vcf-tpl input { margin:0 !important; accent-color:#3b82f6 !important; }
-			#hb-vcard-tools .hb-vcf-tpl.is-active {
-				border-color:#3b82f6 !important;
-				background:#1d3a6e !important;
-				color:#ffffff !important;
-				box-shadow:0 0 0 1px rgba(59,130,246,.4) inset !important;
-			}
-
-			#hb-vcard-tools .hb-vcf-row {
-				display:flex !important;
-				flex-wrap:wrap !important;
-				gap:16px 24px !important;
-				align-items:flex-end !important;
-				margin-bottom:14px !important;
-			}
-			#hb-vcard-tools .hb-vcf-row label {
-				display:flex !important;
-				flex-direction:column !important;
-				font-size:13px !important;
-				gap:4px !important;
-				color:#e5e7eb !important;
-			}
-			#hb-vcard-tools .hb-vcf-row input[type="color"] {
-				width:48px !important;
-				height:32px !important;
-				padding:0 !important;
-				border:1px solid rgba(255,255,255,.25) !important;
-				border-radius:6px !important;
-				background:#ffffff !important;
-				cursor:pointer !important;
-			}
-			#hb-vcard-tools .hb-vcf-row input[type="range"] { min-width:200px !important; accent-color:#3b82f6 !important; }
-			#hb-vcard-tools input[type="text"],
 			#hb-vcard-tools input[type="url"] {
+				width:100% !important;
+				max-width:760px !important;
 				padding:6px 8px !important;
 				border:1px solid rgba(255,255,255,.25) !important;
 				border-radius:6px !important;
 				background:#0f172a !important;
 				color:#f9fafb !important;
 			}
-			#hb-vcard-tools input[type="text"]:focus,
 			#hb-vcard-tools input[type="url"]:focus {
 				outline:none !important;
 				border-color:#3b82f6 !important;
 				box-shadow:0 0 0 2px rgba(59,130,246,.35) !important;
 			}
-			#hb-vcard-tools input[type="radio"] { accent-color:#3b82f6 !important; }
-
-			#hb-vcard-tools select {
-				padding:6px 8px !important;
-				border:1px solid rgba(255,255,255,.25) !important;
-				border-radius:6px !important;
-				background:#0f172a !important;
-				color:#f9fafb !important;
-				font-size:13px !important;
-				min-width:200px !important;
-				appearance:auto;
-			}
-			#hb-vcard-tools select:focus {
-				outline:none !important;
-				border-color:#3b82f6 !important;
-				box-shadow:0 0 0 2px rgba(59,130,246,.35) !important;
-			}
-			/* Make options readable in the native popup on dark sites. */
-			#hb-vcard-tools select option { background:#0f172a !important; color:#f9fafb !important; }
-
 			#hb-vcard-tools .hb-vcf-actions .button { margin-right:6px !important; }
 			#hb-vcard-tools #hb-vcard-status { margin-left:8px !important; font-size:13px !important; }
+			#hb-vcard-tools #hb-vcard-qr-img {
+				max-width:320px;
+				height:auto;
+				border-radius:8px;
+				background:#f6f8fa;
+			}
 		</style>
 
 		<h3><?php esc_html_e( 'VCard', 'hello-elementor-child' ); ?></h3>
-		<p><?php esc_html_e( 'Customise your branded vCard QR. Click Preview to see your changes, then Save vCard to enable downloads.', 'hello-elementor-child' ); ?></p>
-
-		<form id="hb-vcard-form" onsubmit="return false;">
-			<fieldset>
-				<legend><?php esc_html_e( 'Template', 'hello-elementor-child' ); ?></legend>
-				<div class="hb-vcf-grid">
-					<?php foreach ( $templates as $key => $tpl ) : ?>
-						<label class="hb-vcf-tpl<?php echo $selected_template === $key ? ' is-active' : ''; ?>">
-							<input type="radio" name="template" value="<?php echo esc_attr( $key ); ?>" <?php checked( $selected_template, $key ); ?>>
-							<?php echo esc_html( $tpl['label'] ); ?>
-						</label>
-					<?php endforeach; ?>
-				</div>
-			</fieldset>
-
-			<fieldset>
-				<legend><?php esc_html_e( 'Customize', 'hello-elementor-child' ); ?></legend>
-				<div class="hb-vcf-row">
-					<label>
-						<?php esc_html_e( 'Primary color', 'hello-elementor-child' ); ?>
-						<input type="color" name="color01" value="<?php echo esc_attr( $selected_color01 ); ?>">
-					</label>
-					<label>
-						<?php esc_html_e( 'Secondary color', 'hello-elementor-child' ); ?>
-						<input type="color" name="color02" value="<?php echo esc_attr( $selected_color02 ); ?>">
-					</label>
-					<label>
-						<?php esc_html_e( 'Frame text (max 30)', 'hello-elementor-child' ); ?>
-						<input type="text" name="frameText" maxlength="30" value="<?php echo esc_attr( $selected_frametxt ); ?>" style="width:220px;">
-					</label>
-				</div>
-				<div class="hb-vcf-row">
-					<label>
-						<?php esc_html_e( 'Format', 'hello-elementor-child' ); ?>
-						<span>
-							<label style="display:inline-flex;gap:4px;align-items:center;margin-right:12px;">
-								<input type="radio" name="format" value="png" <?php checked( $selected_format, 'png' ); ?>> PNG
-							</label>
-							<label style="display:inline-flex;gap:4px;align-items:center;">
-								<input type="radio" name="format" value="svg" <?php checked( $selected_format, 'svg' ); ?>> SVG
-							</label>
-						</span>
-					</label>
-					<label>
-						<?php esc_html_e( 'Size:', 'hello-elementor-child' ); ?>
-						<span><span id="hb-vcard-size-out"><?php echo (int) $selected_size; ?></span> px</span>
-						<input type="range" name="size" min="256" max="4096" step="128" value="<?php echo (int) $selected_size; ?>">
-					</label>
-				</div>
-			</fieldset>
-
-			<fieldset>
-				<legend><?php esc_html_e( 'Style', 'hello-elementor-child' ); ?></legend>
-				<div class="hb-vcf-row">
-					<label>
-						<?php esc_html_e( 'Eye outer (finder ring)', 'hello-elementor-child' ); ?>
-						<select name="eye_outer">
-							<?php foreach ( $eye_outer_options as $value => $label ) : ?>
-								<option value="<?php echo esc_attr( $value ); ?>" <?php selected( $selected_eye_outer, $value ); ?>>
-									<?php echo esc_html( $label ); ?>
-								</option>
-							<?php endforeach; ?>
-						</select>
-					</label>
-					<label>
-						<?php esc_html_e( 'Eye inner (finder dot)', 'hello-elementor-child' ); ?>
-						<select name="eye_inner">
-							<?php foreach ( $eye_inner_options as $value => $label ) : ?>
-								<option value="<?php echo esc_attr( $value ); ?>" <?php selected( $selected_eye_inner, $value ); ?>>
-									<?php echo esc_html( $label ); ?>
-								</option>
-							<?php endforeach; ?>
-						</select>
-					</label>
-				</div>
-				<div class="hb-vcf-row">
-					<label>
-						<?php esc_html_e( 'Frame style', 'hello-elementor-child' ); ?>
-						<select name="frame">
-							<?php foreach ( $frame_options as $value => $label ) : ?>
-								<option value="<?php echo esc_attr( (string) $value ); ?>" <?php selected( $selected_frame, $value ); ?>>
-									<?php /* translators: 1: frame ID, 2: human label */
-										echo esc_html( sprintf( __( '#%1$d — %2$s', 'hello-elementor-child' ), $value, $label ) );
-									?>
-								</option>
-							<?php endforeach; ?>
-						</select>
-					</label>
-					<label>
-						<?php esc_html_e( 'Body pattern', 'hello-elementor-child' ); ?>
-						<select name="qrData">
-							<?php foreach ( $pattern_options as $value => $label ) : ?>
-								<option value="<?php echo esc_attr( $value ); ?>" <?php selected( $selected_pattern, $value ); ?>>
-									<?php echo esc_html( $label ); ?>
-								</option>
-							<?php endforeach; ?>
-						</select>
-					</label>
-				</div>
-				<p style="font-size:12px;color:#cbd5e1 !important;margin:6px 0 0 !important;">
-					<?php esc_html_e( 'Tip: pick options here, then click Preview to see the result. Names are friendly approximations — actual look comes from QR Tiger.', 'hello-elementor-child' ); ?>
-				</p>
-			</fieldset>
-
-			<p class="hb-vcf-actions">
-				<button type="button" class="button" id="hb-vcard-preview-btn"><?php esc_html_e( 'Preview', 'hello-elementor-child' ); ?></button>
-				<button type="button" class="button alt" id="hb-vcard-generate-btn"><?php esc_html_e( 'Save vCard', 'hello-elementor-child' ); ?></button>
-				<span id="hb-vcard-status" role="status" aria-live="polite"></span>
-			</p>
-		</form>
-
 		<p>
-			<label for="hb-vcard-url"><strong><?php esc_html_e( 'VCard URL', 'hello-elementor-child' ); ?></strong></label><br>
-			<input type="url" id="hb-vcard-url" value="<?php echo esc_attr( $saved_vcard ); ?>" readonly style="width:100%;max-width:760px;">
+			<?php esc_html_e( 'Generate your branded vCard QR. Scanning it opens your contact details — anyone can save you to their phone in one tap.', 'hello-elementor-child' ); ?>
 		</p>
-		<p><button type="button" class="button" id="hb-vcard-copy-url-btn"><?php esc_html_e( 'Copy vCard URL', 'hello-elementor-child' ) ?></button></p>
 
-		<div id="hb-vcard-qr-section"<?php echo $saved_qr_img === '' ? ' style="display:none;"' : ''; ?>>
-			<h4><?php esc_html_e( 'Preview / Saved QR', 'hello-elementor-child' ); ?></h4>
-			<p><img id="hb-vcard-qr-img" src="<?php echo esc_url( $saved_qr_img ); ?>" alt="<?php esc_attr_e( 'VCard QR code', 'hello-elementor-child' ); ?>" style="max-width:320px;height:auto;border-radius:8px;background:#f6f8fa;"></p>
+		<p class="hb-vcf-actions">
+			<button type="button" class="button alt" id="hb-vcard-generate-btn">
+				<?php echo esc_html( $generate_label ); ?>
+			</button>
+			<span id="hb-vcard-status" role="status" aria-live="polite"></span>
+		</p>
+
+		<div id="hb-vcard-saved-section"<?php echo $is_saved ? '' : ' style="display:none;"'; ?>>
+			<p>
+				<label for="hb-vcard-url"><strong><?php esc_html_e( 'VCard URL', 'hello-elementor-child' ); ?></strong></label><br>
+				<input type="url" id="hb-vcard-url" value="<?php echo esc_attr( $saved_vcard ); ?>" readonly>
+			</p>
+			<p class="hb-vcf-actions">
+				<button type="button" class="button" id="hb-vcard-copy-url-btn"><?php esc_html_e( 'Copy vCard URL', 'hello-elementor-child' ); ?></button>
+			</p>
+
+			<h4><?php esc_html_e( 'Your QR', 'hello-elementor-child' ); ?></h4>
+			<p>
+				<img id="hb-vcard-qr-img"
+					src="<?php echo esc_url( $saved_qr_img ); ?>"
+					alt="<?php esc_attr_e( 'VCard QR code', 'hello-elementor-child' ); ?>">
+			</p>
 			<p class="hb-vcf-actions">
 				<a class="button" id="hb-vcard-download-png" href="<?php echo esc_url( $png_href ); ?>"><?php esc_html_e( 'Download PNG', 'hello-elementor-child' ); ?></a>
 				<a class="button" id="hb-vcard-download-jpg" href="<?php echo esc_url( $jpg_href ); ?>"><?php esc_html_e( 'Download JPG', 'hello-elementor-child' ); ?></a>
-				<a class="button" id="hb-vcard-download-svg" href="<?php echo esc_url( $svg_href ); ?>"><?php esc_html_e( 'Download SVG', 'hello-elementor-child' ); ?></a>
 				<button type="button" class="button" id="hb-vcard-copy-image-btn"><?php esc_html_e( 'Copy image URL', 'hello-elementor-child' ); ?></button>
 				<button type="button" class="button" id="hb-vcard-delete-btn"><?php esc_html_e( 'Delete', 'hello-elementor-child' ); ?></button>
 			</p>
-			<p style="font-size:12px;color:#6b7280;"><?php esc_html_e( 'Tip: SVG download requires regenerating with the SVG format selected. JPG/PNG conversion happens server-side.', 'hello-elementor-child' ); ?></p>
 		</div>
 	</div>
 	<script>
@@ -2252,31 +1732,26 @@ function hb_render_vcard_account_endpoint() {
 		if (!root || root.dataset.ready === "1") { return; }
 		root.dataset.ready = "1";
 
-		var statusEl   = document.getElementById("hb-vcard-status");
-		var urlInput   = document.getElementById("hb-vcard-url");
-		var qrImg      = document.getElementById("hb-vcard-qr-img");
-		var qrSection  = document.getElementById("hb-vcard-qr-section");
-		var form       = document.getElementById("hb-vcard-form");
-		var sizeRange  = form ? form.querySelector('input[name="size"]') : null;
-		var sizeOut    = document.getElementById("hb-vcard-size-out");
-		var ajaxUrl    = root.getAttribute("data-ajax-url") || "";
+		var statusEl     = document.getElementById("hb-vcard-status");
+		var urlInput     = document.getElementById("hb-vcard-url");
+		var qrImg        = document.getElementById("hb-vcard-qr-img");
+		var savedSection = document.getElementById("hb-vcard-saved-section");
+		var genBtn       = document.getElementById("hb-vcard-generate-btn");
+		var ajaxUrl      = root.getAttribute("data-ajax-url") || "";
 
 		function setStatus(msg, isError) {
 			if (!statusEl) { return; }
 			statusEl.textContent = msg || "";
-			statusEl.style.color = isError ? "#b91c1c" : "#065f46";
-		}
-		function buildBody(action, nonce) {
-			var data = form ? new FormData(form) : new FormData();
-			data.append("action", action);
-			data.append("nonce", nonce);
-			return data;
+			statusEl.style.color = isError ? "#fca5a5" : "#86efac";
 		}
 		function post(action, nonce) {
+			var data = new FormData();
+			data.append("action", action);
+			data.append("nonce", nonce);
 			return fetch(ajaxUrl, {
 				method: "POST",
 				credentials: "same-origin",
-				body: buildBody(action, nonce)
+				body: data
 			}).then(function (r) { return r.json(); });
 		}
 		function copyText(value) {
@@ -2291,64 +1766,26 @@ function hb_render_vcard_account_endpoint() {
 			return Promise.resolve();
 		}
 
-		if (sizeRange && sizeOut) {
-			sizeRange.addEventListener("input", function () { sizeOut.textContent = sizeRange.value; });
-		}
-
-		// Visual highlight for the active template card.
-		if (form) {
-			form.addEventListener("change", function (ev) {
-				if (ev.target && ev.target.name === "template") {
-					var cards = form.querySelectorAll(".hb-vcf-tpl");
-					cards.forEach(function (c) {
-						var input = c.querySelector('input[name="template"]');
-						c.classList.toggle("is-active", !!(input && input.checked));
-					});
-				}
-			});
-		}
-
 		document.addEventListener("click", function (ev) {
-			var preview = ev.target.closest("#hb-vcard-preview-btn");
-			if (preview) {
-				ev.preventDefault();
-				preview.disabled = true;
-				setStatus("Loading preview...", false);
-				post("hb_preview_vcard_qr", root.getAttribute("data-preview-nonce") || "")
-					.then(function (res) {
-						var data = (res && res.data) ? res.data : {};
-						if (!res || !res.success) {
-							setStatus((data && data.message) ? data.message : "Could not preview.", true);
-							return;
-						}
-						if (qrImg && data.qr_image_url) { qrImg.src = data.qr_image_url; }
-						if (urlInput && data.url && !urlInput.value) { urlInput.value = data.url; }
-						if (qrSection) { qrSection.style.display = ""; }
-						setStatus(data.message || "Preview shown.", false);
-					})
-					.catch(function () { setStatus("Could not preview.", true); })
-					.finally(function () { preview.disabled = false; });
-				return;
-			}
-
 			var gen = ev.target.closest("#hb-vcard-generate-btn");
 			if (gen) {
 				ev.preventDefault();
 				gen.disabled = true;
-				setStatus("Saving...", false);
+				setStatus("<?php echo esc_js( __( 'Generating...', 'hello-elementor-child' ) ); ?>", false);
 				post("hb_generate_vcard_qr", root.getAttribute("data-generate-nonce") || "")
 					.then(function (res) {
 						var data = (res && res.data) ? res.data : {};
 						if (!res || !res.success) {
-							setStatus((data && data.message) ? data.message : "Could not generate VCard.", true);
+							setStatus((data && data.message) ? data.message : "<?php echo esc_js( __( 'Could not generate vCard.', 'hello-elementor-child' ) ); ?>", true);
 							return;
 						}
 						if (urlInput && data.url) { urlInput.value = data.url; }
 						if (qrImg && data.qr_image_url) { qrImg.src = data.qr_image_url; }
-						if (qrSection) { qrSection.style.display = ""; }
-						setStatus(data.message || "Saved.", false);
+						if (savedSection) { savedSection.style.display = ""; }
+						if (genBtn) { genBtn.textContent = "<?php echo esc_js( __( 'Regenerate vCard', 'hello-elementor-child' ) ); ?>"; }
+						setStatus(data.message || "<?php echo esc_js( __( 'Saved.', 'hello-elementor-child' ) ); ?>", false);
 					})
-					.catch(function () { setStatus("Could not generate VCard.", true); })
+					.catch(function () { setStatus("<?php echo esc_js( __( 'Could not generate vCard.', 'hello-elementor-child' ) ); ?>", true); })
 					.finally(function () { gen.disabled = false; });
 				return;
 			}
@@ -2357,19 +1794,20 @@ function hb_render_vcard_account_endpoint() {
 			if (del) {
 				ev.preventDefault();
 				del.disabled = true;
-				setStatus("Removing...", false);
+				setStatus("<?php echo esc_js( __( 'Removing...', 'hello-elementor-child' ) ); ?>", false);
 				post("hb_delete_vcard_qr", root.getAttribute("data-delete-nonce") || "")
 					.then(function (res) {
 						if (res && res.success) {
 							if (urlInput) { urlInput.value = ""; }
 							if (qrImg) { qrImg.src = ""; }
-							if (qrSection) { qrSection.style.display = "none"; }
-							setStatus((res.data && res.data.message) ? res.data.message : "Removed.", false);
+							if (savedSection) { savedSection.style.display = "none"; }
+							if (genBtn) { genBtn.textContent = "<?php echo esc_js( __( 'Generate vCard', 'hello-elementor-child' ) ); ?>"; }
+							setStatus((res.data && res.data.message) ? res.data.message : "<?php echo esc_js( __( 'Removed.', 'hello-elementor-child' ) ); ?>", false);
 						} else {
-							setStatus((res && res.data && res.data.message) ? res.data.message : "Could not remove.", true);
+							setStatus((res && res.data && res.data.message) ? res.data.message : "<?php echo esc_js( __( 'Could not remove.', 'hello-elementor-child' ) ); ?>", true);
 						}
 					})
-					.catch(function () { setStatus("Could not remove.", true); })
+					.catch(function () { setStatus("<?php echo esc_js( __( 'Could not remove.', 'hello-elementor-child' ) ); ?>", true); })
 					.finally(function () { del.disabled = false; });
 				return;
 			}
@@ -2377,22 +1815,18 @@ function hb_render_vcard_account_endpoint() {
 			var copyUrl = ev.target.closest("#hb-vcard-copy-url-btn");
 			if (copyUrl) {
 				ev.preventDefault();
-				copyText(urlInput ? urlInput.value : "").then(function () {
-					setStatus("vCard URL copied.", false);
-				}).catch(function () {
-					setStatus("Could not copy URL.", true);
-				});
+				copyText(urlInput ? urlInput.value : "")
+					.then(function () { setStatus("<?php echo esc_js( __( 'vCard URL copied.', 'hello-elementor-child' ) ); ?>", false); })
+					.catch(function () { setStatus("<?php echo esc_js( __( 'Could not copy URL.', 'hello-elementor-child' ) ); ?>", true); });
 				return;
 			}
 
 			var copyImg = ev.target.closest("#hb-vcard-copy-image-btn");
 			if (copyImg) {
 				ev.preventDefault();
-				copyText(qrImg ? qrImg.src : "").then(function () {
-					setStatus("Image URL copied.", false);
-				}).catch(function () {
-					setStatus("Could not copy image URL.", true);
-				});
+				copyText(qrImg ? qrImg.src : "")
+					.then(function () { setStatus("<?php echo esc_js( __( 'Image URL copied.', 'hello-elementor-child' ) ); ?>", false); })
+					.catch(function () { setStatus("<?php echo esc_js( __( 'Could not copy image URL.', 'hello-elementor-child' ) ); ?>", true); });
 			}
 		});
 	})();
