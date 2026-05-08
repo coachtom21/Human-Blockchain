@@ -1189,14 +1189,15 @@ function hb_get_qrtiger_vcard_logo_url() {
 /**
  * Build QR Tiger /api/campaign/ payload for branded HumanBlockchain vCard QRs.
  *
- * Defaults match the dashboard “master” design (gradient, circular frame, pattern0).
- * Override shape IDs via filters hb_qrtiger_vcard_qr_defaults / hb_qrtiger_vcard_campaign_payload if needed.
+ * Creates a "Vcard" category campaign so the scan opens QR Tiger's hosted
+ * contact landing page (with photo, name, action buttons) instead of
+ * downloading a raw .vcf. The contact data array is JSON-encoded into the
+ * `qrUrl` field — that's the shape QR Tiger's UI uses for vCard QRs.
  *
- * @param string                $vcard_url Public .vcf URL.
- * @param array<string, mixed>  $overrides Per-call overrides (e.g. from the customizer UI).
+ * @param array<string, mixed> $vcard_data Contact data shaped by hb_build_qrtiger_vcard_data().
  * @return array<string, mixed>
  */
-function hb_build_qrtiger_vcard_campaign_payload( $vcard_url ) {
+function hb_build_qrtiger_vcard_campaign_payload( array $vcard_data ) {
 	$styling = hb_get_qrtiger_vcard_master_styling();
 
 	if ( isset( $styling['logo'] ) && is_string( $styling['logo'] ) && $styling['logo'] !== '' ) {
@@ -1207,12 +1208,105 @@ function hb_build_qrtiger_vcard_campaign_payload( $vcard_url ) {
 
 	$payload = array(
 		'qr'         => $styling,
-		'qrUrl'      => esc_url_raw( $vcard_url ),
+		'qrUrl'      => wp_json_encode( $vcard_data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ),
 		'qrType'     => 'qr2',
-		'qrCategory' => 'url',
+		'qrCategory' => 'Vcard',
 	);
 
-	return apply_filters( 'hb_qrtiger_vcard_campaign_payload', $payload, $vcard_url );
+	return apply_filters( 'hb_qrtiger_vcard_campaign_payload', $payload, $vcard_data );
+}
+
+/**
+ * Map a WP user's profile + WooCommerce billing fields to the QR Tiger
+ * Vcard JSON shape (the inner object that gets stuffed into `qrUrl`).
+ *
+ * Field shape mirrors what the QR Tiger dashboard sends when you save a
+ * vCard campaign — see the 6C1LYC reference payload for the full schema.
+ *
+ * Override per site via the `hb_qrtiger_vcard_data` filter.
+ *
+ * @param int $user_id WP user ID.
+ * @return array<string, mixed>
+ */
+function hb_build_qrtiger_vcard_data( $user_id ) {
+	$user = get_userdata( (int) $user_id );
+	if ( ! $user ) {
+		return array();
+	}
+
+	$first = trim( (string) get_user_meta( $user_id, 'first_name', true ) );
+	$last  = trim( (string) get_user_meta( $user_id, 'last_name', true ) );
+	if ( '' === $first ) {
+		$first = trim( (string) get_user_meta( $user_id, 'billing_first_name', true ) );
+	}
+	if ( '' === $last ) {
+		$last = trim( (string) get_user_meta( $user_id, 'billing_last_name', true ) );
+	}
+	$name = trim( $first . ' ' . $last );
+	if ( '' === $name ) {
+		$name = (string) ( $user->display_name !== '' ? $user->display_name : $user->user_login );
+	}
+
+	$mobile = trim( (string) get_user_meta( $user_id, 'billing_phone', true ) );
+	if ( '' === $mobile ) {
+		$mobile = trim( (string) get_user_meta( $user_id, 'mega-mobile', true ) );
+	}
+
+	$street = trim( (string) get_user_meta( $user_id, 'billing_address_1', true ) );
+	$line2  = trim( (string) get_user_meta( $user_id, 'billing_address_2', true ) );
+	if ( '' !== $line2 ) {
+		$street = '' !== $street ? $street . ', ' . $line2 : $line2;
+	}
+
+	$website = trim( (string) $user->user_url );
+	if ( '' === $website ) {
+		$website = home_url( '/' );
+	}
+
+	$avatar = (string) get_avatar_url( (int) $user_id, array( 'size' => 256 ) );
+	$bio    = (string) get_user_meta( $user_id, 'description', true );
+
+	$data = array(
+		'address'        => array(
+			'street'      => $street,
+			'city'        => trim( (string) get_user_meta( $user_id, 'billing_city', true ) ),
+			'state'       => trim( (string) get_user_meta( $user_id, 'billing_state', true ) ),
+			'country'     => trim( (string) get_user_meta( $user_id, 'billing_country', true ) ),
+			'postal_code' => trim( (string) get_user_meta( $user_id, 'billing_postcode', true ) ),
+			// QR Tiger expects an empty object here, not an empty array.
+			'location'    => (object) array(),
+		),
+		'profile_pic'    => $avatar,
+		'name'           => $name,
+		'company'        => trim( (string) get_user_meta( $user_id, 'billing_company', true ) ),
+		'title'          => trim( (string) get_user_meta( $user_id, 'mega-title', true ) ),
+		'email'          => (string) $user->user_email,
+		'website'        => $website,
+		'phone'          => array(
+			'work'    => '',
+			'private' => '',
+			'mobile'  => $mobile,
+		),
+		'fax'            => '',
+		'additional_info' => $bio,
+		// Landing-page theme/colors. Mirrors MEGAcoach's hosted page so the
+		// scan experience visually matches the QR design.
+		'bgColor'        => '#5c1f76',
+		'bgColor2'       => '#C03E4A',
+		'gradient'       => false,
+		'gradientType'   => 'linear',
+		'theme'          => 4,
+		'smedia'         => (object) array(),
+		'bg'             => false,
+		'bgUrl'          => '',
+		'fontFamily'     => 'Roboto',
+		'logo'           => '',
+		'walletBgColor'  => '',
+		'walletFgColor'  => '',
+		'useCurrentLogo' => false,
+	);
+
+	return apply_filters( 'hb_qrtiger_vcard_data', $data, (int) $user_id );
 }
 
 /**
@@ -1267,21 +1361,27 @@ function hb_get_qrtiger_vcard_master_styling() {
 }
 
 /**
- * Generate a QR image for a vCard URL via QRTiger.
+ * Generate a hosted vCard QR (Vcard category) for a WP user via QR Tiger.
  *
- * Always uses the site-wide master styling (see hb_get_qrtiger_vcard_master_styling).
+ * The campaign stores the user's contact info inline so the scan opens
+ * QR Tiger's hosted vCard landing page (photo, name, action buttons).
  *
- * @param string $vcard_url Public VCard file URL.
- * @return array|WP_Error
+ * @param int $user_id WP user ID.
+ * @return array|WP_Error { image_url:string, qr_id:string, short_url:string }
  */
-function hb_generate_qrtiger_qr_for_vcard( $vcard_url ) {
+function hb_generate_qrtiger_qr_for_vcard( $user_id ) {
 	$creds = hb_get_qrtiger_credentials();
 	if ( '' === $creds['key'] ) {
 		return new WP_Error( 'missing_key', __( 'QRTiger API key is missing in NWP Gateway settings.', 'hello-elementor-child' ) );
 	}
 
+	$vcard_data = hb_build_qrtiger_vcard_data( (int) $user_id );
+	if ( empty( $vcard_data ) ) {
+		return new WP_Error( 'vcard_data', __( 'Could not build vCard data from profile.', 'hello-elementor-child' ) );
+	}
+
 	$endpoint = $creds['url'] . '/api/campaign/';
-	$payload  = hb_build_qrtiger_vcard_campaign_payload( $vcard_url );
+	$payload  = hb_build_qrtiger_vcard_campaign_payload( $vcard_data );
 
 	$response = wp_remote_post(
 		$endpoint,
@@ -1304,8 +1404,9 @@ function hb_generate_qrtiger_qr_for_vcard( $vcard_url ) {
 	$body = (string) wp_remote_retrieve_body( $response );
 	$data = json_decode( $body );
 
-	$qr_image = '';
-	$qr_id    = '';
+	$qr_image  = '';
+	$qr_id     = '';
+	$short_url = '';
 	if ( is_object( $data ) ) {
 		// Most common QR Tiger structure.
 		if ( ! empty( $data->data->qrImage ) && is_string( $data->data->qrImage ) ) {
@@ -1314,6 +1415,9 @@ function hb_generate_qrtiger_qr_for_vcard( $vcard_url ) {
 		if ( ! empty( $data->data->qrId ) && is_string( $data->data->qrId ) ) {
 			$qr_id = $data->data->qrId;
 		}
+		if ( ! empty( $data->data->qrShortUrl ) && is_string( $data->data->qrShortUrl ) ) {
+			$short_url = $data->data->qrShortUrl;
+		}
 		// Tolerate alternative structure returned by some clients/proxies.
 		if ( '' === $qr_image && ! empty( $data->qrImage ) && is_string( $data->qrImage ) ) {
 			$qr_image = $data->qrImage;
@@ -1321,6 +1425,14 @@ function hb_generate_qrtiger_qr_for_vcard( $vcard_url ) {
 		if ( '' === $qr_id && ! empty( $data->qrId ) && is_string( $data->qrId ) ) {
 			$qr_id = $data->qrId;
 		}
+		if ( '' === $short_url && ! empty( $data->qrShortUrl ) && is_string( $data->qrShortUrl ) ) {
+			$short_url = $data->qrShortUrl;
+		}
+	}
+
+	// Derive the public scan URL from the short code if QR Tiger didn't return one.
+	if ( '' === $short_url && '' !== $qr_id ) {
+		$short_url = 'https://qr1.be/' . rawurlencode( $qr_id );
 	}
 
 	if ( $code < 200 || $code > 299 || '' === $qr_image ) {
@@ -1381,15 +1493,16 @@ function hb_generate_qrtiger_qr_for_vcard( $vcard_url ) {
 	return array(
 		'image_url' => esc_url_raw( (string) $qr_image ),
 		'qr_id'     => '' !== $qr_id ? sanitize_text_field( (string) $qr_id ) : '',
+		'short_url' => '' !== $short_url ? esc_url_raw( (string) $short_url ) : '',
 	);
 }
 
 /**
- * AJAX: Generate VCard + QRTiger QR for logged-in user.
+ * AJAX: Generate the hosted vCard QR for the logged-in user.
  *
- * Accepts customizer overrides via POST (template, format, size, color01/02, etc.).
- * If QR Tiger returns a `data:` URL, it is decoded and persisted as a real file under
- * uploads/hb-vcards/. The previously saved QR file (if any) is removed.
+ * Creates a Vcard-category campaign at QR Tiger with the user's profile data
+ * embedded inline, then persists the returned QR image locally so we can serve
+ * stable PNG/JPG downloads. The previously saved QR file (if any) is removed.
  */
 function hb_ajax_generate_vcard_qr() {
 	if ( ! is_user_logged_in() ) {
@@ -1399,24 +1512,9 @@ function hb_ajax_generate_vcard_qr() {
 
 	$user_id = (int) get_current_user_id();
 
-	$body = hb_build_user_vcard_body( $user_id );
-	if ( '' === $body ) {
-		wp_send_json_error( array( 'message' => __( 'Could not build vCard from profile.', 'hello-elementor-child' ) ) );
-	}
-
-	$file_url = hb_save_user_vcard_file( $user_id, $body );
-	if ( is_wp_error( $file_url ) ) {
-		wp_send_json_error( array( 'message' => $file_url->get_error_message() ) );
-	}
-
-	$qr = hb_generate_qrtiger_qr_for_vcard( $file_url );
+	$qr = hb_generate_qrtiger_qr_for_vcard( $user_id );
 	if ( is_wp_error( $qr ) ) {
-		wp_send_json_error(
-			array(
-				'message' => $qr->get_error_message(),
-				'url'     => $file_url,
-			)
-		);
+		wp_send_json_error( array( 'message' => $qr->get_error_message() ) );
 	}
 
 	$previous = (string) get_user_meta( $user_id, 'hb_vcard_qr_image_url', true );
@@ -1427,15 +1525,17 @@ function hb_ajax_generate_vcard_qr() {
 		wp_send_json_error( array( 'message' => $persisted->get_error_message() ) );
 	}
 
-	update_user_meta( $user_id, 'hb_vcard_file_url', esc_url_raw( $file_url ) );
 	update_user_meta( $user_id, 'hb_vcard_qr_image_url', esc_url_raw( $persisted ) );
 	update_user_meta( $user_id, 'hb_vcard_qr_id', $qr['qr_id'] );
+	update_user_meta( $user_id, 'hb_vcard_short_url', esc_url_raw( $qr['short_url'] ) );
+	// Legacy meta from the .vcf-redirect flow — clear so the UI never falls back to it.
+	delete_user_meta( $user_id, 'hb_vcard_file_url' );
 
 	wp_send_json_success(
 		array(
-			'url'          => esc_url_raw( $file_url ),
+			'url'          => esc_url_raw( $qr['short_url'] ),
 			'qr_image_url' => esc_url_raw( $persisted ),
-			'message'      => __( 'VCard generated successfully.', 'hello-elementor-child' ),
+			'message'      => __( 'VCard QR generated successfully.', 'hello-elementor-child' ),
 		)
 	);
 }
@@ -1450,7 +1550,9 @@ function hb_ajax_delete_vcard_qr() {
 	}
 	check_ajax_referer( 'hb_delete_vcard_qr', 'nonce' );
 
-	$user_id  = (int) get_current_user_id();
+	$user_id = (int) get_current_user_id();
+
+	// Clean up any stale .vcf file from the legacy redirect flow.
 	$file_url = (string) get_user_meta( $user_id, 'hb_vcard_file_url', true );
 	if ( $file_url !== '' ) {
 		$upload = wp_upload_dir();
@@ -1472,9 +1574,10 @@ function hb_ajax_delete_vcard_qr() {
 	delete_user_meta( $user_id, 'hb_vcard_file_url' );
 	delete_user_meta( $user_id, 'hb_vcard_qr_image_url' );
 	delete_user_meta( $user_id, 'hb_vcard_qr_id' );
+	delete_user_meta( $user_id, 'hb_vcard_short_url' );
 	delete_user_meta( $user_id, 'hb_vcard_qr_overrides' ); // Legacy from removed customizer; safe to clean up.
 
-	wp_send_json_success( array( 'message' => __( 'VCard and QR removed.', 'hello-elementor-child' ) ) );
+	wp_send_json_success( array( 'message' => __( 'VCard QR removed.', 'hello-elementor-child' ) ) );
 }
 add_action( 'wp_ajax_hb_delete_vcard_qr', 'hb_ajax_delete_vcard_qr' );
 
@@ -1626,9 +1729,9 @@ function hb_render_vcard_account_endpoint() {
 	}
 
 	$user_id      = (int) get_current_user_id();
-	$saved_vcard  = (string) get_user_meta( $user_id, 'hb_vcard_file_url', true );
+	$saved_short  = (string) get_user_meta( $user_id, 'hb_vcard_short_url', true );
 	$saved_qr_img = (string) get_user_meta( $user_id, 'hb_vcard_qr_image_url', true );
-	$is_saved     = ( $saved_vcard !== '' && $saved_qr_img !== '' );
+	$is_saved     = ( $saved_qr_img !== '' );
 
 	$ajax_url  = admin_url( 'admin-ajax.php' );
 	$gen_nonce = wp_create_nonce( 'hb_generate_vcard_qr' );
@@ -1697,7 +1800,7 @@ function hb_render_vcard_account_endpoint() {
 
 		<h3><?php esc_html_e( 'VCard', 'hello-elementor-child' ); ?></h3>
 		<p>
-			<?php esc_html_e( 'Generate your branded vCard QR. Scanning it opens your contact details — anyone can save you to their phone in one tap.', 'hello-elementor-child' ); ?>
+			<?php esc_html_e( 'Generate your branded vCard QR. Scanning it opens a hosted contact page with your photo, name, and tap-to-call / email / save buttons.', 'hello-elementor-child' ); ?>
 		</p>
 
 		<p class="hb-vcf-actions">
@@ -1709,11 +1812,12 @@ function hb_render_vcard_account_endpoint() {
 
 		<div id="hb-vcard-saved-section"<?php echo $is_saved ? '' : ' style="display:none;"'; ?>>
 			<p>
-				<label for="hb-vcard-url"><strong><?php esc_html_e( 'VCard URL', 'hello-elementor-child' ); ?></strong></label><br>
-				<input type="url" id="hb-vcard-url" value="<?php echo esc_attr( $saved_vcard ); ?>" readonly>
+				<label for="hb-vcard-url"><strong><?php esc_html_e( 'Public vCard link', 'hello-elementor-child' ); ?></strong></label><br>
+				<input type="url" id="hb-vcard-url" value="<?php echo esc_attr( $saved_short ); ?>" readonly>
 			</p>
 			<p class="hb-vcf-actions">
-				<button type="button" class="button" id="hb-vcard-copy-url-btn"><?php esc_html_e( 'Copy vCard URL', 'hello-elementor-child' ); ?></button>
+				<a class="button" id="hb-vcard-preview-btn" href="<?php echo esc_url( $saved_short ); ?>" target="_blank" rel="noopener"><?php esc_html_e( 'Preview', 'hello-elementor-child' ); ?></a>
+				<button type="button" class="button" id="hb-vcard-copy-url-btn"><?php esc_html_e( 'Copy link', 'hello-elementor-child' ); ?></button>
 			</p>
 
 			<h4><?php esc_html_e( 'Your QR', 'hello-elementor-child' ); ?></h4>
@@ -1784,6 +1888,8 @@ function hb_render_vcard_account_endpoint() {
 							return;
 						}
 						if (urlInput && data.url) { urlInput.value = data.url; }
+						var previewBtn = document.getElementById("hb-vcard-preview-btn");
+						if (previewBtn && data.url) { previewBtn.setAttribute("href", data.url); }
 						if (qrImg && data.qr_image_url) { qrImg.src = data.qr_image_url; }
 						if (savedSection) { savedSection.style.display = ""; }
 						if (genBtn) { genBtn.textContent = "<?php echo esc_js( __( 'Regenerate vCard', 'hello-elementor-child' ) ); ?>"; }
