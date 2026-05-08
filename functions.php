@@ -1258,10 +1258,10 @@ function hb_build_qrtiger_vcard_data( $user_id ) {
 		$street = '' !== $street ? $street . ', ' . $line2 : $line2;
 	}
 
-	$website = trim( (string) $user->user_url );
-	if ( '' === $website ) {
-		$website = home_url( '/' );
-	}
+	// Always use the brand site for the vCard "Website" button so every
+	// user's hosted card points back to humanblockchain.info, not whatever
+	// they've put in their personal WP profile URL.
+	$website = untrailingslashit( home_url() );
 
 	$avatar = (string) get_avatar_url( (int) $user_id, array( 'size' => 256 ) );
 	$bio    = (string) get_user_meta( $user_id, 'description', true );
