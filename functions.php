@@ -1218,42 +1218,46 @@ function hb_build_qrtiger_vcard_campaign_payload( $vcard_url ) {
 /**
  * Single source of truth for the QR design used across every user's vCard.
  *
- * To change the look site-wide, override via the `hb_qrtiger_vcard_master_styling`
- * filter (recommended) or `hb_qrtiger_vcard_qr_defaults` (kept for back-compat).
+ * Mirrors the styling of QR Tiger campaign CP2X ("Tom v-Card" / MEGAcoach):
+ * dark navy + dark red linear gradient body, star-square eye outers, plus-shape
+ * eye inners, multi-ring concentric circle frame with red→navy gradient ring
+ * and the "MEGAcoach" frame text, and the MEGAcoach center logo.
  *
- * Field reference (QR Tiger API):
- *  - size, qrFormat ('png'|'svg'), logo (URL)
- *  - colorDark, backgroundColor, transparentBkg
- *  - gradient (bool), grdType ('linear'|'radial'), color01, color02
- *  - eye_color (bool), eye_color01, eye_color02
- *  - eye_outer ('eyeOuter0'..'eyeOuter15'), eye_inner ('eyeInner0'..'eyeInner17')
- *  - qrData ('pattern0'..'pattern16')
- *  - frame (int 0..19), frameText, frameColor, frameColorType
+ * To override site-wide, hook the `hb_qrtiger_vcard_master_styling` filter.
  *
  * @return array<string, mixed>
  */
 function hb_get_qrtiger_vcard_master_styling() {
+	$logo_override = hb_get_qrtiger_vcard_logo_url();
+	$logo          = '' !== $logo_override ? $logo_override : 'https://media.qrtiger.com/images/2023/06/mlogo2-(2).png';
+
 	$styling = array(
-		'size'           => 800,
-		'qrFormat'       => 'png',
-		'logo'           => hb_get_qrtiger_vcard_logo_url(),
-		'colorDark'      => '#054080',
-		'backgroundColor' => '#ffffff',
-		'transparentBkg' => false,
-		'gradient'       => true,
-		'grdType'        => 'linear',
-		'color01'        => '#054080',
-		'color02'        => '#f30505',
-		'eye_color'      => true,
-		'eye_color01'    => '#054080',
-		'eye_color02'    => '#f30505',
-		'eye_outer'      => 'eyeOuter11',
-		'eye_inner'      => 'eyeInner9',
-		'qrData'         => 'pattern0',
-		'frame'          => 16,
-		'frameText'      => 'Profit Sharing',
-		'frameColor'     => '#054080',
-		'frameColorType' => 'linear',
+		'size'                    => 500,
+		'qrFormat'                => 'png',
+		'logo'                    => $logo,
+		'backgroundColor'         => 'rgb(255,255,255)',
+		'transparentBkg'          => false,
+		'colorDark'               => 'rgb(0,26,114)',
+		'colorType'               => 'SINGLE_COLOR',
+		'gradient'                => true,
+		'grdType'                 => 'linear',
+		'gradientType'            => 'linear',
+		'color01'                 => 'rgb(0,26,114)',
+		'color02'                 => 'rgb(175,35,28)',
+		'eye_color'               => false,
+		'eye_outer'               => 'eyeOuter11',
+		'eye_inner'               => 'eyeInner10',
+		'qrData'                  => 'pattern0',
+		'frame'                   => 16,
+		'frameText'               => 'MEGAcoach',
+		'frametextFont'           => 'Arial',
+		'frameColor'              => '#054080',
+		'frameColor2'             => '#3a74c5',
+		'frameColorType'          => 'linear',
+		'frameColorStyleType'     => 'FRAME_GRADIENT_COLOR',
+		'frameGradientType'       => 'linear',
+		'frameGradientStartColor' => 'rgb(175,35,28)',
+		'frameGradientEndColor'   => 'rgb(0,26,114)',
 	);
 
 	$styling = apply_filters( 'hb_qrtiger_vcard_qr_defaults', $styling, '' );
