@@ -447,6 +447,13 @@ function hb_load_core_files() {
 		require_once $includes_dir . '/class-hb-rest-api.php';
 	}
 
+	if ( file_exists( $includes_dir . '/class-hb-discord-bot-rest.php' ) ) {
+		require_once $includes_dir . '/class-hb-discord-bot-rest.php';
+		if ( class_exists( 'HB_Discord_Bot_Rest' ) ) {
+			HB_Discord_Bot_Rest::init();
+		}
+	}
+
 	if ( file_exists( $includes_dir . '/class-hb-yamjam-verification-model.php' ) ) {
 		require_once $includes_dir . '/class-hb-yamjam-verification-model.php';
 	}
@@ -1996,3 +2003,46 @@ function hb_render_vcard_account_endpoint() {
 	<?php
 }
 add_action( 'woocommerce_account_vcard_endpoint', 'hb_render_vcard_account_endpoint' );
+
+/**
+ * Map Get Started tiers to Paid Memberships Pro level IDs (matches default HB PMPro dump: YAMer=1, Pioneer=2, Patron=3).
+ * Resolves by level name when PMPro is active so renamed levels still work.
+ *
+ * @param int    $id   Default level ID (0).
+ * @param string $tier yamer|megavoter|patron.
+ * @return int
+ */
+function hb_cpm_hb_pmpro_level_id_for_tier( $id, $tier ) {
+	$tier = sanitize_key( (string) $tier );
+	$defaults = array(
+		'yamer'     => 1,
+		'megavoter' => 2,
+		'patron'    => 3,
+	);
+	$labels = array(
+		'yamer'     => 'YAMer',
+		'megavoter' => 'Pioneer',
+		'patron'    => 'Patron',
+	);
+	if ( ! isset( $defaults[ $tier ] ) ) {
+		return (int) $id;
+	}
+	if ( function_exists( 'pmpro_getAllLevels' ) ) {
+		$by_lower = array();
+		foreach ( pmpro_getAllLevels( true ) as $lvl ) {
+			$n = strtolower( trim( (string) $lvl->name ) );
+			if ( $n !== '' ) {
+				$by_lower[ $n ] = (int) $lvl->id;
+			}
+		}
+		$want = strtolower( $labels[ $tier ] );
+		if ( isset( $by_lower[ $want ] ) ) {
+			return (int) $by_lower[ $want ];
+		}
+		if ( 'megavoter' === $tier && isset( $by_lower['megavoter'] ) ) {
+			return (int) $by_lower['megavoter'];
+		}
+	}
+	return (int) $defaults[ $tier ];
+}
+add_filter( 'cpm_hb_pmpro_level_id_for_tier', 'hb_cpm_hb_pmpro_level_id_for_tier', 10, 2 );

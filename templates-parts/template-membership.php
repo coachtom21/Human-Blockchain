@@ -137,10 +137,15 @@
       </select>
 
       <div class="actions">
-        <button class="btn primary" type="button" id="saveMembershipBtn">Save membership choice</button>
-        <a class="btn" href="<?php echo esc_url( home_url( '/' ) ); ?>#register">Register device</a>
-        <a class="btn" href="<?php echo esc_url( home_url( '/organizers' ) ); ?>">Organizer streamline</a>
+        <button class="btn primary" type="button" id="hbOpenMembershipModal"><?php esc_html_e( 'Open membership picker (Get started)', 'hello-elementor-child' ); ?></button>
+        <a class="btn" href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php esc_html_e( 'Home', 'hello-elementor-child' ); ?></a>
+        <a class="btn" href="<?php echo esc_url( home_url( '/' ) ); ?>#register"><?php esc_html_e( 'Register device', 'hello-elementor-child' ); ?></a>
+        <a class="btn" href="<?php echo esc_url( home_url( '/organizers' ) ); ?>"><?php esc_html_e( 'Organizer streamline', 'hello-elementor-child' ); ?></a>
       </div>
+
+      <p class="foot">
+        <?php esc_html_e( 'The site header “Get started” button opens the same membership modal (branch + tier) and sends you to PMPro checkout when configured.', 'hello-elementor-child' ); ?>
+      </p>
 
       <p class="foot">
         Referral XP opportunities (annual, for active members): <strong>$1</strong> YAM'er, <strong>$5</strong> MEGAvoter, <strong>$25</strong> Patron recognition.
@@ -158,25 +163,39 @@
       </p>
 
       <p class="foot">
-        Demo storage key: <code>hb_membership</code>.
+        <?php esc_html_e( 'Legacy demo key (optional):', 'hello-elementor-child' ); ?> <code>hb_membership</code>.
       </p>
     </div>
   </div>
 
   <script>
-    function confirmChoice(){
+    function hbMembershipTierFromPick() {
       var pick = document.getElementById('pick');
-      var choice = pick ? pick.value : 'Buyer';
-      var payload = { choice: choice, saved_at: new Date().toISOString() };
-      try { localStorage.setItem('hb_membership', JSON.stringify(payload)); } catch (e) {}
-      console.log('Saved hb_membership:', payload);
-      alert('Saved (demo). Next: accept Discord Gracebook invite to activate Pending → Active.');
+      var v = pick ? String(pick.value || '') : 'Buyer';
+      if (v === 'Seller') return 'megavoter';
+      if (v === 'Patron') return 'patron';
+      return 'yamer';
+    }
+    function hbOpenMembershipModal() {
+      var el = document.querySelector('.cpm-hb-open-membership-modal');
+      if (el) {
+        el.click();
+        return;
+      }
+      window.location.href = <?php echo wp_json_encode( add_query_arg( 'cpm_hb_open_membership', '1', home_url( '/' ) ) ); ?>;
+    }
+    function confirmChoice(){
+      var tier = hbMembershipTierFromPick();
+      try {
+        sessionStorage.setItem('cpm_hb_selected_membership_tier', JSON.stringify({ tier: tier, branch: '', ts: Date.now() }));
+      } catch (e) {}
+      hbOpenMembershipModal();
     }
     (function(){
       var btn = document.getElementById('confirmChoiceBtn');
       if (btn) btn.addEventListener('click', confirmChoice);
-      var saveBtn = document.getElementById('saveMembershipBtn');
-      if (saveBtn) saveBtn.addEventListener('click', confirmChoice);
+      var openBtn = document.getElementById('hbOpenMembershipModal');
+      if (openBtn) openBtn.addEventListener('click', function(e){ e.preventDefault(); hbOpenMembershipModal(); });
     })();
   </script>
 </body>
