@@ -1003,9 +1003,51 @@ function hb_build_user_vcard_body( $user_id ) {
 		$lines[] = 'TEL;TYPE=CELL:' . $esc( preg_replace( '/\s+/', '', $phone ) );
 	}
 	$lines[] = 'URL:' . esc_url_raw( home_url( '/my-account/' ) );
+	$hb_note = hb_get_humanblockchain_vcard_membership_text( (int) $user_id );
+	if ( $hb_note !== '' ) {
+		$lines[] = 'NOTE:' . $esc( $hb_note );
+	}
 	$lines[] = 'END:VCARD';
 
 	return implode( "\r\n", $lines ) . "\r\n";
+}
+
+/**
+ * Line shown on the QR Tiger hosted vCard and in downloadable .vcf NOTE.
+ *
+ * Uses `_membership_level` JSON (level_name) when present. Override or hide
+ * with the `hb_humanblockchain_vcard_membership_text` filter.
+ *
+ * @param int $user_id WP user ID.
+ * @return string Empty when filtered out.
+ */
+function hb_get_humanblockchain_vcard_membership_text( $user_id ) {
+	$user_id = (int) $user_id;
+	if ( $user_id <= 0 ) {
+		return '';
+	}
+
+	$base = __( 'HumanBlockchain membership', 'hello-elementor-child' );
+	$line = $base;
+
+	$raw  = get_user_meta( $user_id, '_membership_level', true );
+	$meta = is_string( $raw ) ? json_decode( $raw, true ) : null;
+	if ( is_array( $meta ) && ! empty( $meta['level_name'] ) ) {
+		$tier = sanitize_text_field( (string) $meta['level_name'] );
+		if ( $tier !== '' ) {
+			/* translators: %s: membership tier label from API (e.g. YAMer, Pioneer). */
+			$line = sprintf( __( 'HumanBlockchain membership — %s', 'hello-elementor-child' ), $tier );
+		}
+	}
+
+	/**
+	 * Filters the membership line on vCard surfaces (QR Tiger page, .vcf).
+	 *
+	 * @param string $line    Default non-empty line.
+	 * @param int    $user_id User ID.
+	 */
+	$filtered = apply_filters( 'hb_humanblockchain_vcard_membership_text', $line, $user_id );
+	return is_string( $filtered ) ? $filtered : $line;
 }
 
 /**
@@ -1266,6 +1308,16 @@ function hb_build_qrtiger_vcard_data( $user_id ) {
 	$avatar = (string) get_avatar_url( (int) $user_id, array( 'size' => 256 ) );
 	$bio    = (string) get_user_meta( $user_id, 'description', true );
 
+	$membership_text = hb_get_humanblockchain_vcard_membership_text( (int) $user_id );
+	$bio_trim        = trim( $bio );
+	if ( '' === $membership_text ) {
+		$additional_info = $bio_trim;
+	} elseif ( '' === $bio_trim ) {
+		$additional_info = $membership_text;
+	} else {
+		$additional_info = $membership_text . "\n\n" . $bio_trim;
+	}
+
 	$data = array(
 		'address'        => array(
 			'street'      => $street,
@@ -1288,7 +1340,7 @@ function hb_build_qrtiger_vcard_data( $user_id ) {
 			'mobile'  => $mobile,
 		),
 		'fax'            => '',
-		'additional_info' => $bio,
+		'additional_info' => $additional_info,
 		// Landing-page theme/colors. Mirrors MEGAcoach's hosted page so the
 		// scan experience visually matches the QR design.
 		'bgColor'        => '#5c1f76',
@@ -1800,7 +1852,7 @@ function hb_render_vcard_account_endpoint() {
 
 		<h3><?php esc_html_e( 'VCard', 'hello-elementor-child' ); ?></h3>
 		<p>
-			<?php esc_html_e( 'Generate your branded vCard QR. Scanning it opens a hosted contact page with your photo, name, and tap-to-call / email / save buttons.', 'hello-elementor-child' ); ?>
+			<?php esc_html_e( 'Generate your branded vCard QR. Scanning it opens a hosted contact page with your photo, name, HumanBlockchain membership line, and tap-to-call / email / save buttons.', 'hello-elementor-child' ); ?>
 		</p>
 
 		<p class="hb-vcf-actions">
