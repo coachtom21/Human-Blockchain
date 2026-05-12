@@ -1435,7 +1435,9 @@ function hb_build_user_vcard_body( $user_id ) {
 /**
  * Line shown on the QR Tiger hosted vCard and in downloadable .vcf NOTE.
  *
- * Uses `_membership_level` JSON (level_name) when present. Override or hide
+ * Prefers the member’s **current Paid Memberships Pro** level name when PMPro
+ * reports an active level (same source as My Account → Memberships). Falls back
+ * to `_membership_level` JSON `level_name` when PMPro has no active row. Override
  * with the `hb_humanblockchain_vcard_membership_text` filter.
  *
  * @param int $user_id WP user ID.
@@ -1450,14 +1452,29 @@ function hb_get_humanblockchain_vcard_membership_text( $user_id ) {
 	$base = __( 'HumanBlockchain membership', 'hello-elementor-child' );
 	$line = $base;
 
-	$raw  = get_user_meta( $user_id, '_membership_level', true );
-	$meta = is_string( $raw ) ? json_decode( $raw, true ) : null;
-	if ( is_array( $meta ) && ! empty( $meta['level_name'] ) ) {
-		$tier = sanitize_text_field( (string) $meta['level_name'] );
-		if ( $tier !== '' ) {
-			/* translators: %s: membership tier label from API (e.g. YAMer, Pioneer). */
-			$line = sprintf( __( 'HumanBlockchain membership — %s', 'hello-elementor-child' ), $tier );
+	$display_name = '';
+
+	if ( function_exists( 'pmpro_getMembershipLevelsForUser' ) ) {
+		$levels = pmpro_getMembershipLevelsForUser( $user_id );
+		if ( ! empty( $levels ) && is_array( $levels ) ) {
+			$first = reset( $levels );
+			if ( is_object( $first ) && ! empty( $first->name ) ) {
+				$display_name = sanitize_text_field( (string) $first->name );
+			}
 		}
+	}
+
+	if ( '' === $display_name ) {
+		$raw  = get_user_meta( $user_id, '_membership_level', true );
+		$meta = is_string( $raw ) ? json_decode( $raw, true ) : null;
+		if ( is_array( $meta ) && ! empty( $meta['level_name'] ) ) {
+			$display_name = sanitize_text_field( (string) $meta['level_name'] );
+		}
+	}
+
+	if ( '' !== $display_name ) {
+		/* translators: %s: membership level label (e.g. YAMer, Pioneer). */
+		$line = sprintf( __( 'HumanBlockchain membership — %s', 'hello-elementor-child' ), $display_name );
 	}
 
 	/**
