@@ -50,7 +50,7 @@ class HB_Discord_Bot_Rest {
 				array( 'status' => 503 )
 			);
 		}
-		$auth_header = $request->get_header( 'Authorization' );
+		$auth_header = self::get_authorization_header_value( $request );
 		$auth_header = is_string( $auth_header ) ? $auth_header : '';
 		$api_key     = preg_replace( '/^\s*Bearer\s+/i', '', trim( $auth_header ) );
 		if ( ! is_string( $api_key ) || $api_key === '' || ! hash_equals( $stored, $api_key ) ) {
@@ -61,6 +61,26 @@ class HB_Discord_Bot_Rest {
 			);
 		}
 		return true;
+	}
+
+	/**
+	 * Raw Authorization header: REST first, then PHP superglobals (some Apache/FastCGI stacks omit it from REST).
+	 *
+	 * @param WP_REST_Request $request Request.
+	 * @return string
+	 */
+	private static function get_authorization_header_value( WP_REST_Request $request ) {
+		$h = $request->get_header( 'Authorization' );
+		if ( is_string( $h ) && $h !== '' ) {
+			return $h;
+		}
+		if ( ! empty( $_SERVER['HTTP_AUTHORIZATION'] ) && is_string( $_SERVER['HTTP_AUTHORIZATION'] ) ) {
+			return $_SERVER['HTTP_AUTHORIZATION'];
+		}
+		if ( ! empty( $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] ) && is_string( $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] ) ) {
+			return $_SERVER['REDIRECT_HTTP_AUTHORIZATION'];
+		}
+		return '';
 	}
 
 	/**
