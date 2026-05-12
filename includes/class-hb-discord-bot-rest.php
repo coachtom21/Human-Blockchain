@@ -4,6 +4,7 @@
  *
  * Routes (Bearer: HB_DISCORD_BOT_API_KEY constant or option hb_discord_bot_api_key):
  * - GET  /wp-json/hb/v1/discord-bot/membership?email=
+ * - GET  /wp-json/hb/v1/discord-bot/wallet?discord_id= | ?discord_username=
  * - POST /wp-json/hb/v1/discord-bot/verification
  *
  * @package HumanBlockchain
@@ -112,6 +113,164 @@ class HB_Discord_Bot_Rest {
 				'callback'            => array( __CLASS__, 'handle_verification' ),
 				'permission_callback' => array( __CLASS__, 'permission_bearer' ),
 			)
+		);
+
+		register_rest_route(
+			'hb/v1',
+			'/discord-bot/wallet',
+			array(
+				'methods'             => WP_REST_Server::READABLE,
+				'callback'            => array( __CLASS__, 'handle_wallet' ),
+				'permission_callback' => array( __CLASS__, 'permission_bearer' ),
+				'args'                => array(
+					'discord_id'         => array(
+						'required'          => false,
+						'type'              => 'string',
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+					'discord_username'   => array(
+						'required'          => false,
+						'type'              => 'string',
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+				),
+			)
+		);
+	}
+
+	/**
+	 * Resolve WordPress user ID from Discord id or username (hb_discord_* meta / login).
+	 *
+	 * @param string $discord_id         Discord snowflake or empty.
+	 * @param string $discord_username   Discord handle or empty.
+	 * @return int User ID or 0.
+	 */
+	private static function find_user_id_for_discord_wallet( $discord_id, $discord_username ) {
+		global $wpdb;
+
+		$discord_id = trim( (string) $discord_id );
+		if ( $discord_id !== '' && ctype_digit( $discord_id ) ) {
+			$uid = (int) $wpdb->get_var(
+				$wpdb->prepare(
+					"SELECT user_id FROM {$wpdb->usermeta} WHERE meta_key = 'hb_discord_id' AND meta_value = %s LIMIT 1",
+					$discord_id
+				)
+			);
+			if ( $uid > 0 ) {
+				return $uid;
+			}
+		}
+
+		$discord_username = trim( (string) $discord_username );
+		if ( $discord_username !== '' ) {
+			$uid = (int) $wpdb->get_var(
+				$wpdb->prepare(
+					"SELECT u.ID FROM {$wpdb->users} u
+					INNER JOIN {$wpdb->usermeta} m ON m.user_id = u.ID AND m.meta_key = 'hb_discord_username' AND LOWER(m.meta_value) = LOWER(%s)
+					LIMIT 1",
+					$discord_username
+				)
+			);
+			if ( $uid > 0 ) {
+				return $uid;
+			}
+
+			$maybe = get_user_by( 'login', $discord_username );
+			if ( $maybe instanceof WP_User ) {
+				return (int) $maybe->ID;
+			}
+		}
+
+		return 0;
+	}
+
+	/**
+	 * GET wallet / XP ledger summary for Discord !profile / !transaction (HumanBlockchain).
+	 *
+	 * @param WP_REST_Request $request Request.
+	 * @return WP_REST_Response|WP_Error
+	 */
+	public static function handle_wallet( WP_REST_Request $request ) {
+		$discord_id       = (string) $request->get_param( 'discord_id' );
+		$discord_username = (string) $request->get_param( 'discord_username' );
+		$discord_id       = trim( $discord_id );
+		$discord_username = trim( $discord_username );
+
+		if ( $discord_id === '' && $discord_username === '' ) {
+			return new WP_Error(
+				'missing_param',
+				__( 'Provide discord_id and/or discord_username.', 'hello-elementor-child' ),
+				array( 'status' => 400 )
+			);
+		}
+
+		$uid = self::find_user_id_for_discord_wallet( $discord_id, $discord_username );
+		if ( $uid <= 0 ) {
+			return new WP_REST_Response( array( 'found' => false ), 200 );
+		}
+
+		$user = get_userdata( $uid );
+		if ( ! $user instanceof WP_User ) {
+			return new WP_REST_Response( array( 'found' => false ), 200 );
+		}
+
+		$email = sanitize_email( $user->user_email );
+		$mem   = self::resolve_membership_by_email( $email );
+		$membership_name = ! empty( $mem['member'] ) && ! empty( $mem['membership_name'] )
+			? (string) $mem['membership_name']
+			: 'unverified';
+
+		$discord_block = array(
+			'discord_id'           => (string) get_user_meta( $uid, 'hb_discord_id', true ),
+			'discord_username'     => (string) get_user_meta( $uid, 'hb_discord_username', true ),
+			'discord_display_name' => (string) get_user_meta( $uid, 'hb_discord_display_name', true ),
+			'joined_at'            => (string) get_user_meta( $uid, 'hb_discord_joined_at', true ),
+			'verified_at'          => (string) get_user_meta( $uid, 'hb_discord_verified_at', true ),
+		);
+
+		$ledger_rows = array();
+		$total_xp    = '0';
+		if ( class_exists( 'Cpm_Humanblockchain_Xp_Ledger' ) ) {
+			$rows = Cpm_Humanblockchain_Xp_Ledger::get_ledger_rows_for_user( $uid, 200 );
+			if ( is_array( $rows ) ) {
+				foreach ( $rows as $row ) {
+					if ( ! is_object( $row ) ) {
+						continue;
+					}
+					$ledger_rows[] = array(
+						'scan_type'        => isset( $row->scan_type ) ? (string) $row->scan_type : '',
+						'transaction_id'   => isset( $row->transaction_id ) ? (string) $row->transaction_id : '',
+						'xp_units'         => isset( $row->xp_units ) ? (string) $row->xp_units : '0',
+						'scan_status'      => isset( $row->scan_status ) ? (string) $row->scan_status : '',
+						'ledger_date'      => isset( $row->ledger_date ) ? (string) $row->ledger_date : '',
+						'order_id'         => isset( $row->order_id ) && $row->order_id !== null && $row->order_id !== '' ? (int) $row->order_id : null,
+					);
+					$u = preg_replace( '/\D/', '', isset( $row->xp_units ) ? (string) $row->xp_units : '0' );
+					if ( $u === '' ) {
+						continue;
+					}
+					if ( function_exists( 'bcadd' ) ) {
+						$total_xp = bcadd( $total_xp, $u, 0 );
+					} else {
+						$total_xp = (string) ( (int) $total_xp + (int) $u );
+					}
+				}
+			}
+		}
+
+		return new WP_REST_Response(
+			array(
+				'found'             => true,
+				'user_id'           => $uid,
+				'user_email'        => $email,
+				'user_login'        => $user->user_login,
+				'display_name'      => $user->display_name,
+				'membership_name'   => $membership_name,
+				'discord'           => $discord_block,
+				'ledger_rows'       => $ledger_rows,
+				'total_xp'          => $total_xp,
+			),
+			200
 		);
 	}
 
