@@ -1,0 +1,400 @@
+/**
+ * PMPro membership confirmation + invoice pages — Human Blockchain layout polish.
+ * Scoped to body.pmpro-confirmation and body.pmpro-invoice (PMPro core page body classes).
+ */
+
+body.pmpro-confirmation,
+body.pmpro-invoice {
+	--hb-pmpro-accent: #d946ef;
+	--hb-pmpro-accent-hover: #c026d3;
+	--hb-pmpro-accent-soft: rgba(217, 70, 239, 0.22);
+	--hb-pmpro-surface: #ffffff;
+	--hb-pmpro-border: rgba(15, 23, 42, 0.12);
+	--hb-pmpro-muted: #64748b;
+	--hb-pmpro-text: #0f172a;
+	--hb-pmpro-radius: 12px;
+	--hb-pmpro-max: 840px;
+}
+
+body.pmpro-confirmation .site-main,
+body.pmpro-confirmation #content.site-main,
+body.pmpro-invoice .site-main,
+body.pmpro-invoice #content.site-main {
+	max-width: min(var(--hb-pmpro-max), calc(100vw - 32px));
+	margin-left: auto;
+	margin-right: auto;
+	padding-left: 16px;
+	padding-right: 16px;
+	box-sizing: border-box;
+}
+
+body.pmpro-confirmation .page-content,
+body.pmpro-confirmation .entry-content,
+body.pmpro-invoice .page-content,
+body.pmpro-invoice .entry-content {
+	max-width: 100%;
+}
+
+body.pmpro-confirmation .entry-title,
+body.pmpro-confirmation h1.entry-title,
+body.pmpro-invoice .entry-title,
+body.pmpro-invoice h1.entry-title {
+	text-align: center;
+	font-weight: 800;
+	letter-spacing: -0.02em;
+	color: var(--hb-pmpro-text);
+	margin-bottom: 1.5rem;
+}
+
+/* Intro copy (confirmation message is echoed as <p> blocks) */
+body.pmpro-confirmation .pmpro_confirmation_wrap > .pmpro_message {
+	border-radius: var(--hb-pmpro-radius);
+	font-size: 0.95rem;
+	line-height: 1.5;
+	margin-bottom: 1.25rem;
+}
+
+body.pmpro-confirmation .pmpro_confirmation_wrap > p {
+	font-size: 1.02rem;
+	line-height: 1.65;
+	color: var(--hb-pmpro-text);
+	margin: 0 0 1rem;
+	max-width: 65ch;
+}
+
+body.pmpro-confirmation .pmpro_confirmation_wrap > p:last-of-type {
+	margin-bottom: 1.75rem;
+}
+
+/* Free confirmation: bullet list before nav */
+body.pmpro-confirmation .pmpro_confirmation_wrap > ul {
+	list-style: none;
+	margin: 0 0 1.5rem;
+	padding: 1rem 1.25rem;
+	background: rgba(248, 250, 252, 0.9);
+	border: 1px solid var(--hb-pmpro-border);
+	border-radius: var(--hb-pmpro-radius);
+	font-size: 1rem;
+	line-height: 1.55;
+	color: var(--hb-pmpro-text);
+}
+
+body.pmpro-confirmation .pmpro_confirmation_wrap > ul li {
+	margin: 0.35rem 0;
+	padding: 0;
+}
+
+body.pmpro-confirmation .pmpro_confirmation_wrap > ul li strong {
+	font-weight: 700;
+	color: var(--hb-pmpro-text);
+}
+
+/* Invoice shell (embedded on confirmation or standalone invoice page) */
+body.pmpro-confirmation .pmpro_invoice_wrap,
+body.pmpro-invoice .pmpro_invoice_wrap {
+	background: var(--hb-pmpro-surface);
+	border: 1px solid var(--hb-pmpro-border);
+	border-radius: calc(var(--hb-pmpro-radius) + 4px);
+	box-shadow:
+		0 1px 0 rgba(255, 255, 255, 0.8) inset,
+		0 18px 40px rgba(15, 23, 42, 0.06);
+	padding: clamp(20px, 3vw, 32px);
+	box-sizing: border-box;
+	margin-top: 0.5rem;
+	margin-bottom: 0.5rem;
+}
+
+body.pmpro-confirmation .pmpro_invoice_wrap > .pmpro_message,
+body.pmpro-invoice .pmpro_invoice_wrap > .pmpro_message {
+	border-radius: var(--hb-pmpro-radius);
+	font-size: 0.95rem;
+	line-height: 1.5;
+	margin-bottom: 1rem;
+}
+
+/* Grid: optional message full width; invoice title + print on one row */
+body.pmpro-confirmation .pmpro_invoice_wrap,
+body.pmpro-invoice .pmpro_invoice_wrap {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
+	align-items: start;
+	column-gap: 1rem;
+	row-gap: 0;
+}
+
+body.pmpro-confirmation .pmpro_invoice_wrap > .pmpro_message,
+body.pmpro-invoice .pmpro_invoice_wrap > .pmpro_message {
+	grid-column: 1 / -1;
+}
+
+body.pmpro-confirmation .pmpro_invoice_wrap > h2,
+body.pmpro-invoice .pmpro_invoice_wrap > h2 {
+	grid-column: 1;
+	grid-row: auto;
+	margin: 0 0 1rem;
+	padding: 0 0 0.65rem;
+	font-size: clamp(1.05rem, 2.2vw, 1.2rem);
+	font-weight: 700;
+	color: var(--hb-pmpro-text);
+	border-bottom: 2px solid rgba(217, 70, 239, 0.35);
+	align-self: end;
+}
+
+body.pmpro-confirmation .pmpro_invoice_wrap > .pmpro_a-print,
+body.pmpro-invoice .pmpro_invoice_wrap > .pmpro_a-print {
+	grid-column: 2;
+	float: none;
+	margin: 0 0 1rem;
+	align-self: end;
+	justify-self: end;
+	font-size: 0.9rem;
+	line-height: 1.35;
+	color: var(--hb-pmpro-muted);
+	padding: 0.35rem 0 0.35rem 1.65rem;
+	background-position: 0 50%;
+	text-decoration: none;
+	border-radius: 8px;
+	transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+body.pmpro-confirmation .pmpro_invoice_wrap > .pmpro_a-print:hover,
+body.pmpro-invoice .pmpro_invoice_wrap > .pmpro_a-print:hover {
+	color: var(--hb-pmpro-accent);
+	background-color: var(--hb-pmpro-accent-soft);
+}
+
+body.pmpro-confirmation .pmpro_invoice_wrap > ul,
+body.pmpro-invoice .pmpro_invoice_wrap > ul {
+	grid-column: 1 / -1;
+	list-style: none;
+	margin: 0 0 1.25rem;
+	padding: 0;
+	font-size: 1rem;
+	line-height: 1.6;
+	color: var(--hb-pmpro-text);
+}
+
+body.pmpro-confirmation .pmpro_invoice_wrap > ul li,
+body.pmpro-invoice .pmpro_invoice_wrap > ul li {
+	margin: 0.4rem 0;
+	padding: 0;
+	position: relative;
+	padding-left: 0;
+}
+
+body.pmpro-confirmation .pmpro_invoice_wrap > ul li strong,
+body.pmpro-invoice .pmpro_invoice_wrap > ul li strong {
+	font-weight: 700;
+	color: var(--hb-pmpro-text);
+}
+
+body.pmpro-confirmation .pmpro_invoice_wrap > .pmpro_payment_instructions,
+body.pmpro-invoice .pmpro_invoice_wrap > .pmpro_payment_instructions {
+	grid-column: 1 / -1;
+	font-size: 0.95rem;
+	line-height: 1.55;
+	color: var(--hb-pmpro-text);
+}
+
+body.pmpro-confirmation .pmpro_invoice_wrap > hr,
+body.pmpro-invoice .pmpro_invoice_wrap > hr {
+	grid-column: 1 / -1;
+	border: none;
+	border-top: 1px solid var(--hb-pmpro-border);
+	margin: 0.25rem 0 1.25rem;
+}
+
+body.pmpro-confirmation .pmpro_invoice_wrap > .pmpro_invoice_details,
+body.pmpro-invoice .pmpro_invoice_wrap > .pmpro_invoice_details {
+	grid-column: 1 / -1;
+}
+
+body.pmpro-confirmation .pmpro_invoice_wrap > .pmpro_actions_nav,
+body.pmpro-invoice .pmpro_invoice_wrap > .pmpro_actions_nav {
+	grid-column: 1 / -1;
+}
+
+body.pmpro-confirmation .pmpro_invoice_wrap .pmpro_invoice_details,
+body.pmpro-invoice .pmpro_invoice_wrap .pmpro_invoice_details {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 1.25rem 1.75rem;
+	padding: 0.25rem 0 1rem;
+	margin: 0;
+}
+
+body.pmpro-confirmation .pmpro_invoice_wrap .pmpro_invoice_details > div,
+body.pmpro-invoice .pmpro_invoice_wrap .pmpro_invoice_details > div {
+	flex: initial;
+	padding-right: 0;
+	min-width: 0;
+}
+
+body.pmpro-confirmation .pmpro_invoice_wrap .pmpro_invoice_details strong,
+body.pmpro-invoice .pmpro_invoice_wrap .pmpro_invoice_details strong {
+	display: block;
+	font-size: 0.82rem;
+	font-weight: 700;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	color: var(--hb-pmpro-muted);
+	margin-bottom: 0.5rem;
+}
+
+body.pmpro-confirmation .pmpro_invoice_wrap .pmpro_invoice_details p,
+body.pmpro-invoice .pmpro_invoice_wrap .pmpro_invoice_details p {
+	margin: 0;
+	font-size: 1rem;
+	line-height: 1.55;
+	color: var(--hb-pmpro-text);
+}
+
+body.pmpro-confirmation .pmpro_invoice_wrap .pmpro_invoice-total p,
+body.pmpro-invoice .pmpro_invoice_wrap .pmpro_invoice-total p {
+	font-size: 1.1rem;
+	font-weight: 700;
+	color: var(--hb-pmpro-text);
+}
+
+body.pmpro-confirmation .pmpro_invoice_wrap .pmpro_invoice_details span,
+body.pmpro-invoice .pmpro_invoice_wrap .pmpro_invoice_details span {
+	font-size: inherit;
+	line-height: inherit;
+}
+
+/* Invoice list table */
+body.pmpro-confirmation .pmpro_invoice_wrap > table,
+body.pmpro-invoice .pmpro_invoice_wrap > table {
+	grid-column: 1 / -1;
+	width: 100%;
+	border-collapse: collapse;
+	font-size: 0.95rem;
+	margin: 0 0 1rem;
+}
+
+body.pmpro-confirmation .pmpro_invoice_wrap > table th,
+body.pmpro-invoice .pmpro_invoice_wrap > table th {
+	text-align: left;
+	font-size: 0.75rem;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	color: var(--hb-pmpro-muted);
+	padding: 0.65rem 0.5rem;
+	border-bottom: 1px solid var(--hb-pmpro-border);
+}
+
+body.pmpro-confirmation .pmpro_invoice_wrap > table td,
+body.pmpro-invoice .pmpro_invoice_wrap > table td {
+	padding: 0.65rem 0.5rem;
+	border-bottom: 1px solid rgba(15, 23, 42, 0.06);
+}
+
+body.pmpro-confirmation .pmpro_invoice_wrap > table a,
+body.pmpro-invoice .pmpro_invoice_wrap > table a {
+	color: var(--hb-pmpro-accent);
+	font-weight: 600;
+	text-decoration: none;
+}
+
+body.pmpro-confirmation .pmpro_invoice_wrap > table a:hover,
+body.pmpro-invoice .pmpro_invoice_wrap > table a:hover {
+	text-decoration: underline;
+}
+
+/* Footer nav — brand accent, comfortable tap targets */
+body.pmpro-confirmation .pmpro_actions_nav:not(.pmpro_login_wrap .pmpro_actions_nav),
+body.pmpro-invoice .pmpro_actions_nav:not(.pmpro_login_wrap .pmpro_actions_nav) {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	gap: 1rem 1.5rem;
+	margin-top: 1.5rem;
+	padding-top: 1.25rem;
+	border-top: 1px solid var(--hb-pmpro-border);
+}
+
+body.pmpro-confirmation .pmpro_confirmation_wrap > .pmpro_actions_nav,
+body.pmpro-confirmation .pmpro_invoice_wrap > .pmpro_actions_nav {
+	padding-top: 1.25rem;
+	border-top: 1px solid var(--hb-pmpro-border);
+}
+
+body.pmpro-confirmation .pmpro_confirmation_wrap > .pmpro_actions_nav {
+	margin-top: 1.5rem;
+}
+
+body.pmpro-confirmation .pmpro_invoice_wrap > .pmpro_actions_nav {
+	margin-top: 0;
+}
+
+body.pmpro-confirmation .pmpro_actions_nav a,
+body.pmpro-invoice .pmpro_actions_nav a {
+	color: var(--hb-pmpro-accent);
+	font-weight: 600;
+	text-decoration: none;
+	padding: 0.35rem 0;
+	transition: color 0.15s ease;
+}
+
+body.pmpro-confirmation .pmpro_actions_nav a:hover,
+body.pmpro-invoice .pmpro_actions_nav a:hover {
+	color: var(--hb-pmpro-accent-hover);
+	text-decoration: underline;
+}
+
+body.pmpro-confirmation .pmpro_actions_nav-left,
+body.pmpro-invoice .pmpro_actions_nav-left {
+	flex: 1 1 auto;
+	text-align: left;
+	min-width: min(100%, 12rem);
+}
+
+body.pmpro-confirmation .pmpro_actions_nav-right,
+body.pmpro-invoice .pmpro_actions_nav-right {
+	flex: 1 1 auto;
+	text-align: right;
+	min-width: min(100%, 12rem);
+}
+
+@media (max-width: 699px) {
+	body.pmpro-confirmation .pmpro_invoice_wrap .pmpro_invoice_details,
+	body.pmpro-invoice .pmpro_invoice_wrap .pmpro_invoice_details {
+		grid-template-columns: 1fr;
+		gap: 1.25rem;
+	}
+
+	body.pmpro-confirmation .pmpro_invoice_wrap,
+	body.pmpro-invoice .pmpro_invoice_wrap {
+		grid-template-columns: 1fr;
+	}
+
+	body.pmpro-confirmation .pmpro_invoice_wrap > .pmpro_a-print,
+	body.pmpro-invoice .pmpro_invoice_wrap > .pmpro_a-print {
+		grid-column: 1;
+		justify-self: start;
+		margin-top: -0.5rem;
+		margin-bottom: 1rem;
+	}
+
+	body.pmpro-confirmation .pmpro_actions_nav-left,
+	body.pmpro-confirmation .pmpro_actions_nav-right,
+	body.pmpro-invoice .pmpro_actions_nav-left,
+	body.pmpro-invoice .pmpro_actions_nav-right {
+		flex-basis: 100%;
+		text-align: center;
+	}
+}
+
+@media print {
+	body.pmpro-confirmation .pmpro_invoice_wrap,
+	body.pmpro-invoice .pmpro_invoice_wrap {
+		box-shadow: none;
+		border: 1px solid #ccc;
+	}
+
+	body.pmpro-confirmation .pmpro_actions_nav a,
+	body.pmpro-invoice .pmpro_actions_nav a {
+		color: #000;
+	}
+}

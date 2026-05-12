@@ -196,6 +196,103 @@ function hb_enqueue_pmpro_login_ui_styles() {
 add_action( 'wp_enqueue_scripts', 'hb_enqueue_pmpro_login_ui_styles', 101 );
 
 /**
+ * Whether to load PMPro membership checkout UI styles.
+ *
+ * @return bool
+ */
+function hb_should_enqueue_pmpro_checkout_styles() {
+	if ( ! defined( 'PMPRO_VERSION' ) ) {
+		return false;
+	}
+	if ( apply_filters( 'hb_enqueue_pmpro_checkout_styles', false ) ) {
+		return true;
+	}
+	if ( function_exists( 'pmpro_is_checkout' ) && pmpro_is_checkout() ) {
+		return true;
+	}
+	$checkout_page_id = (int) get_option( 'pmpro_checkout_page_id' );
+	if ( $checkout_page_id && is_page( $checkout_page_id ) ) {
+		return true;
+	}
+	return false;
+}
+
+/**
+ * PMPro checkout UI — loads after PMPro frontend + Elementor when active.
+ *
+ * @return void
+ */
+function hb_enqueue_pmpro_checkout_ui_styles() {
+	if ( ! hb_should_enqueue_pmpro_checkout_styles() ) {
+		return;
+	}
+	$pmpro_checkout_css = get_stylesheet_directory() . '/assets/css/pmpro-checkout.css';
+	$deps               = array( 'hello-elementor-child-style' );
+	if ( wp_style_is( 'pmpro_frontend', 'registered' ) ) {
+		$deps[] = 'pmpro_frontend';
+	}
+	if ( wp_style_is( 'elementor-frontend', 'registered' ) ) {
+		$deps[] = 'elementor-frontend';
+	}
+	wp_enqueue_style(
+		'hb-pmpro-checkout-ui',
+		get_stylesheet_directory_uri() . '/assets/css/pmpro-checkout.css',
+		$deps,
+		file_exists( $pmpro_checkout_css ) ? filemtime( $pmpro_checkout_css ) : HELLO_ELEMENTOR_CHILD_VERSION
+	);
+}
+add_action( 'wp_enqueue_scripts', 'hb_enqueue_pmpro_checkout_ui_styles', 101 );
+
+/**
+ * Whether to load PMPro confirmation / invoice page UI styles.
+ *
+ * @return bool
+ */
+function hb_should_enqueue_pmpro_confirmation_styles() {
+	if ( ! defined( 'PMPRO_VERSION' ) ) {
+		return false;
+	}
+	if ( apply_filters( 'hb_enqueue_pmpro_confirmation_styles', false ) ) {
+		return true;
+	}
+	$confirmation_page_id = (int) get_option( 'pmpro_confirmation_page_id' );
+	if ( $confirmation_page_id && is_page( $confirmation_page_id ) ) {
+		return true;
+	}
+	$invoice_page_id = (int) get_option( 'pmpro_invoice_page_id' );
+	if ( $invoice_page_id && is_page( $invoice_page_id ) ) {
+		return true;
+	}
+	return false;
+}
+
+/**
+ * PMPro confirmation + invoice UI — matches checkout accent and readable invoice layout.
+ *
+ * @return void
+ */
+function hb_enqueue_pmpro_confirmation_ui_styles() {
+	if ( ! hb_should_enqueue_pmpro_confirmation_styles() ) {
+		return;
+	}
+	$pmpro_confirmation_css = get_stylesheet_directory() . '/assets/css/pmpro-confirmation.css';
+	$deps                  = array( 'hello-elementor-child-style' );
+	if ( wp_style_is( 'pmpro_frontend', 'registered' ) ) {
+		$deps[] = 'pmpro_frontend';
+	}
+	if ( wp_style_is( 'elementor-frontend', 'registered' ) ) {
+		$deps[] = 'elementor-frontend';
+	}
+	wp_enqueue_style(
+		'hb-pmpro-confirmation-ui',
+		get_stylesheet_directory_uri() . '/assets/css/pmpro-confirmation.css',
+		$deps,
+		file_exists( $pmpro_confirmation_css ) ? filemtime( $pmpro_confirmation_css ) : HELLO_ELEMENTOR_CHILD_VERSION
+	);
+}
+add_action( 'wp_enqueue_scripts', 'hb_enqueue_pmpro_confirmation_ui_styles', 101 );
+
+/**
  * Thank-you / order-received page UI — after WooCommerce blocks + Elementor when present.
  *
  * @return void
@@ -732,6 +829,322 @@ function hb_include_otp_popup() {
 	}
 }
 add_action( 'wp_footer', 'hb_include_otp_popup' );
+
+/**
+ * Register WooCommerce My Account endpoint for PMPro / site memberships.
+ */
+function hb_register_memberships_endpoint() {
+	add_rewrite_endpoint( 'memberships', EP_ROOT | EP_PAGES );
+}
+add_action( 'init', 'hb_register_memberships_endpoint' );
+
+/**
+ * Add Memberships tab to WooCommerce My Account (PMPro levels + recent invoices).
+ *
+ * @param array<string, string> $items Menu items.
+ * @return array<string, string>
+ */
+function hb_add_memberships_account_menu_item( $items ) {
+	if ( ! is_array( $items ) ) {
+		return $items;
+	}
+
+	$new_items = array();
+	$inserted  = false;
+	foreach ( $items as $key => $label ) {
+		$new_items[ $key ] = $label;
+		if ( 'xp-ledger' === $key ) {
+			$new_items['memberships'] = __( 'Memberships', 'hello-elementor-child' );
+			$inserted                 = true;
+		}
+	}
+
+	if ( ! $inserted ) {
+		$rebuilt = array();
+		foreach ( $new_items as $key => $label ) {
+			$rebuilt[ $key ] = $label;
+			if ( 'orders' === $key ) {
+				$rebuilt['memberships'] = __( 'Memberships', 'hello-elementor-child' );
+				$inserted               = true;
+			}
+		}
+		$new_items = $inserted ? $rebuilt : $new_items;
+	}
+
+	if ( ! $inserted ) {
+		$new_items['memberships'] = __( 'Memberships', 'hello-elementor-child' );
+	}
+
+	return $new_items;
+}
+add_filter( 'woocommerce_account_menu_items', 'hb_add_memberships_account_menu_item', 41 );
+
+/**
+ * Whether the user's PMPro membership row has a real end date (not open-ended / unset).
+ *
+ * @param object|null $level Level object from {@see pmpro_getMembershipLevelsForUser()}.
+ * @return bool
+ */
+function hb_pmpro_level_row_has_meaningful_enddate( $level ) {
+	if ( empty( $level ) || ! is_object( $level ) ) {
+		return false;
+	}
+	if ( ! isset( $level->enddate ) ) {
+		return false;
+	}
+	$ed = $level->enddate;
+	if ( is_numeric( $ed ) ) {
+		return (int) $ed > 0;
+	}
+	$s = trim( (string) $ed );
+	if ( $s === '' || $s === '0000-00-00' || ( strpos( $s, '0000-00-00' ) === 0 ) ) {
+		return false;
+	}
+	return true;
+}
+
+/**
+ * PMPro price as plain text (formatPrice returns HTML entities like &#36;).
+ *
+ * @param float|string $amount Price amount.
+ * @return string
+ */
+function hb_pmpro_price_plain( $amount ) {
+	if ( ! function_exists( 'pmpro_formatPrice' ) ) {
+		return '';
+	}
+	$html  = pmpro_formatPrice( $amount );
+	$plain = wp_strip_all_tags( (string) $html );
+	return html_entity_decode( $plain, ENT_QUOTES | ENT_HTML5, 'UTF-8' );
+}
+
+/**
+ * Plain-text billing summary from a PMPro user–level row (when subscription API has no row).
+ *
+ * @param object $lvl Row from {@see pmpro_getMembershipLevelsForUser()}.
+ * @return string
+ */
+function hb_pmpro_plain_billing_summary_for_membership_row( $lvl ) {
+	$cn = isset( $lvl->cycle_number ) ? (int) $lvl->cycle_number : 0;
+	$cp = isset( $lvl->cycle_period ) ? (string) $lvl->cycle_period : '';
+	$ba = isset( $lvl->billing_amount ) ? (float) $lvl->billing_amount : 0.0;
+	if ( $cn > 0 && $cp !== '' && $ba > 0 && function_exists( 'pmpro_translate_billing_period' ) ) {
+		return hb_pmpro_price_plain( $ba ) . ' / ' . pmpro_translate_billing_period( $cp, $cn );
+	}
+	if ( $ba > 0 ) {
+		return hb_pmpro_price_plain( $ba );
+	}
+	$ip = isset( $lvl->initial_payment ) ? (float) $lvl->initial_payment : 0.0;
+	if ( $ip > 0 ) {
+		return hb_pmpro_price_plain( $ip );
+	}
+	return '';
+}
+
+/**
+ * Replace empty PMPro "Billing" cells (em dash) using data from pmpro_memberships_users.
+ *
+ * @param string $html Shortcode HTML.
+ * @return string
+ */
+function hb_pmpro_fix_account_membership_table_billing_cells( $html ) {
+	if ( ! class_exists( 'DOMDocument' ) || ! class_exists( 'DOMXPath' ) || ! function_exists( 'pmpro_getMembershipLevelsForUser' ) ) {
+		return $html;
+	}
+	$levels = pmpro_getMembershipLevelsForUser( get_current_user_id() );
+	if ( empty( $levels ) || ! is_array( $levels ) ) {
+		return $html;
+	}
+
+	libxml_use_internal_errors( true );
+	$dom = new DOMDocument();
+	$wrapped = '<div id="hb-pmpro-account-patch-root">' . $html . '</div>';
+	if ( ! @$dom->loadHTML( '<?xml encoding="utf-8" ?>' . $wrapped, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD ) ) {
+		libxml_clear_errors();
+		return $html;
+	}
+
+	$xpath = new DOMXPath( $dom );
+	$rows  = $xpath->query( '//*[@id="hb-pmpro-account-patch-root"]//table[contains(concat(" ",normalize-space(@class)," "), " pmpro_table ")]//tbody/tr' );
+	if ( ! $rows || ! $rows->length ) {
+		libxml_clear_errors();
+		return $html;
+	}
+
+	foreach ( $rows as $tr ) {
+		$name_td = $xpath->query( './/*[contains(@class,"pmpro_account-membership-levelname")]', $tr )->item( 0 );
+		$fee_p   = $xpath->query( './/*[contains(@class,"pmpro_account-membership-levelfee")]//p', $tr )->item( 0 );
+		if ( ! $name_td instanceof DOMElement || ! $fee_p instanceof DOMElement ) {
+			continue;
+		}
+
+		$name_clone = $name_td->cloneNode( true );
+		$tmp_dom    = new DOMDocument();
+		$tmp_dom->appendChild( $tmp_dom->importNode( $name_clone, true ) );
+		$tmp_xpath = new DOMXPath( $tmp_dom );
+		foreach ( $tmp_xpath->query( '//*[contains(@class,"pmpro_actionlinks")]' ) as $remove ) {
+			if ( $remove->parentNode ) {
+				$remove->parentNode->removeChild( $remove );
+			}
+		}
+		$name_text = trim( $tmp_dom->textContent );
+
+		foreach ( $levels as $lvl ) {
+			if ( trim( (string) $lvl->name ) !== $name_text ) {
+				continue;
+			}
+			$inner = trim( $fee_p->textContent );
+			if ( $inner !== '' && $inner !== '—' && $inner !== '-' && $inner !== '–' ) {
+				break;
+			}
+			$billing = hb_pmpro_plain_billing_summary_for_membership_row( $lvl );
+			if ( $billing === '' ) {
+				break;
+			}
+			while ( $fee_p->firstChild ) {
+				$fee_p->removeChild( $fee_p->firstChild );
+			}
+			$fee_p->appendChild( $dom->createTextNode( $billing ) );
+			break;
+		}
+	}
+
+	$root = $dom->getElementById( 'hb-pmpro-account-patch-root' );
+	$out  = '';
+	if ( $root ) {
+		foreach ( $root->childNodes as $child ) {
+			$out .= $dom->saveHTML( $child );
+		}
+	}
+	libxml_clear_errors();
+	return $out !== '' ? $out : $html;
+}
+
+/**
+ * Explain missing expiration on account when PMPro has no fixed enddate (typical for recurring).
+ *
+ * @param string   $text     Default expiration cell text.
+ * @param object   $level    User membership row.
+ * @param WP_User  $user     User.
+ * @param bool     $show_time Unused.
+ * @return string
+ */
+function hb_pmpro_membership_expiration_text_when_no_enddate( $text, $level, $user, $show_time ) {
+	if ( hb_pmpro_level_row_has_meaningful_enddate( $level ) ) {
+		return $text;
+	}
+
+	$cn = isset( $level->cycle_number ) ? (int) $level->cycle_number : 0;
+	$cp = isset( $level->cycle_period ) ? (string) $level->cycle_period : '';
+	$start = isset( $level->startdate ) ? (int) $level->startdate : 0;
+
+	if ( $cn > 0 && $cp !== '' ) {
+		$period_label = function_exists( 'pmpro_translate_billing_period' )
+			? pmpro_translate_billing_period( $cp, $cn )
+			: $cp;
+		if ( $start > 0 ) {
+			return esc_html(
+				sprintf(
+					/* translators: 1: formatted start date, 2: billing cycle number, 3: billing period label (e.g. Month). */
+					__( 'No fixed end date. Started %1$s. Access continues while your membership is active (renews every %2$d %3$s).', 'hello-elementor-child' ),
+					date_i18n( get_option( 'date_format' ), $start ),
+					$cn,
+					$period_label
+				)
+			);
+		}
+		return esc_html(
+			sprintf(
+				/* translators: 1: cycle number, 2: billing period label. */
+				__( 'No fixed end date. Access continues while your membership is active (renews every %1$d %2$s).', 'hello-elementor-child' ),
+				$cn,
+				$period_label
+			)
+		);
+	}
+
+	if ( function_exists( 'pmpro_getLevel' ) ) {
+		$def = pmpro_getLevel( (int) $level->id );
+		if ( $def && function_exists( 'pmpro_isLevelFree' ) && pmpro_isLevelFree( $def ) ) {
+			return esc_html__( 'No expiration (free level).', 'hello-elementor-child' );
+		}
+	}
+
+	return $text;
+}
+add_filter( 'pmpro_membership_expiration_text', 'hb_pmpro_membership_expiration_text_when_no_enddate', 20, 4 );
+
+/**
+ * Render Memberships endpoint: Paid Memberships Pro account sections when available.
+ *
+ * @return void
+ */
+function hb_render_memberships_account_endpoint() {
+	if ( ! is_user_logged_in() ) {
+		echo '<p>' . esc_html__( 'Please log in to view your memberships.', 'hello-elementor-child' ) . '</p>';
+		return;
+	}
+
+	echo '<div class="hb-my-account-memberships">';
+
+	if ( shortcode_exists( 'pmpro_account' ) ) {
+		echo '<p class="hb-my-account-memberships__intro">' . esc_html__( 'Your active membership levels and recent membership invoices from Paid Memberships Pro.', 'hello-elementor-child' ) . '</p>';
+		ob_start();
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- shortcode HTML from PMPro core.
+		echo do_shortcode( '[pmpro_account sections="membership,invoices"]' );
+		$pmpro_account_html = ob_get_clean();
+		$pmpro_account_html = hb_pmpro_fix_account_membership_table_billing_cells( $pmpro_account_html );
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped inside patch; PMPro markup.
+		echo $pmpro_account_html;
+		if ( function_exists( 'pmpro_url' ) ) {
+			$account_url = pmpro_url( 'account' );
+			if ( is_string( $account_url ) && $account_url !== '' ) {
+				echo '<p class="hb-my-account-memberships__footer"><a href="' . esc_url( $account_url ) . '">' . esc_html__( 'Open full membership account (billing, profile, all invoices)', 'hello-elementor-child' ) . '</a></p>';
+			}
+		}
+	} else {
+		echo '<p class="woocommerce-info">' . esc_html__( 'Paid Memberships Pro is not active. Below is the membership information stored on this site.', 'hello-elementor-child' ) . '</p>';
+		$uid  = get_current_user_id();
+		$raw  = get_user_meta( $uid, '_membership_level', true );
+		$data = is_string( $raw ) ? json_decode( $raw, true ) : null;
+		if ( ! is_array( $data ) || empty( $data ) ) {
+			echo '<p>' . esc_html__( 'No membership record is stored for this account yet.', 'hello-elementor-child' ) . '</p>';
+		} else {
+			echo '<dl class="hb-my-account-memberships__meta">';
+			$rows = array(
+				'level_name' => __( 'Level name', 'hello-elementor-child' ),
+				'level_id'   => __( 'Level ID', 'hello-elementor-child' ),
+				'saved_at'   => __( 'Saved at', 'hello-elementor-child' ),
+				'action'     => __( 'Last action', 'hello-elementor-child' ),
+			);
+			foreach ( $rows as $field => $dt_label ) {
+				if ( ! isset( $data[ $field ] ) ) {
+					continue;
+				}
+				echo '<dt>' . esc_html( $dt_label ) . '</dt>';
+				echo '<dd>' . esc_html( (string) $data[ $field ] ) . '</dd>';
+			}
+			echo '</dl>';
+		}
+	}
+
+	echo '</div>';
+}
+add_action( 'woocommerce_account_memberships_endpoint', 'hb_render_memberships_account_endpoint' );
+
+/**
+ * Flush rewrite rules once so the WooCommerce "memberships" account endpoint resolves.
+ *
+ * @return void
+ */
+function hb_maybe_flush_rewrites_for_memberships_endpoint() {
+	if ( get_option( 'hb_wc_memberships_rewrite_flushed', '' ) === 'yes' ) {
+		return;
+	}
+	flush_rewrite_rules( false );
+	update_option( 'hb_wc_memberships_rewrite_flushed', 'yes', false );
+}
+add_action( 'init', 'hb_maybe_flush_rewrites_for_memberships_endpoint', 999 );
 
 /**
  * Register WooCommerce My Account endpoint for XP Ledger.

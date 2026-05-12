@@ -1,0 +1,387 @@
+/**
+ * PMPro membership checkout — Human Blockchain layout polish.
+ * Scoped to body.pmpro-checkout (PMPro adds this on the checkout core page).
+ */
+
+body.pmpro-checkout {
+	--hb-pmpro-accent: #d946ef;
+	--hb-pmpro-accent-hover: #c026d3;
+	--hb-pmpro-accent-soft: rgba(217, 70, 239, 0.22);
+	--hb-pmpro-surface: #ffffff;
+	--hb-pmpro-border: rgba(15, 23, 42, 0.12);
+	--hb-pmpro-muted: #64748b;
+	--hb-pmpro-text: #0f172a;
+	--hb-pmpro-radius: 12px;
+	--hb-pmpro-max: 720px;
+}
+
+/* Constrain full-width theme / Elementor columns */
+body.pmpro-checkout .site-main,
+body.pmpro-checkout #content.site-main {
+	max-width: min(var(--hb-pmpro-max), calc(100vw - 32px));
+	margin-left: auto;
+	margin-right: auto;
+	padding-left: 16px;
+	padding-right: 16px;
+	box-sizing: border-box;
+}
+
+body.pmpro-checkout .page-content,
+body.pmpro-checkout .entry-content {
+	max-width: 100%;
+}
+
+body.pmpro-checkout .entry-title,
+body.pmpro-checkout h1.entry-title {
+	text-align: center;
+	font-weight: 800;
+	letter-spacing: -0.02em;
+	color: var(--hb-pmpro-text);
+	margin-bottom: 1.25rem;
+}
+
+/* HB tier notice from cpm-humanblockchain */
+body.pmpro-checkout .cpm-hb-checkout-tier-notice {
+	max-width: 100%;
+	margin-bottom: 1.25rem;
+}
+
+body.pmpro-checkout .cpm-hb-checkout-tier-notice .pmpro_message {
+	border-radius: var(--hb-pmpro-radius);
+}
+
+/* Card shell around the form */
+body.pmpro-checkout form#pmpro_form.pmpro_form {
+	background: var(--hb-pmpro-surface);
+	border: 1px solid var(--hb-pmpro-border);
+	border-radius: calc(var(--hb-pmpro-radius) + 4px);
+	box-shadow:
+		0 1px 0 rgba(255, 255, 255, 0.8) inset,
+		0 18px 40px rgba(15, 23, 42, 0.06);
+	padding: clamp(20px, 3vw, 32px);
+	box-sizing: border-box;
+}
+
+body.pmpro-checkout form.pmpro_form .pmpro_message {
+	border-radius: var(--hb-pmpro-radius);
+	font-size: 0.95rem;
+	line-height: 1.5;
+}
+
+body.pmpro-checkout form.pmpro_form hr {
+	border: none;
+	border-top: 1px solid var(--hb-pmpro-border);
+	margin: 1.75rem 0;
+}
+
+body.pmpro-checkout form.pmpro_form .pmpro_checkout > h2 {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 0.5rem 1rem;
+	font-size: clamp(1.1rem, 2.5vw, 1.25rem);
+	font-weight: 700;
+	color: var(--hb-pmpro-text);
+	margin: 0 0 1rem;
+	padding-bottom: 0.5rem;
+	border-bottom: 2px solid rgba(217, 70, 239, 0.35);
+}
+
+body.pmpro-checkout form.pmpro_form .pmpro_checkout-h2-msg {
+	font-size: 0.8rem;
+	font-weight: 600;
+	color: var(--hb-pmpro-muted);
+}
+
+body.pmpro-checkout form.pmpro_form .pmpro_checkout-h2-msg a {
+	color: var(--hb-pmpro-accent);
+	font-weight: 700;
+}
+
+body.pmpro-checkout form.pmpro_form .pmpro_level_name_text {
+	margin: 0 0 0.25rem;
+	line-height: 1.55;
+	color: var(--hb-pmpro-text);
+}
+
+/* Labels — default; checkout fields override below */
+body.pmpro-checkout form.pmpro_form label {
+	display: block;
+	font-size: 0.8rem;
+	font-weight: 600;
+	color: var(--hb-pmpro-text);
+	margin-bottom: 0.35rem;
+}
+
+/*
+ * Required asterisk: PMPro JS appends .pmpro_asterisk after the last input (DOM: label, input, *).
+ * Flex + order renders label then * on one line; inputs force-wrap to full width below.
+ * (Inner CSS grid + parent 2-col grid made the * column stretch — looked right-aligned or centered.)
+ */
+body.pmpro-checkout form.pmpro_form .pmpro_checkout-field:not(.pmpro_hidden):not(.pmpro_payment-expiration):not(.pmpro_checkout-field-bcity_state_zip) {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	align-items: baseline;
+	align-content: flex-start;
+	justify-content: flex-start;
+	gap: 0.28rem 0.4rem;
+	width: 100%;
+	min-width: 0;
+}
+
+body.pmpro-checkout form.pmpro_form .pmpro_checkout-field:not(.pmpro_hidden):not(.pmpro_payment-expiration):not(.pmpro_checkout-field-bcity_state_zip) > label {
+	order: 1;
+	flex: 0 1 auto;
+	margin: 0;
+	padding: 0;
+	display: inline-block;
+	max-width: 100%;
+}
+
+body.pmpro-checkout form.pmpro_form .pmpro_checkout-field:not(.pmpro_hidden):not(.pmpro_payment-expiration):not(.pmpro_checkout-field-bcity_state_zip) > .pmpro_asterisk {
+	order: 2;
+	flex: 0 0 auto;
+	position: static;
+	float: none;
+	display: block;
+	margin: 0;
+	line-height: 1.35;
+	font-size: 1rem;
+	font-weight: 700;
+	color: var(--hb-pmpro-accent);
+}
+
+body.pmpro-checkout form.pmpro_form .pmpro_checkout-field label .pmpro_asterisk {
+	position: static;
+	display: inline;
+	margin-left: 0.2rem;
+	font-weight: 700;
+	color: var(--hb-pmpro-accent);
+	vertical-align: baseline;
+}
+
+body.pmpro-checkout form.pmpro_form .pmpro_checkout-field > .pmpro_asterisk abbr,
+body.pmpro-checkout form.pmpro_form .pmpro_checkout-field label .pmpro_asterisk abbr {
+	border: none;
+	text-decoration: none;
+}
+
+body.pmpro-checkout form.pmpro_form .pmpro_checkout-field:not(.pmpro_hidden):not(.pmpro_payment-expiration):not(.pmpro_checkout-field-bcity_state_zip) > :not(label):not(.pmpro_asterisk) {
+	order: 3;
+	flex: 1 1 100%;
+	width: 100%;
+	max-width: 100%;
+	min-width: 0;
+	box-sizing: border-box;
+}
+
+/* Expiration + “city state zip”: raw `/` text between controls breaks flex order — use grid */
+body.pmpro-checkout #pmpro_payment_information_fields .pmpro_payment-expiration,
+body.pmpro-checkout form.pmpro_form .pmpro_checkout-field-bcity_state_zip {
+	display: grid;
+	grid-template-columns: max-content max-content;
+	grid-template-rows: auto auto;
+	justify-content: start;
+	justify-items: start;
+	align-items: baseline;
+	gap: 0.4rem 0.28rem;
+	width: 100%;
+	min-width: 0;
+}
+
+body.pmpro-checkout #pmpro_payment_information_fields .pmpro_payment-expiration > label,
+body.pmpro-checkout form.pmpro_form .pmpro_checkout-field-bcity_state_zip > label {
+	grid-column: 1;
+	grid-row: 1;
+	margin: 0;
+	display: inline-block;
+}
+
+body.pmpro-checkout #pmpro_payment_information_fields .pmpro_payment-expiration > .pmpro_asterisk,
+body.pmpro-checkout form.pmpro_form .pmpro_checkout-field-bcity_state_zip > .pmpro_asterisk {
+	grid-column: 2;
+	grid-row: 1;
+	margin: 0;
+	line-height: 1.35;
+	font-size: 1rem;
+	font-weight: 700;
+	color: var(--hb-pmpro-accent);
+}
+
+body.pmpro-checkout #pmpro_payment_information_fields .pmpro_payment-expiration > select,
+body.pmpro-checkout #pmpro_payment_information_fields .pmpro_payment-expiration > input,
+body.pmpro-checkout form.pmpro_form .pmpro_checkout-field-bcity_state_zip > :not(label):not(.pmpro_asterisk) {
+	grid-row: 2;
+	grid-column: auto;
+	width: auto !important;
+	max-width: 100%;
+	min-width: 0;
+	box-sizing: border-box;
+	display: inline-block;
+	vertical-align: middle;
+	margin-right: 0.2rem;
+}
+
+body.pmpro-checkout #pmpro_payment_information_fields .pmpro_payment-expiration > select {
+	min-width: 4.25rem;
+}
+
+body.pmpro-checkout form.pmpro_form input.input,
+body.pmpro-checkout form.pmpro_form input[type="text"],
+body.pmpro-checkout form.pmpro_form input[type="email"],
+body.pmpro-checkout form.pmpro_form input[type="password"],
+body.pmpro-checkout form.pmpro_form select {
+	width: 100%;
+	max-width: 100%;
+	box-sizing: border-box;
+	padding: 0.65rem 0.75rem;
+	border: 1px solid var(--hb-pmpro-border);
+	border-radius: 10px;
+	font-size: 1rem;
+	line-height: 1.35;
+	background: #fafafa;
+	color: var(--hb-pmpro-text);
+	transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+body.pmpro-checkout form.pmpro_form input:focus,
+body.pmpro-checkout form.pmpro_form select:focus {
+	outline: none;
+	border-color: var(--hb-pmpro-accent);
+	box-shadow: 0 0 0 3px var(--hb-pmpro-accent-soft);
+	background: #fff;
+}
+
+/* Responsive field grids */
+body.pmpro-checkout #pmpro_billing_address_fields .pmpro_checkout-fields,
+body.pmpro-checkout #pmpro_user_fields .pmpro_checkout-fields,
+body.pmpro-checkout #pmpro_payment_information_fields .pmpro_checkout-fields {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 1rem 1.25rem;
+	align-items: start;
+}
+
+body.pmpro-checkout #pmpro_pricing_fields .pmpro_checkout-fields {
+	display: block;
+}
+
+body.pmpro-checkout #pmpro_billing_address_fields .pmpro_checkout-field-bfirstname,
+body.pmpro-checkout #pmpro_user_fields .pmpro_checkout-field-username {
+	grid-column: 1;
+}
+
+body.pmpro-checkout #pmpro_billing_address_fields .pmpro_checkout-field-blastname,
+body.pmpro-checkout #pmpro_user_fields .pmpro_checkout-field-password {
+	grid-column: 2;
+}
+
+body.pmpro-checkout #pmpro_user_fields .pmpro_checkout-field-password2,
+body.pmpro-checkout #pmpro_user_fields .pmpro_checkout-field-bemail,
+body.pmpro-checkout #pmpro_user_fields .pmpro_checkout-field-bconfirmemail {
+	grid-column: 1 / -1;
+}
+
+body.pmpro-checkout #pmpro_billing_address_fields .pmpro_checkout-field-baddress1,
+body.pmpro-checkout #pmpro_billing_address_fields .pmpro_checkout-field-baddress2,
+body.pmpro-checkout #pmpro_billing_address_fields .pmpro_checkout-field-bcountry,
+body.pmpro-checkout #pmpro_billing_address_fields .pmpro_checkout-field-bphone,
+body.pmpro-checkout #pmpro_billing_address_fields .pmpro_checkout-field-bemail,
+body.pmpro-checkout #pmpro_billing_address_fields .pmpro_checkout-field-bconfirmemail,
+body.pmpro-checkout #pmpro_billing_address_fields .pmpro_checkout-field-bcity_state_zip {
+	grid-column: 1 / -1;
+}
+
+body.pmpro-checkout #pmpro_billing_address_fields .pmpro_checkout-field-bcity {
+	grid-column: 1;
+}
+
+body.pmpro-checkout #pmpro_billing_address_fields .pmpro_checkout-field-bstate {
+	grid-column: 2;
+}
+
+body.pmpro-checkout #pmpro_billing_address_fields .pmpro_checkout-field-bzipcode {
+	grid-column: 1 / -1;
+}
+
+body.pmpro-checkout #pmpro_payment_information_fields .pmpro_payment-account-number {
+	grid-column: 1 / -1;
+}
+
+body.pmpro-checkout #pmpro_payment_information_fields .pmpro_payment-expiration {
+	grid-column: 1;
+}
+
+body.pmpro-checkout #pmpro_payment_information_fields .pmpro_payment-cvv {
+	grid-column: 2;
+}
+
+@media (max-width: 599px) {
+	body.pmpro-checkout #pmpro_billing_address_fields .pmpro_checkout-fields,
+	body.pmpro-checkout #pmpro_user_fields .pmpro_checkout-fields,
+	body.pmpro-checkout #pmpro_payment_information_fields .pmpro_checkout-fields {
+		grid-template-columns: 1fr;
+	}
+
+	body.pmpro-checkout #pmpro_billing_address_fields .pmpro_checkout-field-bfirstname,
+	body.pmpro-checkout #pmpro_billing_address_fields .pmpro_checkout-field-blastname,
+	body.pmpro-checkout #pmpro_billing_address_fields .pmpro_checkout-field-bcity,
+	body.pmpro-checkout #pmpro_billing_address_fields .pmpro_checkout-field-bstate,
+	body.pmpro-checkout #pmpro_billing_address_fields .pmpro_checkout-field-bzipcode,
+	body.pmpro-checkout #pmpro_user_fields .pmpro_checkout-field-username,
+	body.pmpro-checkout #pmpro_user_fields .pmpro_checkout-field-password,
+	body.pmpro-checkout #pmpro_payment_information_fields .pmpro_payment-expiration,
+	body.pmpro-checkout #pmpro_payment_information_fields .pmpro_payment-cvv {
+		grid-column: 1;
+	}
+}
+
+/* Expiration: label margin handled by grid block above */
+body.pmpro-checkout #pmpro_payment_information_fields .pmpro_payment-expiration label {
+	margin-bottom: 0;
+}
+
+body.pmpro-checkout #pmpro_payment_information_fields .pmpro_payment-expiration select {
+	width: auto;
+	min-width: 4.5rem;
+	display: inline-block;
+	margin-right: 0.25rem;
+	vertical-align: middle;
+}
+
+/* Submit */
+body.pmpro-checkout form.pmpro_form .pmpro_submit {
+	margin-top: 1.75rem;
+}
+
+body.pmpro-checkout form.pmpro_form #pmpro_submit_span {
+	display: block;
+}
+
+body.pmpro-checkout form.pmpro_form input#pmpro_btn-submit.pmpro_btn-submit-checkout {
+	-webkit-appearance: none;
+	appearance: none;
+	width: 100%;
+	max-width: 320px;
+	padding: 0.85rem 1.5rem;
+	font-size: 1rem;
+	font-weight: 700;
+	border: none;
+	border-radius: 12px;
+	color: #fff !important;
+	cursor: pointer;
+	background: linear-gradient(180deg, var(--hb-pmpro-accent) 0%, var(--hb-pmpro-accent-hover) 100%) !important;
+	box-shadow: 0 8px 24px rgba(192, 38, 211, 0.35);
+	transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+}
+
+body.pmpro-checkout form.pmpro_form input#pmpro_btn-submit.pmpro_btn-submit-checkout:hover {
+	filter: brightness(1.05);
+	box-shadow: 0 10px 28px rgba(192, 38, 211, 0.45);
+}
+
+body.pmpro-checkout form.pmpro_form input#pmpro_btn-submit.pmpro_btn-submit-checkout:active {
+	transform: translateY(1px);
+}

@@ -116,6 +116,160 @@ class HB_Discord_Bot_Rest {
 	}
 
 	/**
+	 * Map Get started tier slug (cpm-humanblockchain) to Discord bot membership_name.
+	 *
+	 * @param string $tier yamer|megavoter|patron.
+	 * @return string|null pioneer|patron.
+	 */
+	public static function hb_get_started_tier_to_bot_slug( $tier ) {
+		$tier = sanitize_key( (string) $tier );
+		if ( $tier === 'patron' ) {
+			return 'patron';
+		}
+		if ( $tier === 'megavoter' || $tier === 'yamer' ) {
+			return 'pioneer';
+		}
+		return null;
+	}
+
+	/**
+	 * Read HumanBlockchain local _membership_level (JSON from modal/checkout).
+	 *
+	 * @param int $user_id User ID.
+	 * @return array{member:bool, membership_name:?string}
+	 */
+	private static function resolve_membership_from_user_meta( $user_id ) {
+		$user_id = (int) $user_id;
+		$raw     = get_user_meta( $user_id, '_membership_level', true );
+		$dec     = null;
+		if ( is_string( $raw ) && $raw !== '' ) {
+			$tmp = json_decode( $raw, true );
+			if ( is_array( $tmp ) ) {
+				$dec = $tmp;
+			}
+		} elseif ( is_array( $raw ) ) {
+			$dec = $raw;
+		}
+		if ( ! is_array( $dec ) ) {
+			return array(
+				'member'          => false,
+				'membership_name' => null,
+			);
+		}
+		if ( ! empty( $dec['tier'] ) ) {
+			$slug = self::hb_get_started_tier_to_bot_slug( (string) $dec['tier'] );
+			if ( $slug !== null ) {
+				return array(
+					'member'          => true,
+					'membership_name' => $slug,
+				);
+			}
+		}
+		if ( ! empty( $dec['level_name'] ) ) {
+			$slug = self::normalize_membership_slug( (string) $dec['level_name'] );
+			if ( $slug !== null ) {
+				return array(
+					'member'          => true,
+					'membership_name' => $slug,
+				);
+			}
+		}
+		if ( ! empty( $dec['name'] ) ) {
+			$slug = self::normalize_membership_slug( (string) $dec['name'] );
+			if ( $slug !== null ) {
+				return array(
+					'member'          => true,
+					'membership_name' => $slug,
+				);
+			}
+		}
+		return array(
+			'member'          => false,
+			'membership_name' => null,
+		);
+	}
+
+	/**
+	 * WooCommerce Get started orders store tier in _cpm_hb_membership_tier; PMPro user level may not be set yet.
+	 *
+	 * @param string $email User email.
+	 * @param int    $user_id User ID.
+	 * @return array{member:bool, membership_name:?string, user_id:int}
+	 */
+	private static function resolve_membership_from_wc_orders( $email, $user_id ) {
+		$user_id = (int) $user_id;
+		$email   = sanitize_email( $email );
+		if ( ! function_exists( 'wc_get_orders' ) ) {
+			return array(
+				'member'          => false,
+				'membership_name' => null,
+				'user_id'         => $user_id,
+			);
+		}
+
+		$statuses = apply_filters(
+			'hb_discord_bot_membership_wc_order_statuses',
+			array( 'processing', 'completed', 'on-hold', 'pending' )
+		);
+		if ( ! is_array( $statuses ) || empty( $statuses ) ) {
+			$statuses = array( 'processing', 'completed', 'on-hold' );
+		}
+
+		$query_sets = array();
+		if ( $user_id > 0 ) {
+			$query_sets[] = array(
+				'limit'       => 10,
+				'customer_id' => $user_id,
+				'orderby'     => 'date',
+				'order'       => 'DESC',
+				'status'      => $statuses,
+				'meta_key'    => '_cpm_hb_membership_tier',
+			);
+		}
+		if ( is_email( $email ) ) {
+			$query_sets[] = array(
+				'limit'         => 10,
+				'billing_email' => $email,
+				'orderby'       => 'date',
+				'order'         => 'DESC',
+				'status'        => $statuses,
+				'meta_key'      => '_cpm_hb_membership_tier',
+			);
+		}
+
+		foreach ( $query_sets as $args ) {
+			$orders = wc_get_orders( $args );
+			if ( ! is_array( $orders ) ) {
+				continue;
+			}
+			foreach ( $orders as $order ) {
+				if ( ! is_object( $order ) || ! method_exists( $order, 'get_meta' ) ) {
+					continue;
+				}
+				$tier = $order->get_meta( '_cpm_hb_membership_tier', true );
+				$tier = is_string( $tier ) ? sanitize_key( $tier ) : '';
+				if ( $tier === '' ) {
+					continue;
+				}
+				$slug = self::hb_get_started_tier_to_bot_slug( $tier );
+				if ( $slug !== null ) {
+					return array(
+						'member'          => true,
+						'membership_name' => $slug,
+						'user_id'         => $user_id,
+					);
+				}
+			}
+		}
+
+		return array(
+			'member'          => false,
+			'membership_name' => null,
+			'user_id'         => $user_id,
+		);
+	}
+
+	/**
 	 * Resolve membership for a WordPress user email.
 	 *
 	 * @param string $email Email.
@@ -144,43 +298,30 @@ class HB_Discord_Bot_Rest {
 
 		if ( function_exists( 'pmpro_getMembershipLevelForUser' ) ) {
 			$level = pmpro_getMembershipLevelForUser( $uid );
-			if ( ! $level || empty( $level->id ) ) {
-				return array(
-					'member'            => false,
-					'membership_name'   => null,
-					'user_id'           => $uid,
-				);
+			if ( $level && ! empty( $level->id ) ) {
+				$slug = self::normalize_membership_slug( isset( $level->name ) ? $level->name : '' );
+				if ( $slug !== null ) {
+					return array(
+						'member'            => true,
+						'membership_name'   => $slug,
+						'user_id'           => $uid,
+					);
+				}
 			}
-			$slug = self::normalize_membership_slug( isset( $level->name ) ? $level->name : '' );
-			if ( $slug === null ) {
-				return array(
-					'member'            => false,
-					'membership_name'   => null,
-					'user_id'           => $uid,
-				);
-			}
+		}
+
+		$from_meta = self::resolve_membership_from_user_meta( $uid );
+		if ( ! empty( $from_meta['member'] ) && ! empty( $from_meta['membership_name'] ) ) {
 			return array(
 				'member'            => true,
-				'membership_name'   => $slug,
+				'membership_name'   => $from_meta['membership_name'],
 				'user_id'           => $uid,
 			);
 		}
 
-		$raw = get_user_meta( $uid, '_membership_level', true );
-		if ( is_array( $raw ) && ! empty( $raw['name'] ) ) {
-			$slug = self::normalize_membership_slug( $raw['name'] );
-			if ( $slug === null ) {
-				return array(
-					'member'            => false,
-					'membership_name'   => null,
-					'user_id'           => $uid,
-				);
-			}
-			return array(
-				'member'            => true,
-				'membership_name'   => $slug,
-				'user_id'           => $uid,
-			);
+		$from_wc = self::resolve_membership_from_wc_orders( $email, $uid );
+		if ( ! empty( $from_wc['member'] ) && ! empty( $from_wc['membership_name'] ) ) {
+			return $from_wc;
 		}
 
 		return array(

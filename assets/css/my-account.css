@@ -127,6 +127,69 @@ body.woocommerce-account .woocommerce-MyAccount-content table td {
 	border-color: rgba(255,255,255,.12);
 }
 
+/* Paid Memberships Pro — embedded on WooCommerce “Memberships” tab */
+body.woocommerce-account .hb-my-account-memberships__intro,
+body.woocommerce-account .hb-my-account-memberships__footer {
+	color: #c9d2f0;
+	font-size: 0.95rem;
+	margin: 0 0 14px;
+}
+
+body.woocommerce-account .hb-my-account-memberships__footer {
+	margin-top: 18px;
+	margin-bottom: 0;
+}
+
+body.woocommerce-account .hb-my-account-memberships__footer a {
+	font-weight: 600;
+}
+
+body.woocommerce-account #pmpro_account {
+	margin-top: 4px;
+}
+
+body.woocommerce-account #pmpro_account .pmpro_box {
+	border-top-color: rgba(255, 255, 255, 0.14);
+}
+
+body.woocommerce-account #pmpro_account .pmpro_box h2 {
+	color: #fff;
+	font-size: 1.1rem;
+}
+
+body.woocommerce-account #pmpro_account .pmpro_actionlinks a {
+	font-weight: 600;
+}
+
+/* WooCommerce “Memberships” tab only: hide PMPro “Expiration” column (not needed for typical monthly renewals). */
+body.woocommerce-account .hb-my-account-memberships #pmpro_account-membership table.pmpro_table thead th:nth-child(3),
+body.woocommerce-account .hb-my-account-memberships #pmpro_account-membership table.pmpro_table tbody tr td:nth-child(3) {
+	display: none;
+}
+
+body.woocommerce-account .hb-my-account-memberships__meta {
+	display: grid;
+	grid-template-columns: minmax(0, 200px) 1fr;
+	gap: 6px 16px;
+	margin: 12px 0 0;
+	padding: 14px 16px;
+	background: rgba(9, 15, 31, 0.55);
+	border: 1px solid rgba(255, 255, 255, 0.12);
+	border-radius: 12px;
+}
+
+body.woocommerce-account .hb-my-account-memberships__meta dt {
+	margin: 0;
+	font-weight: 700;
+	color: #b8c1e3;
+	font-size: 0.85rem;
+}
+
+body.woocommerce-account .hb-my-account-memberships__meta dd {
+	margin: 0;
+	color: #eef2ff;
+}
+
 /* Highlight pending ledger rows in a soft yellow tone */
 body.woocommerce-account .woocommerce-MyAccount-content table tr.hb-xp-row--pending td {
 	background: rgba(255, 231, 133, 0.2);
