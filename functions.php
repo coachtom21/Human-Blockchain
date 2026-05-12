@@ -1184,6 +1184,20 @@ function hb_add_xp_ledger_account_menu_item( $items ) {
 add_filter( 'woocommerce_account_menu_items', 'hb_add_xp_ledger_account_menu_item', 40 );
 
 /**
+ * Human-readable scan type for XP ledger tables.
+ *
+ * @param string $scan_type Raw scan_type from DB.
+ * @return string
+ */
+function hb_xp_ledger_scan_type_label( $scan_type ) {
+	$t = (string) $scan_type;
+	if ( 'discord_verify' === $t ) {
+		return __( 'Discord verify', 'hello-elementor-child' );
+	}
+	return $t;
+}
+
+/**
  * Sum XP analytics from ledger rows. Pending is tracked separately; total/buyer/seller exclude pending.
  *
  * @param array<int, object> $xp_rows Rows from Cpm_Humanblockchain_Xp_Ledger::get_ledger_rows_for_user.
@@ -1324,7 +1338,7 @@ function hb_render_xp_ledger_account_endpoint() {
 		$row_class  = ( 'pending' === $row_status ) ? ' class="hb-xp-row--pending"' : '';
 		echo '<tr' . $row_class . '>';
 		echo '<td style="padding:8px;border-bottom:1px solid #eee;">' . esc_html( isset( $row->id ) ? (string) (int) $row->id : '' ) . '</td>';
-		echo '<td style="padding:8px;border-bottom:1px solid #eee;">' . esc_html( isset( $row->scan_type ) ? (string) $row->scan_type : '' ) . '</td>';
+		echo '<td style="padding:8px;border-bottom:1px solid #eee;">' . esc_html( hb_xp_ledger_scan_type_label( isset( $row->scan_type ) ? (string) $row->scan_type : '' ) ) . '</td>';
 		echo '<td style="padding:8px;border-bottom:1px solid #eee;word-break:break-all;">' . esc_html( isset( $row->transaction_id ) ? (string) $row->transaction_id : '' ) . '</td>';
 		echo '<td style="padding:8px;border-bottom:1px solid #eee;">' . $xp_display_html( isset( $row->xp_units ) ? (string) $row->xp_units : '0' ) . '</td>';
 		echo '<td style="padding:8px;border-bottom:1px solid #eee;">' . esc_html( isset( $row->scan_status ) ? (string) $row->scan_status : '' ) . '</td>';

@@ -525,6 +525,20 @@ class HB_Discord_Bot_Rest {
 			update_user_meta( $uid, 'hb_discord_verification_events', $list );
 		}
 
+		$ledger_ok = false;
+		if ( class_exists( 'Cpm_Humanblockchain_Xp_Ledger' ) ) {
+			$ledger_ok = Cpm_Humanblockchain_Xp_Ledger::record_discord_verification_xp(
+				$uid,
+				$xp,
+				$event_id !== '' ? $event_id : (string) time(),
+				array(
+					'discord_id'        => $discord_id,
+					'guild_id'          => isset( $params['guild_id'] ) ? (string) $params['guild_id'] : '',
+					'discord_username'  => isset( $params['discord_username'] ) ? (string) $params['discord_username'] : '',
+				)
+			);
+		}
+
 		return new WP_REST_Response(
 			array(
 				'success'           => true,
@@ -532,6 +546,7 @@ class HB_Discord_Bot_Rest {
 				'xp_total'          => $total,
 				'xp_awarded'        => $xp,
 				'membership_name'   => $parsed['membership_name'],
+				'xp_ledger_recorded' => $ledger_ok,
 			),
 			200
 		);

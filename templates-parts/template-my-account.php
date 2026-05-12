@@ -325,7 +325,7 @@ $hb_xp_display_html = static function ( $value ) {
 									?>
 									<tr<?php echo $row_pending ? ' class="hb-xp-row--pending"' : ''; ?>>
 										<td><?php echo isset( $row->id ) ? esc_html( (string) (int) $row->id ) : ''; ?></td>
-										<td><?php echo isset( $row->scan_type ) ? esc_html( (string) $row->scan_type ) : ''; ?></td>
+										<td><?php echo esc_html( hb_xp_ledger_scan_type_label( isset( $row->scan_type ) ? (string) $row->scan_type : '' ) ); ?></td>
 										<td><code class="xp"><?php echo isset( $row->transaction_id ) ? esc_html( (string) $row->transaction_id ) : ''; ?></code></td>
 										<td><?php echo isset( $row->xp_units ) ? wp_kses( $hb_xp_display_html( (string) $row->xp_units ), $hb_xp_allowed_html ) : ''; ?></td>
 										<td><?php echo isset( $row->scan_status ) ? esc_html( (string) $row->scan_status ) : ''; ?></td>
