@@ -116,6 +116,42 @@ class HB_Discord_Bot_Rest {
 	}
 
 	/**
+	 * Map a PMPro level object to Discord role slug (pioneer | patron).
+	 *
+	 * Uses cpm-humanblockchain tier ↔ level ID when available so renames like
+	 * "Free" still resolve; then name heuristics; then PMPro "free level" → pioneer bucket.
+	 *
+	 * @param object $level Row from pmpro_getMembershipLevelsForUser() or similar.
+	 * @return string|null pioneer, patron, or null.
+	 */
+	private static function discord_slug_from_pmpro_level_object( $level ) {
+		if ( empty( $level ) || ! is_object( $level ) || empty( $level->id ) ) {
+			return null;
+		}
+		$lid = (int) $level->id;
+		if ( class_exists( 'Cpm_Humanblockchain_Membership' ) && is_callable( array( 'Cpm_Humanblockchain_Membership', 'tier_slug_for_pmpro_level_id' ) ) ) {
+			$tier = Cpm_Humanblockchain_Membership::tier_slug_for_pmpro_level_id( $lid );
+			if ( 'patron' === $tier ) {
+				return 'patron';
+			}
+			if ( 'megavoter' === $tier || 'yamer' === $tier ) {
+				return 'pioneer';
+			}
+		}
+		$from_name = self::normalize_membership_slug( isset( $level->name ) ? (string) $level->name : '' );
+		if ( null !== $from_name ) {
+			return $from_name;
+		}
+		if ( function_exists( 'pmpro_getLevel' ) && function_exists( 'pmpro_isLevelFree' ) ) {
+			$def = pmpro_getLevel( $lid );
+			if ( $def && pmpro_isLevelFree( $def ) ) {
+				return 'pioneer';
+			}
+		}
+		return null;
+	}
+
+	/**
 	 * Map Get started tier slug (cpm-humanblockchain) to Discord bot membership_name.
 	 *
 	 * @param string $tier yamer|megavoter|patron.
@@ -296,10 +332,25 @@ class HB_Discord_Bot_Rest {
 
 		$uid = (int) $user->ID;
 
-		if ( function_exists( 'pmpro_getMembershipLevelForUser' ) ) {
+		if ( function_exists( 'pmpro_getMembershipLevelsForUser' ) ) {
+			$levels = pmpro_getMembershipLevelsForUser( $uid );
+			if ( ! empty( $levels ) && is_array( $levels ) ) {
+				$level = reset( $levels );
+				if ( $level && ! empty( $level->id ) ) {
+					$slug = self::discord_slug_from_pmpro_level_object( $level );
+					if ( $slug !== null ) {
+						return array(
+							'member'            => true,
+							'membership_name'   => $slug,
+							'user_id'           => $uid,
+						);
+					}
+				}
+			}
+		} elseif ( function_exists( 'pmpro_getMembershipLevelForUser' ) ) {
 			$level = pmpro_getMembershipLevelForUser( $uid );
 			if ( $level && ! empty( $level->id ) ) {
-				$slug = self::normalize_membership_slug( isset( $level->name ) ? $level->name : '' );
+				$slug = self::discord_slug_from_pmpro_level_object( $level );
 				if ( $slug !== null ) {
 					return array(
 						'member'            => true,
