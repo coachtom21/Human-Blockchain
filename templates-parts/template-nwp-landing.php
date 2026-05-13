@@ -4,11 +4,11 @@
  */
 $hb_nwp_activating_video_url = apply_filters(
 	'hb_nwp_activating_video_url',
-	'https://humanblockchain.info/wp-content/uploads/2026/04/One-Sky-One-World-%E2%86%92-Detente-2030-2026-04-241.mp4'
+	'http://humanblockchain.info/wp-content/uploads/2026/05/Architecting_Trust__The_Database_Schema_of_Social_Cooperation.mp4'
 );
 $hb_nwp_gratitude_audio_url = apply_filters(
 	'hb_nwp_gratitude_audio_url',
-	'https://humanblockchain.info/wp-content/uploads/2026/04/Turning_human_gratitude_into_economic_value.mp4'
+	'http://humanblockchain.info/wp-content/uploads/2026/05/Verifying_Presence_in_the_Reputation_Economy-1.mp4'
 );
 $hb_nwp_discord_invite_url = apply_filters(
 	'cpm_nwp_discord_invite_url',
