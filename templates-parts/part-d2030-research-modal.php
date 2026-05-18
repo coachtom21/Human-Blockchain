@@ -45,9 +45,30 @@ $d2030_podcast_3_url = apply_filters(
 	'hb_d2030_podcast_3_url',
 	'http://humanblockchain.info/wp-content/uploads/2026/05/The_Gracebook_human_blockchain_experiment.mp4'
 );
-$d2030_script_pdf_url = apply_filters(
-	'hb_d2030_script_pdf_url',
-	'https://drive.google.com/file/d/1xxjF_mjRmFQvvfidVEC9m5SllTAw-Ca3/view?usp=sharing'
+$d2030_script_pdfs = apply_filters(
+	'hb_d2030_script_pdfs',
+	array(
+		array(
+			'url'   => apply_filters(
+				'hb_d2030_script_pdf_url',
+				'https://drive.google.com/file/d/1xxjF_mjRmFQvvfidVEC9m5SllTAw-Ca3/view?usp=sharing'
+			),
+			'title' => apply_filters(
+				'hb_d2030_script_pdf_title',
+				__( 'Detente 2030 Classroom Script', 'hello-elementor-child' )
+			),
+		),
+		array(
+			'url'   => apply_filters(
+				'hb_d2030_script_pdf_2_url',
+				'https://drive.google.com/file/d/1IneYiu_URK8HkTQP8ifF4wpusjyzvZVh/view?usp=sharing'
+			),
+			'title' => apply_filters(
+				'hb_d2030_script_pdf_2_title',
+				__( 'Regulator-facing Trust Market Memo — HPI and Kalshi Mirror', 'hello-elementor-child' )
+			),
+		),
+	)
 );
 
 $hb_d2030_label_from_url = static function ( $url, $fallback = '' ) {
@@ -209,15 +230,56 @@ $d2030_podcast_3_title = apply_filters(
 					<?php else : ?>
 						<span class="d2030-btn-disabled"><?php esc_html_e( 'Podcast 3 coming soon', 'hello-elementor-child' ); ?></span>
 					<?php endif; ?>
-					<div class="d2030-preview-card">
+					<div class="d2030-preview-card d2030-script-pdf-card">
 						<p class="d2030-preview-title"><?php esc_html_e( 'Script PDF', 'hello-elementor-child' ); ?></p>
-						<div class="d2030-preview-actions">
-							<?php if ( ! empty( $d2030_script_pdf_url ) ) : ?>
-								<a href="<?php echo esc_url( $d2030_script_pdf_url ); ?>" class="d2030-btn-secondary" target="_blank" rel="noopener noreferrer"><?php esc_html_e( '⬇ Download Script PDF', 'hello-elementor-child' ); ?></a>
-							<?php else : ?>
-								<span class="d2030-btn-disabled"><?php esc_html_e( 'Script PDF coming soon', 'hello-elementor-child' ); ?></span>
-							<?php endif; ?>
-						</div>
+						<?php
+						$d2030_script_pdf_items = array();
+						if ( is_array( $d2030_script_pdfs ) ) {
+							foreach ( $d2030_script_pdfs as $d2030_script_pdf_item ) {
+								if ( ! is_array( $d2030_script_pdf_item ) ) {
+									continue;
+								}
+								$d2030_script_pdf_url_item = isset( $d2030_script_pdf_item['url'] ) ? trim( (string) $d2030_script_pdf_item['url'] ) : '';
+								if ( $d2030_script_pdf_url_item === '' ) {
+									continue;
+								}
+								$d2030_script_pdf_title_item = isset( $d2030_script_pdf_item['title'] ) ? trim( (string) $d2030_script_pdf_item['title'] ) : '';
+								if ( $d2030_script_pdf_title_item === '' ) {
+									$d2030_script_pdf_title_item = __( 'Script PDF', 'hello-elementor-child' );
+								}
+								$d2030_script_pdf_items[] = array(
+									'url'   => $d2030_script_pdf_url_item,
+									'title' => $d2030_script_pdf_title_item,
+								);
+							}
+						}
+						?>
+						<?php if ( ! empty( $d2030_script_pdf_items ) ) : ?>
+							<div class="d2030-script-pdf-list">
+								<?php foreach ( $d2030_script_pdf_items as $d2030_script_pdf_entry ) : ?>
+									<div class="d2030-script-pdf-item">
+										<p class="d2030-script-pdf-name"><?php echo esc_html( $d2030_script_pdf_entry['title'] ); ?></p>
+										<div class="d2030-preview-actions">
+											<a
+												href="<?php echo esc_url( $d2030_script_pdf_entry['url'] ); ?>"
+												class="d2030-btn-secondary"
+												target="_blank"
+												rel="noopener noreferrer"
+												aria-label="<?php echo esc_attr(
+													sprintf(
+														/* translators: %s: script document title */
+														__( 'Download %s', 'hello-elementor-child' ),
+														$d2030_script_pdf_entry['title']
+													)
+												); ?>"
+											><?php esc_html_e( '⬇ Download PDF', 'hello-elementor-child' ); ?></a>
+										</div>
+									</div>
+								<?php endforeach; ?>
+							</div>
+						<?php else : ?>
+							<span class="d2030-btn-disabled"><?php esc_html_e( 'Script PDF coming soon', 'hello-elementor-child' ); ?></span>
+						<?php endif; ?>
 					</div>
 				</div>
 			</div>

@@ -145,6 +145,30 @@
 	flex-wrap: wrap;
 }
 
+.d2030-script-pdf-list {
+	display: grid;
+	gap: 14px;
+	margin-top: 4px;
+}
+
+.d2030-script-pdf-item {
+	padding-top: 14px;
+	border-top: 1px solid rgba(148, 163, 184, 0.22);
+}
+
+.d2030-script-pdf-item:first-child {
+	padding-top: 0;
+	border-top: 0;
+}
+
+.d2030-script-pdf-name {
+	margin: 0 0 8px;
+	font-size: 13px;
+	font-weight: 600;
+	color: #cbd5e1;
+	line-height: 1.4;
+}
+
 .d2030-btn-secondary {
 	padding: 12px 18px;
 	border-radius: 999px;
