@@ -29,6 +29,10 @@ $d2030_video_5_url = apply_filters(
 	'hb_d2030_video_5_url',
 	'http://humanblockchain.info/wp-content/uploads/2026/05/The-Three-Minute-Economy_-A-New-Era-of-H-2026-05-131.mp4'
 );
+$d2030_video_6_url = apply_filters(
+	'hb_d2030_video_6_url',
+	'http://humanblockchain.info/wp-content/uploads/2026/05/From-Petrodollars-to-Human-Presence_-The-2026-05-151.mp4'
+);
 $d2030_podcast_1_url = apply_filters(
 	'hb_d2030_podcast_1_url',
 	'http://humanblockchain.info/wp-content/uploads/2026/05/Human_participation_as_a_measurable_economic_signal.mp4'
@@ -74,6 +78,10 @@ $d2030_video_4_title   = apply_filters(
 $d2030_video_5_title   = apply_filters(
 	'hb_d2030_video_5_title',
 	__( 'The Three Minute Economy — A New Era of Human Blockchain', 'hello-elementor-child' )
+);
+$d2030_video_6_title   = apply_filters(
+	'hb_d2030_video_6_title',
+	__( 'From Petrodollars to Human Presence', 'hello-elementor-child' )
 );
 $d2030_podcast_1_title = $hb_d2030_label_from_url( $d2030_podcast_1_url, 'Podcast 1' );
 $d2030_podcast_2_title = $hb_d2030_label_from_url( $d2030_podcast_2_url, 'Podcast 2' );
@@ -146,6 +154,16 @@ $d2030_podcast_3_title = apply_filters(
 						</div>
 					<?php else : ?>
 						<span class="d2030-btn-disabled"><?php esc_html_e( 'Video 5 coming soon', 'hello-elementor-child' ); ?></span>
+					<?php endif; ?>
+					<?php if ( ! empty( $d2030_video_6_url ) ) : ?>
+						<div class="d2030-preview-card">
+							<p class="d2030-preview-title"><?php echo esc_html( $d2030_video_6_title ); ?></p>
+							<video class="d2030-preview-video" controls preload="metadata" playsinline>
+								<source src="<?php echo esc_url( $d2030_video_6_url ); ?>" type="video/mp4" />
+							</video>
+						</div>
+					<?php else : ?>
+						<span class="d2030-btn-disabled"><?php esc_html_e( 'Video 6 coming soon', 'hello-elementor-child' ); ?></span>
 					<?php endif; ?>
 				</div>
 			</div>
