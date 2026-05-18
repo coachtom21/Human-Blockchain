@@ -468,6 +468,50 @@ function hb_enqueue_my_account_ui_styles() {
 add_action( 'wp_enqueue_scripts', 'hb_enqueue_my_account_ui_styles', 100 );
 
 /**
+ * Whether the Detente 2030 research modal assets should load.
+ *
+ * @return bool
+ */
+function hb_should_enqueue_d2030_research_modal() {
+	if ( ! function_exists( 'is_page_template' ) ) {
+		return false;
+	}
+	return is_page_template(
+		array(
+			'templates-parts/template-nwp-landing.php',
+			'templates-parts/template-explore-research-landing.php',
+		)
+	);
+}
+
+/**
+ * Detente 2030 modal CSS/JS (NWP landing + Explore Research landing).
+ *
+ * @return void
+ */
+function hb_enqueue_d2030_research_modal_assets() {
+	if ( ! hb_should_enqueue_d2030_research_modal() ) {
+		return;
+	}
+	$d2030_css = get_stylesheet_directory() . '/assets/css/d2030-research-modal.css';
+	$d2030_js  = get_stylesheet_directory() . '/assets/js/d2030-research-modal.js';
+	wp_enqueue_style(
+		'hb-d2030-research-modal',
+		get_stylesheet_directory_uri() . '/assets/css/d2030-research-modal.css',
+		array(),
+		file_exists( $d2030_css ) ? filemtime( $d2030_css ) : HELLO_ELEMENTOR_CHILD_VERSION
+	);
+	wp_enqueue_script(
+		'hb-d2030-research-modal',
+		get_stylesheet_directory_uri() . '/assets/js/d2030-research-modal.js',
+		array(),
+		file_exists( $d2030_js ) ? filemtime( $d2030_js ) : HELLO_ELEMENTOR_CHILD_VERSION,
+		true
+	);
+}
+add_action( 'wp_enqueue_scripts', 'hb_enqueue_d2030_research_modal_assets', 20 );
+
+/**
  * YAM JAM ledger definitions table styles (NWP landing + My Account / Woo account pages).
  *
  * @return void

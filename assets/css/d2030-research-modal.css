@@ -1,0 +1,185 @@
+/* Detente 2030 research modal — shared (NWP landing + Explore Research) */
+.d2030-trigger {
+	padding: 12px 18px;
+	border-radius: 999px;
+	background: #1d4ed8;
+	color: #fff;
+	font-weight: 800;
+	border: none;
+	cursor: pointer;
+	font-family: inherit;
+	font-size: 1rem;
+}
+
+.d2030-modal {
+	display: none;
+	position: fixed;
+	z-index: 9999;
+	inset: 0;
+	background: rgba(16, 24, 40, 0.7);
+	backdrop-filter: blur(6px);
+}
+
+.d2030-modal-content {
+	position: relative;
+	width: min(960px, calc(100% - 32px));
+	max-width: 960px;
+	margin: 5vh auto;
+	padding: 32px;
+	border-radius: 24px;
+	background: linear-gradient(180deg, #0b172b, #0a1424);
+	text-align: left;
+	border: 1px solid rgba(148, 163, 184, 0.25);
+	box-shadow: 0 30px 80px rgba(2, 6, 23, 0.72);
+	max-height: 90vh;
+	overflow-y: auto;
+	-ms-overflow-style: none;
+	scrollbar-width: none;
+}
+
+.d2030-modal-content::-webkit-scrollbar {
+	width: 0;
+	height: 0;
+	display: none;
+}
+
+.d2030-close {
+	position: absolute;
+	top: 16px;
+	right: 20px;
+	font-size: 24px;
+	line-height: 1;
+	cursor: pointer;
+	color: #e2e8f0;
+	background: rgba(15, 23, 42, 0.9);
+	border: 1px solid rgba(96, 165, 250, 0.5);
+	border-radius: 8px;
+	width: 38px;
+	height: 38px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.d2030-kicker {
+	font-size: 12px;
+	font-weight: 800;
+	color: #93c5fd;
+	text-transform: uppercase;
+	margin-bottom: 8px;
+	text-align: center;
+}
+
+.d2030-modal-content h2 {
+	margin: 0 0 12px;
+	font-size: 32px;
+	color: #f8fafc;
+	text-align: center;
+}
+
+.d2030-modal-content p {
+	color: #cbd5e1;
+	margin-bottom: 20px;
+	text-align: center;
+}
+
+.d2030-resource-grid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 14px;
+	margin-top: 16px;
+}
+
+.d2030-resource-group {
+	border: 1px solid rgba(148, 163, 184, 0.25);
+	border-radius: 16px;
+	padding: 14px;
+	background: rgba(15, 23, 42, 0.45);
+}
+
+.d2030-resource-group-title {
+	margin: 0 0 10px;
+	font-size: 12px;
+	font-weight: 800;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	color: #93c5fd;
+}
+
+.d2030-preview-list {
+	display: grid;
+	gap: 12px;
+}
+
+.d2030-preview-card {
+	border: 1px solid rgba(148, 163, 184, 0.28);
+	border-radius: 14px;
+	background: rgba(15, 23, 42, 0.82);
+	padding: 10px;
+}
+
+.d2030-preview-title {
+	margin: 0 0 8px;
+	font-size: 13px;
+	font-weight: 700;
+	color: #e2e8f0;
+}
+
+.d2030-preview-video {
+	width: 100%;
+	border-radius: 10px;
+	background: #0f172a;
+	display: block;
+	margin-bottom: 10px;
+}
+
+.d2030-preview-audio {
+	width: 100%;
+	display: block;
+	margin-bottom: 10px;
+}
+
+.d2030-preview-actions {
+	display: flex;
+	gap: 8px;
+	flex-wrap: wrap;
+}
+
+.d2030-btn-secondary {
+	padding: 12px 18px;
+	border-radius: 999px;
+	border: 1px solid rgba(148, 163, 184, 0.38);
+	color: #e2e8f0;
+	text-decoration: none;
+	font-weight: 800;
+	background: rgba(30, 41, 59, 0.9);
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.d2030-btn-disabled {
+	padding: 12px 18px;
+	border-radius: 999px;
+	border: 1px dashed rgba(148, 163, 184, 0.38);
+	color: #98a2b3;
+	font-weight: 700;
+	background: rgba(30, 41, 59, 0.5);
+	cursor: not-allowed;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+}
+
+@media (max-width: 720px) {
+	.d2030-resource-grid {
+		grid-template-columns: 1fr;
+	}
+}
+
+@media (max-width: 520px) {
+	.d2030-modal-content {
+		margin: 20% 16px;
+		padding: 24px;
+	}
+}
