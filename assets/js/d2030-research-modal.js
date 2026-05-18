@@ -1,6 +1,50 @@
 (function () {
 	'use strict';
 
+	var scrollLockY = 0;
+	var touchMoveLocked = false;
+
+	function isD2030Open() {
+		var el = document.getElementById('d2030-modal');
+		return el && !el.hasAttribute('hidden') && el.style.display !== 'none';
+	}
+
+	function preventBackgroundTouchMove(event) {
+		if (!isD2030Open()) {
+			return;
+		}
+		var modal = document.getElementById('d2030-modal');
+		var content = modal ? modal.querySelector('.d2030-modal-content') : null;
+		if (content && content.contains(event.target)) {
+			return;
+		}
+		event.preventDefault();
+	}
+
+	function lockPageScroll() {
+		scrollLockY = window.scrollY || window.pageYOffset || 0;
+		document.documentElement.classList.add('d2030-modal-open');
+		document.body.classList.add('d2030-modal-open');
+		document.body.style.top = '-' + scrollLockY + 'px';
+
+		if (!touchMoveLocked) {
+			document.addEventListener('touchmove', preventBackgroundTouchMove, { passive: false });
+			touchMoveLocked = true;
+		}
+	}
+
+	function unlockPageScroll() {
+		document.documentElement.classList.remove('d2030-modal-open');
+		document.body.classList.remove('d2030-modal-open');
+		document.body.style.top = '';
+		window.scrollTo(0, scrollLockY);
+
+		if (touchMoveLocked) {
+			document.removeEventListener('touchmove', preventBackgroundTouchMove, { passive: false });
+			touchMoveLocked = false;
+		}
+	}
+
 	function openD2030Modal() {
 		var el = document.getElementById('d2030-modal');
 		if (!el) {
@@ -8,7 +52,7 @@
 		}
 		el.style.display = 'block';
 		el.removeAttribute('hidden');
-		document.body.style.overflow = 'hidden';
+		lockPageScroll();
 	}
 
 	function closeD2030Modal() {
@@ -18,7 +62,7 @@
 		}
 		el.style.display = 'none';
 		el.setAttribute('hidden', 'hidden');
-		document.body.style.overflow = '';
+		unlockPageScroll();
 	}
 
 	window.openD2030Modal = openD2030Modal;
@@ -32,7 +76,7 @@
 	});
 
 	document.addEventListener('keydown', function (event) {
-		if (event.key === 'Escape') {
+		if (event.key === 'Escape' && isD2030Open()) {
 			closeD2030Modal();
 		}
 	});
