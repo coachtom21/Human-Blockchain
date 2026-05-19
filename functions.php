@@ -775,6 +775,65 @@ function hb_resolve_template_path( $template ) {
 add_filter( 'template_include', 'hb_resolve_template_path', 99 );
 
 /**
+ * Legal page helpers (Privacy Policy & Terms templates).
+ *
+ * @return array<string, string>
+ */
+function hb_legal_template_vars() {
+	return array(
+		'site_name'       => (string) get_bloginfo( 'name' ),
+		'home_url'        => (string) home_url( '/' ),
+		'privacy_url'     => hb_legal_privacy_url(),
+		'terms_url'       => hb_legal_terms_url(),
+		'support_email'   => (string) apply_filters( 'hb_legal_support_email', 'support@humanblockchain.info' ),
+		'effective_date'  => wp_date( 'F j, Y' ),
+		'governing_state' => (string) apply_filters( 'hb_legal_governing_state', '' ),
+		'governing_venue' => (string) apply_filters( 'hb_legal_governing_venue', '' ),
+	);
+}
+
+/**
+ * @return string
+ */
+function hb_legal_privacy_url() {
+	if ( function_exists( 'get_privacy_policy_url' ) ) {
+		$url = get_privacy_policy_url();
+		if ( $url ) {
+			return (string) $url;
+		}
+	}
+	return (string) home_url( '/privacy-policy/' );
+}
+
+/**
+ * @return string
+ */
+function hb_legal_terms_url() {
+	return (string) home_url( '/terms-and-conditions/' );
+}
+
+/**
+ * Enqueue styles for legal page templates.
+ */
+function hb_enqueue_legal_page_styles() {
+	if ( ! function_exists( 'is_page_template' ) ) {
+		return;
+	}
+	if ( ! is_page_template( 'templates-parts/template-privacy-policy.php' )
+		&& ! is_page_template( 'templates-parts/template-terms-and-conditions.php' ) ) {
+		return;
+	}
+	$path = get_stylesheet_directory() . '/assets/css/hb-legal-page.css';
+	wp_enqueue_style(
+		'hb-legal-page',
+		get_stylesheet_directory_uri() . '/assets/css/hb-legal-page.css',
+		array( 'hello-elementor-child-style' ),
+		file_exists( $path ) ? (string) filemtime( $path ) : HELLO_ELEMENTOR_CHILD_VERSION
+	);
+}
+add_action( 'wp_enqueue_scripts', 'hb_enqueue_legal_page_styles', 20 );
+
+/**
  * Create registration pages automatically
  * Run once by visiting: ?hb_create_pages=1 (as admin)
  */

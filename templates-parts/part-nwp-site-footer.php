@@ -10,7 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 $privacy_url = function_exists( 'get_privacy_policy_url' ) ? get_privacy_policy_url() : '';
-$terms_url   = class_exists( 'Cpm_Hb_Legal_Pages' ) ? Cpm_Hb_Legal_Pages::terms_url() : home_url( '/terms-and-conditions/' );
+$terms_url   = function_exists( 'hb_legal_terms_url' ) ? hb_legal_terms_url() : home_url( '/terms-and-conditions/' );
 ?>
 <footer class="nwp-site-footer" role="contentinfo">
 	<div class="container nwp-site-footer__inner">
