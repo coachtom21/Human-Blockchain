@@ -9,6 +9,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+if ( ! isset( $hb_legal ) || ! is_array( $hb_legal ) ) {
+	$hb_legal = function_exists( 'hb_legal_template_vars' ) ? hb_legal_template_vars() : array();
+}
+
 $site_name        = isset( $hb_legal['site_name'] ) ? $hb_legal['site_name'] : '';
 $home_url         = isset( $hb_legal['home_url'] ) ? $hb_legal['home_url'] : '';
 $privacy_url      = isset( $hb_legal['privacy_url'] ) ? $hb_legal['privacy_url'] : '';

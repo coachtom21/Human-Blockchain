@@ -785,7 +785,7 @@ function hb_legal_template_vars() {
 		'home_url'        => (string) home_url( '/' ),
 		'privacy_url'     => hb_legal_privacy_url(),
 		'terms_url'       => hb_legal_terms_url(),
-		'support_email'   => (string) apply_filters( 'hb_legal_support_email', 'support@humanblockchain.info' ),
+		'support_email'   => (string) apply_filters( 'hb_legal_support_email', 'coachtom@legacytoliveby.org' ),
 		'effective_date'  => wp_date( 'F j, Y' ),
 		'governing_state' => (string) apply_filters( 'hb_legal_governing_state', '' ),
 		'governing_venue' => (string) apply_filters( 'hb_legal_governing_venue', '' ),
