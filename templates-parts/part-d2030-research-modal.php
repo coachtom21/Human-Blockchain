@@ -33,6 +33,18 @@ $d2030_video_6_url = apply_filters(
 	'hb_d2030_video_6_url',
 	'http://humanblockchain.info/wp-content/uploads/2026/05/From-Petrodollars-to-Human-Presence_-The-2026-05-151.mp4'
 );
+$d2030_video_7_url = apply_filters(
+	'hb_d2030_video_7_url',
+	'http://humanblockchain.info/wp-content/uploads/2026/05/Engineering_Trust__The_Mechanics_of_Verified_Human_Presence-1.mp4'
+);
+$d2030_video_8_url = apply_filters(
+	'hb_d2030_video_8_url',
+	'http://humanblockchain.info/wp-content/uploads/2026/05/Engineering_the_Human_Blockchain__The_Mathematics_of_Verified_P-1.mp4'
+);
+$d2030_video_9_url = apply_filters(
+	'hb_d2030_video_9_url',
+	'http://humanblockchain.info/wp-content/uploads/2026/05/Discovering-Human-Gold_-The-YAM-JAM-Rewa-2026-05-191.mp4'
+);
 $d2030_podcast_1_url = apply_filters(
 	'hb_d2030_podcast_1_url',
 	'http://humanblockchain.info/wp-content/uploads/2026/05/Human_participation_as_a_measurable_economic_signal.mp4'
@@ -103,6 +115,18 @@ $d2030_video_5_title   = apply_filters(
 $d2030_video_6_title   = apply_filters(
 	'hb_d2030_video_6_title',
 	__( 'From Petrodollars to Human Presence', 'hello-elementor-child' )
+);
+$d2030_video_7_title   = apply_filters(
+	'hb_d2030_video_7_title',
+	__( 'Engineering Trust: The Mechanics of Verified Human Presence', 'hello-elementor-child' )
+);
+$d2030_video_8_title   = apply_filters(
+	'hb_d2030_video_8_title',
+	__( 'Engineering the Human Blockchain: The Mathematics of Verified Presence', 'hello-elementor-child' )
+);
+$d2030_video_9_title   = apply_filters(
+	'hb_d2030_video_9_title',
+	__( 'Discovering Human Gold: The YAM JAM Rewa', 'hello-elementor-child' )
 );
 $d2030_podcast_1_title = $hb_d2030_label_from_url( $d2030_podcast_1_url, 'Podcast 1' );
 $d2030_podcast_2_title = $hb_d2030_label_from_url( $d2030_podcast_2_url, 'Podcast 2' );
@@ -185,6 +209,36 @@ $d2030_podcast_3_title = apply_filters(
 						</div>
 					<?php else : ?>
 						<span class="d2030-btn-disabled"><?php esc_html_e( 'Video 6 coming soon', 'hello-elementor-child' ); ?></span>
+					<?php endif; ?>
+					<?php if ( ! empty( $d2030_video_7_url ) ) : ?>
+						<div class="d2030-preview-card">
+							<p class="d2030-preview-title"><?php echo esc_html( $d2030_video_7_title ); ?></p>
+							<video class="d2030-preview-video" controls preload="metadata" playsinline>
+								<source src="<?php echo esc_url( $d2030_video_7_url ); ?>" type="video/mp4" />
+							</video>
+						</div>
+					<?php else : ?>
+						<span class="d2030-btn-disabled"><?php esc_html_e( 'Video 7 coming soon', 'hello-elementor-child' ); ?></span>
+					<?php endif; ?>
+					<?php if ( ! empty( $d2030_video_8_url ) ) : ?>
+						<div class="d2030-preview-card">
+							<p class="d2030-preview-title"><?php echo esc_html( $d2030_video_8_title ); ?></p>
+							<video class="d2030-preview-video" controls preload="metadata" playsinline>
+								<source src="<?php echo esc_url( $d2030_video_8_url ); ?>" type="video/mp4" />
+							</video>
+						</div>
+					<?php else : ?>
+						<span class="d2030-btn-disabled"><?php esc_html_e( 'Video 8 coming soon', 'hello-elementor-child' ); ?></span>
+					<?php endif; ?>
+					<?php if ( ! empty( $d2030_video_9_url ) ) : ?>
+						<div class="d2030-preview-card">
+							<p class="d2030-preview-title"><?php echo esc_html( $d2030_video_9_title ); ?></p>
+							<video class="d2030-preview-video" controls preload="metadata" playsinline>
+								<source src="<?php echo esc_url( $d2030_video_9_url ); ?>" type="video/mp4" />
+							</video>
+						</div>
+					<?php else : ?>
+						<span class="d2030-btn-disabled"><?php esc_html_e( 'Video 9 coming soon', 'hello-elementor-child' ); ?></span>
 					<?php endif; ?>
 				</div>
 			</div>
