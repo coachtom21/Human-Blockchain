@@ -93,6 +93,14 @@ $effective_date = isset( $hb_legal['effective_date'] ) ? $hb_legal['effective_da
 
 <h2><?php esc_html_e( '4. SMS and phone verification (important)', 'hello-elementor-child' ); ?></h2>
 
+<h3><?php esc_html_e( 'SMS Consent Communication', 'hello-elementor-child' ); ?></h3>
+
+<p><?php esc_html_e( 'By providing your mobile phone number, you consent to receive SMS messages from HumanBlockchain/NWP related to account authentication, login verification, and device verification.', 'hello-elementor-child' ); ?></p>
+
+<p><?php esc_html_e( 'Message frequency varies based on user activity. Message and data rates may apply. Users may reply STOP to unsubscribe or HELP for assistance.', 'hello-elementor-child' ); ?></p>
+
+<p><?php esc_html_e( 'SMS consent is not shared with third parties or affiliates for marketing purposes.', 'hello-elementor-child' ); ?></p>
+
 <p><?php esc_html_e( 'When you enter your mobile phone number on our Site and click to send a verification code, you are requesting a transactional, one-time password (OTP) message. We use your number only for purposes related to that request, such as:', 'hello-elementor-child' ); ?></p>
 
 <ul>

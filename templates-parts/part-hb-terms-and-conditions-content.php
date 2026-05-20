@@ -108,6 +108,10 @@ $governing_venue  = isset( $hb_legal['governing_venue'] ) ? trim( $hb_legal['gov
 
 <h2><?php esc_html_e( '5. SMS verification program (NWP / device & delivery OTP)', 'hello-elementor-child' ); ?></h2>
 
+<p><?php esc_html_e( 'By using our services, you agree to receive transactional SMS messages related to account verification and device authentication. These messages are required for security and account access purposes.', 'hello-elementor-child' ); ?></p>
+
+<p><?php esc_html_e( 'Message frequency varies. Msg & data rates may apply. Reply STOP to opt out or HELP for support.', 'hello-elementor-child' ); ?></p>
+
 <p><?php esc_html_e( 'This section describes our SMS one-time verification program for carriers and users. It applies when you enter your mobile number on our Site and request a verification code.', 'hello-elementor-child' ); ?></p>
 
 <table border="1" cellpadding="8" cellspacing="0" style="border-collapse:collapse;width:100%;max-width:640px;">
