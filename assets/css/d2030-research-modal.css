@@ -40,9 +40,9 @@ body.d2030-modal-open {
 
 .d2030-modal-content {
 	position: relative;
-	width: min(960px, calc(100% - 32px));
-	max-width: 960px;
-	margin: 5vh auto;
+	width: min(1400px, calc(100% - 32px));
+	max-width: 1400px;
+	margin: 4vh auto;
 	padding: 32px;
 	border-radius: 24px;
 	background: linear-gradient(180deg, #0b172b, #0a1424);
@@ -103,9 +103,10 @@ body.d2030-modal-open {
 
 .d2030-resource-grid {
 	display: grid;
-	grid-template-columns: repeat(2, minmax(0, 1fr));
-	gap: 14px;
+	grid-template-columns: 1.35fr 1fr;
+	gap: 18px;
 	margin-top: 16px;
+	align-items: start;
 }
 
 .d2030-resource-group {
@@ -127,6 +128,12 @@ body.d2030-modal-open {
 .d2030-preview-list {
 	display: grid;
 	gap: 12px;
+}
+
+/* Videos column: two cards per row on wide modals to shorten scroll */
+.d2030-resource-group:first-child .d2030-preview-list {
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 14px;
 }
 
 .d2030-preview-card {
@@ -213,9 +220,20 @@ body.d2030-modal-open {
 	justify-content: center;
 }
 
+@media (max-width: 900px) {
+	.d2030-resource-group:first-child .d2030-preview-list {
+		grid-template-columns: 1fr;
+	}
+}
+
 @media (max-width: 720px) {
 	.d2030-resource-grid {
 		grid-template-columns: 1fr;
+	}
+
+	.d2030-modal-content {
+		width: calc(100% - 24px);
+		max-width: none;
 	}
 }
 
