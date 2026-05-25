@@ -141,17 +141,23 @@ $hb_pp_media_mime = static function ( $ext, $as_audio = false ) {
 				margin-top: 28px;
 			}
 			.hb-btn {
-				display: inline-block;
-				padding: 14px 20px;
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				padding: 14px 22px;
 				border-radius: 999px;
 				text-decoration: none;
 				font-weight: 700;
+				text-align: center;
+				line-height: 1.2;
+				min-height: 44px;
 				transition: 0.2s ease;
 			}
 			.hb-btn-primary { background: #ffd166; color: #111827; }
 			.hb-btn-secondary {
 				border: 1px solid rgba(255,255,255,0.5);
 				color: #ffffff;
+				background: transparent;
 			}
 			.hb-btn:hover { transform: translateY(-2px); opacity: 0.92; }
 			.hb-grid {
@@ -273,15 +279,46 @@ $hb_pp_media_mime = static function ( $ext, $as_audio = false ) {
 				padding: 36px 24px;
 				border-radius: 24px;
 			}
-			.hb-footer-cta h2 { margin-top: 0; font-size: 32px; }
+			.hb-footer-cta h2 { margin-top: 0; font-size: clamp(22px, 5vw, 32px); }
+			.hb-footer-cta p  { font-size: clamp(15px, 2.6vw, 17px); line-height: 1.6; }
+
 			@media (max-width: 800px) {
 				.hb-grid,
 				.hb-video-grid,
 				.hb-summary-list { grid-template-columns: 1fr; }
 				.hb-wide,
 				.hb-two { grid-column: span 1; }
-				.hb-hero { padding: 36px 24px; }
+				.hb-hero { padding: 36px 24px; border-radius: 20px; }
+				.hb-hero p { font-size: 17px; }
 			}
+
+			@media (max-width: 600px) {
+				.hb-research-page { padding: 32px 14px; }
+				.hb-hero { padding: 28px 20px; border-radius: 18px; }
+				.hb-hero p { font-size: 16px; margin-bottom: 18px; }
+				.hb-button-row { gap: 10px; }
+				.hb-btn { padding: 12px 18px; font-size: 14px; }
+				.hb-grid { gap: 16px; margin-top: 24px; }
+				.hb-card { padding: 22px 18px; border-radius: 16px; }
+				.hb-pdf-box { padding: 20px 18px; border-radius: 16px; }
+				.hb-footer-cta { padding: 28px 20px; border-radius: 18px; }
+				.hb-modal { padding: 0; }
+				.hb-modal-content { height: 100vh; border-radius: 0; max-width: 100%; }
+			}
+
+			@media (max-width: 420px) {
+				.hb-button-row { flex-direction: column; align-items: stretch; }
+				.hb-btn { text-align: center; }
+				.hb-pdf-actions { flex-direction: column; }
+				.hb-pdf-actions a,
+				.hb-pdf-actions button { width: 100%; text-align: center; }
+				.hb-summary-list li { padding: 14px; }
+			}
+
+			/* Make every embedded media block fluid on small screens. */
+			.hb-media-box iframe,
+			.hb-media-box video { max-width: 100%; }
+			.hb-research-page audio { max-width: 100%; }
 		</style>
 
 		<div class="hb-container">
@@ -505,9 +542,9 @@ $hb_pp_media_mime = static function ( $ext, $as_audio = false ) {
 				margin-bottom: 42px;
 				box-shadow: 0 18px 40px rgba(0,0,0,0.12);
 			}
-			.qo-highlight h2 { margin-top: 0; font-size: 36px; margin-bottom: 18px; }
+			.qo-highlight h2 { margin-top: 0; font-size: clamp(24px, 4.5vw, 36px); margin-bottom: 18px; }
 			.qo-highlight p {
-				font-size: 19px;
+				font-size: clamp(16px, 2.4vw, 19px);
 				line-height: 1.8;
 				margin-bottom: 0;
 				color: rgba(255,255,255,0.92);
@@ -530,7 +567,7 @@ $hb_pp_media_mime = static function ( $ext, $as_audio = false ) {
 			.qo-card h3 {
 				margin-top: 0;
 				margin-bottom: 14px;
-				font-size: 24px;
+				font-size: clamp(20px, 3vw, 24px);
 				color: #0f172a;
 			}
 			.qo-card p { line-height: 1.7; color: #4b5563; margin-bottom: 0; }
@@ -545,7 +582,7 @@ $hb_pp_media_mime = static function ( $ext, $as_audio = false ) {
 			.qo-process h2 {
 				margin-top: 0;
 				text-align: center;
-				font-size: 38px;
+				font-size: clamp(24px, 5vw, 38px);
 				margin-bottom: 36px;
 			}
 			.qo-steps {
@@ -576,7 +613,7 @@ $hb_pp_media_mime = static function ( $ext, $as_audio = false ) {
 			.qo-step h4 {
 				margin-top: 0;
 				margin-bottom: 12px;
-				font-size: 21px;
+				font-size: clamp(18px, 2.8vw, 21px);
 				color: #111827;
 			}
 			.qo-step p {
@@ -593,12 +630,12 @@ $hb_pp_media_mime = static function ( $ext, $as_audio = false ) {
 			}
 			.qo-summary-box h2 {
 				margin-top: 0;
-				font-size: 34px;
+				font-size: clamp(22px, 4.2vw, 34px);
 				margin-bottom: 18px;
 				color: #111827;
 			}
 			.qo-summary-box p {
-				font-size: 18px;
+				font-size: clamp(15px, 2.3vw, 18px);
 				line-height: 1.8;
 				color: #4b5563;
 				margin-bottom: 0;
@@ -607,17 +644,39 @@ $hb_pp_media_mime = static function ( $ext, $as_audio = false ) {
 				margin-top: 28px;
 				padding-left: 22px;
 				border-left: 5px solid #f59e0b;
-				font-size: 24px;
+				font-size: clamp(17px, 2.8vw, 24px);
 				line-height: 1.5;
 				color: #111827;
 				font-weight: 600;
 			}
+
 			@media (max-width: 980px) {
-				.qo-grid,
-				.qo-steps { grid-template-columns: 1fr; }
+				.qo-grid { grid-template-columns: 1fr; }
+				.qo-steps { grid-template-columns: repeat(2, 1fr); }
 				.qo-highlight,
 				.qo-process,
-				.qo-summary-box { padding: 28px; }
+				.qo-summary-box { padding: 32px; }
+			}
+
+			@media (max-width: 600px) {
+				.quick-overview-section { padding: 40px 14px; }
+				.qo-header { margin-bottom: 32px; }
+				.qo-steps { grid-template-columns: 1fr; gap: 16px; }
+				.qo-highlight {
+					padding: 26px 20px;
+					border-radius: 20px;
+					margin-bottom: 28px;
+				}
+				.qo-process {
+					padding: 26px 20px;
+					border-radius: 20px;
+					margin-bottom: 28px;
+				}
+				.qo-process h2 { margin-bottom: 22px; }
+				.qo-card { padding: 22px 20px; border-radius: 18px; }
+				.qo-step { padding: 22px 18px; border-radius: 16px; }
+				.qo-summary-box { padding: 26px 20px; border-radius: 20px; }
+				.qo-quote { padding-left: 16px; margin-top: 22px; }
 			}
 		</style>
 
