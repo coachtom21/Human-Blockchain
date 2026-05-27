@@ -17,7 +17,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 $hb_pp_video_1_url = 'http://humanblockchain.info/wp-content/uploads/2026/05/The_Human_Gold_Experiment__How_Do_We_Measure_Trust_.mp4';
 $hb_pp_video_2_url = 'http://humanblockchain.info/wp-content/uploads/2026/05/The-Human-Gold-Experiment_-Presenting-Presence1.mp4';
 $hb_pp_podcast_url = 'http://humanblockchain.info/wp-content/uploads/2026/05/Verifying_real_humans_in_a_synthetic_world.mp4';
-$hb_pp_pdf_url     = 'http://humanblockchain.info/wp-content/uploads/2026/05/Present-Presence-HTML.pdf';
+// Research brief (Google Drive — Policy Paper.pdf).
+$hb_pp_pdf_gdrive_id      = '15excXL-xZgYqN9iSUPvrD709v1A3aq3h';
+$hb_pp_pdf_url            = 'https://drive.google.com/file/d/' . $hb_pp_pdf_gdrive_id . '/view?usp=sharing';
+$hb_pp_pdf_preview_url    = 'https://drive.google.com/file/d/' . $hb_pp_pdf_gdrive_id . '/preview';
+$hb_pp_pdf_download_url   = 'https://drive.google.com/uc?export=download&id=' . $hb_pp_pdf_gdrive_id;
+$hb_pp_pdf_filename       = 'Policy-Paper.pdf';
 
 $hb_pp_contact_email = 'coachtom@legacytoliveby.org';
 
@@ -418,14 +423,12 @@ $hb_pp_media_mime = static function ( $ext, $as_audio = false ) {
 				<p><?php esc_html_e( 'Download or preview the PDF research brief for a quick institutional overview, study framing, and implementation prompt.', 'hello-elementor-child' ); ?></p>
 
 				<div class="hb-pdf-actions">
-					<a href="<?php echo esc_url( $hb_pp_pdf_url ); ?>" target="_blank" rel="noopener"><?php esc_html_e( 'Open PDF', 'hello-elementor-child' ); ?></a>
-					<?php $hb_pp_pdf_filename = basename( (string) wp_parse_url( $hb_pp_pdf_url, PHP_URL_PATH ) ); ?>
+					<a href="<?php echo esc_url( $hb_pp_pdf_url ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Open PDF', 'hello-elementor-child' ); ?></a>
 					<a
-						href="<?php echo esc_url( $hb_pp_pdf_url ); ?>"
+						href="<?php echo esc_url( $hb_pp_pdf_download_url ); ?>"
 						class="hb-light-btn"
-						id="hbPdfDownloadBtn"
-						download="<?php echo esc_attr( $hb_pp_pdf_filename ); ?>"
-						data-filename="<?php echo esc_attr( $hb_pp_pdf_filename ); ?>"
+						target="_blank"
+						rel="noopener noreferrer"
 					><?php esc_html_e( 'Download PDF', 'hello-elementor-child' ); ?></a>
 					<button type="button" id="hbPdfPreviewBtn"><?php esc_html_e( 'Preview PDF', 'hello-elementor-child' ); ?></button>
 				</div>
@@ -442,16 +445,15 @@ $hb_pp_media_mime = static function ( $ext, $as_audio = false ) {
 		<div id="hbPdfModal" class="hb-modal" role="dialog" aria-modal="true" aria-label="<?php esc_attr_e( 'Research Brief PDF Preview', 'hello-elementor-child' ); ?>">
 			<div class="hb-modal-content">
 				<button type="button" class="hb-close" id="hbPdfCloseBtn"><?php esc_html_e( 'Close', 'hello-elementor-child' ); ?></button>
-				<iframe src="<?php echo esc_url( $hb_pp_pdf_url ); ?>" title="<?php esc_attr_e( 'Research Brief PDF Preview', 'hello-elementor-child' ); ?>"></iframe>
+				<iframe src="<?php echo esc_url( $hb_pp_pdf_preview_url ); ?>" title="<?php esc_attr_e( 'Research Brief PDF Preview', 'hello-elementor-child' ); ?>" allow="autoplay"></iframe>
 			</div>
 		</div>
 
 		<script>
 			(function () {
-				var openBtn     = document.getElementById('hbPdfPreviewBtn');
-				var closeBtn    = document.getElementById('hbPdfCloseBtn');
-				var modal       = document.getElementById('hbPdfModal');
-				var downloadBtn = document.getElementById('hbPdfDownloadBtn');
+				var openBtn  = document.getElementById('hbPdfPreviewBtn');
+				var closeBtn = document.getElementById('hbPdfCloseBtn');
+				var modal    = document.getElementById('hbPdfModal');
 
 				if (modal) {
 					if (openBtn)  { openBtn.addEventListener('click', function () { modal.style.display = 'block'; }); }
@@ -463,38 +465,6 @@ $hb_pp_media_mime = static function ( $ext, $as_audio = false ) {
 						if (event.key === 'Escape' && modal.style.display === 'block') {
 							modal.style.display = 'none';
 						}
-					});
-				}
-
-				if (downloadBtn) {
-					downloadBtn.addEventListener('click', function (event) {
-						var url = downloadBtn.getAttribute('href');
-						var filename = downloadBtn.getAttribute('data-filename') || 'download.pdf';
-						if (!url) { return; }
-
-						event.preventDefault();
-
-						fetch(url, { credentials: 'omit' })
-							.then(function (response) {
-								if (!response.ok) { throw new Error('HTTP ' + response.status); }
-								return response.blob();
-							})
-							.then(function (blob) {
-								var blobUrl = URL.createObjectURL(blob);
-								var anchor  = document.createElement('a');
-								anchor.href = blobUrl;
-								anchor.download = filename;
-								document.body.appendChild(anchor);
-								anchor.click();
-								anchor.remove();
-								setTimeout(function () { URL.revokeObjectURL(blobUrl); }, 1000);
-							})
-							.catch(function () {
-								// CORS or network failure (e.g. cross-origin asset without
-								// Access-Control-Allow-Origin). Fall back to opening the file
-								// in a new tab so the user can still save it manually.
-								window.open(url, '_blank', 'noopener');
-							});
 					});
 				}
 			}());
