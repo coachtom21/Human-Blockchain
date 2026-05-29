@@ -16,6 +16,7 @@ $hb_etf_video_1_url = 'http://humanblockchain.info/wp-content/uploads/2026/05/No
 $hb_etf_video_2_url = 'http://humanblockchain.info/wp-content/uploads/2026/05/XP__The_Anti-Speculation_Asset.mp4';
 $hb_etf_video_3_url = 'http://humanblockchain.info/wp-content/uploads/2026/05/The-Four-Year-Buildout11.mp4';
 $hb_etf_video_4_url = 'http://humanblockchain.info/wp-content/uploads/2026/05/Engineering_the_Trust_Index.mp4';
+$hb_etf_video_5_url = 'http://humanblockchain.info/wp-content/uploads/2026/05/Measuring-Gratitude_-The-New-World-Penny1.mp4';
 
 $hb_etf_podcast_1_url = 'http://humanblockchain.info/wp-content/uploads/2026/05/Proving_Human_Presence_Without_Money.mp4';
 $hb_etf_podcast_2_url = 'http://humanblockchain.info/wp-content/uploads/2026/05/The_financial_index_for_human_presence.mp4';
@@ -423,6 +424,18 @@ $hb_etf_render_podcast = static function ( $url, $subtitle, $url_ext, $mime, $v_
 						$hb_etf_video_4_url,
 						__( 'Personal, Group, and Guild Recognition', 'hello-elementor-child' ),
 						__( 'Video 4: Personal, Group, and Guild Recognition', 'hello-elementor-child' ),
+						$hb_etf_url_ext,
+						$hb_etf_media_mime,
+						$hb_etf_video_exts
+					);
+					?>
+				</div>
+				<div class="hb-etf-media-box">
+					<?php
+					$hb_etf_render_video(
+						$hb_etf_video_5_url,
+						__( 'Measuring Gratitude: The New World Penny', 'hello-elementor-child' ),
+						__( 'Video 5: Measuring Gratitude: The New World Penny', 'hello-elementor-child' ),
 						$hb_etf_url_ext,
 						$hb_etf_media_mime,
 						$hb_etf_video_exts
