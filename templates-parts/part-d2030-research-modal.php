@@ -45,6 +45,10 @@ $d2030_video_9_url = apply_filters(
 	'hb_d2030_video_9_url',
 	'http://humanblockchain.info/wp-content/uploads/2026/05/Discovering-Human-Gold_-The-YAM-JAM-Rewa-2026-05-191.mp4'
 );
+$d2030_video_10_url = apply_filters(
+	'hb_d2030_video_10_url',
+	'http://humanblockchain.info/wp-content/uploads/2026/05/Architecting_the_Non-Custodial_Network__The_VFN_MSB_Dual-Layer_-1.mp4'
+);
 $d2030_podcast_1_url = apply_filters(
 	'hb_d2030_podcast_1_url',
 	'http://humanblockchain.info/wp-content/uploads/2026/05/Human_participation_as_a_measurable_economic_signal.mp4'
@@ -127,6 +131,10 @@ $d2030_video_8_title   = apply_filters(
 $d2030_video_9_title   = apply_filters(
 	'hb_d2030_video_9_title',
 	__( 'Discovering Human Gold: The YAM JAM Rewa', 'hello-elementor-child' )
+);
+$d2030_video_10_title  = apply_filters(
+	'hb_d2030_video_10_title',
+	__( 'Architecting the Non-Custodial Network: The VFN-MSB Dual-Layer', 'hello-elementor-child' )
 );
 $d2030_podcast_1_title = $hb_d2030_label_from_url( $d2030_podcast_1_url, 'Podcast 1' );
 $d2030_podcast_2_title = $hb_d2030_label_from_url( $d2030_podcast_2_url, 'Podcast 2' );
@@ -239,6 +247,16 @@ $d2030_podcast_3_title = apply_filters(
 						</div>
 					<?php else : ?>
 						<span class="d2030-btn-disabled"><?php esc_html_e( 'Video 9 coming soon', 'hello-elementor-child' ); ?></span>
+					<?php endif; ?>
+					<?php if ( ! empty( $d2030_video_10_url ) ) : ?>
+						<div class="d2030-preview-card">
+							<p class="d2030-preview-title"><?php echo esc_html( $d2030_video_10_title ); ?></p>
+							<video class="d2030-preview-video" controls preload="metadata" playsinline>
+								<source src="<?php echo esc_url( $d2030_video_10_url ); ?>" type="video/mp4" />
+							</video>
+						</div>
+					<?php else : ?>
+						<span class="d2030-btn-disabled"><?php esc_html_e( 'Video 10 coming soon', 'hello-elementor-child' ); ?></span>
 					<?php endif; ?>
 				</div>
 			</div>
