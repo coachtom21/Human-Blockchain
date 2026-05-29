@@ -61,6 +61,10 @@ $d2030_podcast_3_url = apply_filters(
 	'hb_d2030_podcast_3_url',
 	'http://humanblockchain.info/wp-content/uploads/2026/05/The_Gracebook_human_blockchain_experiment.mp4'
 );
+$d2030_podcast_4_url = apply_filters(
+	'hb_d2030_podcast_4_url',
+	'http://humanblockchain.info/wp-content/uploads/2026/05/A_blockchain_for_pure_human_gratitude.mp4'
+);
 $d2030_script_pdfs = apply_filters(
 	'hb_d2030_script_pdfs',
 	array(
@@ -82,6 +86,16 @@ $d2030_script_pdfs = apply_filters(
 			'title' => apply_filters(
 				'hb_d2030_script_pdf_2_title',
 				__( 'Regulator-facing Trust Market Memo — HPI and Kalshi Mirror', 'hello-elementor-child' )
+			),
+		),
+		array(
+			'url'   => apply_filters(
+				'hb_d2030_script_pdf_3_url',
+				'https://drive.google.com/file/d/1xooc8tQzLs-b1xvkydQm_WAaYdquZWcf/view?usp=sharing'
+			),
+			'title' => apply_filters(
+				'hb_d2030_script_pdf_3_title',
+				__( 'VFN-MSB Sustainability', 'hello-elementor-child' )
 			),
 		),
 	)
@@ -144,6 +158,10 @@ $d2030_podcast_3_title = apply_filters(
 		$d2030_podcast_3_url,
 		__( 'The Gracebook Human Blockchain Experiment', 'hello-elementor-child' )
 	)
+);
+$d2030_podcast_4_title = apply_filters(
+	'hb_d2030_podcast_4_title',
+	__( 'A Blockchain for Pure Human Gratitude', 'hello-elementor-child' )
 );
 ?>
 <div id="d2030-modal" class="d2030-modal" role="dialog" aria-modal="true" aria-labelledby="d2030-modal-title" hidden>
@@ -301,6 +319,19 @@ $d2030_podcast_3_title = apply_filters(
 						</div>
 					<?php else : ?>
 						<span class="d2030-btn-disabled"><?php esc_html_e( 'Podcast 3 coming soon', 'hello-elementor-child' ); ?></span>
+					<?php endif; ?>
+					<?php if ( ! empty( $d2030_podcast_4_url ) ) : ?>
+						<div class="d2030-preview-card">
+							<p class="d2030-preview-title"><?php echo esc_html( $d2030_podcast_4_title ); ?></p>
+							<audio class="d2030-preview-audio" controls preload="metadata">
+								<source src="<?php echo esc_url( $d2030_podcast_4_url ); ?>" type="audio/mp4" />
+							</audio>
+							<div class="d2030-preview-actions">
+								<a href="<?php echo esc_url( $d2030_podcast_4_url ); ?>" class="d2030-btn-secondary" target="_blank" rel="noopener noreferrer"><?php esc_html_e( '♪ Listen', 'hello-elementor-child' ); ?></a>
+							</div>
+						</div>
+					<?php else : ?>
+						<span class="d2030-btn-disabled"><?php esc_html_e( 'Podcast 4 coming soon', 'hello-elementor-child' ); ?></span>
 					<?php endif; ?>
 					<div class="d2030-preview-card d2030-script-pdf-card">
 						<p class="d2030-preview-title"><?php esc_html_e( 'Script PDF', 'hello-elementor-child' ); ?></p>
