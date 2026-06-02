@@ -447,8 +447,8 @@ class Hb_Postcard {
 		$ref = apply_filters(
 			'hb_postcard_qr_placement_ref',
 			array(
-				'x'    => 1300,
-				'y'    => 850,
+				'x'    => 1310,
+				'y'    => 840,
 				'size' => 158,
 			),
 			$user_id
