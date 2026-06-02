@@ -447,9 +447,9 @@ class Hb_Postcard {
 		$ref = apply_filters(
 			'hb_postcard_qr_placement_ref',
 			array(
-				'x'    => 1268,
-				'y'    => 764,
-				'size' => 176,
+				'x'    => 1274,
+				'y'    => 772,
+				'size' => 158,
 			),
 			$user_id
 		);
@@ -631,7 +631,7 @@ class Hb_Postcard {
 		$qr_size = (int) $placement['size'];
 		$qr_x    = (int) $placement['x'];
 		$qr_y    = (int) $placement['y'];
-		$wipe_pad = (int) apply_filters( 'hb_postcard_qr_wipe_padding', 12, $user_id, $placement );
+		$wipe_pad = (int) apply_filters( 'hb_postcard_qr_wipe_padding', 8, $user_id, $placement );
 		$wipe_pad = max( 0, min( 32, $wipe_pad ) );
 
 		if ( ! empty( $placement['wipe'] ) ) {
