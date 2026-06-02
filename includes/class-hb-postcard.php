@@ -909,7 +909,7 @@ class Hb_Postcard {
 						<span id="hb-postcard-status" role="status" aria-live="polite"></span>
 					</p>
 
-					<div class="hb-postcard-referral" id="hb-postcard-referral-wrap">
+					<div class="hb-postcard-referral" id="hb-postcard-referral-wrap"<?php echo $has_image ? '' : ' hidden'; ?>>
 						<label for="hb-postcard-ref-url"><strong><?php esc_html_e( 'Public vCard link (encoded in QR)', 'hello-elementor-child' ); ?></strong></label>
 						<input type="url" id="hb-postcard-ref-url" readonly value="<?php echo esc_attr( $scan_url ); ?>" placeholder="<?php esc_attr_e( 'Generate postcard to create your vCard link', 'hello-elementor-child' ); ?>">
 						<p class="hb-postcard-actions">

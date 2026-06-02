@@ -16,6 +16,7 @@
 	var previewCol = document.getElementById('hb-postcard-preview-col');
 	var printNote = document.getElementById('hb-postcard-print-note');
 	var downloadWrap = document.getElementById('hb-postcard-download-wrap');
+	var referralWrap = document.getElementById('hb-postcard-referral-wrap');
 
 	function setStatus(msg, isError) {
 		if (!statusEl) {
@@ -71,11 +72,8 @@
 		}).then(function (r) { return r.json(); });
 	}
 
-	function showImage(url) {
-		if (!url) {
-			return;
-		}
-		if (previewImg) {
+	function showGeneratedUi(url, scanUrl) {
+		if (url && previewImg) {
 			previewImg.src = url + (url.indexOf('?') >= 0 ? '&' : '?') + 't=' + Date.now();
 			previewImg.hidden = false;
 		}
@@ -85,13 +83,53 @@
 		if (printNote) {
 			printNote.hidden = false;
 		}
+		if (referralWrap) {
+			referralWrap.hidden = false;
+		}
 		if (downloadWrap) {
 			downloadWrap.hidden = false;
+		}
+		if (scanUrl && refInput) {
+			refInput.value = scanUrl;
+			var previewVcard = document.getElementById('hb-postcard-ref-preview');
+			if (previewVcard) {
+				previewVcard.href = scanUrl;
+				previewVcard.removeAttribute('aria-disabled');
+				previewVcard.removeAttribute('tabindex');
+			}
+			var copyBtn = document.getElementById('hb-postcard-ref-copy');
+			if (copyBtn) {
+				copyBtn.disabled = false;
+			}
 		}
 		root.dataset.hasImage = '1';
 		var genBtn = document.getElementById('hb-postcard-generate-btn');
 		if (genBtn) {
 			genBtn.textContent = 'Regenerate Postcard';
+		}
+	}
+
+	function hideGeneratedUi() {
+		if (previewImg) {
+			previewImg.src = '';
+			previewImg.hidden = true;
+		}
+		if (previewCol) {
+			previewCol.hidden = true;
+		}
+		if (printNote) {
+			printNote.hidden = true;
+		}
+		if (referralWrap) {
+			referralWrap.hidden = true;
+		}
+		if (downloadWrap) {
+			downloadWrap.hidden = true;
+		}
+		root.dataset.hasImage = '0';
+		var genBtn = document.getElementById('hb-postcard-generate-btn');
+		if (genBtn) {
+			genBtn.textContent = 'Generate Postcard';
 		}
 	}
 
@@ -128,36 +166,26 @@
 				setStatus((json && json.data && json.data.message) || 'Error', true);
 				return;
 			}
-			if (json.data.scan_url && refInput) {
-				refInput.value = json.data.scan_url;
-				var previewVcard = document.getElementById('hb-postcard-ref-preview');
-				if (previewVcard) {
-					previewVcard.href = json.data.scan_url;
-					previewVcard.removeAttribute('aria-disabled');
-					previewVcard.removeAttribute('tabindex');
-				}
-				var copyBtn = document.getElementById('hb-postcard-ref-copy');
-				if (copyBtn) {
-					copyBtn.disabled = false;
-				}
-			}
-			showImage(json.data.image_url);
+			showGeneratedUi(json.data.image_url, json.data.scan_url || '');
 			setStatus(json.data.message || 'Done', false);
 		}).catch(function () {
 			setStatus('Request failed', true);
 		});
 	});
 
-	document.getElementById('hb-postcard-ref-copy').addEventListener('click', function () {
-		if (!refInput) {
-			return;
-		}
-		copyText(refInput.value).then(function () {
-			setStatus(cfg.i18n.copied, false);
-		}).catch(function () {
-			setStatus(cfg.i18n.copyFail, true);
+	var refCopyBtn = document.getElementById('hb-postcard-ref-copy');
+	if (refCopyBtn) {
+		refCopyBtn.addEventListener('click', function () {
+			if (!refInput) {
+				return;
+			}
+			copyText(refInput.value).then(function () {
+				setStatus(cfg.i18n.copied, false);
+			}).catch(function () {
+				setStatus(cfg.i18n.copyFail, true);
+			});
 		});
-	});
+	}
 
 	var deleteBtn = document.getElementById('hb-postcard-delete-btn');
 	if (deleteBtn) {
@@ -170,24 +198,7 @@
 					setStatus((json && json.data && json.data.message) || 'Error', true);
 					return;
 				}
-				if (previewImg) {
-					previewImg.src = '';
-					previewImg.hidden = true;
-				}
-				if (previewCol) {
-					previewCol.hidden = true;
-				}
-				if (printNote) {
-					printNote.hidden = true;
-				}
-				if (downloadWrap) {
-					downloadWrap.hidden = true;
-				}
-				root.dataset.hasImage = '0';
-				var genBtn = document.getElementById('hb-postcard-generate-btn');
-				if (genBtn) {
-					genBtn.textContent = 'Generate Postcard';
-				}
+				hideGeneratedUi();
 				setStatus(json.data.message || 'Removed', false);
 			});
 		});
