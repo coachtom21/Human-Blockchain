@@ -110,20 +110,6 @@
 	border: 1px solid rgba(214, 168, 79, 0.35);
 }
 
-.hb-postcard-preview-img--master {
-	opacity: 0.92;
-}
-
-.hb-postcard-preview-placeholder {
-	text-align: center;
-	padding: 12px 8px 0;
-	color: #94a3b8;
-	font-size: 13px;
-	line-height: 1.5;
-	max-width: 520px;
-	margin: 0 auto;
-}
-
 .hb-postcard-print-note {
 	font-size: 12px;
 	color: #94a3b8;

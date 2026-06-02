@@ -13,7 +13,8 @@
 	var campaignInput = document.getElementById('hb-postcard-campaign');
 	var refInput = document.getElementById('hb-postcard-ref-url');
 	var previewImg = document.getElementById('hb-postcard-preview-img');
-	var previewPlaceholder = document.getElementById('hb-postcard-preview-placeholder');
+	var previewCol = document.getElementById('hb-postcard-preview-col');
+	var printNote = document.getElementById('hb-postcard-print-note');
 	var downloadWrap = document.getElementById('hb-postcard-download-wrap');
 
 	function setStatus(msg, isError) {
@@ -77,10 +78,12 @@
 		if (previewImg) {
 			previewImg.src = url + (url.indexOf('?') >= 0 ? '&' : '?') + 't=' + Date.now();
 			previewImg.hidden = false;
-			previewImg.classList.remove('hb-postcard-preview-img--master');
 		}
-		if (previewPlaceholder) {
-			previewPlaceholder.hidden = true;
+		if (previewCol) {
+			previewCol.hidden = false;
+		}
+		if (printNote) {
+			printNote.hidden = false;
 		}
 		if (downloadWrap) {
 			downloadWrap.hidden = false;
@@ -171,8 +174,11 @@
 					previewImg.src = '';
 					previewImg.hidden = true;
 				}
-				if (previewPlaceholder) {
-					previewPlaceholder.hidden = false;
+				if (previewCol) {
+					previewCol.hidden = true;
+				}
+				if (printNote) {
+					printNote.hidden = true;
 				}
 				if (downloadWrap) {
 					downloadWrap.hidden = true;

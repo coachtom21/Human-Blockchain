@@ -841,8 +841,6 @@ class Hb_Postcard {
 		$scan_url     = self::get_display_scan_url( $user_id );
 		$referral_url = self::get_referral_url( $user_id );
 		$has_image    = $image_url !== '';
-		$template_url = self::get_template_url();
-		$has_template = $template_url !== '';
 		$ajax_url    = admin_url( 'admin-ajax.php' );
 		$nonce       = wp_create_nonce( 'hb_postcard' );
 		$dl_nonce    = wp_create_nonce( 'hb_postcard_download' );
@@ -933,20 +931,18 @@ class Hb_Postcard {
 					</div>
 				</div>
 
-				<div class="hb-postcard-preview-col">
+				<div class="hb-postcard-preview-col" id="hb-postcard-preview-col"<?php echo $has_image ? '' : ' hidden'; ?>>
 					<h4><?php esc_html_e( 'Preview', 'hello-elementor-child' ); ?></h4>
 					<div class="hb-postcard-preview-frame">
-						<?php if ( $has_image ) : ?>
-							<img id="hb-postcard-preview-img" class="hb-postcard-preview-img" src="<?php echo esc_url( $image_url ); ?>" alt="<?php esc_attr_e( 'Generated 4×6 postcard with your referral QR', 'hello-elementor-child' ); ?>">
-						<?php elseif ( $has_template ) : ?>
-							<img id="hb-postcard-preview-img" class="hb-postcard-preview-img hb-postcard-preview-img--master" src="<?php echo esc_url( $template_url ); ?>" alt="<?php esc_attr_e( 'Medici postcard master artwork', 'hello-elementor-child' ); ?>">
-							<p id="hb-postcard-preview-placeholder" class="hb-postcard-preview-placeholder"><?php esc_html_e( 'Generate to stamp your vCard QR on this artwork', 'hello-elementor-child' ); ?></p>
-						<?php else : ?>
-							<div id="hb-postcard-preview-placeholder" class="hb-postcard-preview-placeholder"><?php esc_html_e( 'Upload master artwork, then generate your postcard', 'hello-elementor-child' ); ?></div>
-							<img id="hb-postcard-preview-img" class="hb-postcard-preview-img" src="" alt="" hidden>
-						<?php endif; ?>
+						<img
+							id="hb-postcard-preview-img"
+							class="hb-postcard-preview-img"
+							src="<?php echo $has_image ? esc_url( $image_url ) : ''; ?>"
+							alt="<?php esc_attr_e( 'Generated 4×6 postcard with your vCard QR', 'hello-elementor-child' ); ?>"
+							<?php echo $has_image ? '' : ' hidden'; ?>
+						>
 					</div>
-					<p class="hb-postcard-print-note"><?php esc_html_e( 'Print at 4×6 inches (300 DPI). PNG preserves the full Medici artwork.', 'hello-elementor-child' ); ?></p>
+					<p class="hb-postcard-print-note" id="hb-postcard-print-note"<?php echo $has_image ? '' : ' hidden'; ?>><?php esc_html_e( 'Print at 4×6 inches (300 DPI). PNG preserves the full Medici artwork.', 'hello-elementor-child' ); ?></p>
 				</div>
 			</div>
 		</div>
