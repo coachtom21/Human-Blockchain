@@ -480,6 +480,7 @@ function hb_should_enqueue_d2030_research_modal() {
 		array(
 			'templates-parts/template-nwp-landing.php',
 			'templates-parts/template-explore-research-landing.php',
+			'templates-parts/template-yam-is-on-landing.php',
 		)
 	);
 }

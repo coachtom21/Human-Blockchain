@@ -1,0 +1,296 @@
+/**
+ * YAM-is-On Landing — Detente 2030 / Human Gold Experiment.
+ *
+ * @package HelloElementorChild
+ */
+
+:root {
+	--yam-navy: #071827;
+	--yam-blue: #123954;
+	--yam-gold: #d6a84f;
+	--yam-cream: #fff3d4;
+	--yam-paper: #f5e6c4;
+	--yam-ink: #1d1b16;
+	--yam-muted: #d7c9a7;
+}
+
+@supports (overflow: clip) {
+	html:has(body.yam-is-on-landing),
+	body.yam-is-on-landing {
+		overflow-x: clip;
+	}
+}
+
+body.yam-is-on-landing {
+	margin: 0;
+	font-family: Georgia, "Times New Roman", serif;
+	background: linear-gradient(135deg, var(--yam-navy), var(--yam-blue));
+	color: var(--yam-cream);
+	-webkit-text-size-adjust: 100%;
+}
+
+body.yam-is-on-landing .yam-is-on,
+body.yam-is-on-landing .yam-is-on * {
+	box-sizing: border-box;
+}
+
+body.yam-is-on-landing .yam-is-on section {
+	padding: clamp(40px, 6vw, 56px) clamp(16px, 4vw, 20px);
+}
+
+body.yam-is-on-landing .yam-is-on .wrap {
+	max-width: 1180px;
+	margin: 0 auto;
+	width: 100%;
+	min-width: 0;
+}
+
+body.yam-is-on-landing .yam-is-on .hero {
+	text-align: center;
+	padding-top: clamp(20px, 4vw, 36px);
+}
+
+body.yam-is-on-landing .yam-is-on .eyebrow {
+	color: var(--yam-gold);
+	letter-spacing: 0.2em;
+	font-size: clamp(12px, 2.5vw, 14px);
+	text-transform: uppercase;
+	font-weight: bold;
+	margin: 0;
+}
+
+body.yam-is-on-landing .yam-is-on h1 {
+	font-size: clamp(2rem, 6vw, 3.5rem);
+	line-height: 1.08;
+	margin: 18px auto;
+	max-width: 900px;
+}
+
+body.yam-is-on-landing .yam-is-on h2 {
+	font-size: clamp(1.5rem, 4vw, 2.25rem);
+	margin: 0 0 16px;
+	line-height: 1.2;
+}
+
+body.yam-is-on-landing .yam-is-on p {
+	font-size: clamp(17px, 2.8vw, 19px);
+	line-height: 1.65;
+	margin: 0 0 1em;
+}
+
+body.yam-is-on-landing .yam-is-on p:last-child {
+	margin-bottom: 0;
+}
+
+body.yam-is-on-landing .yam-is-on .lead {
+	max-width: 780px;
+	margin: 0 auto 28px;
+	color: #f4e8c9;
+}
+
+body.yam-is-on-landing .yam-is-on .postcard-frame {
+	background: rgba(255, 255, 255, 0.08);
+	border: 1px solid rgba(214, 168, 79, 0.45);
+	border-radius: 24px;
+	padding: 18px;
+	box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+	margin: 28px auto;
+	max-width: 720px;
+}
+
+body.yam-is-on-landing .yam-is-on .postcard-frame img,
+body.yam-is-on-landing .yam-is-on .postcard-frame .yam-hero-video {
+	width: 100%;
+	height: auto;
+	border-radius: 16px;
+	display: block;
+}
+
+body.yam-is-on-landing .yam-is-on .postcard-frame .yam-hero-video {
+	background: #000;
+	aspect-ratio: 16 / 9;
+	max-height: min(56vw, 405px);
+	object-fit: contain;
+}
+
+body.yam-is-on-landing .yam-is-on .postcard-placeholder {
+	border: 2px dashed rgba(214, 168, 79, 0.5);
+	border-radius: 16px;
+	padding: clamp(48px, 10vw, 80px) 24px;
+	text-align: center;
+	color: var(--yam-muted);
+	font-family: system-ui, -apple-system, sans-serif;
+	font-size: 15px;
+	line-height: 1.5;
+	background: rgba(0, 0, 0, 0.2);
+}
+
+body.yam-is-on-landing .yam-is-on .cta-row {
+	display: flex;
+	gap: 14px;
+	justify-content: center;
+	flex-wrap: wrap;
+	margin-top: 28px;
+}
+
+body.yam-is-on-landing .yam-is-on .btn,
+body.yam-is-on-landing .yam-is-on button.btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 48px;
+	padding: 14px 24px;
+	border-radius: 999px;
+	text-decoration: none;
+	font-weight: bold;
+	font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+	font-size: 15px;
+	text-align: center;
+	-webkit-tap-highlight-color: transparent;
+}
+
+body.yam-is-on-landing .yam-is-on button.btn {
+	border: none;
+	cursor: pointer;
+	appearance: none;
+}
+
+body.yam-is-on-landing .yam-is-on .btn-research-portal {
+	background: #1d4ed8;
+	color: #fff;
+	box-shadow: 0 8px 24px rgba(29, 78, 216, 0.35);
+}
+
+body.yam-is-on-landing .yam-is-on .btn-research-portal:hover,
+body.yam-is-on-landing .yam-is-on .btn-research-portal:focus-visible {
+	background: #2563eb;
+	color: #fff;
+}
+
+body.yam-is-on-landing .yam-is-on .btn-primary {
+	background: var(--yam-gold);
+	color: #111;
+}
+
+body.yam-is-on-landing .yam-is-on .btn-primary:hover,
+body.yam-is-on-landing .yam-is-on .btn-primary:focus-visible {
+	background: #e8bc6a;
+	color: #111;
+}
+
+body.yam-is-on-landing .yam-is-on .btn-secondary {
+	background: var(--yam-cream);
+	color: var(--yam-navy);
+}
+
+body.yam-is-on-landing .yam-is-on .btn-secondary:hover,
+body.yam-is-on-landing .yam-is-on .btn-secondary:focus-visible {
+	background: #fff;
+}
+
+body.yam-is-on-landing .yam-is-on .btn-outline {
+	border: 1px solid var(--yam-gold);
+	color: var(--yam-cream);
+	background: transparent;
+}
+
+body.yam-is-on-landing .yam-is-on .btn-outline:hover,
+body.yam-is-on-landing .yam-is-on .btn-outline:focus-visible {
+	background: rgba(214, 168, 79, 0.15);
+}
+
+body.yam-is-on-landing .yam-is-on .btn:focus-visible {
+	outline: 2px solid var(--yam-cream);
+	outline-offset: 3px;
+}
+
+body.yam-is-on-landing .yam-is-on .grid {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 22px;
+}
+
+body.yam-is-on-landing .yam-is-on .card {
+	background: rgba(255, 255, 255, 0.08);
+	border: 1px solid rgba(255, 255, 255, 0.15);
+	border-radius: 22px;
+	padding: clamp(20px, 4vw, 26px);
+	min-width: 0;
+}
+
+body.yam-is-on-landing .yam-is-on .card h3 {
+	color: var(--yam-gold);
+	font-size: clamp(1.25rem, 3vw, 1.5625rem);
+	margin: 0 0 12px;
+	line-height: 1.25;
+}
+
+body.yam-is-on-landing .yam-is-on .card .btn {
+	margin-top: 16px;
+}
+
+body.yam-is-on-landing .yam-is-on .paper {
+	background: var(--yam-paper);
+	color: var(--yam-ink);
+	border-radius: 24px;
+	padding: clamp(24px, 5vw, 34px);
+}
+
+body.yam-is-on-landing .yam-is-on .paper h2 {
+	color: var(--yam-ink);
+}
+
+body.yam-is-on-landing .yam-is-on .split {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 28px;
+}
+
+body.yam-is-on-landing .yam-is-on .price {
+	font-size: clamp(1.75rem, 4vw, 2.5rem);
+	font-weight: bold;
+	color: var(--yam-gold);
+	margin: 8px 0 12px;
+}
+
+body.yam-is-on-landing .yam-is-on .yam-footer {
+	text-align: center;
+	background: #03080d;
+	color: var(--yam-muted);
+	padding: 34px 20px;
+	font-size: 14px;
+	line-height: 1.6;
+}
+
+body.yam-is-on-landing .yam-is-on .yam-footer p {
+	font-size: 14px;
+	margin: 0;
+}
+
+@media (max-width: 992px) {
+	body.yam-is-on-landing .yam-is-on .grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+@media (max-width: 850px) {
+	body.yam-is-on-landing .yam-is-on .grid,
+	body.yam-is-on-landing .yam-is-on .split {
+		grid-template-columns: 1fr;
+	}
+
+	body.yam-is-on-landing .yam-is-on .cta-row {
+		flex-direction: column;
+		align-items: stretch;
+	}
+
+	body.yam-is-on-landing .yam-is-on .cta-row .btn {
+		width: 100%;
+	}
+}
+
+@media (max-width: 480px) {
+	body.yam-is-on-landing .yam-is-on .grid {
+		grid-template-columns: 1fr;
+	}
+}
