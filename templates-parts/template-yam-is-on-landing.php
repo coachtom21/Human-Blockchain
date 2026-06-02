@@ -57,6 +57,11 @@ $url_charter = $hb_yam_page_url(
 	'/explore-research-landing/'
 );
 
+$url_curious = $hb_yam_page_url(
+	array( 'curious' ),
+	'/curious/'
+);
+
 $url_discord = apply_filters(
 	'cpm_nwp_discord_invite_url',
 	get_option( 'cpm_nwp_discord_invite_url', 'https://discord.com/invite/g5jreAPbra' )
@@ -145,6 +150,7 @@ $css_ver  = file_exists( $css_file ) ? (string) filemtime( $css_file ) : HELLO_E
 						aria-haspopup="dialog"
 					><?php esc_html_e( 'Explore Research Portal', 'hello-elementor-child' ); ?></button>
 					<a href="<?php echo esc_url( $url_member_services ); ?>" class="btn btn-secondary"><?php esc_html_e( 'Member Services', 'hello-elementor-child' ); ?></a>
+					<a href="<?php echo esc_url( $url_curious ); ?>" class="btn btn-outline"><?php esc_html_e( 'Curious?', 'hello-elementor-child' ); ?></a>
 					<a href="<?php echo esc_url( $url_observe_free ); ?>" class="btn btn-outline"><?php esc_html_e( 'Observe Free', 'hello-elementor-child' ); ?></a>
 				</div>
 			</div>
@@ -276,6 +282,7 @@ $css_ver  = file_exists( $css_file ) ? (string) filemtime( $css_file ) : HELLO_E
 						aria-haspopup="dialog"
 					><?php esc_html_e( 'Explore Research Portal', 'hello-elementor-child' ); ?></button>
 					<a href="<?php echo esc_url( $url_discord ); ?>" class="btn btn-secondary" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Enter Discord Gracebook', 'hello-elementor-child' ); ?></a>
+					<a href="<?php echo esc_url( $url_curious ); ?>" class="btn btn-outline"><?php esc_html_e( 'Curious?', 'hello-elementor-child' ); ?></a>
 				</div>
 			</div>
 		</section>
