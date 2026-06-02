@@ -92,23 +92,26 @@
 		}
 	}
 
-	document.getElementById('hb-postcard-save-btn').addEventListener('click', function () {
-		setStatus(cfg.i18n.saving, false);
-		var data = fieldPayload();
-		post('hb_save_postcard_fields', {
-			poc: data.poc,
-			sponsor: data.sponsor,
-			campaign: data.campaign
-		}).then(function (json) {
-			if (!json || !json.success) {
-				setStatus((json && json.data && json.data.message) || 'Error', true);
-				return;
-			}
-			setStatus(json.data.message || cfg.i18n.copied, false);
-		}).catch(function () {
-			setStatus('Request failed', true);
+	var saveBtn = document.getElementById('hb-postcard-save-btn');
+	if (saveBtn) {
+		saveBtn.addEventListener('click', function () {
+			setStatus(cfg.i18n.saving, false);
+			var data = fieldPayload();
+			post('hb_save_postcard_fields', {
+				poc: data.poc,
+				sponsor: data.sponsor,
+				campaign: data.campaign
+			}).then(function (json) {
+				if (!json || !json.success) {
+					setStatus((json && json.data && json.data.message) || 'Error', true);
+					return;
+				}
+				setStatus(json.data.message || cfg.i18n.copied, false);
+			}).catch(function () {
+				setStatus('Request failed', true);
+			});
 		});
-	});
+	}
 
 	document.getElementById('hb-postcard-generate-btn').addEventListener('click', function () {
 		setStatus(cfg.i18n.generating, false);

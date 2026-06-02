@@ -837,7 +837,6 @@ class Hb_Postcard {
 		}
 
 		$user_id     = (int) get_current_user_id();
-		$fields      = self::get_fields( $user_id );
 		$image_url    = (string) get_user_meta( $user_id, self::META_IMAGE_URL, true );
 		$scan_url     = self::get_display_scan_url( $user_id );
 		$referral_url = self::get_referral_url( $user_id );
@@ -905,25 +904,10 @@ class Hb_Postcard {
 
 			<div class="hb-postcard-layout">
 				<div class="hb-postcard-form-col">
-					<h4><?php esc_html_e( 'Customize your postcard', 'hello-elementor-child' ); ?></h4>
-					<p>
-						<label for="hb-postcard-poc"><strong><?php esc_html_e( 'POC Name', 'hello-elementor-child' ); ?></strong></label>
-						<input type="text" id="hb-postcard-poc" name="poc" maxlength="80" value="<?php echo esc_attr( $fields['poc'] ); ?>" placeholder="<?php esc_attr_e( 'Point of contact', 'hello-elementor-child' ); ?>">
-					</p>
-					<p>
-						<label for="hb-postcard-sponsor"><strong><?php esc_html_e( 'Sponsor Name', 'hello-elementor-child' ); ?></strong></label>
-						<input type="text" id="hb-postcard-sponsor" name="sponsor" maxlength="80" value="<?php echo esc_attr( $fields['sponsor'] ); ?>" placeholder="<?php esc_attr_e( 'Sponsor or steward', 'hello-elementor-child' ); ?>">
-					</p>
-					<p>
-						<label for="hb-postcard-campaign"><strong><?php esc_html_e( 'Campaign Message', 'hello-elementor-child' ); ?></strong></label>
-						<textarea id="hb-postcard-campaign" name="campaign" maxlength="200" rows="3" placeholder="<?php esc_attr_e( 'Short message for the postcard', 'hello-elementor-child' ); ?>"><?php echo esc_textarea( $fields['campaign'] ); ?></textarea>
-					</p>
-
 					<p class="hb-postcard-actions">
 						<button type="button" class="button alt" id="hb-postcard-generate-btn">
 							<?php echo $has_image ? esc_html__( 'Regenerate Postcard', 'hello-elementor-child' ) : esc_html__( 'Generate Postcard', 'hello-elementor-child' ); ?>
 						</button>
-						<button type="button" class="button" id="hb-postcard-save-btn"><?php esc_html_e( 'Save details', 'hello-elementor-child' ); ?></button>
 						<span id="hb-postcard-status" role="status" aria-live="polite"></span>
 					</p>
 
