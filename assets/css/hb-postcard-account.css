@@ -1,0 +1,142 @@
+/**
+ * My Account — Postcard tab UI.
+ *
+ * @package HelloElementorChild
+ */
+
+.hb-postcard-tools,
+.hb-postcard-tools * {
+	box-sizing: border-box;
+}
+
+.hb-postcard-tools {
+	color: #e5e7eb;
+	max-width: 1100px;
+}
+
+.hb-postcard-tools h3,
+.hb-postcard-tools h4,
+.hb-postcard-tools p,
+.hb-postcard-tools label {
+	color: #e5e7eb;
+}
+
+.hb-postcard-intro {
+	max-width: 720px;
+	line-height: 1.6;
+}
+
+.hb-postcard-layout {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(280px, 420px);
+	gap: 28px;
+	margin-top: 20px;
+	align-items: start;
+}
+
+.hb-postcard-form-col input[type="text"],
+.hb-postcard-form-col input[type="url"],
+.hb-postcard-form-col textarea {
+	width: 100%;
+	max-width: 100%;
+	padding: 8px 10px;
+	border: 1px solid rgba(255, 255, 255, 0.25);
+	border-radius: 6px;
+	background: #0f172a;
+	color: #f9fafb;
+}
+
+.hb-postcard-form-col textarea {
+	resize: vertical;
+	min-height: 72px;
+}
+
+.hb-postcard-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	align-items: center;
+}
+
+.hb-postcard-actions .button {
+	margin: 0 !important;
+}
+
+#hb-postcard-status {
+	font-size: 13px;
+	margin-left: 4px;
+}
+
+.hb-postcard-referral {
+	margin-top: 20px;
+	padding-top: 16px;
+	border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.hb-postcard-referral-note {
+	font-size: 13px;
+	color: #94a3b8;
+	margin-top: 10px;
+	line-height: 1.5;
+}
+
+.hb-postcard-referral-note a {
+	color: #93c5fd;
+}
+
+.hb-postcard-notice {
+	background: rgba(251, 191, 36, 0.12);
+	border: 1px solid rgba(251, 191, 36, 0.45);
+	border-radius: 8px;
+	padding: 12px 14px;
+	font-size: 14px;
+	line-height: 1.55;
+	max-width: 720px;
+}
+
+.hb-postcard-preview-frame {
+	background: rgba(0, 0, 0, 0.25);
+	border-radius: 12px;
+	padding: 12px;
+}
+
+.hb-postcard-preview-img {
+	display: block;
+	width: 100%;
+	max-width: 520px;
+	margin: 0 auto;
+	height: auto;
+	border-radius: 6px;
+	border: 1px solid rgba(214, 168, 79, 0.35);
+}
+
+.hb-postcard-preview-img--master {
+	opacity: 0.92;
+}
+
+.hb-postcard-preview-placeholder {
+	text-align: center;
+	padding: 12px 8px 0;
+	color: #94a3b8;
+	font-size: 13px;
+	line-height: 1.5;
+	max-width: 520px;
+	margin: 0 auto;
+}
+
+.hb-postcard-print-note {
+	font-size: 12px;
+	color: #94a3b8;
+	margin-top: 10px;
+	text-align: center;
+}
+
+@media (max-width: 900px) {
+	.hb-postcard-layout {
+		grid-template-columns: 1fr;
+	}
+
+	.hb-postcard-preview-col {
+		order: -1;
+	}
+}

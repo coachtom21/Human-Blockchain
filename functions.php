@@ -600,6 +600,10 @@ function hb_load_core_files() {
 	if ( file_exists( $includes_dir . '/class-hb-yamjam-verification-model.php' ) ) {
 		require_once $includes_dir . '/class-hb-yamjam-verification-model.php';
 	}
+
+	if ( file_exists( $includes_dir . '/class-hb-postcard.php' ) ) {
+		require_once $includes_dir . '/class-hb-postcard.php';
+	}
 }
 add_action( 'after_setup_theme', 'hb_load_core_files' );
 
@@ -1456,43 +1460,6 @@ function hb_render_xp_ledger_account_endpoint() {
 add_action( 'woocommerce_account_xp-ledger_endpoint', 'hb_render_xp_ledger_account_endpoint' );
 
 /**
- * Register WooCommerce My Account endpoint for VCard.
- */
-function hb_register_vcard_endpoint() {
-	add_rewrite_endpoint( 'vcard', EP_ROOT | EP_PAGES );
-}
-add_action( 'init', 'hb_register_vcard_endpoint' );
-
-/**
- * Add VCard tab to WooCommerce My Account menu.
- *
- * @param array<string, string> $items Menu items.
- * @return array<string, string>
- */
-function hb_add_vcard_account_menu_item( $items ) {
-	if ( ! is_array( $items ) ) {
-		return $items;
-	}
-
-	$new_items = array();
-	$inserted  = false;
-	foreach ( $items as $key => $label ) {
-		$new_items[ $key ] = $label;
-		if ( 'xp-ledger' === $key ) {
-			$new_items['vcard'] = __( 'VCard', 'hello-elementor-child' );
-			$inserted           = true;
-		}
-	}
-
-	if ( ! $inserted ) {
-		$new_items['vcard'] = __( 'VCard', 'hello-elementor-child' );
-	}
-
-	return $new_items;
-}
-add_filter( 'woocommerce_account_menu_items', 'hb_add_vcard_account_menu_item', 41 );
-
-/**
  * Build vCard 3.0 body for current user.
  *
  * @param int $user_id User ID.
@@ -2147,7 +2114,6 @@ function hb_ajax_generate_vcard_qr() {
 		)
 	);
 }
-add_action( 'wp_ajax_hb_generate_vcard_qr', 'hb_ajax_generate_vcard_qr' );
 
 /**
  * AJAX: Delete saved VCard and QR references.
@@ -2187,7 +2153,6 @@ function hb_ajax_delete_vcard_qr() {
 
 	wp_send_json_success( array( 'message' => __( 'VCard QR removed.', 'hello-elementor-child' ) ) );
 }
-add_action( 'wp_ajax_hb_delete_vcard_qr', 'hb_ajax_delete_vcard_qr' );
 
 /**
  * Download generated QR image for current user (PNG / JPG / SVG).
@@ -2321,237 +2286,6 @@ function hb_ajax_download_vcard_qr() {
 	echo $binary;
 	exit;
 }
-add_action( 'wp_ajax_hb_download_vcard_qr', 'hb_ajax_download_vcard_qr' );
-
-/**
- * Render VCard endpoint content on Woo My Account.
- *
- * Single Generate button. Design comes from the site-wide master styling
- * (see hb_get_qrtiger_vcard_master_styling) so every user's QR has the same look.
- * After generation, shows the vCard URL, the QR image, and download / copy / delete actions.
- */
-function hb_render_vcard_account_endpoint() {
-	if ( ! is_user_logged_in() ) {
-		echo '<p>' . esc_html__( 'Please log in to manage your VCard.', 'hello-elementor-child' ) . '</p>';
-		return;
-	}
-
-	$user_id      = (int) get_current_user_id();
-	$saved_short  = (string) get_user_meta( $user_id, 'hb_vcard_short_url', true );
-	$saved_qr_img = (string) get_user_meta( $user_id, 'hb_vcard_qr_image_url', true );
-	$is_saved     = ( $saved_qr_img !== '' );
-
-	$ajax_url  = admin_url( 'admin-ajax.php' );
-	$gen_nonce = wp_create_nonce( 'hb_generate_vcard_qr' );
-	$del_nonce = wp_create_nonce( 'hb_delete_vcard_qr' );
-	$dl_nonce  = wp_create_nonce( 'hb_download_vcard_qr' );
-
-	$png_href = add_query_arg(
-		array(
-			'action' => 'hb_download_vcard_qr',
-			'format' => 'png',
-			'nonce'  => $dl_nonce,
-		),
-		$ajax_url
-	);
-	$jpg_href = add_query_arg(
-		array(
-			'action' => 'hb_download_vcard_qr',
-			'format' => 'jpg',
-			'nonce'  => $dl_nonce,
-		),
-		$ajax_url
-	);
-
-	$generate_label = $is_saved
-		? __( 'Regenerate vCard', 'hello-elementor-child' )
-		: __( 'Generate vCard', 'hello-elementor-child' );
-	?>
-	<div id="hb-vcard-tools"
-		data-ajax-url="<?php echo esc_attr( $ajax_url ); ?>"
-		data-generate-nonce="<?php echo esc_attr( $gen_nonce ); ?>"
-		data-delete-nonce="<?php echo esc_attr( $del_nonce ); ?>">
-
-		<style>
-			/* Self-contained styles; force colours with !important so the parent
-			   theme (Hello Elementor / Woo / Astra-style) can't override them. */
-			#hb-vcard-tools, #hb-vcard-tools * { box-sizing:border-box; }
-			#hb-vcard-tools { color:#e5e7eb !important; }
-			#hb-vcard-tools h3,
-			#hb-vcard-tools h4,
-			#hb-vcard-tools p,
-			#hb-vcard-tools label,
-			#hb-vcard-tools span { color:#e5e7eb !important; }
-			#hb-vcard-tools input[type="url"] {
-				width:100% !important;
-				max-width:760px !important;
-				padding:6px 8px !important;
-				border:1px solid rgba(255,255,255,.25) !important;
-				border-radius:6px !important;
-				background:#0f172a !important;
-				color:#f9fafb !important;
-			}
-			#hb-vcard-tools input[type="url"]:focus {
-				outline:none !important;
-				border-color:#3b82f6 !important;
-				box-shadow:0 0 0 2px rgba(59,130,246,.35) !important;
-			}
-			#hb-vcard-tools .hb-vcf-actions .button { margin-right:6px !important; }
-			#hb-vcard-tools #hb-vcard-status { margin-left:8px !important; font-size:13px !important; }
-			#hb-vcard-tools #hb-vcard-qr-img {
-				max-width:320px;
-				height:auto;
-				border-radius:8px;
-				background:#f6f8fa;
-			}
-		</style>
-
-		<h3><?php esc_html_e( 'VCard', 'hello-elementor-child' ); ?></h3>
-		<p>
-			<?php esc_html_e( 'Generate your branded vCard QR. Scanning it opens a hosted contact page with your photo, name, HumanBlockchain membership line, and tap-to-call / email / save buttons.', 'hello-elementor-child' ); ?>
-		</p>
-
-		<p class="hb-vcf-actions">
-			<button type="button" class="button alt" id="hb-vcard-generate-btn">
-				<?php echo esc_html( $generate_label ); ?>
-			</button>
-			<span id="hb-vcard-status" role="status" aria-live="polite"></span>
-		</p>
-
-		<div id="hb-vcard-saved-section"<?php echo $is_saved ? '' : ' style="display:none;"'; ?>>
-			<p>
-				<label for="hb-vcard-url"><strong><?php esc_html_e( 'Public vCard link', 'hello-elementor-child' ); ?></strong></label><br>
-				<input type="url" id="hb-vcard-url" value="<?php echo esc_attr( $saved_short ); ?>" readonly>
-			</p>
-			<p class="hb-vcf-actions">
-				<a class="button" id="hb-vcard-preview-btn" href="<?php echo esc_url( $saved_short ); ?>" target="_blank" rel="noopener"><?php esc_html_e( 'Preview', 'hello-elementor-child' ); ?></a>
-				<button type="button" class="button" id="hb-vcard-copy-url-btn"><?php esc_html_e( 'Copy link', 'hello-elementor-child' ); ?></button>
-			</p>
-
-			<h4><?php esc_html_e( 'Your QR', 'hello-elementor-child' ); ?></h4>
-			<p>
-				<img id="hb-vcard-qr-img"
-					src="<?php echo esc_url( $saved_qr_img ); ?>"
-					alt="<?php esc_attr_e( 'VCard QR code', 'hello-elementor-child' ); ?>">
-			</p>
-			<p class="hb-vcf-actions">
-				<a class="button" id="hb-vcard-download-png" href="<?php echo esc_url( $png_href ); ?>"><?php esc_html_e( 'Download PNG', 'hello-elementor-child' ); ?></a>
-				<a class="button" id="hb-vcard-download-jpg" href="<?php echo esc_url( $jpg_href ); ?>"><?php esc_html_e( 'Download JPG', 'hello-elementor-child' ); ?></a>
-				<button type="button" class="button" id="hb-vcard-copy-image-btn"><?php esc_html_e( 'Copy image URL', 'hello-elementor-child' ); ?></button>
-				<button type="button" class="button" id="hb-vcard-delete-btn"><?php esc_html_e( 'Delete', 'hello-elementor-child' ); ?></button>
-			</p>
-		</div>
-	</div>
-	<script>
-	(function () {
-		var root = document.getElementById("hb-vcard-tools");
-		if (!root || root.dataset.ready === "1") { return; }
-		root.dataset.ready = "1";
-
-		var statusEl     = document.getElementById("hb-vcard-status");
-		var urlInput     = document.getElementById("hb-vcard-url");
-		var qrImg        = document.getElementById("hb-vcard-qr-img");
-		var savedSection = document.getElementById("hb-vcard-saved-section");
-		var genBtn       = document.getElementById("hb-vcard-generate-btn");
-		var ajaxUrl      = root.getAttribute("data-ajax-url") || "";
-
-		function setStatus(msg, isError) {
-			if (!statusEl) { return; }
-			statusEl.textContent = msg || "";
-			statusEl.style.color = isError ? "#fca5a5" : "#86efac";
-		}
-		function post(action, nonce) {
-			var data = new FormData();
-			data.append("action", action);
-			data.append("nonce", nonce);
-			return fetch(ajaxUrl, {
-				method: "POST",
-				credentials: "same-origin",
-				body: data
-			}).then(function (r) { return r.json(); });
-		}
-		function copyText(value) {
-			if (!value) { return Promise.reject(new Error("Missing value")); }
-			if (navigator.clipboard && navigator.clipboard.writeText) { return navigator.clipboard.writeText(value); }
-			var t = document.createElement("textarea");
-			t.value = value;
-			document.body.appendChild(t);
-			t.select();
-			document.execCommand("copy");
-			document.body.removeChild(t);
-			return Promise.resolve();
-		}
-
-		document.addEventListener("click", function (ev) {
-			var gen = ev.target.closest("#hb-vcard-generate-btn");
-			if (gen) {
-				ev.preventDefault();
-				gen.disabled = true;
-				setStatus("<?php echo esc_js( __( 'Generating...', 'hello-elementor-child' ) ); ?>", false);
-				post("hb_generate_vcard_qr", root.getAttribute("data-generate-nonce") || "")
-					.then(function (res) {
-						var data = (res && res.data) ? res.data : {};
-						if (!res || !res.success) {
-							setStatus((data && data.message) ? data.message : "<?php echo esc_js( __( 'Could not generate vCard.', 'hello-elementor-child' ) ); ?>", true);
-							return;
-						}
-						if (urlInput && data.url) { urlInput.value = data.url; }
-						var previewBtn = document.getElementById("hb-vcard-preview-btn");
-						if (previewBtn && data.url) { previewBtn.setAttribute("href", data.url); }
-						if (qrImg && data.qr_image_url) { qrImg.src = data.qr_image_url; }
-						if (savedSection) { savedSection.style.display = ""; }
-						if (genBtn) { genBtn.textContent = "<?php echo esc_js( __( 'Regenerate vCard', 'hello-elementor-child' ) ); ?>"; }
-						setStatus(data.message || "<?php echo esc_js( __( 'Saved.', 'hello-elementor-child' ) ); ?>", false);
-					})
-					.catch(function () { setStatus("<?php echo esc_js( __( 'Could not generate vCard.', 'hello-elementor-child' ) ); ?>", true); })
-					.finally(function () { gen.disabled = false; });
-				return;
-			}
-
-			var del = ev.target.closest("#hb-vcard-delete-btn");
-			if (del) {
-				ev.preventDefault();
-				del.disabled = true;
-				setStatus("<?php echo esc_js( __( 'Removing...', 'hello-elementor-child' ) ); ?>", false);
-				post("hb_delete_vcard_qr", root.getAttribute("data-delete-nonce") || "")
-					.then(function (res) {
-						if (res && res.success) {
-							if (urlInput) { urlInput.value = ""; }
-							if (qrImg) { qrImg.src = ""; }
-							if (savedSection) { savedSection.style.display = "none"; }
-							if (genBtn) { genBtn.textContent = "<?php echo esc_js( __( 'Generate vCard', 'hello-elementor-child' ) ); ?>"; }
-							setStatus((res.data && res.data.message) ? res.data.message : "<?php echo esc_js( __( 'Removed.', 'hello-elementor-child' ) ); ?>", false);
-						} else {
-							setStatus((res && res.data && res.data.message) ? res.data.message : "<?php echo esc_js( __( 'Could not remove.', 'hello-elementor-child' ) ); ?>", true);
-						}
-					})
-					.catch(function () { setStatus("<?php echo esc_js( __( 'Could not remove.', 'hello-elementor-child' ) ); ?>", true); })
-					.finally(function () { del.disabled = false; });
-				return;
-			}
-
-			var copyUrl = ev.target.closest("#hb-vcard-copy-url-btn");
-			if (copyUrl) {
-				ev.preventDefault();
-				copyText(urlInput ? urlInput.value : "")
-					.then(function () { setStatus("<?php echo esc_js( __( 'vCard URL copied.', 'hello-elementor-child' ) ); ?>", false); })
-					.catch(function () { setStatus("<?php echo esc_js( __( 'Could not copy URL.', 'hello-elementor-child' ) ); ?>", true); });
-				return;
-			}
-
-			var copyImg = ev.target.closest("#hb-vcard-copy-image-btn");
-			if (copyImg) {
-				ev.preventDefault();
-				copyText(qrImg ? qrImg.src : "")
-					.then(function () { setStatus("<?php echo esc_js( __( 'Image URL copied.', 'hello-elementor-child' ) ); ?>", false); })
-					.catch(function () { setStatus("<?php echo esc_js( __( 'Could not copy image URL.', 'hello-elementor-child' ) ); ?>", true); });
-			}
-		});
-	})();
-	</script>
-	<?php
-}
-add_action( 'woocommerce_account_vcard_endpoint', 'hb_render_vcard_account_endpoint' );
 
 /**
  * Map Get Started tiers to Paid Memberships Pro level IDs (matches default HB PMPro dump: YAMer=1, Pioneer=2, Patron=3).
