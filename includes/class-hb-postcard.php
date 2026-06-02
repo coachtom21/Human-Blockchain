@@ -448,8 +448,8 @@ class Hb_Postcard {
 			'hb_postcard_qr_placement_ref',
 			array(
 				'x'    => 1266,
-				'y'    => 734,
-				'size' => 184,
+				'y'    => 744,
+				'size' => 186,
 			),
 			$user_id
 		);
