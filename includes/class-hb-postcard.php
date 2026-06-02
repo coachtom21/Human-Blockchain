@@ -447,9 +447,9 @@ class Hb_Postcard {
 		$ref = apply_filters(
 			'hb_postcard_qr_placement_ref',
 			array(
-				'x'    => 1258,
-				'y'    => 722,
-				'size' => 178,
+				'x'    => 1252,
+				'y'    => 718,
+				'size' => 182,
 			),
 			$user_id
 		);
@@ -631,10 +631,12 @@ class Hb_Postcard {
 		$qr_size = (int) $placement['size'];
 		$qr_x    = (int) $placement['x'];
 		$qr_y    = (int) $placement['y'];
+		$wipe_pad = (int) apply_filters( 'hb_postcard_qr_wipe_padding', 12, $user_id, $placement );
+		$wipe_pad = max( 0, min( 32, $wipe_pad ) );
 
 		if ( ! empty( $placement['wipe'] ) ) {
 			$white = imagecolorallocate( $img, 255, 255, 255 );
-			imagefilledrectangle( $img, $qr_x - 4, $qr_y - 4, $qr_x + $qr_size + 4, $qr_y + $qr_size + 4, $white );
+			imagefilledrectangle( $img, $qr_x - $wipe_pad, $qr_y - $wipe_pad, $qr_x + $qr_size + $wipe_pad, $qr_y + $qr_size + $wipe_pad, $white );
 		}
 
 		imagecopyresampled( $img, $qr_img, $qr_x, $qr_y, 0, 0, $qr_size, $qr_size, imagesx( $qr_img ), imagesy( $qr_img ) );
