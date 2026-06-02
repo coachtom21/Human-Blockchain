@@ -449,7 +449,7 @@ class Hb_Postcard {
 			array(
 				'x'    => 1310,
 				'y'    => 840,
-				'size' => 158,
+				'size' => 150,
 			),
 			$user_id
 		);
