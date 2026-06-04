@@ -940,6 +940,39 @@ function hb_include_otp_popup() {
 add_action( 'wp_footer', 'hb_include_otp_popup' );
 
 /**
+ * Re-enable WooCommerce PayPal Standard on stores where WC hides it (8.9+).
+ *
+ * The filter `woocommerce_should_load_paypal_standard` no longer runs in modern WooCommerce;
+ * we register the gateway and set `_should_load` instead (see WC PR #47205).
+ */
+function hb_woocommerce_enable_paypal_standard_settings() {
+	if ( ! class_exists( 'WooCommerce' ) ) {
+		return;
+	}
+	$settings = get_option( 'woocommerce_paypal_settings', array() );
+	if ( ! is_array( $settings ) ) {
+		$settings = array();
+	}
+	if ( empty( $settings['_should_load'] ) || 'yes' !== $settings['_should_load'] ) {
+		$settings['_should_load'] = 'yes';
+		update_option( 'woocommerce_paypal_settings', $settings, false );
+	}
+}
+add_action( 'woocommerce_init', 'hb_woocommerce_enable_paypal_standard_settings', 5 );
+
+/**
+ * @param array<int, string> $gateways Gateway class names.
+ * @return array<int, string>
+ */
+function hb_woocommerce_register_paypal_standard_gateway( $gateways ) {
+	if ( class_exists( 'WC_Gateway_Paypal' ) && ! in_array( 'WC_Gateway_Paypal', $gateways, true ) ) {
+		$gateways[] = 'WC_Gateway_Paypal';
+	}
+	return $gateways;
+}
+add_filter( 'woocommerce_payment_gateways', 'hb_woocommerce_register_paypal_standard_gateway', 5 );
+
+/**
  * Register WooCommerce My Account endpoint for PMPro / site memberships.
  */
 function hb_register_memberships_endpoint() {
