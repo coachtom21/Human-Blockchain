@@ -902,11 +902,16 @@ class Hb_Postcard {
 				'ajaxUrl' => $ajax_url,
 				'nonce'   => $nonce,
 				'i18n'    => array(
-					'generating'  => __( 'Generating postcard…', 'hello-elementor-child' ),
-					'saving'      => __( 'Saving…', 'hello-elementor-child' ),
-					'copied'      => __( 'Copied.', 'hello-elementor-child' ),
-					'copyFail'    => __( 'Could not copy.', 'hello-elementor-child' ),
-					'confirmDel'  => __( 'Remove your saved postcard?', 'hello-elementor-child' ),
+					'generating'   => __( 'Generating postcard…', 'hello-elementor-child' ),
+					'saving'       => __( 'Saving…', 'hello-elementor-child' ),
+					'copied'       => __( 'Copied.', 'hello-elementor-child' ),
+					'copyFail'     => __( 'Could not copy.', 'hello-elementor-child' ),
+					'confirmDel'   => __( 'Remove your saved postcard?', 'hello-elementor-child' ),
+					'lightboxClose' => __( 'Close preview', 'hello-elementor-child' ),
+					'lightboxPrev'  => __( 'Previous image', 'hello-elementor-child' ),
+					'lightboxNext'  => __( 'Next image', 'hello-elementor-child' ),
+					'enlargeFront'  => __( 'View front postcard larger', 'hello-elementor-child' ),
+					'enlargeBack'   => __( 'View back postcard larger', 'hello-elementor-child' ),
 				),
 			)
 		);
@@ -954,32 +959,68 @@ class Hb_Postcard {
 						<figure class="hb-postcard-preview-card">
 							<figcaption class="hb-postcard-preview-label"><?php esc_html_e( 'Front (your vCard QR)', 'hello-elementor-child' ); ?></figcaption>
 							<div class="hb-postcard-preview-frame">
-								<img
-									id="hb-postcard-preview-img"
-									class="hb-postcard-preview-img"
-									src="<?php echo $has_image ? esc_url( $image_url ) : ''; ?>"
-									alt="<?php esc_attr_e( 'Generated 4×6 postcard front with your vCard QR', 'hello-elementor-child' ); ?>"
-									<?php echo $has_image ? '' : ' hidden'; ?>
+								<button
+									type="button"
+									class="hb-postcard-preview-trigger"
+									data-hb-lightbox
+									aria-label="<?php esc_attr_e( 'View front postcard larger', 'hello-elementor-child' ); ?>"
+									<?php echo $has_image ? '' : ' hidden disabled'; ?>
 								>
+									<img
+										id="hb-postcard-preview-img"
+										class="hb-postcard-preview-img"
+										src="<?php echo $has_image ? esc_url( $image_url ) : ''; ?>"
+										alt="<?php esc_attr_e( 'Generated 4×6 postcard front with your vCard QR', 'hello-elementor-child' ); ?>"
+										<?php echo $has_image ? '' : ' hidden'; ?>
+									>
+								</button>
 							</div>
 						</figure>
 						<?php if ( $back_url !== '' ) : ?>
 						<figure class="hb-postcard-preview-card">
 							<figcaption class="hb-postcard-preview-label"><?php esc_html_e( 'Back', 'hello-elementor-child' ); ?></figcaption>
 							<div class="hb-postcard-preview-frame">
-								<img
-									id="hb-postcard-preview-back"
-									class="hb-postcard-preview-img hb-postcard-preview-img--back"
-									src="<?php echo esc_url( $back_url ); ?>"
-									alt="<?php esc_attr_e( 'Detente 2030 postcard back', 'hello-elementor-child' ); ?>"
-									loading="lazy"
-									decoding="async"
+								<button
+									type="button"
+									class="hb-postcard-preview-trigger"
+									data-hb-lightbox
+									aria-label="<?php esc_attr_e( 'View back postcard larger', 'hello-elementor-child' ); ?>"
 								>
+									<img
+										id="hb-postcard-preview-back"
+										class="hb-postcard-preview-img hb-postcard-preview-img--back"
+										src="<?php echo esc_url( $back_url ); ?>"
+										alt="<?php esc_attr_e( 'Detente 2030 postcard back', 'hello-elementor-child' ); ?>"
+										loading="lazy"
+										decoding="async"
+									>
+								</button>
 							</div>
 						</figure>
 						<?php endif; ?>
 					</div>
 					<p class="hb-postcard-print-note" id="hb-postcard-print-note"<?php echo $has_image ? '' : ' hidden'; ?>><?php esc_html_e( 'Print front and back at 4×6 inches (300 DPI). Download PNG for the front; use the back artwork when printing double-sided.', 'hello-elementor-child' ); ?></p>
+				</div>
+			</div>
+
+			<div
+				id="hb-postcard-lightbox"
+				class="hb-postcard-lightbox"
+				hidden
+				aria-hidden="true"
+				role="dialog"
+				aria-modal="true"
+				aria-labelledby="hb-postcard-lightbox-caption"
+			>
+				<div class="hb-postcard-lightbox-backdrop" data-hb-lightbox-close tabindex="-1" aria-hidden="true"></div>
+				<div class="hb-postcard-lightbox-panel">
+					<button type="button" class="hb-postcard-lightbox-close" data-hb-lightbox-close aria-label="<?php esc_attr_e( 'Close preview', 'hello-elementor-child' ); ?>">&times;</button>
+					<button type="button" class="hb-postcard-lightbox-nav hb-postcard-lightbox-prev" data-hb-lightbox-prev aria-label="<?php esc_attr_e( 'Previous image', 'hello-elementor-child' ); ?>">&#8249;</button>
+					<button type="button" class="hb-postcard-lightbox-nav hb-postcard-lightbox-next" data-hb-lightbox-next aria-label="<?php esc_attr_e( 'Next image', 'hello-elementor-child' ); ?>">&#8250;</button>
+					<p id="hb-postcard-lightbox-caption" class="hb-postcard-lightbox-caption"></p>
+					<div class="hb-postcard-lightbox-stage">
+						<img id="hb-postcard-lightbox-img" class="hb-postcard-lightbox-img" src="" alt="">
+					</div>
 				</div>
 			</div>
 		</div>
