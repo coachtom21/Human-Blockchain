@@ -43,6 +43,30 @@
 .hb-postcard-preview-col {
 	order: 1;
 	min-width: 0;
+	max-width: 100%;
+}
+
+.hb-postcard-preview-duo {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 16px;
+	align-items: start;
+}
+
+.hb-postcard-preview-card {
+	margin: 0;
+	min-width: 0;
+}
+
+.hb-postcard-preview-label {
+	display: block;
+	font-size: 12px;
+	font-weight: 600;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	color: #94a3b8;
+	margin: 0 0 8px;
+	text-align: center;
 }
 
 .hb-postcard-form-col input[type="text"],
@@ -136,6 +160,10 @@
 	.hb-postcard-form-col,
 	.hb-postcard-preview-col {
 		max-width: 100%;
+	}
+
+	.hb-postcard-preview-duo {
+		grid-template-columns: 1fr;
 	}
 
 	.hb-postcard-preview-img {

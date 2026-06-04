@@ -27,6 +27,9 @@ class Hb_Postcard {
 	/** Default master artwork (Media Library). */
 	const DEFAULT_TEMPLATE_URL = 'https://humanblockchain.info/wp-content/uploads/2026/06/Detente2030Postcard.png';
 
+	/** Static back of postcard (print reverse side). */
+	const DEFAULT_BACK_URL = 'https://humanblockchain.info/wp-content/uploads/2026/06/Detente-Postcard-Back.png';
+
 	/**
 	 * Bootstrap hooks.
 	 *
@@ -417,6 +420,17 @@ class Hb_Postcard {
 	public static function get_template_url() {
 		$url = self::get_template_url_config();
 		return $url !== '' ? $url : '';
+	}
+
+	/**
+	 * Public URL for the static postcard back (reverse print side).
+	 *
+	 * @return string
+	 */
+	public static function get_back_url() {
+		$url = apply_filters( 'hb_postcard_back_template_url', self::DEFAULT_BACK_URL );
+		$url = is_string( $url ) ? trim( $url ) : '';
+		return $url !== '' ? esc_url( $url ) : '';
 	}
 
 	/**
@@ -843,6 +857,7 @@ class Hb_Postcard {
 		$scan_url     = self::get_display_scan_url( $user_id );
 		$referral_url = self::get_referral_url( $user_id );
 		$has_image    = $image_url !== '';
+		$back_url     = self::get_back_url();
 		$ajax_url    = admin_url( 'admin-ajax.php' );
 		$nonce       = wp_create_nonce( 'hb_postcard' );
 		$dl_nonce    = wp_create_nonce( 'hb_postcard_download' );
@@ -935,16 +950,36 @@ class Hb_Postcard {
 
 				<div class="hb-postcard-preview-col" id="hb-postcard-preview-col"<?php echo $has_image ? '' : ' hidden'; ?>>
 					<h4><?php esc_html_e( 'Preview', 'hello-elementor-child' ); ?></h4>
-					<div class="hb-postcard-preview-frame">
-						<img
-							id="hb-postcard-preview-img"
-							class="hb-postcard-preview-img"
-							src="<?php echo $has_image ? esc_url( $image_url ) : ''; ?>"
-							alt="<?php esc_attr_e( 'Generated 4×6 postcard with your vCard QR', 'hello-elementor-child' ); ?>"
-							<?php echo $has_image ? '' : ' hidden'; ?>
-						>
+					<div class="hb-postcard-preview-duo">
+						<figure class="hb-postcard-preview-card">
+							<figcaption class="hb-postcard-preview-label"><?php esc_html_e( 'Front (your vCard QR)', 'hello-elementor-child' ); ?></figcaption>
+							<div class="hb-postcard-preview-frame">
+								<img
+									id="hb-postcard-preview-img"
+									class="hb-postcard-preview-img"
+									src="<?php echo $has_image ? esc_url( $image_url ) : ''; ?>"
+									alt="<?php esc_attr_e( 'Generated 4×6 postcard front with your vCard QR', 'hello-elementor-child' ); ?>"
+									<?php echo $has_image ? '' : ' hidden'; ?>
+								>
+							</div>
+						</figure>
+						<?php if ( $back_url !== '' ) : ?>
+						<figure class="hb-postcard-preview-card">
+							<figcaption class="hb-postcard-preview-label"><?php esc_html_e( 'Back', 'hello-elementor-child' ); ?></figcaption>
+							<div class="hb-postcard-preview-frame">
+								<img
+									id="hb-postcard-preview-back"
+									class="hb-postcard-preview-img hb-postcard-preview-img--back"
+									src="<?php echo esc_url( $back_url ); ?>"
+									alt="<?php esc_attr_e( 'Detente 2030 postcard back', 'hello-elementor-child' ); ?>"
+									loading="lazy"
+									decoding="async"
+								>
+							</div>
+						</figure>
+						<?php endif; ?>
 					</div>
-					<p class="hb-postcard-print-note" id="hb-postcard-print-note"<?php echo $has_image ? '' : ' hidden'; ?>><?php esc_html_e( 'Print at 4×6 inches (300 DPI). PNG preserves the full Medici artwork.', 'hello-elementor-child' ); ?></p>
+					<p class="hb-postcard-print-note" id="hb-postcard-print-note"<?php echo $has_image ? '' : ' hidden'; ?>><?php esc_html_e( 'Print front and back at 4×6 inches (300 DPI). Download PNG for the front; use the back artwork when printing double-sided.', 'hello-elementor-child' ); ?></p>
 				</div>
 			</div>
 		</div>
