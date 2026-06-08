@@ -69,7 +69,7 @@ $url_discord = apply_filters(
 
 $hb_yam_hero_video_url = apply_filters(
 	'hb_yam_is_on_hero_video_url',
-	'http://humanblockchain.info/wp-content/uploads/2026/06/The_Poor_Man_s_Web3__Architecting_the_Human_Ledger.mp4'
+	'http://humanblockchain.info/wp-content/uploads/2026/06/Measuring-Presence_-The-Human-Gold-Experiment11.mp4'
 );
 $hb_yam_hero_video_url = is_string( $hb_yam_hero_video_url ) ? trim( $hb_yam_hero_video_url ) : '';
 
@@ -114,7 +114,7 @@ $css_ver  = file_exists( $css_file ) ? (string) filemtime( $css_file ) : HELLO_E
 							controls
 							preload="metadata"
 							playsinline
-							title="<?php esc_attr_e( 'The Poor Man\'s Web3: Architecting the Human Ledger', 'hello-elementor-child' ); ?>"
+							title="<?php esc_attr_e( 'Measuring Presence: The Human Gold Experiment', 'hello-elementor-child' ); ?>"
 						>
 							<source src="<?php echo esc_url( $hb_yam_hero_video_url ); ?>" type="video/mp4" />
 							<?php esc_html_e( 'Your browser does not support the video tag.', 'hello-elementor-child' ); ?>
