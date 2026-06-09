@@ -515,6 +515,15 @@ function hb_enqueue_d2030_research_modal_assets() {
 		array(),
 		file_exists( $d2030_css ) ? filemtime( $d2030_css ) : HELLO_ELEMENTOR_CHILD_VERSION
 	);
+	$lazy_js = get_stylesheet_directory() . '/assets/js/hb-d2030-lazy-media.js';
+	wp_enqueue_script(
+		'hb-d2030-lazy-media',
+		get_stylesheet_directory_uri() . '/assets/js/hb-d2030-lazy-media.js',
+		array(),
+		file_exists( $lazy_js ) ? filemtime( $lazy_js ) : HELLO_ELEMENTOR_CHILD_VERSION,
+		true
+	);
+
 	if ( ! is_page_template( 'templates-parts/template-human-ledger.php' ) ) {
 		wp_enqueue_script(
 			'hb-d2030-research-modal',
