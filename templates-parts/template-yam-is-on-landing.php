@@ -62,6 +62,11 @@ $url_curious = $hb_yam_page_url(
 	'/curious/'
 );
 
+$url_human_ledger = $hb_yam_page_url(
+	array( 'the-human-ledger', 'human-ledger' ),
+	'/the-human-ledger/'
+);
+
 $url_discord = apply_filters(
 	'cpm_nwp_discord_invite_url',
 	get_option( 'cpm_nwp_discord_invite_url', 'https://discord.com/invite/g5jreAPbra' )
@@ -143,12 +148,7 @@ $css_ver  = file_exists( $css_file ) ? (string) filemtime( $css_file ) : HELLO_E
 						aria-controls="cpm-nwp-register-modal"
 						aria-haspopup="dialog"
 					><?php esc_html_e( 'Register Device', 'hello-elementor-child' ); ?></a>
-					<button
-						type="button"
-						class="btn btn-research-portal"
-						onclick="openD2030Modal()"
-						aria-haspopup="dialog"
-					><?php esc_html_e( 'Explore Research Portal', 'hello-elementor-child' ); ?></button>
+					<a href="<?php echo esc_url( $url_human_ledger ); ?>" class="btn btn-research-portal"><?php esc_html_e( 'The Human Ledger', 'hello-elementor-child' ); ?></a>
 					<a href="<?php echo esc_url( $url_member_services ); ?>" class="btn btn-secondary"><?php esc_html_e( 'Member Services', 'hello-elementor-child' ); ?></a>
 					<a href="<?php echo esc_url( $url_curious ); ?>" class="btn btn-outline"><?php esc_html_e( 'Curious?', 'hello-elementor-child' ); ?></a>
 					<a href="<?php echo esc_url( $url_observe_free ); ?>" class="btn btn-outline"><?php esc_html_e( 'Observe Free', 'hello-elementor-child' ); ?></a>
@@ -275,12 +275,7 @@ $css_ver  = file_exists( $css_file ) ? (string) filemtime( $css_file ) : HELLO_E
 						aria-controls="cpm-nwp-register-modal"
 						aria-haspopup="dialog"
 					><?php esc_html_e( 'Scan YAM-is-On', 'hello-elementor-child' ); ?></a>
-					<button
-						type="button"
-						class="btn btn-research-portal"
-						onclick="openD2030Modal()"
-						aria-haspopup="dialog"
-					><?php esc_html_e( 'Explore Research Portal', 'hello-elementor-child' ); ?></button>
+					<a href="<?php echo esc_url( $url_human_ledger ); ?>" class="btn btn-research-portal"><?php esc_html_e( 'The Human Ledger', 'hello-elementor-child' ); ?></a>
 					<a href="<?php echo esc_url( $url_discord ); ?>" class="btn btn-secondary" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Enter Discord Gracebook', 'hello-elementor-child' ); ?></a>
 					<a href="<?php echo esc_url( $url_curious ); ?>" class="btn btn-outline"><?php esc_html_e( 'Curious?', 'hello-elementor-child' ); ?></a>
 				</div>
