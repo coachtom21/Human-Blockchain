@@ -482,9 +482,21 @@ function hb_should_enqueue_d2030_research_modal() {
 			'templates-parts/template-explore-research-landing.php',
 			'templates-parts/template-yam-is-on-landing.php',
 			'templates-parts/template-curious.php',
+			'templates-parts/template-human-ledger.php',
 		)
 	);
 }
+
+/**
+ * Detente 2030 research resource data (modal + Human Ledger page).
+ */
+function hb_load_d2030_research_data() {
+	$file = get_stylesheet_directory() . '/includes/hb-d2030-research-data.php';
+	if ( file_exists( $file ) ) {
+		require_once $file;
+	}
+}
+add_action( 'after_setup_theme', 'hb_load_d2030_research_data', 15 );
 
 /**
  * Detente 2030 modal CSS/JS (NWP landing + Explore Research landing).
@@ -503,13 +515,24 @@ function hb_enqueue_d2030_research_modal_assets() {
 		array(),
 		file_exists( $d2030_css ) ? filemtime( $d2030_css ) : HELLO_ELEMENTOR_CHILD_VERSION
 	);
-	wp_enqueue_script(
-		'hb-d2030-research-modal',
-		get_stylesheet_directory_uri() . '/assets/js/d2030-research-modal.js',
-		array(),
-		file_exists( $d2030_js ) ? filemtime( $d2030_js ) : HELLO_ELEMENTOR_CHILD_VERSION,
-		true
-	);
+	if ( ! is_page_template( 'templates-parts/template-human-ledger.php' ) ) {
+		wp_enqueue_script(
+			'hb-d2030-research-modal',
+			get_stylesheet_directory_uri() . '/assets/js/d2030-research-modal.js',
+			array(),
+			file_exists( $d2030_js ) ? filemtime( $d2030_js ) : HELLO_ELEMENTOR_CHILD_VERSION,
+			true
+		);
+	}
+	if ( is_page_template( 'templates-parts/template-human-ledger.php' ) ) {
+		$hl_css = get_stylesheet_directory() . '/assets/css/human-ledger.css';
+		wp_enqueue_style(
+			'hb-human-ledger',
+			get_stylesheet_directory_uri() . '/assets/css/human-ledger.css',
+			array( 'hb-d2030-research-modal' ),
+			file_exists( $hl_css ) ? filemtime( $hl_css ) : HELLO_ELEMENTOR_CHILD_VERSION
+		);
+	}
 }
 add_action( 'wp_enqueue_scripts', 'hb_enqueue_d2030_research_modal_assets', 20 );
 
