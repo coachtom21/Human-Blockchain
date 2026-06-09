@@ -67,6 +67,27 @@
 	gap: 24px;
 }
 
+.human-ledger-panel .d2030-featured-video-wrap {
+	margin-bottom: 18px;
+}
+
+.human-ledger-panel .d2030-featured-video__title {
+	margin: 0 0 10px;
+	font-size: clamp(1rem, 2vw, 1.2rem);
+	font-weight: 700;
+	color: #f8fafc;
+	line-height: 1.35;
+}
+
+.human-ledger-panel .d2030-featured-video {
+	width: 100%;
+	display: block;
+	aspect-ratio: 16 / 9;
+	border-radius: 14px;
+	background: #0f172a;
+	margin-bottom: 0;
+}
+
 .human-ledger-panel .d2030-resource-group:first-child .d2030-preview-list {
 	grid-template-columns: repeat(3, minmax(0, 1fr));
 }

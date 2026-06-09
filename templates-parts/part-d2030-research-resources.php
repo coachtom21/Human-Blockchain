@@ -17,15 +17,30 @@ if ( ! function_exists( 'hb_get_d2030_research_resources' ) ) {
 
 $hb_d2030_layout = isset( $hb_d2030_layout ) && $hb_d2030_layout === 'page' ? 'page' : 'modal';
 $hb_d2030_data   = hb_get_d2030_research_resources();
-$hb_d2030_videos   = $hb_d2030_data['videos'];
-$hb_d2030_podcasts = $hb_d2030_data['podcasts'];
-$hb_d2030_pdfs     = $hb_d2030_data['pdfs'];
+$hb_d2030_videos         = $hb_d2030_data['videos'];
+$hb_d2030_podcasts       = $hb_d2030_data['podcasts'];
+$hb_d2030_pdfs           = $hb_d2030_data['pdfs'];
+$hb_d2030_featured_video = isset( $hb_d2030_data['featured_video'] ) ? $hb_d2030_data['featured_video'] : null;
 
 $hb_d2030_grid_class = 'page' === $hb_d2030_layout ? 'd2030-resource-grid d2030-resource-grid--page' : 'd2030-resource-grid';
 ?>
 <div class="<?php echo esc_attr( $hb_d2030_grid_class ); ?>">
 	<div class="d2030-resource-group">
 		<p class="d2030-resource-group-title"><?php esc_html_e( 'Videos', 'hello-elementor-child' ); ?></p>
+		<?php if ( 'page' === $hb_d2030_layout && ! empty( $hb_d2030_featured_video ) ) : ?>
+			<div class="d2030-featured-video-wrap">
+				<p class="d2030-featured-video__title"><?php echo esc_html( $hb_d2030_featured_video['title'] ); ?></p>
+				<video
+					class="d2030-preview-video d2030-featured-video"
+					controls
+					preload="metadata"
+					playsinline
+					title="<?php echo esc_attr( $hb_d2030_featured_video['title'] ); ?>"
+				>
+					<source src="<?php echo esc_url( $hb_d2030_featured_video['url'] ); ?>" type="video/mp4" />
+				</video>
+			</div>
+		<?php endif; ?>
 		<div class="d2030-preview-list">
 			<?php if ( ! empty( $hb_d2030_videos ) ) : ?>
 				<?php foreach ( $hb_d2030_videos as $hb_d2030_video ) : ?>

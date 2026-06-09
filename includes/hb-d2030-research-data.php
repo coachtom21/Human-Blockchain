@@ -34,9 +34,13 @@ function hb_d2030_label_from_url( $url, $fallback = '' ) {
 /**
  * Videos, podcasts, and PDF documents for Detente 2030 / Human Ledger.
  *
- * @return array{videos: array<int, array{url: string, title: string}>, podcasts: array<int, array{url: string, title: string}>, pdfs: array<int, array{url: string, title: string}>}
+ * @return array{videos: array<int, array{url: string, title: string}>, podcasts: array<int, array{url: string, title: string}>, pdfs: array<int, array{url: string, title: string}>, featured_video: array{url: string, title: string}|null}
  */
 function hb_get_d2030_research_resources() {
+	$featured_video_raw = array(
+		'url'   => apply_filters( 'hb_d2030_featured_video_url', 'http://humanblockchain.info/wp-content/uploads/2026/06/Coach-Toms-Vision_-The-Human-Blockchain1.mp4' ),
+		'title' => apply_filters( 'hb_d2030_featured_video_title', __( "Coach Tom's Vision: The Human Blockchain", 'hello-elementor-child' ) ),
+	);
 	$videos = array(
 		array(
 			'url'   => apply_filters( 'hb_d2030_video_1_url', 'http://humanblockchain.info/wp-content/uploads/2026/05/Hello_Device_Experiment.mp4' ),
@@ -134,13 +138,15 @@ function hb_get_d2030_research_resources() {
 	$videos   = hb_d2030_filter_resource_items( $videos );
 	$podcasts = hb_d2030_filter_resource_items( $podcasts );
 	$pdfs     = hb_d2030_filter_resource_items( is_array( $pdfs ) ? $pdfs : array() );
+	$featured = hb_d2030_filter_resource_items( array( $featured_video_raw ) );
 
 	return apply_filters(
 		'hb_d2030_research_resources',
 		array(
-			'videos'   => $videos,
-			'podcasts' => $podcasts,
-			'pdfs'     => $pdfs,
+			'videos'         => $videos,
+			'podcasts'       => $podcasts,
+			'pdfs'           => $pdfs,
+			'featured_video' => ! empty( $featured ) ? $featured[0] : null,
 		)
 	);
 }
