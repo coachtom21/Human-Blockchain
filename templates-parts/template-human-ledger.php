@@ -27,8 +27,13 @@ get_header();
 
 		<div class="human-ledger-panel">
 			<?php
-			$hb_d2030_layout = 'page';
-			get_template_part( 'templates-parts/part', 'd2030-research-resources' );
+			get_template_part(
+				'templates-parts/part',
+				'd2030-research-resources',
+				array(
+					'hb_d2030_layout' => 'page',
+				)
+			);
 			?>
 		</div>
 	</div>

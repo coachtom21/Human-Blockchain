@@ -18,8 +18,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<?php esc_html_e( 'A 15-minute classroom experiment testing whether human interaction can be verified as value.', 'hello-elementor-child' ); ?>
 		</p>
 		<?php
-		$hb_d2030_layout = 'modal';
-		get_template_part( 'templates-parts/part', 'd2030-research-resources' );
+		get_template_part(
+			'templates-parts/part',
+			'd2030-research-resources',
+			array(
+				'hb_d2030_layout' => 'modal',
+			)
+		);
 		?>
 	</div>
 </div>

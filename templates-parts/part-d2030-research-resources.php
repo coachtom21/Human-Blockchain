@@ -15,7 +15,10 @@ if ( ! function_exists( 'hb_get_d2030_research_resources' ) ) {
 	require_once get_stylesheet_directory() . '/includes/hb-d2030-research-data.php';
 }
 
-$hb_d2030_layout = isset( $hb_d2030_layout ) && $hb_d2030_layout === 'page' ? 'page' : 'modal';
+$hb_d2030_layout = 'modal';
+if ( isset( $args ) && is_array( $args ) && isset( $args['hb_d2030_layout'] ) && 'page' === $args['hb_d2030_layout'] ) {
+	$hb_d2030_layout = 'page';
+}
 $hb_d2030_data   = hb_get_d2030_research_resources();
 $hb_d2030_videos         = $hb_d2030_data['videos'];
 $hb_d2030_podcasts       = $hb_d2030_data['podcasts'];
