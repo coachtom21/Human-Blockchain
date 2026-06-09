@@ -31,13 +31,9 @@ $hb_d2030_grid_class = 'page' === $hb_d2030_layout ? 'd2030-resource-grid d2030-
 				<?php foreach ( $hb_d2030_videos as $hb_d2030_video ) : ?>
 					<div class="d2030-preview-card">
 						<p class="d2030-preview-title"><?php echo esc_html( $hb_d2030_video['title'] ); ?></p>
-						<div class="d2030-media-lazy d2030-media-lazy--video" data-src="<?php echo esc_url( $hb_d2030_video['url'] ); ?>" data-kind="video">
-							<button type="button" class="d2030-media-lazy__play" aria-label="<?php echo esc_attr( sprintf( __( 'Play %s', 'hello-elementor-child' ), $hb_d2030_video['title'] ) ); ?>">
-								<span class="d2030-media-lazy__icon" aria-hidden="true">▶</span>
-								<span class="d2030-media-lazy__label"><?php esc_html_e( 'Load video', 'hello-elementor-child' ); ?></span>
-							</button>
-							<video class="d2030-preview-video d2030-media-lazy__target" controls preload="none" playsinline title="<?php echo esc_attr( $hb_d2030_video['title'] ); ?>" hidden></video>
-						</div>
+						<video class="d2030-preview-video" controls preload="metadata" playsinline title="<?php echo esc_attr( $hb_d2030_video['title'] ); ?>">
+							<source src="<?php echo esc_url( $hb_d2030_video['url'] ); ?>" type="video/mp4" />
+						</video>
 					</div>
 				<?php endforeach; ?>
 			<?php else : ?>
@@ -53,15 +49,11 @@ $hb_d2030_grid_class = 'page' === $hb_d2030_layout ? 'd2030-resource-grid d2030-
 				<?php foreach ( $hb_d2030_podcasts as $hb_d2030_podcast ) : ?>
 					<div class="d2030-preview-card">
 						<p class="d2030-preview-title"><?php echo esc_html( $hb_d2030_podcast['title'] ); ?></p>
-						<div class="d2030-media-lazy d2030-media-lazy--audio" data-src="<?php echo esc_url( $hb_d2030_podcast['url'] ); ?>" data-kind="audio">
-							<button type="button" class="d2030-media-lazy__play" aria-label="<?php echo esc_attr( sprintf( __( 'Play %s', 'hello-elementor-child' ), $hb_d2030_podcast['title'] ) ); ?>">
-								<span class="d2030-media-lazy__icon" aria-hidden="true">♪</span>
-								<span class="d2030-media-lazy__label"><?php esc_html_e( 'Load audio', 'hello-elementor-child' ); ?></span>
-							</button>
-							<audio class="d2030-preview-audio d2030-media-lazy__target" controls preload="none" title="<?php echo esc_attr( $hb_d2030_podcast['title'] ); ?>" hidden></audio>
-						</div>
+						<audio class="d2030-preview-audio" controls preload="metadata" title="<?php echo esc_attr( $hb_d2030_podcast['title'] ); ?>">
+							<source src="<?php echo esc_url( $hb_d2030_podcast['url'] ); ?>" type="audio/mp4" />
+						</audio>
 						<div class="d2030-preview-actions">
-							<a href="<?php echo esc_url( $hb_d2030_podcast['url'] ); ?>" class="d2030-btn-secondary" target="_blank" rel="noopener noreferrer"><?php esc_html_e( '♪ Open in new tab', 'hello-elementor-child' ); ?></a>
+							<a href="<?php echo esc_url( $hb_d2030_podcast['url'] ); ?>" class="d2030-btn-secondary" target="_blank" rel="noopener noreferrer"><?php esc_html_e( '♪ Listen', 'hello-elementor-child' ); ?></a>
 						</div>
 					</div>
 				<?php endforeach; ?>

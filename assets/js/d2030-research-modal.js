@@ -55,11 +55,24 @@
 		lockPageScroll();
 	}
 
+	function pauseD2030ModalMedia() {
+		var modal = document.getElementById('d2030-modal');
+		if (!modal) {
+			return;
+		}
+		modal.querySelectorAll('.d2030-preview-video, .d2030-preview-audio').forEach(function (media) {
+			if (!media.paused) {
+				media.pause();
+			}
+		});
+	}
+
 	function closeD2030Modal() {
 		var el = document.getElementById('d2030-modal');
 		if (!el) {
 			return;
 		}
+		pauseD2030ModalMedia();
 		el.style.display = 'none';
 		el.setAttribute('hidden', 'hidden');
 		unlockPageScroll();
