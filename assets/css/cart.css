@@ -357,6 +357,28 @@ body.woocommerce-cart .wp-block-woocommerce-cart-cross-sells-block h2 {
 	margin-bottom: 16px;
 }
 
+/* Fixed-pack lines (YAM-STICKER / HANG-TAG = 10) — show qty, lock at 10 */
+body.woocommerce-cart .wc-block-cart-item__quantity .wc-block-components-quantity-selector {
+	display: flex !important;
+}
+
+body.woocommerce-cart .wc-block-components-quantity-selector.cpm-hb-cart-qty-locked {
+	pointer-events: none;
+	opacity: 1;
+}
+
+body.woocommerce-cart .wc-block-components-quantity-selector.cpm-hb-cart-qty-locked input {
+	background: rgba(15, 23, 42, 0.04);
+	color: var(--hb-cart-text);
+	cursor: default;
+}
+
+body.woocommerce-cart .wc-block-cart-item__quantity .wc-block-components-quantity-selector input[readonly] {
+	background: rgba(15, 23, 42, 0.04);
+	color: var(--hb-cart-text);
+	cursor: default;
+}
+
 /* Classic shortcode cart */
 body.woocommerce-cart .woocommerce-cart-form {
 	background: var(--hb-cart-surface);
