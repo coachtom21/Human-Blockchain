@@ -17,6 +17,30 @@ if ( ! defined( 'ABSPATH' ) ) {
 define( 'HELLO_ELEMENTOR_CHILD_VERSION', '2.0.0' );
 
 /**
+ * After logout, redirect to the home page (not wp-login or PMPro login).
+ *
+ * @param string  $redirect_to           Default redirect URL.
+ * @param string  $requested_redirect_to Redirect requested in the logout link.
+ * @param WP_User $user                  User being logged out.
+ * @return string
+ */
+function hb_logout_redirect_to_home( $redirect_to, $requested_redirect_to, $user ) {
+	unset( $redirect_to, $requested_redirect_to, $user );
+	return home_url( '/' );
+}
+add_filter( 'logout_redirect', 'hb_logout_redirect_to_home', 99, 3 );
+
+/**
+ * WooCommerce "Log out" links default to My Account; send guests to home instead.
+ *
+ * @return string
+ */
+function hb_woocommerce_logout_redirect_home() {
+	return home_url( '/' );
+}
+add_filter( 'woocommerce_logout_default_redirect_url', 'hb_woocommerce_logout_redirect_home' );
+
+/**
  * Permalink of the page using the NWP Landing template, or home.
  *
  * @return string
