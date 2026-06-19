@@ -470,3 +470,39 @@ body.hb-my-account-page .hb-xp-ledger-table-wrap table tr.hb-xp-row--pending td 
 	background: rgba(255, 231, 133, 0.2);
 	color: #fff6cf;
 }
+
+/* Guest My Account — phone OTP sign-in (no wp-login redirect) */
+body.hb-my-account-guest-otp {
+	margin: 0;
+	min-height: 100vh;
+	font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+	background:
+		radial-gradient(1000px 650px at 20% 10%, rgba(120, 160, 255, 0.18), transparent 60%),
+		radial-gradient(900px 650px at 80% 85%, rgba(52, 211, 153, 0.12), transparent 65%),
+		#0b1020;
+	color: #eef2ff;
+}
+
+body.hb-my-account-guest-otp .hb-my-account-guest-otp__wrap {
+	max-width: 960px;
+	margin: 0 auto;
+	padding: 28px 18px 48px;
+}
+
+body.hb-my-account-guest-otp h1 {
+	font-size: 1.75rem;
+	margin: 0 0 8px;
+	font-weight: 650;
+}
+
+body.hb-my-account-guest-otp .sub {
+	color: #b8c1e3;
+	font-size: 0.95rem;
+	margin: 0 0 28px;
+}
+
+body.hb-account-otp-guest .woocommerce-form-login,
+body.hb-account-otp-guest .pmpro_login_wrap {
+	opacity: 0.35;
+	pointer-events: none;
+}

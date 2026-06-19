@@ -10,7 +10,26 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 if ( ! is_user_logged_in() ) {
-	auth_redirect();
+	?>
+	<!DOCTYPE html>
+	<html <?php language_attributes(); ?>>
+	<head>
+		<meta charset="<?php bloginfo( 'charset' ); ?>" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title><?php echo esc_html( get_the_title() ?: __( 'My Account', 'hello-elementor-child' ) ); ?> | <?php echo esc_html( get_bloginfo( 'name' ) ); ?></title>
+		<?php wp_head(); ?>
+	</head>
+	<body <?php body_class( 'hb-my-account-page hb-my-account-guest-otp' ); ?>>
+		<?php get_template_part( 'templates-parts/part', 'nwp-site-header' ); ?>
+		<div class="wrap hb-my-account-guest-otp__wrap">
+			<h1><?php esc_html_e( 'My account', 'hello-elementor-child' ); ?></h1>
+			<p class="sub"><?php esc_html_e( 'Sign in with the mobile number linked to your registered device.', 'hello-elementor-child' ); ?></p>
+		</div>
+		<?php get_template_part( 'templates-parts/part', 'nwp-site-footer' ); ?>
+		<?php wp_footer(); ?>
+	</body>
+	</html>
+	<?php
 	exit;
 }
 
