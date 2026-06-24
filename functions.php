@@ -2024,38 +2024,89 @@ function hb_get_qrtiger_vcard_master_styling() {
 }
 
 /**
- * Generate a hosted vCard QR (Vcard category) for a WP user via QR Tiger.
+ * Sanitize a QR Tiger campaign ID stored on a user.
  *
- * The campaign stores the user's contact info inline so the scan opens
- * QR Tiger's hosted vCard landing page (photo, name, action buttons).
+ * @param mixed $qr_id Raw meta value.
+ * @return string Empty when invalid.
+ */
+function hb_sanitize_qrtiger_qr_id( $qr_id ) {
+	$qr_id = sanitize_text_field( (string) $qr_id );
+	if ( '' === $qr_id || ! preg_match( '/^[A-Za-z0-9_-]+$/', $qr_id ) ) {
+		return '';
+	}
+	return $qr_id;
+}
+
+/**
+ * Stored QR Tiger campaign ID for a user's hosted vCard.
  *
  * @param int $user_id WP user ID.
- * @return array|WP_Error { image_url:string, qr_id:string, short_url:string }
+ * @return string
  */
-function hb_generate_qrtiger_qr_for_vcard( $user_id ) {
-	$creds = hb_get_qrtiger_credentials();
-	if ( '' === $creds['key'] ) {
-		return new WP_Error( 'missing_key', __( 'QRTiger API key is missing in NWP Gateway settings.', 'hello-elementor-child' ) );
-	}
+function hb_get_user_vcard_qr_id( $user_id ) {
+	return hb_sanitize_qrtiger_qr_id( get_user_meta( (int) $user_id, 'hb_vcard_qr_id', true ) );
+}
 
-	$vcard_data = hb_build_qrtiger_vcard_data( (int) $user_id );
-	if ( empty( $vcard_data ) ) {
-		return new WP_Error( 'vcard_data', __( 'Could not build vCard data from profile.', 'hello-elementor-child' ) );
-	}
+/**
+ * Stable hash of the campaign payload sent to QR Tiger.
+ *
+ * @param array<string, mixed> $payload Campaign payload.
+ * @return string
+ */
+function hb_qrtiger_vcard_payload_hash( array $payload ) {
+	return md5( wp_json_encode( $payload ) );
+}
 
-	$endpoint = $creds['url'] . '/api/campaign/';
-	$payload  = hb_build_qrtiger_vcard_campaign_payload( $vcard_data );
+/**
+ * @param array{key:string,url:string} $creds QR Tiger credentials.
+ * @return array<string, string>
+ */
+function hb_qrtiger_request_headers( array $creds ) {
+	return array(
+		'Authorization' => 'Bearer ' . $creds['key'],
+		'Content-Type'  => 'application/json',
+		'Accept'        => 'application/json',
+	);
+}
 
-	$response = wp_remote_post(
-		$endpoint,
+/**
+ * POST a dynamic campaign payload to QR Tiger.
+ *
+ * @param array{key:string,url:string} $creds   QR Tiger credentials.
+ * @param array<string, mixed>         $payload Campaign body.
+ * @return array|WP_Error WordPress HTTP API response.
+ */
+function hb_qrtiger_post_campaign( array $creds, array $payload ) {
+	return wp_remote_post(
+		$creds['url'] . '/api/campaign/',
 		array(
 			'timeout' => 30,
-			'headers' => array(
-				'Authorization' => 'Bearer ' . $creds['key'],
-				'Content-Type'  => 'application/json',
-				'Accept'        => 'application/json',
-			),
+			'headers' => hb_qrtiger_request_headers( $creds ),
 			'body'    => wp_json_encode( $payload ),
+		)
+	);
+}
+
+/**
+ * Parse QR Tiger /api/campaign/ response.
+ *
+ * @param array|WP_Error $response       WordPress HTTP API response.
+ * @param array<string, mixed> $args {
+ *     @type bool   $require_image      Fail when qrImage is missing (create flow).
+ *     @type string $fallback_qr_id     Existing campaign ID (update flow).
+ *     @type string $fallback_short_url Existing scan URL (update flow).
+ *     @type string $fallback_image_url Existing raster URL (update flow).
+ * }
+ * @return array|WP_Error { image_url:string, qr_id:string, short_url:string }
+ */
+function hb_parse_qrtiger_campaign_response( $response, array $args = array() ) {
+	$args = wp_parse_args(
+		$args,
+		array(
+			'require_image'      => true,
+			'fallback_qr_id'     => '',
+			'fallback_short_url' => '',
+			'fallback_image_url' => '',
 		)
 	);
 
@@ -2071,7 +2122,6 @@ function hb_generate_qrtiger_qr_for_vcard( $user_id ) {
 	$qr_id     = '';
 	$short_url = '';
 	if ( is_object( $data ) ) {
-		// Most common QR Tiger structure.
 		if ( ! empty( $data->data->qrImage ) && is_string( $data->data->qrImage ) ) {
 			$qr_image = $data->data->qrImage;
 		}
@@ -2081,7 +2131,6 @@ function hb_generate_qrtiger_qr_for_vcard( $user_id ) {
 		if ( ! empty( $data->data->qrShortUrl ) && is_string( $data->data->qrShortUrl ) ) {
 			$short_url = $data->data->qrShortUrl;
 		}
-		// Tolerate alternative structure returned by some clients/proxies.
 		if ( '' === $qr_image && ! empty( $data->qrImage ) && is_string( $data->qrImage ) ) {
 			$qr_image = $data->qrImage;
 		}
@@ -2093,79 +2142,238 @@ function hb_generate_qrtiger_qr_for_vcard( $user_id ) {
 		}
 	}
 
-	// Derive the public scan URL from the short code if QR Tiger didn't return one.
+	if ( '' === $qr_id && '' !== $args['fallback_qr_id'] ) {
+		$qr_id = $args['fallback_qr_id'];
+	}
+	if ( '' === $short_url && '' !== $args['fallback_short_url'] ) {
+		$short_url = $args['fallback_short_url'];
+	}
+	if ( '' === $qr_image && ! $args['require_image'] && '' !== $args['fallback_image_url'] ) {
+		$qr_image = $args['fallback_image_url'];
+	}
+
 	if ( '' === $short_url && '' !== $qr_id ) {
 		$short_url = 'https://qr1.be/' . rawurlencode( $qr_id );
 	}
 
-	if ( $code < 200 || $code > 299 || '' === $qr_image ) {
-		$msg = __( 'QRTiger did not return a valid QR image.', 'hello-elementor-child' );
+	$json_status = null;
+	if ( is_object( $data ) && isset( $data->status ) && is_numeric( $data->status ) ) {
+		$json_status = (int) $data->status;
+	}
 
-		$json_status = null;
-		if ( is_object( $data ) && isset( $data->status ) && is_numeric( $data->status ) ) {
-			$json_status = (int) $data->status;
-		}
+	$http_ok  = ( $code >= 200 && $code <= 299 );
+	$json_ok  = ( null === $json_status || $json_status < 400 );
+	$has_id   = ( '' !== hb_sanitize_qrtiger_qr_id( $qr_id ) );
+	$has_img  = ( '' !== $qr_image );
+	$accepted = $http_ok && $json_ok && $has_id && ( $has_img || ! $args['require_image'] );
 
-		// QR Tiger often returns HTTP 200 with {"status":403} for invalid key or missing API access.
-		if ( 403 === $json_status ) {
-			$msg = __( 'QR Tiger rejected the request (forbidden). Check the QRTiger API key in NWP Gateway settings: it must be active, copied correctly, and your QR Tiger plan must allow API / dynamic QR creation.', 'hello-elementor-child' );
-		} elseif ( null !== $json_status && $json_status >= 400 ) {
-			$msg = sprintf(
-				/* translators: %d: status code from QR Tiger JSON body */
-				__( 'QR Tiger returned an error status in the response body (%d). Check API credentials and account limits.', 'hello-elementor-child' ),
-				$json_status
-			);
-		} elseif ( is_object( $data ) ) {
-			if ( ! empty( $data->message ) && is_string( $data->message ) ) {
-				$msg = $data->message;
-			} elseif ( ! empty( $data->error ) && is_string( $data->error ) ) {
-				$msg = $data->error;
-			} elseif ( ! empty( $data->data->message ) && is_string( $data->data->message ) ) {
-				$msg = $data->data->message;
-			} elseif ( '' !== trim( $body ) ) {
-				$snippet = sanitize_text_field( substr( trim( $body ), 0, 220 ) );
-				if ( '' !== $snippet ) {
-					$msg = sprintf(
-						/* translators: 1: HTTP code, 2: response snippet */
-						__( 'QRTiger response (%1$d): %2$s', 'hello-elementor-child' ),
-						$code,
-						$snippet
-					);
-				}
-			}
+	if ( $accepted ) {
+		return array(
+			'image_url' => esc_url_raw( (string) $qr_image ),
+			'qr_id'     => hb_sanitize_qrtiger_qr_id( $qr_id ),
+			'short_url' => '' !== $short_url ? esc_url_raw( (string) $short_url ) : '',
+		);
+	}
+
+	$msg = $args['require_image']
+		? __( 'QRTiger did not return a valid QR image.', 'hello-elementor-child' )
+		: __( 'QRTiger did not confirm the vCard campaign update.', 'hello-elementor-child' );
+
+	if ( 403 === $json_status ) {
+		$msg = __( 'QR Tiger rejected the request (forbidden). Check the QRTiger API key in NWP Gateway settings: it must be active, copied correctly, and your QR Tiger plan must allow API / dynamic QR creation.', 'hello-elementor-child' );
+	} elseif ( null !== $json_status && $json_status >= 400 ) {
+		$msg = sprintf(
+			/* translators: %d: status code from QR Tiger JSON body */
+			__( 'QR Tiger returned an error status in the response body (%d). Check API credentials and account limits.', 'hello-elementor-child' ),
+			$json_status
+		);
+	} elseif ( is_object( $data ) ) {
+		if ( ! empty( $data->message ) && is_string( $data->message ) ) {
+			$msg = $data->message;
+		} elseif ( ! empty( $data->error ) && is_string( $data->error ) ) {
+			$msg = $data->error;
+		} elseif ( ! empty( $data->data->message ) && is_string( $data->data->message ) ) {
+			$msg = $data->data->message;
 		} elseif ( '' !== trim( $body ) ) {
 			$snippet = sanitize_text_field( substr( trim( $body ), 0, 220 ) );
 			if ( '' !== $snippet ) {
 				$msg = sprintf(
 					/* translators: 1: HTTP code, 2: response snippet */
-					__( 'QRTiger response error (%1$d): %2$s', 'hello-elementor-child' ),
+					__( 'QRTiger response (%1$d): %2$s', 'hello-elementor-child' ),
 					$code,
 					$snippet
 				);
 			}
-		} elseif ( 0 !== $code ) {
+		}
+	} elseif ( '' !== trim( $body ) ) {
+		$snippet = sanitize_text_field( substr( trim( $body ), 0, 220 ) );
+		if ( '' !== $snippet ) {
 			$msg = sprintf(
-				/* translators: %d: HTTP response code */
-				__( 'QRTiger response error (HTTP %d).', 'hello-elementor-child' ),
-				$code
+				/* translators: 1: HTTP code, 2: response snippet */
+				__( 'QRTiger response error (%1$d): %2$s', 'hello-elementor-child' ),
+				$code,
+				$snippet
 			);
 		}
-		return new WP_Error( 'qrtiger_response', $msg );
+	} elseif ( 0 !== $code ) {
+		$msg = sprintf(
+			/* translators: %d: HTTP response code */
+			__( 'QRTiger response error (HTTP %d).', 'hello-elementor-child' ),
+			$code
+		);
 	}
 
-	return array(
-		'image_url' => esc_url_raw( (string) $qr_image ),
-		'qr_id'     => '' !== $qr_id ? sanitize_text_field( (string) $qr_id ) : '',
-		'short_url' => '' !== $short_url ? esc_url_raw( (string) $short_url ) : '',
+	return new WP_Error( 'qrtiger_response', $msg );
+}
+
+/**
+ * Update an existing QR Tiger vCard campaign (same qrId, refreshed profile data).
+ *
+ * Uses POST /api/campaign/ with qrId in the body (QR Tiger "Update QR Code" API).
+ *
+ * @param string               $qr_id   Existing campaign ID.
+ * @param array<string, mixed> $payload Create payload (qrId added here).
+ * @param array{key:string,url:string} $creds QR Tiger credentials.
+ * @param array<string, string> $fallback Existing stored values when update omits image URL.
+ * @return array|WP_Error
+ */
+function hb_update_qrtiger_vcard_campaign( $qr_id, array $payload, array $creds, array $fallback = array() ) {
+	$qr_id = hb_sanitize_qrtiger_qr_id( $qr_id );
+	if ( '' === $qr_id ) {
+		return new WP_Error( 'invalid_qr_id', __( 'Invalid QR Tiger campaign ID.', 'hello-elementor-child' ) );
+	}
+
+	$update_payload            = $payload;
+	$update_payload['qrId']    = $qr_id;
+	$update_payload['qrCategory'] = isset( $payload['qrCategory'] ) ? $payload['qrCategory'] : 'Vcard';
+
+	$response = hb_qrtiger_post_campaign( $creds, $update_payload );
+
+	return hb_parse_qrtiger_campaign_response(
+		$response,
+		array(
+			'require_image'      => false,
+			'fallback_qr_id'     => $qr_id,
+			'fallback_short_url' => isset( $fallback['short_url'] ) ? (string) $fallback['short_url'] : '',
+			'fallback_image_url' => isset( $fallback['image_url'] ) ? (string) $fallback['image_url'] : '',
+		)
 	);
+}
+
+/**
+ * Create a new QR Tiger vCard campaign.
+ *
+ * @param array<string, mixed>         $payload Campaign body.
+ * @param array{key:string,url:string} $creds   QR Tiger credentials.
+ * @return array|WP_Error
+ */
+function hb_create_qrtiger_vcard_campaign( array $payload, array $creds ) {
+	return hb_parse_qrtiger_campaign_response(
+		hb_qrtiger_post_campaign( $creds, $payload ),
+		array( 'require_image' => true )
+	);
+}
+
+/**
+ * Persist vCard QR meta after a successful create/update.
+ *
+ * @param int                    $user_id WP user ID.
+ * @param array<string, mixed>   $qr      Parsed QR Tiger result.
+ * @param string                 $hash    Payload hash.
+ * @return void
+ */
+function hb_store_vcard_qr_user_meta( $user_id, array $qr, $hash ) {
+	$user_id = (int) $user_id;
+	if ( ! empty( $qr['short_url'] ) ) {
+		update_user_meta( $user_id, 'hb_vcard_short_url', esc_url_raw( $qr['short_url'] ) );
+	}
+	if ( ! empty( $qr['qr_id'] ) ) {
+		update_user_meta( $user_id, 'hb_vcard_qr_id', sanitize_text_field( (string) $qr['qr_id'] ) );
+	}
+	if ( is_string( $hash ) && $hash !== '' ) {
+		update_user_meta( $user_id, 'hb_vcard_qr_payload_hash', sanitize_text_field( $hash ) );
+	}
+}
+
+/**
+ * Generate or update a hosted vCard QR (Vcard category) for a WP user via QR Tiger.
+ *
+ * Reuses hb_vcard_qr_id when present (POST /api/campaign/ with qrId). Creates a new
+ * campaign only when none exists or the update call fails. Skips the API entirely
+ * when profile data is unchanged since the last successful sync.
+ *
+ * @param int $user_id WP user ID.
+ * @return array|WP_Error {
+ *     image_url:string, qr_id:string, short_url:string,
+ *     created:bool, updated:bool, unchanged:bool
+ * }
+ */
+function hb_generate_qrtiger_qr_for_vcard( $user_id ) {
+	$user_id = (int) $user_id;
+
+	$creds = hb_get_qrtiger_credentials();
+	if ( '' === $creds['key'] ) {
+		return new WP_Error( 'missing_key', __( 'QRTiger API key is missing in NWP Gateway settings.', 'hello-elementor-child' ) );
+	}
+
+	$vcard_data = hb_build_qrtiger_vcard_data( $user_id );
+	if ( empty( $vcard_data ) ) {
+		return new WP_Error( 'vcard_data', __( 'Could not build vCard data from profile.', 'hello-elementor-child' ) );
+	}
+
+	$payload     = hb_build_qrtiger_vcard_campaign_payload( $vcard_data );
+	$payload_hash = hb_qrtiger_vcard_payload_hash( $payload );
+
+	$existing_qr_id     = hb_get_user_vcard_qr_id( $user_id );
+	$existing_short_url = esc_url_raw( (string) get_user_meta( $user_id, 'hb_vcard_short_url', true ) );
+	$existing_image     = esc_url_raw( (string) get_user_meta( $user_id, 'hb_vcard_qr_image_url', true ) );
+	$stored_hash        = sanitize_text_field( (string) get_user_meta( $user_id, 'hb_vcard_qr_payload_hash', true ) );
+
+	if ( $stored_hash === $payload_hash && '' !== $existing_qr_id && '' !== $existing_short_url && '' !== $existing_image ) {
+		return array(
+			'image_url' => $existing_image,
+			'qr_id'     => $existing_qr_id,
+			'short_url' => $existing_short_url,
+			'created'   => false,
+			'updated'   => false,
+			'unchanged' => true,
+		);
+	}
+
+	$fallback = array(
+		'short_url'  => $existing_short_url,
+		'image_url'  => $existing_image,
+	);
+
+	if ( '' !== $existing_qr_id ) {
+		$updated = hb_update_qrtiger_vcard_campaign( $existing_qr_id, $payload, $creds, $fallback );
+		if ( ! is_wp_error( $updated ) ) {
+			hb_store_vcard_qr_user_meta( $user_id, $updated, $payload_hash );
+			$updated['created']   = false;
+			$updated['updated']   = true;
+			$updated['unchanged'] = false;
+			return $updated;
+		}
+	}
+
+	$created = hb_create_qrtiger_vcard_campaign( $payload, $creds );
+	if ( is_wp_error( $created ) ) {
+		return $created;
+	}
+
+	hb_store_vcard_qr_user_meta( $user_id, $created, $payload_hash );
+	$created['created']   = true;
+	$created['updated']   = false;
+	$created['unchanged'] = false;
+
+	return $created;
 }
 
 /**
  * AJAX: Generate the hosted vCard QR for the logged-in user.
  *
- * Creates a Vcard-category campaign at QR Tiger with the user's profile data
- * embedded inline, then persists the returned QR image locally so we can serve
- * stable PNG/JPG downloads. The previously saved QR file (if any) is removed.
+ * Updates an existing Vcard campaign when hb_vcard_qr_id is set; otherwise creates one.
+ * Persists the returned QR image locally for stable PNG/JPG downloads.
  */
 function hb_ajax_generate_vcard_qr() {
 	if ( ! is_user_logged_in() ) {
@@ -2180,25 +2388,37 @@ function hb_ajax_generate_vcard_qr() {
 		wp_send_json_error( array( 'message' => $qr->get_error_message() ) );
 	}
 
-	$previous = (string) get_user_meta( $user_id, 'hb_vcard_qr_image_url', true );
-	hb_delete_qr_image_file_for_user( $user_id, $previous );
+	$unchanged = ! empty( $qr['unchanged'] );
+	$persisted = (string) get_user_meta( $user_id, 'hb_vcard_qr_image_url', true );
 
-	$persisted = hb_persist_qr_image_to_file( $user_id, $qr['image_url'] );
-	if ( is_wp_error( $persisted ) ) {
-		wp_send_json_error( array( 'message' => $persisted->get_error_message() ) );
+	if ( ! $unchanged ) {
+		$previous = $persisted;
+		$persisted = hb_persist_qr_image_to_file( $user_id, $qr['image_url'] );
+		if ( is_wp_error( $persisted ) ) {
+			wp_send_json_error( array( 'message' => $persisted->get_error_message() ) );
+		}
+		if ( $previous !== '' && $previous !== $persisted ) {
+			hb_delete_qr_image_file_for_user( $user_id, $previous );
+		}
+		update_user_meta( $user_id, 'hb_vcard_qr_image_url', esc_url_raw( $persisted ) );
 	}
 
-	update_user_meta( $user_id, 'hb_vcard_qr_image_url', esc_url_raw( $persisted ) );
-	update_user_meta( $user_id, 'hb_vcard_qr_id', $qr['qr_id'] );
-	update_user_meta( $user_id, 'hb_vcard_short_url', esc_url_raw( $qr['short_url'] ) );
 	// Legacy meta from the .vcf-redirect flow — clear so the UI never falls back to it.
 	delete_user_meta( $user_id, 'hb_vcard_file_url' );
+
+	if ( $unchanged ) {
+		$message = __( 'VCard QR is already up to date.', 'hello-elementor-child' );
+	} elseif ( ! empty( $qr['updated'] ) ) {
+		$message = __( 'VCard QR updated successfully.', 'hello-elementor-child' );
+	} else {
+		$message = __( 'VCard QR generated successfully.', 'hello-elementor-child' );
+	}
 
 	wp_send_json_success(
 		array(
 			'url'          => esc_url_raw( $qr['short_url'] ),
 			'qr_image_url' => esc_url_raw( $persisted ),
-			'message'      => __( 'VCard QR generated successfully.', 'hello-elementor-child' ),
+			'message'      => $message,
 		)
 	);
 }
@@ -2237,6 +2457,7 @@ function hb_ajax_delete_vcard_qr() {
 	delete_user_meta( $user_id, 'hb_vcard_qr_image_url' );
 	delete_user_meta( $user_id, 'hb_vcard_qr_id' );
 	delete_user_meta( $user_id, 'hb_vcard_short_url' );
+	delete_user_meta( $user_id, 'hb_vcard_qr_payload_hash' );
 	delete_user_meta( $user_id, 'hb_vcard_qr_overrides' ); // Legacy from removed customizer; safe to clean up.
 
 	wp_send_json_success( array( 'message' => __( 'VCard QR removed.', 'hello-elementor-child' ) ) );

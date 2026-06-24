@@ -134,7 +134,8 @@ class Hb_Postcard {
 	/**
 	 * Ensure a QR Tiger hosted vCard scan URL exists (photo, name, contact buttons).
 	 *
-	 * Regenerates the vCard campaign so profile data stays current on each postcard build.
+	 * Updates the existing vCard campaign when hb_vcard_qr_id is set; creates one only
+	 * on first use or when the update call fails. Skips QR Tiger when profile is unchanged.
 	 *
 	 * @param int $user_id User ID.
 	 * @return string|WP_Error Public scan URL (e.g. qr1.be/…).
@@ -148,25 +149,20 @@ class Hb_Postcard {
 			);
 		}
 
-		$previous_qr = (string) get_user_meta( $user_id, 'hb_vcard_qr_image_url', true );
-		if ( $previous_qr !== '' && function_exists( 'hb_delete_qr_image_file_for_user' ) ) {
-			hb_delete_qr_image_file_for_user( $user_id, $previous_qr );
-		}
-
 		$qr = hb_generate_qrtiger_qr_for_vcard( $user_id );
 		if ( is_wp_error( $qr ) ) {
 			return $qr;
 		}
 
-		if ( ! empty( $qr['short_url'] ) ) {
-			update_user_meta( $user_id, 'hb_vcard_short_url', esc_url_raw( $qr['short_url'] ) );
-		}
-		if ( ! empty( $qr['qr_id'] ) ) {
-			update_user_meta( $user_id, 'hb_vcard_qr_id', sanitize_text_field( (string) $qr['qr_id'] ) );
-		}
-		if ( ! empty( $qr['image_url'] ) && function_exists( 'hb_persist_qr_image_to_file' ) ) {
-			$persisted = hb_persist_qr_image_to_file( $user_id, $qr['image_url'] );
+		$unchanged = ! empty( $qr['unchanged'] );
+
+		if ( ! $unchanged && ! empty( $qr['image_url'] ) && function_exists( 'hb_persist_qr_image_to_file' ) ) {
+			$previous_qr = (string) get_user_meta( $user_id, 'hb_vcard_qr_image_url', true );
+			$persisted   = hb_persist_qr_image_to_file( $user_id, $qr['image_url'] );
 			if ( ! is_wp_error( $persisted ) ) {
+				if ( $previous_qr !== '' && $previous_qr !== $persisted && function_exists( 'hb_delete_qr_image_file_for_user' ) ) {
+					hb_delete_qr_image_file_for_user( $user_id, $previous_qr );
+				}
 				update_user_meta( $user_id, 'hb_vcard_qr_image_url', esc_url_raw( $persisted ) );
 			}
 		}
