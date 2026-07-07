@@ -108,6 +108,8 @@
 			'Open this page at https://' + expected + ' (you are on ' + window.location.hostname + ') and try again.'
 		);
 	}
+
+	function platformBiometricAvailable() {
 		if ( ! window.isSecureContext ) {
 			return Promise.resolve( false );
 		}
@@ -118,6 +120,7 @@
 			return false;
 		} );
 	}
+
 	function initBiometricPage() {
 		var $root = $( '#hb-biometric-settings' );
 		if ( ! $root.length ) {
@@ -194,6 +197,11 @@
 	function registerPasskey() {
 		var $btn = $( '#hb-biometric-enable-btn' );
 		var label = $( '#hb-biometric-device-label' ).val() || '';
+
+		if ( ! cfg.ajaxUrl || ! cfg.registerBegin || ! cfg.nonce ) {
+			showFeedback( 'Biometric login script did not load correctly. Hard refresh this page.', 'error' );
+			return;
+		}
 
 		$btn.prop( 'disabled', true ).text( cfg.i18n.enabling || 'Waiting…' );
 		showFeedback( '', '' );
