@@ -523,13 +523,12 @@ class Hb_Biometric_Settings {
 			'hb-biometric-settings',
 			'hbBiometric',
 			array(
-				'ajaxUrl'           => admin_url( 'admin-ajax.php' ),
-				'nonce'             => wp_create_nonce( 'hb_biometric_settings' ),
-				'isEndpoint'        => self::is_biometric_endpoint(),
-				'canManage'         => self::user_can_manage_passkeys(),
-				'registerBegin'     => 'hb_biometric_register_begin',
-				'registerComplete'  => 'hb_biometric_register_complete',
-				'removeAction'      => 'hb_biometric_remove',
+				'ajaxUrl'          => admin_url( 'admin-ajax.php' ),
+				'nonce'            => wp_create_nonce( 'hb_biometric_settings' ),
+				'canManage'        => self::user_can_manage_passkeys(),
+				'registerBegin'    => 'hb_biometric_register_begin',
+				'registerComplete' => 'hb_biometric_register_complete',
+				'removeAction'     => 'hb_biometric_remove',
 				'i18n'              => array(
 					'unsupported'       => __( 'Biometric login is not available on this device or browser. Continue using phone + OTP.', 'hello-elementor-child' ),
 					'needActivation'    => __( 'Activate your device with OTP before enabling biometric login.', 'hello-elementor-child' ),
@@ -571,18 +570,21 @@ class Hb_Biometric_Settings {
 		<div class="hb-biometric-settings" id="hb-biometric-settings">
 			<h2><?php esc_html_e( 'Biometric login', 'hello-elementor-child' ); ?></h2>
 
-			<div class="hb-biometric-settings__unsupported" id="hb-biometric-unsupported" hidden>
-				<p><?php esc_html_e( 'Biometric login is not available on this device or browser. You can continue signing in with phone + OTP.', 'hello-elementor-child' ); ?></p>
-			</div>
-
 			<?php if ( ! $can_manage ) : ?>
 				<div class="hb-biometric-settings__notice hb-biometric-settings__notice--warn">
 					<p><?php esc_html_e( 'Activate your device with a one-time SMS code before you can enable biometric login on this device.', 'hello-elementor-child' ); ?></p>
+					<p class="hb-biometric-settings__hint">
+						<?php esc_html_e( 'Use the Activate Your Phone button in the site header, complete OTP verification, then return here.', 'hello-elementor-child' ); ?>
+					</p>
 				</div>
 			<?php else : ?>
-				<div class="hb-biometric-settings__supported" id="hb-biometric-supported" hidden>
+				<div class="hb-biometric-settings__unsupported" id="hb-biometric-unsupported" style="display:none;">
+					<p><?php esc_html_e( 'Biometric login is not available on this device or browser. You can continue signing in with phone + OTP.', 'hello-elementor-child' ); ?></p>
+				</div>
+
+				<div class="hb-biometric-settings__supported" id="hb-biometric-supported">
 					<p class="hb-biometric-settings__intro">
-						<?php esc_html_e( 'Use Face ID or fingerprint to sign in faster on this device after your phone has been verified once with OTP. OTP remains available for new devices and account recovery.', 'hello-elementor-child' ); ?>
+						<?php esc_html_e( 'Use Face ID, Touch ID, or fingerprint to sign in faster on this device after your phone has been verified once with OTP. OTP remains available for new devices and account recovery.', 'hello-elementor-child' ); ?>
 					</p>
 
 					<div class="hb-biometric-settings__enable">
@@ -594,7 +596,7 @@ class Hb_Biometric_Settings {
 							id="hb-biometric-device-label"
 							class="hb-biometric-settings__input"
 							maxlength="80"
-							placeholder="<?php esc_attr_e( 'e.g. My iPhone', 'hello-elementor-child' ); ?>"
+							placeholder="<?php esc_attr_e( 'e.g. My MacBook', 'hello-elementor-child' ); ?>"
 						/>
 						<button type="button" class="button hb-biometric-settings__btn" id="hb-biometric-enable-btn">
 							<?php esc_html_e( 'Enable Face ID / fingerprint login', 'hello-elementor-child' ); ?>

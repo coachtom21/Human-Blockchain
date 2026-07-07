@@ -55,6 +55,35 @@
 			return false;
 		} );
 	}
+	function initBiometricPage() {
+		var $root = $( '#hb-biometric-settings' );
+		if ( ! $root.length ) {
+			return;
+		}
+
+		var $unsupported = $( '#hb-biometric-unsupported' );
+		var $supported = $( '#hb-biometric-supported' );
+
+		if ( ! $supported.length ) {
+			return;
+		}
+
+		platformBiometricAvailable().then( function ( supported ) {
+			if ( ! supported ) {
+				$unsupported.show();
+				$supported.hide();
+				return;
+			}
+
+			if ( cfg.canManage ) {
+				$supported.show();
+				$unsupported.hide();
+			} else {
+				$supported.hide();
+				$unsupported.hide();
+			}
+		} );
+	}
 
 	function updateNavVisibility() {
 		var $navItem = $( '.woocommerce-MyAccount-navigation-link--biometric-login' );
@@ -183,28 +212,7 @@
 
 	$( function () {
 		updateNavVisibility();
-
-		platformBiometricAvailable().then( function ( supported ) {
-			if ( ! cfg.isEndpoint ) {
-				return;
-			}
-
-			var $unsupported = $( '#hb-biometric-unsupported' );
-			var $supported = $( '#hb-biometric-supported' );
-
-			if ( ! supported ) {
-				$unsupported.prop( 'hidden', false );
-				$supported.prop( 'hidden', true );
-				return;
-			}
-
-			if ( cfg.canManage ) {
-				$supported.prop( 'hidden', false );
-			} else {
-				$supported.prop( 'hidden', true );
-			}
-			$unsupported.prop( 'hidden', true );
-		} );
+		initBiometricPage();
 
 		$( document ).on( 'click', '#hb-biometric-enable-btn', function ( e ) {
 			e.preventDefault();
