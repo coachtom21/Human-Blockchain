@@ -199,7 +199,16 @@ class Hb_Biometric_Settings {
 		if ( isset( $public_key->extensions ) ) {
 			unset( $public_key->extensions );
 		}
+		$public_key->attestation = 'none';
 		return $public_key;
+	}
+
+	/**
+	 * @param int $user_id User ID.
+	 * @return string
+	 */
+	private static function challenge_transient_key( $user_id ) {
+		return 'hb_webauthn_challenge_' . (int) $user_id;
 	}
 
 	/**
@@ -219,7 +228,7 @@ class Hb_Biometric_Settings {
 		}
 
 		try {
-			$formats = array( 'none', 'packed', 'apple', 'android-key', 'android-safetynet' );
+			$formats = array( 'none', 'packed', 'apple', 'android-key', 'android-safetynet', 'tpm' );
 			$server  = new \lbuchs\WebAuthn\WebAuthn(
 				apply_filters( 'hb_webauthn_rp_name', get_bloginfo( 'name' ) ?: 'Human Blockchain' ),
 				self::get_rp_id(),
@@ -295,7 +304,7 @@ class Hb_Biometric_Settings {
 	 * @return void
 	 */
 	public static function ajax_register_begin() {
-		check_ajax_referer( 'hb_biometric_settings', 'nonce' );
+		self::verify_ajax_nonce();
 
 		if ( ! self::user_can_manage_passkeys() ) {
 			wp_send_json_error(
@@ -308,12 +317,11 @@ class Hb_Biometric_Settings {
 
 		$server = self::webauthn_server();
 		if ( ! $server ) {
-			wp_send_json_error(
-				array(
-					'message' => __( 'Biometric login is not available on this site right now. Please contact support.', 'hello-elementor-child' ),
-				),
-				500
-			);
+			$autoload = get_stylesheet_directory() . '/vendor/autoload.php';
+			$message  = file_exists( $autoload )
+				? __( 'Biometric login could not start on the server. Contact support.', 'hello-elementor-child' )
+				: __( 'Biometric login library is missing on the server. Deploy the theme vendor folder or run composer install.', 'hello-elementor-child' );
+			wp_send_json_error( array( 'message' => $message ), 500 );
 		}
 
 		$user    = wp_get_current_user();
@@ -337,11 +345,7 @@ class Hb_Biometric_Settings {
 
 		$challenge = $server->getChallenge();
 		if ( $challenge ) {
-			set_transient(
-				self::challenge_transient_key( $user_id ),
-				base64_encode( $challenge->getBinaryString() ),
-				self::CHALLENGE_TTL
-			);
+			self::store_registration_challenge( $user_id, base64_encode( $challenge->getBinaryString() ) );
 		}
 
 		wp_send_json_success(
@@ -356,7 +360,7 @@ class Hb_Biometric_Settings {
 	 * @return void
 	 */
 	public static function ajax_register_complete() {
-		check_ajax_referer( 'hb_biometric_settings', 'nonce' );
+		self::verify_ajax_nonce();
 
 		if ( ! self::user_can_manage_passkeys() ) {
 			wp_send_json_error(
@@ -378,7 +382,7 @@ class Hb_Biometric_Settings {
 		}
 
 		$user_id = get_current_user_id();
-		$stored  = get_transient( self::challenge_transient_key( $user_id ) );
+		$stored  = self::get_registration_challenge( $user_id );
 		if ( ! $stored ) {
 			wp_send_json_error(
 				array(
@@ -432,13 +436,14 @@ class Hb_Biometric_Settings {
 			);
 		}
 
-		delete_transient( self::challenge_transient_key( $user_id ) );
+		self::clear_registration_challenge( $user_id );
 
 		$cred_id_b64 = base64_encode( $data->credentialId->getBinaryString() );
 		if ( '' === $device_label ) {
 			$device_label = self::default_device_label();
 		}
 
+		self::maybe_create_table();
 		global $wpdb;
 		$inserted = $wpdb->insert(
 			self::table_name(),
@@ -457,7 +462,7 @@ class Hb_Biometric_Settings {
 		if ( ! $inserted ) {
 			wp_send_json_error(
 				array(
-					'message' => __( 'Could not save biometric login for this device.', 'hello-elementor-child' ),
+					'message' => __( 'Could not save biometric login for this device.', 'hello-elementor-child' ) . ( $wpdb->last_error ? ' (' . $wpdb->last_error . ')' : '' ),
 				),
 				500
 			);
@@ -477,7 +482,7 @@ class Hb_Biometric_Settings {
 	 * @return void
 	 */
 	public static function ajax_remove() {
-		check_ajax_referer( 'hb_biometric_settings', 'nonce' );
+		self::verify_ajax_nonce();
 
 		if ( ! is_user_logged_in() ) {
 			wp_send_json_error( array( 'message' => __( 'You must be logged in.', 'hello-elementor-child' ) ), 403 );
@@ -510,11 +515,56 @@ class Hb_Biometric_Settings {
 	}
 
 	/**
-	 * @param int $user_id User ID.
-	 * @return string
+	 * Verify AJAX nonce or return JSON error.
+	 *
+	 * @return void
 	 */
-	private static function challenge_transient_key( $user_id ) {
-		return 'hb_webauthn_challenge_' . (int) $user_id;
+	private static function verify_ajax_nonce() {
+		if ( ! check_ajax_referer( 'hb_biometric_settings', 'nonce', false ) ) {
+			wp_send_json_error(
+				array(
+					'message' => __( 'Session expired. Reload this page and try again.', 'hello-elementor-child' ),
+				),
+				403
+			);
+		}
+	}
+
+	/**
+	 * Persist registration challenge for the current user.
+	 *
+	 * @param int    $user_id User ID.
+	 * @param string $challenge_b64 Base64-encoded challenge bytes.
+	 * @return void
+	 */
+	private static function store_registration_challenge( $user_id, $challenge_b64 ) {
+		$user_id = (int) $user_id;
+		set_transient( self::challenge_transient_key( $user_id ), $challenge_b64, self::CHALLENGE_TTL );
+		update_user_meta( $user_id, 'hb_webauthn_pending_challenge', $challenge_b64 );
+	}
+
+	/**
+	 * @param int $user_id User ID.
+	 * @return string|false
+	 */
+	private static function get_registration_challenge( $user_id ) {
+		$user_id = (int) $user_id;
+		$stored  = get_transient( self::challenge_transient_key( $user_id ) );
+		if ( is_string( $stored ) && '' !== $stored ) {
+			return $stored;
+		}
+		$meta = get_user_meta( $user_id, 'hb_webauthn_pending_challenge', true );
+		return is_string( $meta ) && '' !== $meta ? $meta : false;
+	}
+
+	/**
+	 * @param int $user_id User ID.
+	 * @return void
+	 */
+	private static function clear_registration_challenge( $user_id ) {
+		$user_id = (int) $user_id;
+		delete_transient( self::challenge_transient_key( $user_id ) );
+		delete_user_meta( $user_id, 'hb_webauthn_pending_challenge' );
 	}
 
 	/**
@@ -584,13 +634,14 @@ class Hb_Biometric_Settings {
 				'registerComplete' => 'hb_biometric_register_complete',
 				'removeAction'     => 'hb_biometric_remove',
 				'i18n'              => array(
-					'unsupported'       => __( 'Biometric login is not available on this device or browser. Continue using phone + OTP.', 'hello-elementor-child' ),
+					'unsupported'       => __( 'Biometric login is not available on this device or browser. Continue using your number + OTP.', 'hello-elementor-child' ),
 					'needActivation'    => __( 'Activate your device with OTP before enabling biometric login.', 'hello-elementor-child' ),
 					'enableBtn'         => __( 'Enable Face ID / fingerprint login', 'hello-elementor-child' ),
 					'enabling'          => __( 'Waiting for biometric confirmation…', 'hello-elementor-child' ),
 					'removeConfirm'     => __( 'Remove biometric login for this device?', 'hello-elementor-child' ),
-					'errorGeneric'      => __( 'Something went wrong. Please try again or use phone + OTP.', 'hello-elementor-child' ),
+					'errorGeneric'      => __( 'Something went wrong. Please try again or use your number + OTP.', 'hello-elementor-child' ),
 					'httpsRequired'     => __( 'Biometric login requires a secure (HTTPS) connection.', 'hello-elementor-child' ),
+					'sessionExpired'    => __( 'Session expired. Reload this page and try again.', 'hello-elementor-child' ),
 				),
 			)
 		);

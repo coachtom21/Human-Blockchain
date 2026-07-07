@@ -47,30 +47,67 @@
 		return pk;
 	}
 
-	function extractErrorMessage( jqXHR, textStatus, errorThrown ) {
-		if ( errorThrown && errorThrown.message ) {
-			return errorThrown.message;
+	function extractErrorMessage( err ) {
+		if ( ! err ) {
+			return cfg.i18n.errorGeneric;
 		}
-		if ( jqXHR && jqXHR.responseJSON && jqXHR.responseJSON.data && jqXHR.responseJSON.data.message ) {
-			return jqXHR.responseJSON.data.message;
+		if ( typeof err === 'string' ) {
+			return err;
 		}
-		if ( typeof jqXHR === 'object' && jqXHR.responseText ) {
+		if ( err.message ) {
+			return err.message;
+		}
+		if ( err.responseJSON && err.responseJSON.data && err.responseJSON.data.message ) {
+			return err.responseJSON.data.message;
+		}
+		if ( err.responseText ) {
 			try {
-				var parsed = JSON.parse( jqXHR.responseText );
+				var parsed = JSON.parse( err.responseText );
 				if ( parsed && parsed.data && parsed.data.message ) {
 					return parsed.data.message;
 				}
-			} catch ( e ) {
+			} catch ( parseErr ) {
 				// Ignore JSON parse errors.
 			}
-		}
-		if ( textStatus ) {
-			return textStatus;
 		}
 		return cfg.i18n.errorGeneric;
 	}
 
-	function platformBiometricAvailable() {
+	function postBiometric( data ) {
+		return $.ajax( {
+			url: cfg.ajaxUrl,
+			method: 'POST',
+			data: data,
+			dataType: 'json',
+		} ).then( function ( res, textStatus, jqXHR ) {
+			if ( res === null || res === 0 || res === '0' || res === -1 || res === '-1' ) {
+				throw new Error( cfg.i18n.sessionExpired || 'Session expired. Reload this page and try again.' );
+			}
+			if ( typeof res !== 'object' ) {
+				throw new Error( cfg.i18n.errorGeneric );
+			}
+			if ( ! res.success ) {
+				throw new Error( ( res.data && res.data.message ) || cfg.i18n.errorGeneric );
+			}
+			return res;
+		}, function ( jqXHR ) {
+			throw new Error( extractErrorMessage( jqXHR ) );
+		} );
+	}
+
+	function validateRpId( rpId ) {
+		if ( ! rpId ) {
+			return;
+		}
+		var host = window.location.hostname.toLowerCase().replace( /^www\./, '' );
+		var expected = String( rpId ).toLowerCase().replace( /^www\./, '' );
+		if ( host === expected || host.endsWith( '.' + expected ) ) {
+			return;
+		}
+		throw new Error(
+			'Open this page at https://' + expected + ' (you are on ' + window.location.hostname + ') and try again.'
+		);
+	}
 		if ( ! window.isSecureContext ) {
 			return Promise.resolve( false );
 		}
@@ -167,16 +204,19 @@
 			return;
 		}
 
-		$.post( cfg.ajaxUrl, {
+		if ( ! navigator.credentials || typeof navigator.credentials.create !== 'function' ) {
+			showFeedback( cfg.i18n.unsupported, 'error' );
+			$btn.prop( 'disabled', false ).text( cfg.i18n.enableBtn || 'Enable Face ID / fingerprint login' );
+			return;
+		}
+
+		postBiometric( {
 			action: cfg.registerBegin,
 			nonce: cfg.nonce,
 		} )
-			.then( function ( res ) {
-				if ( ! res || ! res.success || ! res.data || ! res.data.publicKey ) {
-					throw new Error( ( res && res.data && res.data.message ) || cfg.i18n.errorGeneric );
-				}
-
-				var publicKey = decodeCreationOptions( res.data.publicKey );
+			.then( function ( beginRes ) {
+				validateRpId( beginRes.data.rpId );
+				var publicKey = decodeCreationOptions( beginRes.data.publicKey );
 				return navigator.credentials.create( { publicKey: publicKey } );
 			} )
 			.then( function ( cred ) {
@@ -184,7 +224,7 @@
 					throw new Error( cfg.i18n.errorGeneric );
 				}
 
-				return $.post( cfg.ajaxUrl, {
+				return postBiometric( {
 					action: cfg.registerComplete,
 					nonce: cfg.nonce,
 					clientDataJSON: arrayBufferToBase64Url( cred.response.clientDataJSON ),
@@ -192,19 +232,16 @@
 					device_label: label,
 				} );
 			} )
-			.then( function ( res ) {
-				if ( ! res || ! res.success ) {
-					throw new Error( ( res && res.data && res.data.message ) || cfg.i18n.errorGeneric );
-				}
-				showFeedback( res.data.message, 'success' );
+			.then( function ( completeRes ) {
+				showFeedback( completeRes.data.message, 'success' );
 				appendPasskeyRow( {
-					passkey_id: res.data.passkey_id,
-					device_label: res.data.device_label || label || 'This device',
-					created_at: res.data.created_at || 'Just now',
+					passkey_id: completeRes.data.passkey_id,
+					device_label: completeRes.data.device_label || label || 'This device',
+					created_at: completeRes.data.created_at || 'Just now',
 				} );
 			} )
-			.fail( function ( jqXHR, textStatus, errorThrown ) {
-				showFeedback( extractErrorMessage( jqXHR, textStatus, errorThrown ), 'error' );
+			.fail( function ( err ) {
+				showFeedback( extractErrorMessage( err ), 'error' );
 			} )
 			.always( function () {
 				$btn.prop( 'disabled', false ).text( cfg.i18n.enableBtn || 'Enable Face ID / fingerprint login' );
