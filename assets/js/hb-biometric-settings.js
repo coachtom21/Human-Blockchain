@@ -28,6 +28,9 @@
 
 	function decodeCreationOptions( publicKey ) {
 		var pk = JSON.parse( JSON.stringify( publicKey ) );
+		if ( pk.extensions ) {
+			delete pk.extensions;
+		}
 		pk.challenge = base64UrlToArrayBuffer( pk.challenge );
 		if ( pk.user && pk.user.id ) {
 			pk.user.id = base64UrlToArrayBuffer( pk.user.id );
@@ -42,6 +45,29 @@
 			} );
 		}
 		return pk;
+	}
+
+	function extractErrorMessage( jqXHR, textStatus, errorThrown ) {
+		if ( errorThrown && errorThrown.message ) {
+			return errorThrown.message;
+		}
+		if ( jqXHR && jqXHR.responseJSON && jqXHR.responseJSON.data && jqXHR.responseJSON.data.message ) {
+			return jqXHR.responseJSON.data.message;
+		}
+		if ( typeof jqXHR === 'object' && jqXHR.responseText ) {
+			try {
+				var parsed = JSON.parse( jqXHR.responseText );
+				if ( parsed && parsed.data && parsed.data.message ) {
+					return parsed.data.message;
+				}
+			} catch ( e ) {
+				// Ignore JSON parse errors.
+			}
+		}
+		if ( textStatus ) {
+			return textStatus;
+		}
+		return cfg.i18n.errorGeneric;
 	}
 
 	function platformBiometricAvailable() {
@@ -135,11 +161,17 @@
 		$btn.prop( 'disabled', true ).text( cfg.i18n.enabling || 'Waiting…' );
 		showFeedback( '', '' );
 
+		if ( ! window.isSecureContext ) {
+			showFeedback( cfg.i18n.httpsRequired, 'error' );
+			$btn.prop( 'disabled', false ).text( cfg.i18n.enableBtn || 'Enable Face ID / fingerprint login' );
+			return;
+		}
+
 		$.post( cfg.ajaxUrl, {
 			action: cfg.registerBegin,
 			nonce: cfg.nonce,
 		} )
-			.done( function ( res ) {
+			.then( function ( res ) {
 				if ( ! res || ! res.success || ! res.data || ! res.data.publicKey ) {
 					throw new Error( ( res && res.data && res.data.message ) || cfg.i18n.errorGeneric );
 				}
@@ -160,7 +192,7 @@
 					device_label: label,
 				} );
 			} )
-			.done( function ( res ) {
+			.then( function ( res ) {
 				if ( ! res || ! res.success ) {
 					throw new Error( ( res && res.data && res.data.message ) || cfg.i18n.errorGeneric );
 				}
@@ -171,14 +203,8 @@
 					created_at: res.data.created_at || 'Just now',
 				} );
 			} )
-			.fail( function ( xhr ) {
-				var msg = cfg.i18n.errorGeneric;
-				if ( xhr && xhr.responseJSON && xhr.responseJSON.data && xhr.responseJSON.data.message ) {
-					msg = xhr.responseJSON.data.message;
-				} else if ( xhr && xhr.message ) {
-					msg = xhr.message;
-				}
-				showFeedback( msg, 'error' );
+			.fail( function ( jqXHR, textStatus, errorThrown ) {
+				showFeedback( extractErrorMessage( jqXHR, textStatus, errorThrown ), 'error' );
 			} )
 			.always( function () {
 				$btn.prop( 'disabled', false ).text( cfg.i18n.enableBtn || 'Enable Face ID / fingerprint login' );
@@ -216,10 +242,6 @@
 
 		$( document ).on( 'click', '#hb-biometric-enable-btn', function ( e ) {
 			e.preventDefault();
-			if ( ! window.isSecureContext ) {
-				showFeedback( cfg.i18n.httpsRequired, 'error' );
-				return;
-			}
 			registerPasskey();
 		} );
 

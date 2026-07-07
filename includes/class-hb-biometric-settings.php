@@ -150,12 +150,56 @@ class Hb_Biometric_Settings {
 	 * @return string
 	 */
 	public static function get_rp_id() {
-		$host = wp_parse_url( home_url(), PHP_URL_HOST );
-		$host = is_string( $host ) ? strtolower( $host ) : '';
+		$host = '';
+		if ( ! empty( $_SERVER['HTTP_HOST'] ) ) {
+			$host = strtolower( sanitize_text_field( wp_unslash( $_SERVER['HTTP_HOST'] ) ) );
+			$host = preg_replace( '/:\d+$/', '', $host );
+		}
+		if ( '' === $host ) {
+			$host = wp_parse_url( home_url(), PHP_URL_HOST );
+			$host = is_string( $host ) ? strtolower( $host ) : '';
+		}
 		if ( str_starts_with( $host, 'www.' ) ) {
 			$host = substr( $host, 4 );
 		}
 		return (string) apply_filters( 'hb_webauthn_rp_id', $host );
+	}
+
+	/**
+	 * Read a base64url field from POST without stripping payload bytes.
+	 *
+	 * @param string $key POST key.
+	 * @return string
+	 */
+	private static function get_post_base64url( $key ) {
+		if ( ! isset( $_POST[ $key ] ) ) {
+			return '';
+		}
+		$raw = wp_unslash( $_POST[ $key ] );
+		if ( ! is_string( $raw ) ) {
+			return '';
+		}
+		$raw = trim( $raw );
+		if ( '' === $raw || ! preg_match( '/^[A-Za-z0-9_-]+$/', $raw ) ) {
+			return '';
+		}
+		return $raw;
+	}
+
+	/**
+	 * Prepare creation options for the browser (strip invalid extension keys).
+	 *
+	 * @param object $public_key PublicKeyCredentialCreationOptions partial.
+	 * @return object
+	 */
+	private static function prepare_public_key_for_browser( $public_key ) {
+		if ( ! is_object( $public_key ) ) {
+			return $public_key;
+		}
+		if ( isset( $public_key->extensions ) ) {
+			unset( $public_key->extensions );
+		}
+		return $public_key;
 	}
 
 	/**
@@ -300,7 +344,12 @@ class Hb_Biometric_Settings {
 			);
 		}
 
-		wp_send_json_success( array( 'publicKey' => $args->publicKey ) );
+		wp_send_json_success(
+			array(
+				'publicKey' => self::prepare_public_key_for_browser( $args->publicKey ),
+				'rpId'      => self::get_rp_id(),
+			)
+		);
 	}
 
 	/**
@@ -339,11 +388,11 @@ class Hb_Biometric_Settings {
 			);
 		}
 
-		$client_data_b64      = isset( $_POST['clientDataJSON'] ) ? sanitize_text_field( wp_unslash( $_POST['clientDataJSON'] ) ) : '';
-		$attestation_b64      = isset( $_POST['attestationObject'] ) ? sanitize_text_field( wp_unslash( $_POST['attestationObject'] ) ) : '';
-		$device_label         = isset( $_POST['device_label'] ) ? sanitize_text_field( wp_unslash( $_POST['device_label'] ) ) : '';
-		$client_data_json     = self::base64url_decode( $client_data_b64 );
-		$attestation_object   = self::base64url_decode( $attestation_b64 );
+		$client_data_b64    = self::get_post_base64url( 'clientDataJSON' );
+		$attestation_b64    = self::get_post_base64url( 'attestationObject' );
+		$device_label       = isset( $_POST['device_label'] ) ? sanitize_text_field( wp_unslash( $_POST['device_label'] ) ) : '';
+		$client_data_json   = self::base64url_decode( $client_data_b64 );
+		$attestation_object = self::base64url_decode( $attestation_b64 );
 
 		if ( false === $client_data_json || false === $attestation_object ) {
 			wp_send_json_error(
@@ -375,7 +424,12 @@ class Hb_Biometric_Settings {
 				false
 			);
 		} catch ( Exception $e ) {
-			wp_send_json_error( array( 'message' => $e->getMessage() ), 400 );
+			wp_send_json_error(
+				array(
+					'message' => $e->getMessage() ?: __( 'Biometric verification failed.', 'hello-elementor-child' ),
+				),
+				400
+			);
 		}
 
 		delete_transient( self::challenge_transient_key( $user_id ) );
@@ -584,7 +638,7 @@ class Hb_Biometric_Settings {
 
 				<div class="hb-biometric-settings__supported" id="hb-biometric-supported">
 					<p class="hb-biometric-settings__intro">
-						<?php esc_html_e( 'Use Face ID, Touch ID, or fingerprint to sign in faster on this device after your phone has been verified once with OTP. OTP remains available for new devices and account recovery.', 'hello-elementor-child' ); ?>
+						<?php esc_html_e( 'Use Face ID, Touch ID, or fingerprint to sign in faster on this device after your number has been verified once with OTP. OTP remains available for new devices and account recovery.', 'hello-elementor-child' ); ?>
 					</p>
 
 					<div class="hb-biometric-settings__enable">
