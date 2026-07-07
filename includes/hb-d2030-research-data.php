@@ -38,77 +38,77 @@ function hb_d2030_label_from_url( $url, $fallback = '' ) {
  */
 function hb_get_d2030_research_resources() {
 	$featured_video_raw = array(
-		'url'   => apply_filters( 'hb_d2030_featured_video_url', 'http://humanblockchain.info/wp-content/uploads/2026/06/Coach-Toms-Vision_-The-Human-Blockchain1.mp4' ),
+		'url'   => apply_filters( 'hb_d2030_featured_video_url', 'https://humanblockchain.info/wp-content/uploads/2026/06/Coach-Toms-Vision_-The-Human-Blockchain1.mp4' ),
 		'title' => apply_filters( 'hb_d2030_featured_video_title', __( "Coach Tom's Vision: The Human Blockchain", 'hello-elementor-child' ) ),
 	);
 	$videos = array(
 		array(
-			'url'   => apply_filters( 'hb_d2030_video_1_url', 'http://humanblockchain.info/wp-content/uploads/2026/05/Hello_Device_Experiment.mp4' ),
-			'title' => hb_d2030_label_from_url( apply_filters( 'hb_d2030_video_1_url', 'http://humanblockchain.info/wp-content/uploads/2026/05/Hello_Device_Experiment.mp4' ), 'Video 1' ),
+			'url'   => apply_filters( 'hb_d2030_video_1_url', 'https://humanblockchain.info/wp-content/uploads/2026/05/Hello_Device_Experiment.mp4' ),
+			'title' => hb_d2030_label_from_url( apply_filters( 'hb_d2030_video_1_url', 'https://humanblockchain.info/wp-content/uploads/2026/05/Hello_Device_Experiment.mp4' ), 'Video 1' ),
 		),
 		array(
-			'url'   => apply_filters( 'hb_d2030_video_2_url', 'http://humanblockchain.info/wp-content/uploads/2026/05/Organized_Krill_Study-1.mp4' ),
-			'title' => hb_d2030_label_from_url( apply_filters( 'hb_d2030_video_2_url', 'http://humanblockchain.info/wp-content/uploads/2026/05/Organized_Krill_Study-1.mp4' ), 'Video 2' ),
+			'url'   => apply_filters( 'hb_d2030_video_2_url', 'https://humanblockchain.info/wp-content/uploads/2026/05/Organized_Krill_Study-1.mp4' ),
+			'title' => hb_d2030_label_from_url( apply_filters( 'hb_d2030_video_2_url', 'https://humanblockchain.info/wp-content/uploads/2026/05/Organized_Krill_Study-1.mp4' ), 'Video 2' ),
 		),
 		array(
-			'url'   => apply_filters( 'hb_d2030_video_3_url', 'http://humanblockchain.info/wp-content/uploads/2026/05/Gracebook__Presence_Economics__Architecting_Trust_Without_Capi.mp4' ),
+			'url'   => apply_filters( 'hb_d2030_video_3_url', 'https://humanblockchain.info/wp-content/uploads/2026/05/Gracebook__Presence_Economics__Architecting_Trust_Without_Capi.mp4' ),
 			'title' => apply_filters( 'hb_d2030_video_3_title', __( 'Gracebook: Presence Economics — Architecting Trust Without Capital', 'hello-elementor-child' ) ),
 		),
 		array(
-			'url'   => apply_filters( 'hb_d2030_video_4_url', 'http://humanblockchain.info/wp-content/uploads/2026/05/Join-the-Human-Blockchain-Experiment_-YA-2026-05-131.mp4' ),
+			'url'   => apply_filters( 'hb_d2030_video_4_url', 'https://humanblockchain.info/wp-content/uploads/2026/05/Join-the-Human-Blockchain-Experiment_-YA-2026-05-131.mp4' ),
 			'title' => apply_filters( 'hb_d2030_video_4_title', __( 'Join the Human Blockchain Experiment', 'hello-elementor-child' ) ),
 		),
 		array(
-			'url'   => apply_filters( 'hb_d2030_video_5_url', 'http://humanblockchain.info/wp-content/uploads/2026/05/The-Three-Minute-Economy_-A-New-Era-of-H-2026-05-131.mp4' ),
+			'url'   => apply_filters( 'hb_d2030_video_5_url', 'https://humanblockchain.info/wp-content/uploads/2026/05/The-Three-Minute-Economy_-A-New-Era-of-H-2026-05-131.mp4' ),
 			'title' => apply_filters( 'hb_d2030_video_5_title', __( 'The Three Minute Economy — A New Era of Human Blockchain', 'hello-elementor-child' ) ),
 		),
 		array(
-			'url'   => apply_filters( 'hb_d2030_video_6_url', 'http://humanblockchain.info/wp-content/uploads/2026/05/From-Petrodollars-to-Human-Presence_-The-2026-05-151.mp4' ),
+			'url'   => apply_filters( 'hb_d2030_video_6_url', 'https://humanblockchain.info/wp-content/uploads/2026/05/From-Petrodollars-to-Human-Presence_-The-2026-05-151.mp4' ),
 			'title' => apply_filters( 'hb_d2030_video_6_title', __( 'From Petrodollars to Human Presence', 'hello-elementor-child' ) ),
 		),
 		array(
-			'url'   => apply_filters( 'hb_d2030_video_7_url', 'http://humanblockchain.info/wp-content/uploads/2026/05/Engineering_Trust__The_Mechanics_of_Verified_Human_Presence-1.mp4' ),
+			'url'   => apply_filters( 'hb_d2030_video_7_url', 'https://humanblockchain.info/wp-content/uploads/2026/05/Engineering_Trust__The_Mechanics_of_Verified_Human_Presence-1.mp4' ),
 			'title' => apply_filters( 'hb_d2030_video_7_title', __( 'Engineering Trust: The Mechanics of Verified Human Presence', 'hello-elementor-child' ) ),
 		),
 		array(
-			'url'   => apply_filters( 'hb_d2030_video_8_url', 'http://humanblockchain.info/wp-content/uploads/2026/05/Engineering_the_Human_Blockchain__The_Mathematics_of_Verified_P-1.mp4' ),
+			'url'   => apply_filters( 'hb_d2030_video_8_url', 'https://humanblockchain.info/wp-content/uploads/2026/05/Engineering_the_Human_Blockchain__The_Mathematics_of_Verified_P-1.mp4' ),
 			'title' => apply_filters( 'hb_d2030_video_8_title', __( 'Engineering the Human Blockchain: The Mathematics of Verified Presence', 'hello-elementor-child' ) ),
 		),
 		array(
-			'url'   => apply_filters( 'hb_d2030_video_9_url', 'http://humanblockchain.info/wp-content/uploads/2026/05/Discovering-Human-Gold_-The-YAM-JAM-Rewa-2026-05-191.mp4' ),
+			'url'   => apply_filters( 'hb_d2030_video_9_url', 'https://humanblockchain.info/wp-content/uploads/2026/05/Discovering-Human-Gold_-The-YAM-JAM-Rewa-2026-05-191.mp4' ),
 			'title' => apply_filters( 'hb_d2030_video_9_title', __( 'Discovering Human Gold: The YAM JAM Rewa', 'hello-elementor-child' ) ),
 		),
 		array(
-			'url'   => apply_filters( 'hb_d2030_video_10_url', 'http://humanblockchain.info/wp-content/uploads/2026/05/Architecting_the_Non-Custodial_Network__The_VFN_MSB_Dual-Layer_-1.mp4' ),
+			'url'   => apply_filters( 'hb_d2030_video_10_url', 'https://humanblockchain.info/wp-content/uploads/2026/05/Architecting_the_Non-Custodial_Network__The_VFN_MSB_Dual-Layer_-1.mp4' ),
 			'title' => apply_filters( 'hb_d2030_video_10_title', __( 'Architecting the Non-Custodial Network: The VFN-MSB Dual-Layer', 'hello-elementor-child' ) ),
 		),
 	);
 
 	$podcasts = array(
 		array(
-			'url'   => apply_filters( 'hb_d2030_podcast_1_url', 'http://humanblockchain.info/wp-content/uploads/2026/05/Human_participation_as_a_measurable_economic_signal.mp4' ),
-			'title' => hb_d2030_label_from_url( apply_filters( 'hb_d2030_podcast_1_url', 'http://humanblockchain.info/wp-content/uploads/2026/05/Human_participation_as_a_measurable_economic_signal.mp4' ), 'Podcast 1' ),
+			'url'   => apply_filters( 'hb_d2030_podcast_1_url', 'https://humanblockchain.info/wp-content/uploads/2026/05/Human_participation_as_a_measurable_economic_signal.mp4' ),
+			'title' => hb_d2030_label_from_url( apply_filters( 'hb_d2030_podcast_1_url', 'https://humanblockchain.info/wp-content/uploads/2026/05/Human_participation_as_a_measurable_economic_signal.mp4' ), 'Podcast 1' ),
 		),
 		array(
-			'url'   => apply_filters( 'hb_d2030_podcast_2_url', 'http://humanblockchain.info/wp-content/uploads/2026/05/How_symbolic_pledges_build_accountability-1.mp4' ),
-			'title' => hb_d2030_label_from_url( apply_filters( 'hb_d2030_podcast_2_url', 'http://humanblockchain.info/wp-content/uploads/2026/05/How_symbolic_pledges_build_accountability-1.mp4' ), 'Podcast 2' ),
+			'url'   => apply_filters( 'hb_d2030_podcast_2_url', 'https://humanblockchain.info/wp-content/uploads/2026/05/How_symbolic_pledges_build_accountability-1.mp4' ),
+			'title' => hb_d2030_label_from_url( apply_filters( 'hb_d2030_podcast_2_url', 'https://humanblockchain.info/wp-content/uploads/2026/05/How_symbolic_pledges_build_accountability-1.mp4' ), 'Podcast 2' ),
 		),
 		array(
-			'url'   => apply_filters( 'hb_d2030_podcast_3_url', 'http://humanblockchain.info/wp-content/uploads/2026/05/The_Gracebook_human_blockchain_experiment.mp4' ),
+			'url'   => apply_filters( 'hb_d2030_podcast_3_url', 'https://humanblockchain.info/wp-content/uploads/2026/05/The_Gracebook_human_blockchain_experiment.mp4' ),
 			'title' => apply_filters(
 				'hb_d2030_podcast_3_title',
 				hb_d2030_label_from_url(
-					apply_filters( 'hb_d2030_podcast_3_url', 'http://humanblockchain.info/wp-content/uploads/2026/05/The_Gracebook_human_blockchain_experiment.mp4' ),
+					apply_filters( 'hb_d2030_podcast_3_url', 'https://humanblockchain.info/wp-content/uploads/2026/05/The_Gracebook_human_blockchain_experiment.mp4' ),
 					__( 'The Gracebook Human Blockchain Experiment', 'hello-elementor-child' )
 				)
 			),
 		),
 		array(
-			'url'   => apply_filters( 'hb_d2030_podcast_4_url', 'http://humanblockchain.info/wp-content/uploads/2026/05/A_blockchain_for_pure_human_gratitude.mp4' ),
+			'url'   => apply_filters( 'hb_d2030_podcast_4_url', 'https://humanblockchain.info/wp-content/uploads/2026/05/A_blockchain_for_pure_human_gratitude.mp4' ),
 			'title' => apply_filters( 'hb_d2030_podcast_4_title', __( 'A Blockchain for Pure Human Gratitude', 'hello-elementor-child' ) ),
 		),
 		array(
-			'url'   => apply_filters( 'hb_d2030_podcast_5_url', 'http://humanblockchain.info/wp-content/uploads/2026/06/Poor-Mans-Web3_-.mp4' ),
+			'url'   => apply_filters( 'hb_d2030_podcast_5_url', 'https://humanblockchain.info/wp-content/uploads/2026/06/Poor-Mans-Web3_-.mp4' ),
 			'title' => apply_filters( 'hb_d2030_podcast_5_title', __( 'Poor Man\'s Web3', 'hello-elementor-child' ) ),
 		),
 	);

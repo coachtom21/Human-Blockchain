@@ -12,14 +12,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Media URLs — update placeholders when assets are ready.
-$hb_etf_video_1_url = 'http://humanblockchain.info/wp-content/uploads/2026/05/Nothing-to-Lose.mp4';
-$hb_etf_video_2_url = 'http://humanblockchain.info/wp-content/uploads/2026/05/XP__The_Anti-Speculation_Asset.mp4';
-$hb_etf_video_3_url = 'http://humanblockchain.info/wp-content/uploads/2026/05/The-Four-Year-Buildout11.mp4';
-$hb_etf_video_4_url = 'http://humanblockchain.info/wp-content/uploads/2026/05/Engineering_the_Trust_Index.mp4';
-$hb_etf_video_5_url = 'http://humanblockchain.info/wp-content/uploads/2026/05/Measuring-Gratitude_-The-New-World-Penny1.mp4';
+$hb_etf_video_1_url = 'https://humanblockchain.info/wp-content/uploads/2026/05/Nothing-to-Lose.mp4';
+$hb_etf_video_2_url = 'https://humanblockchain.info/wp-content/uploads/2026/05/XP__The_Anti-Speculation_Asset.mp4';
+$hb_etf_video_3_url = 'https://humanblockchain.info/wp-content/uploads/2026/05/The-Four-Year-Buildout11.mp4';
+$hb_etf_video_4_url = 'https://humanblockchain.info/wp-content/uploads/2026/05/Engineering_the_Trust_Index.mp4';
+$hb_etf_video_5_url = 'https://humanblockchain.info/wp-content/uploads/2026/05/Measuring-Gratitude_-The-New-World-Penny1.mp4';
 
-$hb_etf_podcast_1_url = 'http://humanblockchain.info/wp-content/uploads/2026/05/Proving_Human_Presence_Without_Money.mp4';
-$hb_etf_podcast_2_url = 'http://humanblockchain.info/wp-content/uploads/2026/05/The_financial_index_for_human_presence.mp4';
+$hb_etf_podcast_1_url = 'https://humanblockchain.info/wp-content/uploads/2026/05/Proving_Human_Presence_Without_Money.mp4';
+$hb_etf_podcast_2_url = 'https://humanblockchain.info/wp-content/uploads/2026/05/The_financial_index_for_human_presence.mp4';
 
 $hb_etf_pdf_gdrive_id    = '1Mbs9I2pjM5aXBlrjZKYX-MzRDuvCmWYW';
 $hb_etf_pdf_1_url        = 'https://drive.google.com/file/d/' . $hb_etf_pdf_gdrive_id . '/view?usp=sharing';

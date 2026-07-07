@@ -42,35 +42,35 @@ $hb_curious_video_1_url = apply_filters(
 	'hb_curious_video_1_url',
 	apply_filters(
 		'hb_yam_is_on_hero_video_url',
-		'http://humanblockchain.info/wp-content/uploads/2026/06/The_Poor_Man_s_Web3__Architecting_the_Human_Ledger.mp4'
+		'https://humanblockchain.info/wp-content/uploads/2026/06/The_Poor_Man_s_Web3__Architecting_the_Human_Ledger.mp4'
 	)
 );
 $hb_curious_video_2_url = apply_filters(
 	'hb_curious_video_2_url',
 	apply_filters(
 		'hb_d2030_video_10_url',
-		'http://humanblockchain.info/wp-content/uploads/2026/05/Architecting_the_Non-Custodial_Network__The_VFN_MSB_Dual-Layer_-1.mp4'
+		'https://humanblockchain.info/wp-content/uploads/2026/05/Architecting_the_Non-Custodial_Network__The_VFN_MSB_Dual-Layer_-1.mp4'
 	)
 );
 $hb_curious_video_3_url = apply_filters(
 	'hb_curious_video_3_url',
 	apply_filters(
 		'hb_hotspot_video_1_url',
-		'http://humanblockchain.info/wp-content/uploads/2026/06/Architecting_the_Hotspot_Bot__State_Machines_and_Ledger_Isolati.mp4'
+		'https://humanblockchain.info/wp-content/uploads/2026/06/Architecting_the_Hotspot_Bot__State_Machines_and_Ledger_Isolati.mp4'
 	)
 );
 $hb_curious_podcast_1_url = apply_filters(
 	'hb_curious_podcast_1_url',
 	apply_filters(
 		'hb_d2030_video_2_url',
-		'http://humanblockchain.info/wp-content/uploads/2026/05/Organized_Krill_Study-1.mp4'
+		'https://humanblockchain.info/wp-content/uploads/2026/05/Organized_Krill_Study-1.mp4'
 	)
 );
 $hb_curious_podcast_2_url = apply_filters(
 	'hb_curious_podcast_2_url',
 	apply_filters(
 		'hb_d2030_video_4_url',
-		'http://humanblockchain.info/wp-content/uploads/2026/05/Join-the-Human-Blockchain-Experiment_-YA-2026-05-131.mp4'
+		'https://humanblockchain.info/wp-content/uploads/2026/05/Join-the-Human-Blockchain-Experiment_-YA-2026-05-131.mp4'
 	)
 );
 

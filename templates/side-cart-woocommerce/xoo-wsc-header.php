@@ -16,7 +16,7 @@ $hb_side_cart_video_url = (string) apply_filters(
 	'cpm_hb_side_cart_video_url',
 	(string) apply_filters(
 		'cpm_hb_cart_page_video_url',
-		'http://humanblockchain.info/wp-content/uploads/2026/05/Coach-Toms-Dream_-One-Grain-of-Sand-2026-05-021.mp4'
+		'https://humanblockchain.info/wp-content/uploads/2026/05/Coach-Toms-Dream_-One-Grain-of-Sand-2026-05-021.mp4'
 	)
 );
 $hb_side_cart_video_title = (string) apply_filters(

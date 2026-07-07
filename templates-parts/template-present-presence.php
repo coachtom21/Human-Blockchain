@@ -14,9 +14,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 // Replace these with the actual media URLs once available.
 // For self-hosted files (mp4/webm/ogv/mov) the template renders <video>; otherwise <iframe>.
-$hb_pp_video_1_url = 'http://humanblockchain.info/wp-content/uploads/2026/05/The_Human_Gold_Experiment__How_Do_We_Measure_Trust_.mp4';
-$hb_pp_video_2_url = 'http://humanblockchain.info/wp-content/uploads/2026/05/The-Human-Gold-Experiment_-Presenting-Presence1.mp4';
-$hb_pp_podcast_url = 'http://humanblockchain.info/wp-content/uploads/2026/05/Verifying_real_humans_in_a_synthetic_world.mp4';
+$hb_pp_video_1_url = 'https://humanblockchain.info/wp-content/uploads/2026/05/The_Human_Gold_Experiment__How_Do_We_Measure_Trust_.mp4';
+$hb_pp_video_2_url = 'https://humanblockchain.info/wp-content/uploads/2026/05/The-Human-Gold-Experiment_-Presenting-Presence1.mp4';
+$hb_pp_podcast_url = 'https://humanblockchain.info/wp-content/uploads/2026/05/Verifying_real_humans_in_a_synthetic_world.mp4';
 // Research brief (Google Drive — Policy Paper.pdf).
 $hb_pp_pdf_gdrive_id      = '15excXL-xZgYqN9iSUPvrD709v1A3aq3h';
 $hb_pp_pdf_url            = 'https://drive.google.com/file/d/' . $hb_pp_pdf_gdrive_id . '/view?usp=sharing';

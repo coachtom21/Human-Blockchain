@@ -74,7 +74,7 @@ $url_discord = apply_filters(
 
 $hb_yam_hero_video_url = apply_filters(
 	'hb_yam_is_on_hero_video_url',
-	'http://humanblockchain.info/wp-content/uploads/2026/06/Measuring-Presence_-The-Human-Gold-Experiment11.mp4'
+	'https://humanblockchain.info/wp-content/uploads/2026/06/Measuring-Presence_-The-Human-Gold-Experiment11.mp4'
 );
 $hb_yam_hero_video_url = is_string( $hb_yam_hero_video_url ) ? trim( $hb_yam_hero_video_url ) : '';
 

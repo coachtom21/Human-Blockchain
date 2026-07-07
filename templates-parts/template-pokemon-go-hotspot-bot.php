@@ -40,17 +40,17 @@ $url_register_device = $hb_hotspot_page_url(
 
 $hb_hotspot_video_1_url = apply_filters(
 	'hb_hotspot_video_1_url',
-	'http://humanblockchain.info/wp-content/uploads/2026/06/Architecting_the_Hotspot_Bot__State_Machines_and_Ledger_Isolati.mp4'
+	'https://humanblockchain.info/wp-content/uploads/2026/06/Architecting_the_Hotspot_Bot__State_Machines_and_Ledger_Isolati.mp4'
 );
 
 $hb_hotspot_video_2_url = apply_filters(
 	'hb_hotspot_video_2_url',
-	'http://humanblockchain.info/wp-content/uploads/2026/06/Practice-FAITH_-The-Human-Gold-Standard1.mp4'
+	'https://humanblockchain.info/wp-content/uploads/2026/06/Practice-FAITH_-The-Human-Gold-Standard1.mp4'
 );
 
 $hb_hotspot_podcast_1_url = apply_filters(
 	'hb_hotspot_podcast_1_url',
-	'http://humanblockchain.info/wp-content/uploads/2026/06/How_the_Pokemon_Go_Schema_Governs_Society.mp4'
+	'https://humanblockchain.info/wp-content/uploads/2026/06/How_the_Pokemon_Go_Schema_Governs_Society.mp4'
 );
 
 $css_file = get_stylesheet_directory() . '/assets/css/pokemon-go-hotspot-bot.css';
