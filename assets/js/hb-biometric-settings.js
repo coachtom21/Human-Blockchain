@@ -1,0 +1,227 @@
+( function ( $ ) {
+	'use strict';
+
+	var cfg = window.hbBiometric || {};
+
+	function base64UrlToArrayBuffer( base64url ) {
+		var base64 = base64url.replace( /-/g, '+' ).replace( /_/g, '/' );
+		var pad = base64.length % 4;
+		if ( pad ) {
+			base64 += '='.repeat( 4 - pad );
+		}
+		var binary = window.atob( base64 );
+		var bytes = new Uint8Array( binary.length );
+		for ( var i = 0; i < binary.length; i++ ) {
+			bytes[ i ] = binary.charCodeAt( i );
+		}
+		return bytes.buffer;
+	}
+
+	function arrayBufferToBase64Url( buffer ) {
+		var bytes = new Uint8Array( buffer );
+		var binary = '';
+		for ( var i = 0; i < bytes.length; i++ ) {
+			binary += String.fromCharCode( bytes[ i ] );
+		}
+		return window.btoa( binary ).replace( /\+/g, '-' ).replace( /\//g, '_' ).replace( /=+$/, '' );
+	}
+
+	function decodeCreationOptions( publicKey ) {
+		var pk = JSON.parse( JSON.stringify( publicKey ) );
+		pk.challenge = base64UrlToArrayBuffer( pk.challenge );
+		if ( pk.user && pk.user.id ) {
+			pk.user.id = base64UrlToArrayBuffer( pk.user.id );
+		}
+		if ( Array.isArray( pk.excludeCredentials ) ) {
+			pk.excludeCredentials = pk.excludeCredentials.map( function ( cred ) {
+				return {
+					type: cred.type,
+					id: base64UrlToArrayBuffer( cred.id ),
+					transports: cred.transports || undefined,
+				};
+			} );
+		}
+		return pk;
+	}
+
+	function platformBiometricAvailable() {
+		if ( ! window.isSecureContext ) {
+			return Promise.resolve( false );
+		}
+		if ( ! window.PublicKeyCredential || typeof PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable !== 'function' ) {
+			return Promise.resolve( false );
+		}
+		return PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable().catch( function () {
+			return false;
+		} );
+	}
+
+	function updateNavVisibility() {
+		var $navItem = $( '.woocommerce-MyAccount-navigation-link--biometric-login' );
+		if ( $navItem.length ) {
+			$navItem.removeClass( 'hb-biometric-nav-hidden' );
+		}
+	}
+
+	function showFeedback( message, type ) {
+		var $el = $( '#hb-biometric-feedback' );
+		if ( ! $el.length ) {
+			return;
+		}
+		$el.text( message || '' ).attr( 'data-type', type || '' );
+	}
+
+	function appendPasskeyRow( data ) {
+		var $list = $( '#hb-biometric-passkey-list' );
+		if ( ! $list.length ) {
+			return;
+		}
+		$list.prop( 'hidden', false );
+		var $wrap = $( '.hb-biometric-settings__list-wrap' );
+		if ( ! $wrap.length ) {
+			var html = '<div class="hb-biometric-settings__list-wrap"><h3>Registered devices</h3></div>';
+			$list.before( html );
+			$wrap = $( '.hb-biometric-settings__list-wrap' );
+		}
+		if ( ! $list.parent( '.hb-biometric-settings__list-wrap' ).length ) {
+			$wrap.append( $list );
+		}
+		var item = document.createElement( 'li' );
+		item.className = 'hb-biometric-settings__list-item';
+		if ( data.passkey_id ) {
+			item.setAttribute( 'data-passkey-id', String( data.passkey_id ) );
+		}
+		item.innerHTML =
+			'<div class="hb-biometric-settings__list-meta"><strong></strong><span></span></div>' +
+			'<button type="button" class="hb-biometric-settings__remove hb-biometric-remove-btn">Remove</button>';
+		item.querySelector( 'strong' ).textContent = data.device_label || 'This device';
+		item.querySelector( 'span' ).textContent = data.created_at || 'Just now';
+		$list.prepend( item );
+	}
+
+	function registerPasskey() {
+		var $btn = $( '#hb-biometric-enable-btn' );
+		var label = $( '#hb-biometric-device-label' ).val() || '';
+
+		$btn.prop( 'disabled', true ).text( cfg.i18n.enabling || 'Waiting…' );
+		showFeedback( '', '' );
+
+		$.post( cfg.ajaxUrl, {
+			action: cfg.registerBegin,
+			nonce: cfg.nonce,
+		} )
+			.done( function ( res ) {
+				if ( ! res || ! res.success || ! res.data || ! res.data.publicKey ) {
+					throw new Error( ( res && res.data && res.data.message ) || cfg.i18n.errorGeneric );
+				}
+
+				var publicKey = decodeCreationOptions( res.data.publicKey );
+				return navigator.credentials.create( { publicKey: publicKey } );
+			} )
+			.then( function ( cred ) {
+				if ( ! cred || ! cred.response ) {
+					throw new Error( cfg.i18n.errorGeneric );
+				}
+
+				return $.post( cfg.ajaxUrl, {
+					action: cfg.registerComplete,
+					nonce: cfg.nonce,
+					clientDataJSON: arrayBufferToBase64Url( cred.response.clientDataJSON ),
+					attestationObject: arrayBufferToBase64Url( cred.response.attestationObject ),
+					device_label: label,
+				} );
+			} )
+			.done( function ( res ) {
+				if ( ! res || ! res.success ) {
+					throw new Error( ( res && res.data && res.data.message ) || cfg.i18n.errorGeneric );
+				}
+				showFeedback( res.data.message, 'success' );
+				appendPasskeyRow( {
+					passkey_id: res.data.passkey_id,
+					device_label: res.data.device_label || label || 'This device',
+					created_at: res.data.created_at || 'Just now',
+				} );
+			} )
+			.fail( function ( xhr ) {
+				var msg = cfg.i18n.errorGeneric;
+				if ( xhr && xhr.responseJSON && xhr.responseJSON.data && xhr.responseJSON.data.message ) {
+					msg = xhr.responseJSON.data.message;
+				} else if ( xhr && xhr.message ) {
+					msg = xhr.message;
+				}
+				showFeedback( msg, 'error' );
+			} )
+			.always( function () {
+				$btn.prop( 'disabled', false ).text( cfg.i18n.enableBtn || 'Enable Face ID / fingerprint login' );
+			} );
+	}
+
+	function removePasskey( passkeyId, $row ) {
+		if ( ! window.confirm( cfg.i18n.removeConfirm ) ) {
+			return;
+		}
+
+		$.post( cfg.ajaxUrl, {
+			action: cfg.removeAction,
+			nonce: cfg.nonce,
+			passkey_id: passkeyId,
+		} )
+			.done( function ( res ) {
+				if ( ! res || ! res.success ) {
+					throw new Error( ( res && res.data && res.data.message ) || cfg.i18n.errorGeneric );
+				}
+				$row.remove();
+			} )
+			.fail( function ( xhr ) {
+				var msg = cfg.i18n.errorGeneric;
+				if ( xhr && xhr.responseJSON && xhr.responseJSON.data && xhr.responseJSON.data.message ) {
+					msg = xhr.responseJSON.data.message;
+				}
+				window.alert( msg );
+			} );
+	}
+
+	$( function () {
+		updateNavVisibility();
+
+		platformBiometricAvailable().then( function ( supported ) {
+			if ( ! cfg.isEndpoint ) {
+				return;
+			}
+
+			var $unsupported = $( '#hb-biometric-unsupported' );
+			var $supported = $( '#hb-biometric-supported' );
+
+			if ( ! supported ) {
+				$unsupported.prop( 'hidden', false );
+				$supported.prop( 'hidden', true );
+				return;
+			}
+
+			if ( cfg.canManage ) {
+				$supported.prop( 'hidden', false );
+			} else {
+				$supported.prop( 'hidden', true );
+			}
+			$unsupported.prop( 'hidden', true );
+		} );
+
+		$( document ).on( 'click', '#hb-biometric-enable-btn', function ( e ) {
+			e.preventDefault();
+			if ( ! window.isSecureContext ) {
+				showFeedback( cfg.i18n.httpsRequired, 'error' );
+				return;
+			}
+			registerPasskey();
+		} );
+
+		$( document ).on( 'click', '.hb-biometric-remove-btn', function ( e ) {
+			e.preventDefault();
+			var $row = $( this ).closest( '.hb-biometric-settings__list-item' );
+			var id = $row.data( 'passkey-id' );
+			if ( id ) {
+				removePasskey( id, $row );
+			}
+		} );
+	} );
+}( jQuery ) );
