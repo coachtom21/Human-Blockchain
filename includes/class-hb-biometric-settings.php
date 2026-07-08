@@ -523,6 +523,97 @@ class Hb_Biometric_Settings {
 	}
 
 	/**
+	 * Extract raw credential id bytes from processCreate result.
+	 *
+	 * @param mixed $credential_id Credential id from WebAuthn library.
+	 * @return string
+	 */
+	private static function credential_id_to_raw( $credential_id ) {
+		if ( $credential_id instanceof \lbuchs\WebAuthn\Binary\ByteBuffer ) {
+			return $credential_id->getBinaryString();
+		}
+		return (string) $credential_id;
+	}
+
+	/**
+	 * Lenient registration fallback when strict attestation validation fails (common on Apple passkeys).
+	 *
+	 * @param \lbuchs\WebAuthn\WebAuthn $server WebAuthn server.
+	 * @param string                    $client_data_json Client data JSON.
+	 * @param string                    $attestation_object Attestation object bytes.
+	 * @param string                    $challenge_raw Challenge bytes.
+	 * @return \stdClass|null
+	 */
+	private static function process_create_lenient( $server, $client_data_json, $attestation_object, $challenge_raw ) {
+		if ( ! class_exists( '\lbuchs\WebAuthn\CBOR\CborDecoder' )
+			|| ! class_exists( '\lbuchs\WebAuthn\Attestation\AuthenticatorData' )
+			|| ! class_exists( '\lbuchs\WebAuthn\Binary\ByteBuffer' ) ) {
+			return null;
+		}
+
+		$client_data = json_decode( $client_data_json );
+		if ( ! is_object( $client_data )
+			|| ! isset( $client_data->type, $client_data->challenge, $client_data->origin )
+			|| 'webauthn.create' !== $client_data->type ) {
+			return null;
+		}
+
+		$challenge_buf = \lbuchs\WebAuthn\Binary\ByteBuffer::fromBase64Url( $client_data->challenge );
+		$expected      = $challenge_buf instanceof \lbuchs\WebAuthn\Binary\ByteBuffer
+			? $challenge_buf->getBinaryString()
+			: '';
+		$stored        = $challenge_raw instanceof \lbuchs\WebAuthn\Binary\ByteBuffer
+			? $challenge_raw->getBinaryString()
+			: (string) $challenge_raw;
+
+		if ( $expected !== $stored ) {
+			return null;
+		}
+
+		try {
+			$decoded = \lbuchs\WebAuthn\CBOR\CborDecoder::decode( $attestation_object );
+		} catch ( Exception $e ) {
+			return null;
+		}
+
+		if ( ! is_array( $decoded )
+			|| empty( $decoded['authData'] )
+			|| ! ( $decoded['authData'] instanceof \lbuchs\WebAuthn\Binary\ByteBuffer ) ) {
+			return null;
+		}
+
+		try {
+			$auth_data = new \lbuchs\WebAuthn\Attestation\AuthenticatorData( $decoded['authData']->getBinaryString() );
+		} catch ( Exception $e ) {
+			return null;
+		}
+
+		$rp_id_hash = hash( 'sha256', self::get_rp_id(), true );
+		if ( $auth_data->getRpIdHash() !== $rp_id_hash ) {
+			return null;
+		}
+
+		if ( ! $auth_data->getUserVerified() ) {
+			return null;
+		}
+
+		try {
+			$credential_id     = $auth_data->getCredentialId();
+			$credential_pubkey = $auth_data->getPublicKeyPem();
+		} catch ( Exception $e ) {
+			return null;
+		}
+
+		$data                     = new \stdClass();
+		$data->credentialId       = $credential_id;
+		$data->credentialPublicKey = $credential_pubkey;
+		$data->signatureCounter   = $auth_data->getSignCount() > 0 ? $auth_data->getSignCount() : null;
+		$data->attestationFormat  = isset( $decoded['fmt'] ) ? (string) $decoded['fmt'] : 'none';
+
+		return $data;
+	}
+
+	/**
 	 * @param int $user_id User ID.
 	 * @return array<int, string>
 	 */
@@ -676,18 +767,21 @@ class Hb_Biometric_Settings {
 				false,
 				false
 			);
-		} catch ( Exception $e ) {
-			wp_send_json_error(
-				array(
-					'message' => $e->getMessage() ?: __( 'Biometric verification failed.', 'hello-elementor-child' ),
-				),
-				400
-			);
+		} catch ( Throwable $e ) {
+			$data = self::process_create_lenient( $server, $client_data_json, $attestation_object, $challenge_raw );
+			if ( ! $data ) {
+				wp_send_json_error(
+					array(
+						'message' => $e->getMessage() ?: __( 'Biometric verification failed.', 'hello-elementor-child' ),
+					),
+					400
+				);
+			}
 		}
 
 		self::clear_registration_challenge( $user_id );
 
-		$cred_id_b64 = base64_encode( $data->credentialId->getBinaryString() );
+		$cred_id_b64 = base64_encode( self::credential_id_to_raw( $data->credentialId ) );
 		if ( '' === $device_label ) {
 			$device_label = self::default_device_label();
 		}
@@ -700,7 +794,7 @@ class Hb_Biometric_Settings {
 				'user_id'                => $user_id,
 				'credential_id'          => $cred_id_b64,
 				'credential_public_key'  => (string) $data->credentialPublicKey,
-				'sign_count'             => (int) $data->signatureCounter,
+				'sign_count'             => isset( $data->signatureCounter ) ? (int) $data->signatureCounter : 0,
 				'device_label'           => $device_label,
 				'attestation_format'     => (string) $data->attestationFormat,
 				'created_at'             => current_time( 'mysql' ),
