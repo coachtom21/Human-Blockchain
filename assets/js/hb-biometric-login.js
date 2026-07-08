@@ -69,6 +69,7 @@
 			method: 'POST',
 			data: data,
 			dataType: 'json',
+			xhrFields: { withCredentials: true },
 		} ).then( function ( res ) {
 			if ( res === null || res === 0 || res === '0' || res === -1 || res === '-1' ) {
 				throw new Error( cfg.i18n.sessionExpired );
@@ -123,10 +124,19 @@
 
 	function showFeedback( message, type ) {
 		var $el = $( '#hb-biometric-login-feedback' );
-		if ( ! $el.length ) {
-			return;
+		if ( $el.length ) {
+			$el.text( message || '' ).attr( 'data-type', type || '' );
 		}
-		$el.text( message || '' ).attr( 'data-type', type || '' );
+
+		var $modalFb = $( '#cpm-nwp-activate-feedback' );
+		if ( $modalFb.length && message ) {
+			$modalFb.removeClass( 'cpm-nwp-inline-feedback--hidden' ).text( message );
+			if ( type === 'error' ) {
+				$modalFb.addClass( 'cpm-nwp-inline-feedback--error' );
+			} else {
+				$modalFb.removeClass( 'cpm-nwp-inline-feedback--error' );
+			}
+		}
 	}
 
 	function openOtpLogin( returnUrl ) {
@@ -202,13 +212,14 @@
 					clientDataJSON: arrayBufferToBase64Url( cred.response.clientDataJSON ),
 					authenticatorData: arrayBufferToBase64Url( cred.response.authenticatorData ),
 					signature: arrayBufferToBase64Url( cred.response.signature ),
+					userHandle: cred.response.userHandle ? arrayBufferToBase64Url( cred.response.userHandle ) : '',
 					redirect_to: redirectTo,
 				} );
 			} )
 			.then( function ( completeRes ) {
 				showFeedback( completeRes.data.message || '', 'success' );
-				window.location.href = completeRes.data.redirect || redirectTo || window.location.href;
-				return completeRes;
+				var redirect = completeRes.data.redirect || redirectTo || window.location.href;
+				window.location.replace( redirect );
 			} )
 			.catch( function ( err ) {
 				var errObj = err instanceof Error ? err : new Error( extractErrorMessage( err ) );

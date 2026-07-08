@@ -370,6 +370,33 @@ class Hb_Biometric_Settings {
 	}
 
 	/**
+	 * Find a passkey row from raw credential id bytes (tries common encodings).
+	 *
+	 * @param string $cred_raw Raw credential id bytes.
+	 * @return object|null
+	 */
+	private static function find_passkey_by_credential_raw( $cred_raw ) {
+		$cred_raw = (string) $cred_raw;
+		if ( '' === $cred_raw ) {
+			return null;
+		}
+
+		$variants = array(
+			base64_encode( $cred_raw ),
+			rtrim( strtr( base64_encode( $cred_raw ), '+/', '-_' ), '=' ),
+		);
+
+		foreach ( array_unique( $variants ) as $variant ) {
+			$row = self::get_passkey_by_credential_id( $variant );
+			if ( $row ) {
+				return $row;
+			}
+		}
+
+		return null;
+	}
+
+	/**
 	 * @param string $token Login token.
 	 * @param array<string, mixed> $data Session payload.
 	 * @return void
@@ -879,17 +906,34 @@ class Hb_Biometric_Settings {
 		}
 
 		$cred_id_b64  = base64_encode( $cred_raw );
-		$passkey_row  = self::get_passkey_by_credential_id( $cred_id_b64 );
+		$passkey_row  = self::find_passkey_by_credential_raw( $cred_raw );
 		if ( ! $passkey_row ) {
 			wp_send_json_error(
 				array(
-					'message' => __( 'This biometric login is not registered on this site. Sign in with your number + OTP.', 'hello-elementor-child' ),
+					'message' => __( 'This biometric login is not registered on this site. Sign in with your number + OTP, then re-enable biometric login in My Account.', 'hello-elementor-child' ),
 				),
 				404
 			);
 		}
 
 		$user_id = (int) $passkey_row->user_id;
+
+		$user_handle_b64 = self::get_post_base64url( 'userHandle' );
+		if ( '' !== $user_handle_b64 ) {
+			$user_handle_raw = self::base64url_decode( $user_handle_b64 );
+			if ( false !== $user_handle_raw && '' !== $user_handle_raw ) {
+				$expected_handle = hex2bin( sprintf( '%016x', $user_id ) );
+				if ( false !== $expected_handle && $user_handle_raw !== $expected_handle ) {
+					wp_send_json_error(
+						array(
+							'message' => __( 'Biometric credential does not match this account.', 'hello-elementor-child' ),
+						),
+						403
+					);
+				}
+			}
+		}
+
 		if ( ! self::user_can_login_with_passkey( $user_id ) ) {
 			wp_send_json_error(
 				array(
@@ -909,7 +953,8 @@ class Hb_Biometric_Settings {
 			);
 		}
 
-		$prev_sign_count = isset( $passkey_row->sign_count ) ? (int) $passkey_row->sign_count : null;
+		// Platform passkeys (Touch ID / iCloud) often use a fixed signCount of 0 — skip counter validation.
+		$prev_sign_count = null;
 
 		try {
 			$verified = $server->processGet(
@@ -968,6 +1013,10 @@ class Hb_Biometric_Settings {
 		wp_set_current_user( $user_id );
 		wp_set_auth_cookie( $user_id, true, is_ssl() );
 		do_action( 'wp_login', $user->user_login, $user );
+
+		if ( ! headers_sent() ) {
+			nocache_headers();
+		}
 
 		wp_send_json_success(
 			array(
