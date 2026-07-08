@@ -250,9 +250,14 @@
 				return;
 			}
 
-			loginWithPasskey( returnUrl ).catch( function () {
-				if ( typeof fallback === 'function' ) {
+			loginWithPasskey( returnUrl ).catch( function ( err ) {
+				if ( isUserCancelled( err ) && typeof fallback === 'function' ) {
 					fallback();
+					return;
+				}
+				var msg = extractErrorMessage( err );
+				if ( msg && msg !== cfg.i18n.cancelled ) {
+					window.alert( msg );
 				}
 			} );
 		} );
@@ -343,8 +348,13 @@
 		$( document ).on( 'click', '#hb-biometric-login-btn, #hb-biometric-login-modal-btn', function ( e ) {
 			e.preventDefault();
 			var returnUrl = ( window.cpmHbLanding && window.cpmHbLanding.pendingOtpRedirect ) || cfg.myAccountUrl;
-			loginWithPasskey( returnUrl ).catch( function () {
-				// Keep modal open; user can still use OTP form.
+			loginWithPasskey( returnUrl ).catch( function ( err ) {
+				if ( ! isUserCancelled( err ) ) {
+					var msg = extractErrorMessage( err );
+					if ( msg ) {
+						window.alert( msg );
+					}
+				}
 			} );
 		} );
 

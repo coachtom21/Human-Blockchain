@@ -24,6 +24,7 @@ class Hb_Biometric_Settings {
 	 * @return void
 	 */
 	public static function init() {
+		add_action( 'init', array( __CLASS__, 'maybe_finish_passkey_login' ), 1 );
 		add_action( 'init', array( __CLASS__, 'register_endpoint' ) );
 		add_action( 'init', array( __CLASS__, 'maybe_create_table' ), 5 );
 		add_filter( 'woocommerce_account_menu_items', array( __CLASS__, 'account_menu_item' ), 42 );
@@ -451,13 +452,162 @@ class Hb_Biometric_Settings {
 				''
 			);
 		}
+		if ( '' === $redirect && class_exists( 'Cpm_Humanblockchain_Public' ) && method_exists( 'Cpm_Humanblockchain_Public', 'get_my_account_page_url' ) ) {
+			$redirect = Cpm_Humanblockchain_Public::get_my_account_page_url();
+		}
 		if ( '' === $redirect && function_exists( 'wc_get_page_permalink' ) ) {
 			$redirect = wc_get_page_permalink( 'myaccount' );
 		}
 		if ( ! is_string( $redirect ) || '' === $redirect ) {
-			$redirect = home_url( '/' );
+			$redirect = home_url( '/my-account/' );
 		}
 		return (string) apply_filters( 'hb_biometric_login_redirect', $redirect );
+	}
+
+	/**
+	 * Set WordPress (and WooCommerce) auth cookies for a user.
+	 *
+	 * @param int $user_id User ID.
+	 * @return void
+	 */
+	private static function establish_user_session( $user_id ) {
+		$user_id = (int) $user_id;
+		if ( $user_id <= 0 ) {
+			return;
+		}
+
+		$user = get_user_by( 'id', $user_id );
+		if ( ! $user ) {
+			return;
+		}
+
+		wp_set_current_user( $user_id );
+		wp_set_auth_cookie( $user_id, true, is_ssl() );
+		if ( function_exists( 'wc_set_customer_auth_cookie' ) ) {
+			wc_set_customer_auth_cookie( $user_id );
+		}
+		do_action( 'wp_login', $user->user_login, $user );
+	}
+
+	/**
+	 * One-time redirect token so login cookies are set on a normal page load (not admin-ajax).
+	 *
+	 * @param int $user_id User ID.
+	 * @return string
+	 */
+	private static function create_passkey_finish_token( $user_id ) {
+		$token = wp_generate_password( 32, false, false );
+		set_transient( 'hb_passkey_finish_' . $token, (int) $user_id, 60 );
+		return $token;
+	}
+
+	/**
+	 * Complete passkey login after redirect from biometric verification.
+	 *
+	 * @return void
+	 */
+	public static function maybe_finish_passkey_login() {
+		if ( is_user_logged_in() ) {
+			return;
+		}
+
+		$token = isset( $_GET['hb_passkey_finish'] ) ? sanitize_text_field( wp_unslash( $_GET['hb_passkey_finish'] ) ) : '';
+		if ( '' === $token ) {
+			return;
+		}
+
+		$user_id = get_transient( 'hb_passkey_finish_' . $token );
+		delete_transient( 'hb_passkey_finish_' . $token );
+
+		if ( ! is_numeric( $user_id ) || (int) $user_id <= 0 ) {
+			return;
+		}
+
+		self::establish_user_session( (int) $user_id );
+
+		$redirect = remove_query_arg( 'hb_passkey_finish' );
+		if ( ! is_string( $redirect ) || '' === $redirect ) {
+			if ( class_exists( 'Cpm_Humanblockchain_Public' ) && method_exists( 'Cpm_Humanblockchain_Public', 'get_my_account_page_url' ) ) {
+				$redirect = Cpm_Humanblockchain_Public::get_my_account_page_url();
+			} else {
+				$redirect = home_url( '/my-account/' );
+			}
+		}
+
+		wp_safe_redirect( $redirect );
+		exit;
+	}
+
+	/**
+	 * Verify WebAuthn assertion without strict sign-count checks (platform passkeys).
+	 *
+	 * @param string $client_data_json Client data JSON.
+	 * @param string $auth_data Authenticator data bytes.
+	 * @param string $signature Signature bytes.
+	 * @param string $credential_public_key PEM public key.
+	 * @param string $challenge_raw Expected challenge bytes.
+	 * @return bool
+	 */
+	private static function process_get_lenient( $client_data_json, $auth_data, $signature, $credential_public_key, $challenge_raw ) {
+		if ( ! class_exists( '\lbuchs\WebAuthn\Attestation\AuthenticatorData' )
+			|| ! class_exists( '\lbuchs\WebAuthn\Binary\ByteBuffer' ) ) {
+			return false;
+		}
+
+		$client_data = json_decode( $client_data_json );
+		if ( ! is_object( $client_data )
+			|| ! isset( $client_data->type, $client_data->challenge, $client_data->origin )
+			|| 'webauthn.get' !== $client_data->type ) {
+			return false;
+		}
+
+		$challenge_buf = \lbuchs\WebAuthn\Binary\ByteBuffer::fromBase64Url( $client_data->challenge );
+		$expected      = $challenge_buf instanceof \lbuchs\WebAuthn\Binary\ByteBuffer
+			? $challenge_buf->getBinaryString()
+			: '';
+		$stored        = $challenge_raw instanceof \lbuchs\WebAuthn\Binary\ByteBuffer
+			? $challenge_raw->getBinaryString()
+			: (string) $challenge_raw;
+
+		if ( $expected !== $stored ) {
+			return false;
+		}
+
+		$origin_host = wp_parse_url( $client_data->origin, PHP_URL_HOST );
+		$origin_host = is_string( $origin_host ) ? strtolower( trim( $origin_host, '.' ) ) : '';
+		$rp_id       = strtolower( self::get_rp_id() );
+		if ( '' === $origin_host || ! ( $origin_host === $rp_id || str_ends_with( $origin_host, '.' . $rp_id ) ) ) {
+			return false;
+		}
+
+		if ( ! is_string( $credential_public_key ) || '' === trim( $credential_public_key ) ) {
+			return false;
+		}
+
+		try {
+			$auth_obj = new \lbuchs\WebAuthn\Attestation\AuthenticatorData( $auth_data );
+		} catch ( Throwable $e ) {
+			return false;
+		}
+
+		if ( $auth_obj->getRpIdHash() !== hash( 'sha256', self::get_rp_id(), true ) ) {
+			return false;
+		}
+
+		if ( ! $auth_obj->getUserPresent() || ! $auth_obj->getUserVerified() ) {
+			return false;
+		}
+
+		$data_to_verify  = $auth_data;
+		$data_to_verify .= hash( 'sha256', $client_data_json, true );
+
+		$public_key = openssl_pkey_get_public( $credential_public_key );
+		if ( false === $public_key ) {
+			return false;
+		}
+
+		$verified = openssl_verify( $data_to_verify, $signature, $public_key, OPENSSL_ALGO_SHA256 );
+		return 1 === $verified;
 	}
 
 	/**
@@ -1012,22 +1162,6 @@ class Hb_Biometric_Settings {
 
 		$user_id = (int) $passkey_row->user_id;
 
-		$user_handle_b64 = self::get_post_base64url( 'userHandle' );
-		if ( '' !== $user_handle_b64 ) {
-			$user_handle_raw = self::base64url_decode( $user_handle_b64 );
-			if ( false !== $user_handle_raw && '' !== $user_handle_raw ) {
-				$expected_handle = hex2bin( sprintf( '%016x', $user_id ) );
-				if ( false !== $expected_handle && $user_handle_raw !== $expected_handle ) {
-					wp_send_json_error(
-						array(
-							'message' => __( 'Biometric credential does not match this account.', 'hello-elementor-child' ),
-						),
-						403
-					);
-				}
-			}
-		}
-
 		if ( ! self::user_can_login_with_passkey( $user_id ) ) {
 			wp_send_json_error(
 				array(
@@ -1049,6 +1183,7 @@ class Hb_Biometric_Settings {
 
 		// Platform passkeys (Touch ID / iCloud) often use a fixed signCount of 0 — skip counter validation.
 		$prev_sign_count = null;
+		$verified          = false;
 
 		try {
 			$verified = $server->processGet(
@@ -1061,13 +1196,22 @@ class Hb_Biometric_Settings {
 				true,
 				true
 			);
-		} catch ( Exception $e ) {
-			wp_send_json_error(
-				array(
-					'message' => $e->getMessage() ?: __( 'Biometric verification failed.', 'hello-elementor-child' ),
-				),
-				400
+		} catch ( Throwable $e ) {
+			$verified = self::process_get_lenient(
+				$client_data_json,
+				$auth_data,
+				$signature,
+				(string) $passkey_row->credential_public_key,
+				$challenge_raw
 			);
+			if ( ! $verified ) {
+				wp_send_json_error(
+					array(
+						'message' => $e->getMessage() ?: __( 'Biometric verification failed.', 'hello-elementor-child' ),
+					),
+					400
+				);
+			}
 		}
 
 		if ( ! $verified ) {
@@ -1104,9 +1248,8 @@ class Hb_Biometric_Settings {
 			);
 		}
 
-		wp_set_current_user( $user_id );
-		wp_set_auth_cookie( $user_id, true, is_ssl() );
-		do_action( 'wp_login', $user->user_login, $user );
+		$finish_token = self::create_passkey_finish_token( $user_id );
+		$redirect     = add_query_arg( 'hb_passkey_finish', $finish_token, self::login_redirect_url() );
 
 		if ( ! headers_sent() ) {
 			nocache_headers();
@@ -1115,7 +1258,7 @@ class Hb_Biometric_Settings {
 		wp_send_json_success(
 			array(
 				'message'  => __( 'Signed in successfully.', 'hello-elementor-child' ),
-				'redirect' => self::login_redirect_url(),
+				'redirect' => $redirect,
 			)
 		);
 	}
