@@ -2,6 +2,8 @@
 	'use strict';
 
 	var cfg = window.hbBiometricLogin || {};
+	var platformCheck = null;
+	var loginInProgress = false;
 
 	function base64UrlToArrayBuffer( base64url ) {
 		var base64 = base64url.replace( /-/g, '+' ).replace( /_/g, '/' );
@@ -57,6 +59,10 @@
 		return cfg.i18n.errorGeneric;
 	}
 
+	function isUserCancelled( err ) {
+		return !!( err && ( err.name === 'NotAllowedError' || err.name === 'AbortError' ) );
+	}
+
 	function postLogin( data ) {
 		return $.ajax( {
 			url: cfg.ajaxUrl,
@@ -98,15 +104,21 @@
 	}
 
 	function platformBiometricAvailable() {
+		if ( platformCheck ) {
+			return platformCheck;
+		}
 		if ( ! window.isSecureContext ) {
-			return Promise.resolve( false );
+			platformCheck = Promise.resolve( false );
+			return platformCheck;
 		}
 		if ( ! window.PublicKeyCredential || typeof PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable !== 'function' ) {
-			return Promise.resolve( false );
+			platformCheck = Promise.resolve( false );
+			return platformCheck;
 		}
-		return PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable().catch( function () {
+		platformCheck = PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable().catch( function () {
 			return false;
 		} );
+		return platformCheck;
 	}
 
 	function showFeedback( message, type ) {
@@ -117,13 +129,14 @@
 		$el.text( message || '' ).attr( 'data-type', type || '' );
 	}
 
-	function openOtpLogin() {
-		if ( typeof window.cpmHbOpenMyAccountPhoneLogin === 'function' ) {
-			window.cpmHbOpenMyAccountPhoneLogin( cfg.myAccountUrl || '' );
+	function openOtpLogin( returnUrl ) {
+		var orig = window.cpmHbOpenMyAccountPhoneLoginOriginal;
+		if ( typeof orig === 'function' ) {
+			orig( returnUrl || cfg.myAccountUrl || '' );
 			return;
 		}
-		if ( window.cpmNwp && window.cpmNwp.openAccountOtpOnLoad ) {
-			window.cpmNwp.openAccountOtpOnLoad = true;
+		if ( typeof window.cpmHbOpenMyAccountPhoneLogin === 'function' ) {
+			window.cpmHbOpenMyAccountPhoneLogin( returnUrl || cfg.myAccountUrl || '' );
 		}
 	}
 
@@ -133,39 +146,42 @@
 		}
 	}
 
-	var loginInProgress = false;
-
-	function loginWithPasskey() {
+	/**
+	 * Attempt passkey sign-in. Resolves on success (before redirect). Rejects on cancel/error.
+	 *
+	 * @param {string} returnUrl Redirect after login.
+	 * @return {Promise}
+	 */
+	function loginWithPasskey( returnUrl ) {
 		if ( loginInProgress ) {
-			return;
+			return Promise.reject( new Error( 'busy' ) );
 		}
 
-		var $btn = $( '#hb-biometric-login-btn' );
 		if ( ! cfg.ajaxUrl || ! cfg.loginBegin || ! cfg.nonce ) {
-			showFeedback( 'Biometric login script did not load correctly. Hard refresh this page.', 'error' );
-			return;
+			return Promise.reject( new Error( 'Biometric login script did not load correctly.' ) );
 		}
 
 		if ( ! window.isSecureContext ) {
-			showFeedback( cfg.i18n.httpsRequired, 'error' );
-			return;
+			return Promise.reject( new Error( cfg.i18n.httpsRequired ) );
 		}
 
 		if ( ! navigator.credentials || typeof navigator.credentials.get !== 'function' ) {
-			showFeedback( cfg.i18n.unsupported, 'error' );
-			return;
+			return Promise.reject( new Error( cfg.i18n.unsupported ) );
 		}
 
 		loginInProgress = true;
-		$btn.prop( 'disabled', true ).text( cfg.i18n.signingIn || 'Waiting…' );
+		var $btn = $( '#hb-biometric-login-btn, #hb-biometric-login-modal-btn' );
+		$btn.prop( 'disabled', true );
+		$( '#hb-biometric-login-btn' ).text( cfg.i18n.signingIn || 'Waiting…' );
 		showFeedback( '', '' );
 
 		var loginToken = '';
+		var redirectTo = returnUrl || cfg.myAccountUrl || '';
 
-		postLogin( {
+		return postLogin( {
 			action: cfg.loginBegin,
 			nonce: cfg.nonce,
-			redirect_to: cfg.myAccountUrl || '',
+			redirect_to: redirectTo,
 		} )
 			.then( function ( beginRes ) {
 				validateRpId( beginRes.data.rpId );
@@ -186,37 +202,98 @@
 					clientDataJSON: arrayBufferToBase64Url( cred.response.clientDataJSON ),
 					authenticatorData: arrayBufferToBase64Url( cred.response.authenticatorData ),
 					signature: arrayBufferToBase64Url( cred.response.signature ),
-					redirect_to: cfg.myAccountUrl || '',
+					redirect_to: redirectTo,
 				} );
 			} )
 			.then( function ( completeRes ) {
 				showFeedback( completeRes.data.message || '', 'success' );
-				var redirect = completeRes.data.redirect || cfg.myAccountUrl || window.location.href;
-				window.location.href = redirect;
+				window.location.href = completeRes.data.redirect || redirectTo || window.location.href;
+				return completeRes;
 			} )
-			.fail( function ( err ) {
-				showFeedback( extractErrorMessage( err ), 'error' );
+			.catch( function ( err ) {
+				var errObj = err instanceof Error ? err : new Error( extractErrorMessage( err ) );
+				if ( ! isUserCancelled( errObj ) ) {
+					showFeedback( extractErrorMessage( errObj ), 'error' );
+				}
+				throw errObj;
 			} )
-			.always( function () {
+			.finally( function () {
 				loginInProgress = false;
-				$btn.prop( 'disabled', false ).text( cfg.i18n.loginBtn || 'Sign in with Face ID / Touch ID' );
+				$btn.prop( 'disabled', false );
+				$( '#hb-biometric-login-btn' ).text( cfg.i18n.loginBtn || 'Sign in with Face ID / Touch ID' );
 			} );
 	}
 
-	function initGuestLogin() {
+	/**
+	 * Try biometric first; call fallback (OTP modal) when unavailable, cancelled, or failed.
+	 *
+	 * @param {string} returnUrl Post-login redirect.
+	 * @param {Function} fallback Opens OTP modal.
+	 */
+	function tryBiometricThenOtp( returnUrl, fallback ) {
+		platformBiometricAvailable().then( function ( supported ) {
+			if ( ! supported ) {
+				if ( typeof fallback === 'function' ) {
+					fallback();
+				}
+				return;
+			}
+
+			loginWithPasskey( returnUrl ).catch( function () {
+				if ( typeof fallback === 'function' ) {
+					fallback();
+				}
+			} );
+		} );
+	}
+
+	function wrapMyAccountPhoneLogin() {
+		if ( typeof window.cpmHbOpenMyAccountPhoneLogin !== 'function' || window.cpmHbOpenMyAccountPhoneLoginOriginal ) {
+			return;
+		}
+
+		window.cpmHbOpenMyAccountPhoneLoginOriginal = window.cpmHbOpenMyAccountPhoneLogin;
+		window.cpmHbOpenMyAccountPhoneLogin = function ( returnUrl ) {
+			tryBiometricThenOtp( returnUrl, function () {
+				window.cpmHbOpenMyAccountPhoneLoginOriginal( returnUrl );
+			} );
+		};
+	}
+
+	function injectActivateModalButton() {
+		var $actions = $( '#cpm-nwp-activate-modal .cpm-nwp-activate-actions' );
+		if ( ! $actions.length || $( '#hb-biometric-login-modal-btn' ).length ) {
+			return;
+		}
+
+		platformBiometricAvailable().then( function ( supported ) {
+			if ( ! supported ) {
+				return;
+			}
+
+			var $btn = $( '<button type="button" class="cpm-nwp-btn cpm-nwp-btn--biometric hb-biometric-login__modal-btn" id="hb-biometric-login-modal-btn"></button>' );
+			$btn.text( cfg.i18n.loginBtn || 'Sign in with Face ID / Touch ID' );
+			$actions.prepend( $btn );
+
+			var $divider = $( '<p class="hb-biometric-login__modal-divider" id="hb-biometric-login-modal-divider"></p>' );
+			$divider.text( cfg.i18n.orUseOtp || 'or use your number' );
+			$btn.after( $divider );
+		} );
+	}
+
+	function initGuestLoginPanel() {
 		var $panel = $( '#hb-biometric-login-guest' );
 		if ( ! $panel.length ) {
 			return;
 		}
 
-		// Prevent the OTP modal from opening before the async platform check finishes.
 		deferOtpAutoOpen();
 
 		platformBiometricAvailable().then( function ( supported ) {
 			if ( ! supported ) {
 				$panel.remove();
 				setTimeout( function () {
-					openOtpLogin();
+					openOtpLogin( cfg.myAccountUrl );
 				}, 250 );
 				return;
 			}
@@ -225,23 +302,44 @@
 
 			if ( cfg.autoPromptOnLoad ) {
 				setTimeout( function () {
-					loginWithPasskey();
+					loginWithPasskey( cfg.myAccountUrl ).catch( function () {
+						openOtpLogin( cfg.myAccountUrl );
+					} );
 				}, 350 );
 			}
 		} );
 	}
 
-	$( function () {
-		initGuestLogin();
+	window.hbBiometricLoginTry = loginWithPasskey;
+	window.hbBiometricLoginTryThenOtp = tryBiometricThenOtp;
 
-		$( document ).on( 'click', '#hb-biometric-login-btn', function ( e ) {
+	$( function () {
+		var shouldAutoOpen = !!( window.cpmNwp && window.cpmNwp.openAccountOtpOnLoad );
+
+		deferOtpAutoOpen();
+		wrapMyAccountPhoneLogin();
+		injectActivateModalButton();
+		initGuestLoginPanel();
+
+		if ( shouldAutoOpen && ! $( '#hb-biometric-login-guest' ).length ) {
+			setTimeout( function () {
+				tryBiometricThenOtp( cfg.myAccountUrl, function () {
+					openOtpLogin( cfg.myAccountUrl );
+				} );
+			}, 200 );
+		}
+
+		$( document ).on( 'click', '#hb-biometric-login-btn, #hb-biometric-login-modal-btn', function ( e ) {
 			e.preventDefault();
-			loginWithPasskey();
+			var returnUrl = ( window.cpmHbLanding && window.cpmHbLanding.pendingOtpRedirect ) || cfg.myAccountUrl;
+			loginWithPasskey( returnUrl ).catch( function () {
+				// Keep modal open; user can still use OTP form.
+			} );
 		} );
 
 		$( document ).on( 'click', '#hb-biometric-login-otp-btn', function ( e ) {
 			e.preventDefault();
-			openOtpLogin();
+			openOtpLogin( cfg.myAccountUrl );
 		} );
 	} );
 }( jQuery ) );

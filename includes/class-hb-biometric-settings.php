@@ -229,6 +229,18 @@ class Hb_Biometric_Settings {
 	}
 
 	/**
+	 * Whether guest biometric login assets should load site-wide.
+	 *
+	 * @return bool
+	 */
+	public static function should_enqueue_guest_login_script() {
+		if ( is_user_logged_in() || is_admin() ) {
+			return false;
+		}
+		return (bool) apply_filters( 'hb_enqueue_biometric_guest_login', true );
+	}
+
+	/**
 	 * Whether the current request is a guest sign-in page.
 	 *
 	 * @return bool
@@ -1004,7 +1016,7 @@ class Hb_Biometric_Settings {
 	 * @return void
 	 */
 	public static function enqueue_guest_login_assets() {
-		if ( ! self::is_guest_login_context() ) {
+		if ( ! self::should_enqueue_guest_login_script() ) {
 			return;
 		}
 
@@ -1031,22 +1043,29 @@ class Hb_Biometric_Settings {
 			true
 		);
 
-		$my_account_url = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'myaccount' ) : home_url( '/' );
+		$my_account_url = home_url( '/my-account/' );
+		if ( class_exists( 'Cpm_Humanblockchain_Public' ) && method_exists( 'Cpm_Humanblockchain_Public', 'get_my_account_page_url' ) ) {
+			$my_account_url = Cpm_Humanblockchain_Public::get_my_account_page_url();
+		} elseif ( function_exists( 'wc_get_page_permalink' ) ) {
+			$my_account_url = wc_get_page_permalink( 'myaccount' );
+		}
 
 		wp_localize_script(
 			'hb-biometric-login',
 			'hbBiometricLogin',
 			array(
-				'ajaxUrl'           => admin_url( 'admin-ajax.php' ),
-				'nonce'             => wp_create_nonce( 'hb_biometric_login' ),
-				'loginBegin'        => 'hb_biometric_login_begin',
-				'loginComplete'     => 'hb_biometric_login_complete',
-				'myAccountUrl'      => $my_account_url,
-				'autoPromptOnLoad'  => true,
-				'i18n'              => array(
+				'ajaxUrl'          => admin_url( 'admin-ajax.php' ),
+				'nonce'            => wp_create_nonce( 'hb_biometric_login' ),
+				'loginBegin'       => 'hb_biometric_login_begin',
+				'loginComplete'    => 'hb_biometric_login_complete',
+				'myAccountUrl'     => $my_account_url,
+				'autoPromptOnLoad' => self::is_guest_login_context(),
+				'i18n'             => array(
 					'unsupported'    => __( 'Biometric login is not available on this device or browser. Use your number + OTP.', 'hello-elementor-child' ),
 					'signingIn'      => __( 'Waiting for biometric confirmation…', 'hello-elementor-child' ),
 					'loginBtn'       => __( 'Sign in with Face ID / Touch ID', 'hello-elementor-child' ),
+					'otpBtn'         => __( 'Sign in with number + OTP', 'hello-elementor-child' ),
+					'orUseOtp'       => __( 'or use your number', 'hello-elementor-child' ),
 					'errorGeneric'   => __( 'Something went wrong. Please try again or use your number + OTP.', 'hello-elementor-child' ),
 					'httpsRequired'  => __( 'Biometric login requires a secure (HTTPS) connection.', 'hello-elementor-child' ),
 					'sessionExpired' => __( 'Session expired. Reload this page and try again.', 'hello-elementor-child' ),
