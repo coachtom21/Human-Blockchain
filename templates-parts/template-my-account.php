@@ -23,7 +23,8 @@ if ( ! is_user_logged_in() ) {
 		<?php get_template_part( 'templates-parts/part', 'nwp-site-header' ); ?>
 		<div class="wrap hb-my-account-guest-otp__wrap">
 			<h1><?php esc_html_e( 'My account', 'hello-elementor-child' ); ?></h1>
-			<p class="sub"><?php esc_html_e( 'Sign in with the mobile number linked to your registered device.', 'hello-elementor-child' ); ?></p>
+			<p class="sub"><?php esc_html_e( 'Sign in with Face ID / Touch ID if enabled on this device, or use the mobile number linked to your registered device.', 'hello-elementor-child' ); ?></p>
+			<?php do_action( 'hb_my_account_guest_login' ); ?>
 		</div>
 		<?php get_template_part( 'templates-parts/part', 'nwp-site-footer' ); ?>
 		<?php wp_footer(); ?>
