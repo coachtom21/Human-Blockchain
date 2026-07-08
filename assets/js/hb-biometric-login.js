@@ -164,6 +164,9 @@
 	}
 
 	function showFeedback( message, type ) {
+		if ( window.cpmHbOtpFlowActive && type === 'error' ) {
+			return;
+		}
 		var $el = $( '#hb-biometric-login-feedback' );
 		if ( $el.length ) {
 			$el.text( message || '' ).attr( 'data-type', type || '' );
@@ -217,6 +220,9 @@
 	 * @return {Promise}
 	 */
 	function loginWithPasskey( returnUrl ) {
+		if ( window.cpmHbOtpFlowActive ) {
+			return Promise.reject( new Error( 'otp_flow' ) );
+		}
 		if ( loginInProgress ) {
 			return Promise.reject( new Error( 'busy' ) );
 		}
@@ -307,6 +313,12 @@
 	}
 
 	function tryBiometricThenOtp( returnUrl, fallback ) {
+		if ( window.cpmHbOtpFlowActive ) {
+			if ( typeof fallback === 'function' ) {
+				fallback();
+			}
+			return;
+		}
 		platformBiometricAvailable().then( function ( supported ) {
 			if ( ! supported ) {
 				if ( typeof fallback === 'function' ) {
@@ -316,8 +328,23 @@
 			}
 
 			loginWithPasskey( returnUrl ).catch( function ( err ) {
-				if ( isUserCancelled( err ) && typeof fallback === 'function' ) {
-					fallback();
+				if ( err && err.message === 'otp_flow' ) {
+					return;
+				}
+				if ( typeof fallback === 'function' ) {
+					// Guest without passkeys: fall back to phone + OTP instead of a dead-end error.
+					if ( isUserCancelled( err ) ) {
+						fallback();
+						return;
+					}
+					var msg = extractErrorMessage( err );
+					if ( /not set up|activate your device|session expired|something went wrong/i.test( msg ) ) {
+						fallback();
+						return;
+					}
+				}
+				if ( ! isUserCancelled( err ) ) {
+					showFeedback( extractErrorMessage( err ), 'error' );
 				}
 			} );
 		} );
@@ -390,6 +417,11 @@
 
 	window.hbBiometricLoginTry = loginWithPasskey;
 	window.hbBiometricLoginTryThenOtp = tryBiometricThenOtp;
+	window.cpmHbCancelBiometricLogin = function () {
+		loginInProgress = false;
+		$( '#hb-biometric-login-btn, #hb-biometric-login-modal-btn' ).prop( 'disabled', false );
+		$( '#hb-biometric-login-btn' ).text( cfg.i18n.loginBtn || 'Sign in with Face ID / Touch ID' );
+	};
 
 	$( function () {
 		var shouldAutoOpen = !!( window.cpmNwp && window.cpmNwp.openAccountOtpOnLoad );
