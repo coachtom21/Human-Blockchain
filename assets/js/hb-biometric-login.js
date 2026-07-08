@@ -63,25 +63,66 @@
 		return !!( err && ( err.name === 'NotAllowedError' || err.name === 'AbortError' ) );
 	}
 
+	function parseAjaxResponse( res, responseText ) {
+		if ( res === null || res === undefined ) {
+			if ( typeof responseText === 'string' && responseText ) {
+				try {
+					res = JSON.parse( responseText );
+				} catch ( parseErr ) {
+					res = null;
+				}
+			}
+		}
+
+		if ( res === 0 || res === '0' || res === -1 || res === '-1' ) {
+			return null;
+		}
+
+		if ( typeof res === 'object' && res ) {
+			return res;
+		}
+
+		if ( typeof responseText === 'string' && responseText.indexOf( '"success":true' ) !== -1 ) {
+			try {
+				return JSON.parse( responseText );
+			} catch ( parseErr2 ) {
+				return null;
+			}
+		}
+
+		return null;
+	}
+
 	function postLogin( data ) {
 		return $.ajax( {
 			url: cfg.ajaxUrl,
 			method: 'POST',
 			data: data,
-			dataType: 'json',
+			dataType: 'text',
 			xhrFields: { withCredentials: true },
-		} ).then( function ( res ) {
-			if ( res === null || res === 0 || res === '0' || res === -1 || res === '-1' ) {
-				throw new Error( cfg.i18n.sessionExpired );
+			cache: false,
+		} ).then( function ( responseText ) {
+			var res = null;
+			try {
+				res = JSON.parse( responseText );
+			} catch ( parseErr ) {
+				res = parseAjaxResponse( null, responseText );
 			}
-			if ( typeof res !== 'object' ) {
-				throw new Error( cfg.i18n.errorGeneric );
+
+			res = parseAjaxResponse( res, responseText );
+
+			if ( ! res ) {
+				throw new Error( cfg.i18n.sessionExpired );
 			}
 			if ( ! res.success ) {
 				throw new Error( ( res.data && res.data.message ) || cfg.i18n.errorGeneric );
 			}
 			return res;
 		}, function ( jqXHR ) {
+			var parsed = parseAjaxResponse( jqXHR && jqXHR.responseJSON, jqXHR && jqXHR.responseText );
+			if ( parsed && parsed.success ) {
+				return parsed;
+			}
 			var msg = cfg.i18n.errorGeneric;
 			if ( jqXHR && jqXHR.responseJSON && jqXHR.responseJSON.data && jqXHR.responseJSON.data.message ) {
 				msg = jqXHR.responseJSON.data.message;
@@ -139,6 +180,19 @@
 		}
 	}
 
+	function closeLoginModal() {
+		$( '#cpm-nwp-activate-modal' ).addClass( 'cpm-nwp-modal--hidden' ).attr( 'aria-hidden', 'true' );
+		$( 'body' ).removeClass( 'cpm-nwp-modal-open' );
+		$( '#cpm-nwp-activate-feedback' ).addClass( 'cpm-nwp-inline-feedback--hidden' ).text( '' );
+	}
+
+	function finishLoginRedirect( redirect, fallback ) {
+		var target = redirect || fallback || cfg.myAccountUrl || window.location.href;
+		closeLoginModal();
+		loginInProgress = false;
+		window.location.href = target;
+	}
+
 	function openOtpLogin( returnUrl ) {
 		var orig = window.cpmHbOpenMyAccountPhoneLoginOriginal;
 		if ( typeof orig === 'function' ) {
@@ -157,7 +211,7 @@
 	}
 
 	/**
-	 * Attempt passkey sign-in. Resolves on success (before redirect). Rejects on cancel/error.
+	 * Attempt passkey sign-in.
 	 *
 	 * @param {string} returnUrl Redirect after login.
 	 * @return {Promise}
@@ -183,10 +237,11 @@
 		var $btn = $( '#hb-biometric-login-btn, #hb-biometric-login-modal-btn' );
 		$btn.prop( 'disabled', true );
 		$( '#hb-biometric-login-btn' ).text( cfg.i18n.signingIn || 'Waiting…' );
-		showFeedback( '', '' );
+		showFeedback( cfg.i18n.signingIn || 'Waiting for biometric confirmation…', '' );
 
 		var loginToken = '';
 		var redirectTo = returnUrl || cfg.myAccountUrl || '';
+		var passkeyUsed = false;
 
 		return postLogin( {
 			action: cfg.loginBegin,
@@ -204,7 +259,10 @@
 					throw new Error( cfg.i18n.errorGeneric );
 				}
 
-				return postLogin( {
+				passkeyUsed = true;
+				showFeedback( cfg.i18n.signingIn || 'Signing you in…', '' );
+
+				var completeData = {
 					action: cfg.loginComplete,
 					nonce: cfg.nonce,
 					login_token: loginToken,
@@ -212,35 +270,42 @@
 					clientDataJSON: arrayBufferToBase64Url( cred.response.clientDataJSON ),
 					authenticatorData: arrayBufferToBase64Url( cred.response.authenticatorData ),
 					signature: arrayBufferToBase64Url( cred.response.signature ),
-					userHandle: cred.response.userHandle ? arrayBufferToBase64Url( cred.response.userHandle ) : '',
 					redirect_to: redirectTo,
-				} );
+				};
+
+				if ( cred.response.userHandle ) {
+					completeData.userHandle = arrayBufferToBase64Url( cred.response.userHandle );
+				}
+
+				return postLogin( completeData );
 			} )
 			.then( function ( completeRes ) {
-				showFeedback( completeRes.data.message || '', 'success' );
-				var redirect = completeRes.data.redirect || redirectTo || window.location.href;
-				window.location.replace( redirect );
+				finishLoginRedirect( completeRes.data.redirect, redirectTo );
 			} )
 			.catch( function ( err ) {
 				var errObj = err instanceof Error ? err : new Error( extractErrorMessage( err ) );
+
+				// Touch ID succeeded but AJAX response was unclear — reload account page (cookie may be set).
+				if ( passkeyUsed ) {
+					finishLoginRedirect( redirectTo, redirectTo );
+					return;
+				}
+
 				if ( ! isUserCancelled( errObj ) ) {
 					showFeedback( extractErrorMessage( errObj ), 'error' );
 				}
 				throw errObj;
 			} )
 			.finally( function () {
+				if ( ! loginInProgress ) {
+					return;
+				}
 				loginInProgress = false;
 				$btn.prop( 'disabled', false );
 				$( '#hb-biometric-login-btn' ).text( cfg.i18n.loginBtn || 'Sign in with Face ID / Touch ID' );
 			} );
 	}
 
-	/**
-	 * Try biometric first; call fallback (OTP modal) when unavailable, cancelled, or failed.
-	 *
-	 * @param {string} returnUrl Post-login redirect.
-	 * @param {Function} fallback Opens OTP modal.
-	 */
 	function tryBiometricThenOtp( returnUrl, fallback ) {
 		platformBiometricAvailable().then( function ( supported ) {
 			if ( ! supported ) {
@@ -253,11 +318,6 @@
 			loginWithPasskey( returnUrl ).catch( function ( err ) {
 				if ( isUserCancelled( err ) && typeof fallback === 'function' ) {
 					fallback();
-					return;
-				}
-				var msg = extractErrorMessage( err );
-				if ( msg && msg !== cfg.i18n.cancelled ) {
-					window.alert( msg );
 				}
 			} );
 		} );
@@ -318,8 +378,10 @@
 
 			if ( cfg.autoPromptOnLoad ) {
 				setTimeout( function () {
-					loginWithPasskey( cfg.myAccountUrl ).catch( function () {
-						openOtpLogin( cfg.myAccountUrl );
+					loginWithPasskey( cfg.myAccountUrl ).catch( function ( err ) {
+						if ( isUserCancelled( err ) ) {
+							openOtpLogin( cfg.myAccountUrl );
+						}
 					} );
 				}, 350 );
 			}
@@ -348,13 +410,8 @@
 		$( document ).on( 'click', '#hb-biometric-login-btn, #hb-biometric-login-modal-btn', function ( e ) {
 			e.preventDefault();
 			var returnUrl = ( window.cpmHbLanding && window.cpmHbLanding.pendingOtpRedirect ) || cfg.myAccountUrl;
-			loginWithPasskey( returnUrl ).catch( function ( err ) {
-				if ( ! isUserCancelled( err ) ) {
-					var msg = extractErrorMessage( err );
-					if ( msg ) {
-						window.alert( msg );
-					}
-				}
+			loginWithPasskey( returnUrl ).catch( function () {
+				// Errors shown in modal feedback.
 			} );
 		} );
 

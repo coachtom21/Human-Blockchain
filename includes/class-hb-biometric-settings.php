@@ -1251,6 +1251,9 @@ class Hb_Biometric_Settings {
 		$finish_token = self::create_passkey_finish_token( $user_id );
 		$redirect     = add_query_arg( 'hb_passkey_finish', $finish_token, self::login_redirect_url() );
 
+		// Set cookies on this response too (some hosts); redirect token is a backup.
+		self::establish_user_session( $user_id );
+
 		if ( ! headers_sent() ) {
 			nocache_headers();
 		}
@@ -1259,6 +1262,7 @@ class Hb_Biometric_Settings {
 			array(
 				'message'  => __( 'Signed in successfully.', 'hello-elementor-child' ),
 				'redirect' => $redirect,
+				'loggedIn' => true,
 			)
 		);
 	}
