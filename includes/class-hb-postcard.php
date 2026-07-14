@@ -156,15 +156,19 @@ class Hb_Postcard {
 
 		$unchanged = ! empty( $qr['unchanged'] );
 
-		if ( ! $unchanged && ! empty( $qr['image_url'] ) && function_exists( 'hb_persist_qr_image_to_file' ) ) {
-			$previous_qr = (string) get_user_meta( $user_id, 'hb_vcard_qr_image_url', true );
-			$persisted   = hb_persist_qr_image_to_file( $user_id, $qr['image_url'] );
-			if ( ! is_wp_error( $persisted ) ) {
-				if ( $previous_qr !== '' && $previous_qr !== $persisted && function_exists( 'hb_delete_qr_image_file_for_user' ) ) {
-					hb_delete_qr_image_file_for_user( $user_id, $previous_qr );
+		if ( ! empty( $qr['image_url'] ) ) {
+			$image_to_store = (string) $qr['image_url'];
+			if ( ! $unchanged && function_exists( 'hb_persist_qr_image_to_file' ) ) {
+				$previous_qr = (string) get_user_meta( $user_id, 'hb_vcard_qr_image_url', true );
+				$persisted   = hb_persist_qr_image_to_file( $user_id, $qr['image_url'] );
+				if ( ! is_wp_error( $persisted ) ) {
+					if ( $previous_qr !== '' && $previous_qr !== $persisted && function_exists( 'hb_delete_qr_image_file_for_user' ) ) {
+						hb_delete_qr_image_file_for_user( $user_id, $previous_qr );
+					}
+					$image_to_store = $persisted;
 				}
-				update_user_meta( $user_id, 'hb_vcard_qr_image_url', esc_url_raw( $persisted ) );
 			}
+			update_user_meta( $user_id, 'hb_vcard_qr_image_url', esc_url_raw( $image_to_store ) );
 		}
 
 		$scan_url = ! empty( $qr['short_url'] ) ? (string) $qr['short_url'] : (string) get_user_meta( $user_id, 'hb_vcard_short_url', true );
@@ -176,6 +180,103 @@ class Hb_Postcard {
 		}
 
 		return esc_url_raw( apply_filters( 'hb_postcard_vcard_scan_url', $scan_url, $user_id ) );
+	}
+
+	/**
+	 * Styled QR Tiger vCard image URL for a user (local file or remote).
+	 *
+	 * @param int $user_id User ID.
+	 * @return string
+	 */
+	public static function get_vcard_qr_image_url( $user_id ) {
+		$url = (string) get_user_meta( (int) $user_id, 'hb_vcard_qr_image_url', true );
+		return esc_url_raw( apply_filters( 'hb_postcard_vcard_qr_image_url', $url, (int) $user_id ) );
+	}
+
+	/**
+	 * Load QR image binary from a local uploads URL, data URI, or remote HTTPS URL.
+	 *
+	 * @param string $url Image URL or data URI.
+	 * @return string|WP_Error Binary image data.
+	 */
+	public static function load_qr_image_binary( $url ) {
+		$url = is_string( $url ) ? trim( $url ) : '';
+		if ( $url === '' ) {
+			return new WP_Error( 'qr_empty', __( 'Empty QR image URL.', 'hello-elementor-child' ) );
+		}
+
+		if ( preg_match( '#^data:image/(png|jpe?g|webp);base64,(.+)$#i', $url, $m ) ) {
+			$binary = base64_decode( $m[2], true );
+			if ( false === $binary || $binary === '' ) {
+				return new WP_Error( 'qr_decode', __( 'Could not decode QR image data.', 'hello-elementor-child' ) );
+			}
+			return $binary;
+		}
+
+		if ( preg_match( '#\.svg(?:\?|$)#i', $url ) || false !== stripos( $url, 'image/svg' ) ) {
+			return new WP_Error( 'qr_svg', __( 'SVG QR images cannot be stamped onto the postcard.', 'hello-elementor-child' ) );
+		}
+
+		$path = self::path_from_site_upload_url( $url );
+		if ( $path === '' ) {
+			$upload = wp_upload_dir();
+			if ( ! empty( $upload['basedir'] ) && ! empty( $upload['baseurl'] ) && 0 === strpos( $url, $upload['baseurl'] ) ) {
+				$rel  = ltrim( substr( $url, strlen( $upload['baseurl'] ) ), '/' );
+				$path = trailingslashit( $upload['basedir'] ) . rawurldecode( $rel );
+			}
+		}
+		if ( $path !== '' && is_readable( $path ) ) {
+			$binary = file_get_contents( $path );
+			if ( is_string( $binary ) && $binary !== '' ) {
+				return $binary;
+			}
+		}
+
+		if ( preg_match( '#^https?://#i', $url ) ) {
+			$resp = wp_remote_get(
+				$url,
+				array(
+					'timeout'   => 25,
+					'sslverify' => true,
+				)
+			);
+			if ( is_wp_error( $resp ) ) {
+				return $resp;
+			}
+			$code = (int) wp_remote_retrieve_response_code( $resp );
+			$body = (string) wp_remote_retrieve_body( $resp );
+			if ( $code < 200 || $code >= 300 || $body === '' ) {
+				return new WP_Error( 'qr_fetch', __( 'Could not download styled vCard QR image.', 'hello-elementor-child' ) );
+			}
+			return $body;
+		}
+
+		return new WP_Error( 'qr_unknown', __( 'Unrecognized QR image URL.', 'hello-elementor-child' ) );
+	}
+
+	/**
+	 * Prefer styled QR Tiger vCard art; fall back to a plain QR of the scan URL.
+	 *
+	 * @param int    $user_id  User ID.
+	 * @param string $scan_url Hosted vCard scan URL.
+	 * @param int    $size     Preferred plain-QR render size.
+	 * @return string|WP_Error PNG/JPEG binary.
+	 */
+	public static function resolve_postcard_qr_binary( $user_id, $scan_url, $size = 400 ) {
+		$user_id = (int) $user_id;
+		$prefer  = (bool) apply_filters( 'hb_postcard_prefer_styled_vcard_qr', true, $user_id );
+
+		if ( $prefer ) {
+			$styled_url = self::get_vcard_qr_image_url( $user_id );
+			if ( $styled_url !== '' ) {
+				$styled = self::load_qr_image_binary( $styled_url );
+				if ( ! is_wp_error( $styled ) ) {
+					return $styled;
+				}
+			}
+		}
+
+		return self::fetch_qr_png( $scan_url, $size );
 	}
 
 	/**
@@ -664,22 +765,22 @@ class Hb_Postcard {
 			}
 		}
 
-		$placement   = self::get_qr_placement( $w, $h, $user_id );
-		$qr_binary   = self::fetch_qr_png( $scan_url, max( 200, $placement['size'] + 40 ) );
+		$placement = self::get_qr_placement( $w, $h, $user_id );
+		$qr_binary = self::resolve_postcard_qr_binary( $user_id, $scan_url, max( 200, $placement['size'] + 40 ) );
 		if ( is_wp_error( $qr_binary ) ) {
 			imagedestroy( $img );
 			return $qr_binary;
 		}
 
-		$qr_img = imagecreatefromstring( $qr_binary );
+		$qr_img = @imagecreatefromstring( $qr_binary );
 		if ( ! $qr_img ) {
 			imagedestroy( $img );
 			return new WP_Error( 'qr_decode', __( 'Could not decode QR image.', 'hello-elementor-child' ) );
 		}
 
-		$qr_size = (int) $placement['size'];
-		$qr_x    = (int) $placement['x'];
-		$qr_y    = (int) $placement['y'];
+		$qr_size  = (int) $placement['size'];
+		$qr_x     = (int) $placement['x'];
+		$qr_y     = (int) $placement['y'];
 		$wipe_pad = (int) apply_filters( 'hb_postcard_qr_wipe_padding', 8, $user_id, $placement );
 		$wipe_pad = max( 0, min( 32, $wipe_pad ) );
 
@@ -688,7 +789,16 @@ class Hb_Postcard {
 			imagefilledrectangle( $img, $qr_x - $wipe_pad, $qr_y - $wipe_pad, $qr_x + $qr_size + $wipe_pad, $qr_y + $qr_size + $wipe_pad, $white );
 		}
 
-		imagecopyresampled( $img, $qr_img, $qr_x, $qr_y, 0, 0, $qr_size, $qr_size, imagesx( $qr_img ), imagesy( $qr_img ) );
+		// Preserve aspect ratio (framed QR Tiger art is often taller than wide).
+		$src_w = imagesx( $qr_img );
+		$src_h = imagesy( $qr_img );
+		$scale = min( $qr_size / max( 1, $src_w ), $qr_size / max( 1, $src_h ) );
+		$dst_w = max( 1, (int) round( $src_w * $scale ) );
+		$dst_h = max( 1, (int) round( $src_h * $scale ) );
+		$dst_x = $qr_x + (int) round( ( $qr_size - $dst_w ) / 2 );
+		$dst_y = $qr_y + (int) round( ( $qr_size - $dst_h ) / 2 );
+
+		imagecopyresampled( $img, $qr_img, $dst_x, $dst_y, 0, 0, $dst_w, $dst_h, $src_w, $src_h );
 		imagedestroy( $qr_img );
 
 		ob_start();
@@ -954,7 +1064,7 @@ class Hb_Postcard {
 		<div id="hb-postcard-tools" class="hb-postcard-tools" data-has-image="<?php echo $has_image ? '1' : '0'; ?>">
 			<h3><?php esc_html_e( 'Postcard', 'hello-elementor-child' ); ?></h3>
 			<p class="hb-postcard-intro">
-				<?php esc_html_e( 'Your hosted vCard QR is stamped onto the Human Gold Rush RSVP postcard (SCAN TO RSVP slot). Scanning opens your contact page with photo, name, and save-to-phone options — same as the previous VCard flow.', 'hello-elementor-child' ); ?>
+				<?php esc_html_e( 'Your styled vCard QR (QR Tiger) is stamped onto the Human Gold Rush RSVP postcard (SCAN TO RSVP slot). Scanning opens your contact page with photo, name, and save-to-phone options.', 'hello-elementor-child' ); ?>
 			</p>
 
 			<div class="hb-postcard-layout">
@@ -992,7 +1102,7 @@ class Hb_Postcard {
 					<h4><?php esc_html_e( 'Preview', 'hello-elementor-child' ); ?></h4>
 					<div class="hb-postcard-preview-duo">
 						<figure class="hb-postcard-preview-card">
-							<figcaption class="hb-postcard-preview-label"><?php esc_html_e( 'Front (your vCard QR)', 'hello-elementor-child' ); ?></figcaption>
+							<figcaption class="hb-postcard-preview-label"><?php esc_html_e( 'Front (your styled vCard QR)', 'hello-elementor-child' ); ?></figcaption>
 							<div class="hb-postcard-preview-frame">
 								<button
 									type="button"
