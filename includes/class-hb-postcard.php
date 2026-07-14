@@ -20,15 +20,15 @@ class Hb_Postcard {
 	const META_IMAGE_URL = 'hb_postcard_image_url';
 	const META_REF_URL   = 'hb_postcard_referral_url';
 
-	/** Reference canvas for QR placement (matches Detente2030Postcard.png). */
-	const REF_WIDTH  = 1536;
-	const REF_HEIGHT = 1024;
+	/** Reference canvas for QR placement (matches Human Gold Rush front art). */
+	const REF_WIDTH  = 1024;
+	const REF_HEIGHT = 748;
 
-	/** Default master artwork (Media Library). */
-	const DEFAULT_TEMPLATE_URL = 'https://humanblockchain.info/wp-content/uploads/2026/06/Detente2030Postcard.png';
+	/** Default master artwork (Media Library / theme fallback). */
+	const DEFAULT_TEMPLATE_URL = 'https://humanblockchain.info/wp-content/uploads/2026/07/Human-Gold-Rush-Postcard-Front.png';
 
 	/** Static back of postcard (print reverse side). */
-	const DEFAULT_BACK_URL = 'https://humanblockchain.info/wp-content/uploads/2026/06/Detente-Postcard-Back.png';
+	const DEFAULT_BACK_URL = 'https://humanblockchain.info/wp-content/uploads/2026/07/Human-Gold-Rush-Postcard-Back.png';
 
 	/**
 	 * Bootstrap hooks.
@@ -299,7 +299,10 @@ class Hb_Postcard {
 	 * @return string
 	 */
 	private static function get_template_url_config() {
-		$url = apply_filters( 'hb_postcard_template_url', self::DEFAULT_TEMPLATE_URL );
+		$theme_default = get_stylesheet_directory() . '/assets/images/human-gold-rush-postcard-front.png';
+		$theme_url     = trailingslashit( get_stylesheet_directory_uri() ) . 'assets/images/human-gold-rush-postcard-front.png';
+
+		$url = apply_filters( 'hb_postcard_template_url', '' );
 		if ( ! is_string( $url ) || trim( $url ) === '' ) {
 			$att_id = (int) apply_filters( 'hb_postcard_template_attachment_id', 0 );
 			if ( $att_id > 0 ) {
@@ -307,14 +310,23 @@ class Hb_Postcard {
 			}
 		}
 		$url = is_string( $url ) ? trim( $url ) : '';
+
+		// Prefer bundled theme art when present (local + deploys).
+		if ( is_file( $theme_default ) ) {
+			if ( $url === '' || $url === self::DEFAULT_TEMPLATE_URL ) {
+				return esc_url_raw( $theme_url );
+			}
+		}
+
+		if ( $url === '' ) {
+			$url = self::DEFAULT_TEMPLATE_URL;
+		}
+
 		if ( $url !== '' ) {
 			return esc_url_raw( $url );
 		}
-		$theme_default = get_stylesheet_directory() . '/assets/images/medici-postcard-master.png';
-		if ( is_file( $theme_default ) ) {
-			return trailingslashit( get_stylesheet_directory_uri() ) . 'assets/images/medici-postcard-master.png';
-		}
-		return '';
+
+		return is_file( $theme_default ) ? esc_url_raw( $theme_url ) : '';
 	}
 
 	/**
@@ -424,9 +436,23 @@ class Hb_Postcard {
 	 * @return string
 	 */
 	public static function get_back_url() {
-		$url = apply_filters( 'hb_postcard_back_template_url', self::DEFAULT_BACK_URL );
+		$theme_default = get_stylesheet_directory() . '/assets/images/human-gold-rush-postcard-back.png';
+		$theme_url     = trailingslashit( get_stylesheet_directory_uri() ) . 'assets/images/human-gold-rush-postcard-back.png';
+
+		$url = apply_filters( 'hb_postcard_back_template_url', '' );
 		$url = is_string( $url ) ? trim( $url ) : '';
-		return $url !== '' ? esc_url( $url ) : '';
+
+		if ( is_file( $theme_default ) ) {
+			if ( $url === '' || $url === self::DEFAULT_BACK_URL ) {
+				return esc_url( $theme_url );
+			}
+		}
+
+		if ( $url === '' ) {
+			$url = self::DEFAULT_BACK_URL;
+		}
+
+		return $url !== '' ? esc_url( $url ) : ( is_file( $theme_default ) ? esc_url( $theme_url ) : '' );
 	}
 
 	/**
@@ -436,17 +462,30 @@ class Hb_Postcard {
 	 */
 	private static function load_template_image( $path ) {
 		$ext = strtolower( pathinfo( $path, PATHINFO_EXTENSION ) );
-		if ( in_array( $ext, array( 'jpg', 'jpeg' ), true ) ) {
-			return imagecreatefromjpeg( $path );
+		if ( in_array( $ext, array( 'jpg', 'jpeg' ), true ) && function_exists( 'imagecreatefromjpeg' ) ) {
+			$img = @imagecreatefromjpeg( $path );
+			if ( $img ) {
+				return $img;
+			}
 		}
-		if ( 'png' === $ext ) {
-			return imagecreatefrompng( $path );
+		if ( 'png' === $ext && function_exists( 'imagecreatefrompng' ) ) {
+			$img = @imagecreatefrompng( $path );
+			if ( $img ) {
+				return $img;
+			}
+		}
+		$raw = is_readable( $path ) ? file_get_contents( $path ) : false;
+		if ( is_string( $raw ) && $raw !== '' ) {
+			$img = @imagecreatefromstring( $raw );
+			if ( $img ) {
+				return $img;
+			}
 		}
 		return null;
 	}
 
 	/**
-	 * QR stamp position scaled to the master canvas (bottom-right on Medici art).
+	 * QR stamp position scaled to the master canvas (RSVP slot on Human Gold Rush art).
 	 *
 	 * @param int $w Canvas width.
 	 * @param int $h Canvas height.
@@ -457,9 +496,9 @@ class Hb_Postcard {
 		$ref = apply_filters(
 			'hb_postcard_qr_placement_ref',
 			array(
-				'x'    => 1318,
-				'y'    => 840,
-				'size' => 148,
+				'x'    => 608,
+				'y'    => 502,
+				'size' => 108,
 			),
 			$user_id
 		);
@@ -467,16 +506,16 @@ class Hb_Postcard {
 		$scale_y = $h / self::REF_HEIGHT;
 		$scale   = ( $scale_x + $scale_y ) / 2;
 		$placement = array(
-			'x'    => (int) round( (float) ( $ref['x'] ?? 1485 ) * $scale_x ),
-			'y'    => (int) round( (float) ( $ref['y'] ?? 855 ) * $scale_y ),
-			'size' => (int) round( (float) ( $ref['size'] ?? 230 ) * $scale ),
+			'x'    => (int) round( (float) ( $ref['x'] ?? 608 ) * $scale_x ),
+			'y'    => (int) round( (float) ( $ref['y'] ?? 502 ) * $scale_y ),
+			'size' => (int) round( (float) ( $ref['size'] ?? 108 ) * $scale ),
 			'wipe' => (bool) apply_filters( 'hb_postcard_qr_wipe_background', true, $user_id ),
 		);
 		return apply_filters( 'hb_postcard_qr_placement', $placement, $user_id, $w, $h );
 	}
 
 	/**
-	 * Optional "To:" address block (left of QR on master art).
+	 * Optional "To:" address block (not used on Human Gold Rush RSVP art by default).
 	 *
 	 * @param int $w Canvas width.
 	 * @param int $h Canvas height.
@@ -485,10 +524,10 @@ class Hb_Postcard {
 	 */
 	private static function get_address_zone( $w, $h, $user_id ) {
 		$ref = array(
-			'x' => 836,
-			'y' => 768,
-			'w' => 392,
-			'h' => 154,
+			'x' => 420,
+			'y' => 520,
+			'w' => 170,
+			'h' => 90,
 		);
 		$scale_x = $w / self::REF_WIDTH;
 		$scale_y = $h / self::REF_HEIGHT;
@@ -915,7 +954,7 @@ class Hb_Postcard {
 		<div id="hb-postcard-tools" class="hb-postcard-tools" data-has-image="<?php echo $has_image ? '1' : '0'; ?>">
 			<h3><?php esc_html_e( 'Postcard', 'hello-elementor-child' ); ?></h3>
 			<p class="hb-postcard-intro">
-				<?php esc_html_e( 'Your hosted vCard QR is stamped onto the official Detente 2030 Medici Dual-Ledger postcard (bottom-right). Scanning opens your contact page with photo, name, and save-to-phone options — same as the previous VCard flow.', 'hello-elementor-child' ); ?>
+				<?php esc_html_e( 'Your hosted vCard QR is stamped onto the Human Gold Rush RSVP postcard (SCAN TO RSVP slot). Scanning opens your contact page with photo, name, and save-to-phone options — same as the previous VCard flow.', 'hello-elementor-child' ); ?>
 			</p>
 
 			<div class="hb-postcard-layout">
@@ -986,7 +1025,7 @@ class Hb_Postcard {
 										id="hb-postcard-preview-back"
 										class="hb-postcard-preview-img hb-postcard-preview-img--back"
 										src="<?php echo esc_url( $back_url ); ?>"
-										alt="<?php esc_attr_e( 'Detente 2030 postcard back', 'hello-elementor-child' ); ?>"
+										alt="<?php esc_attr_e( 'Human Gold Rush postcard back', 'hello-elementor-child' ); ?>"
 										loading="lazy"
 										decoding="async"
 									>
