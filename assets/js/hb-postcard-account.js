@@ -357,16 +357,53 @@
 		});
 	}
 
-	function triggerFileDownload(url) {
-		if (!url) {
-			return;
+	function parseDownloadFilename(disposition, fallback) {
+		if (!disposition) {
+			return fallback;
 		}
+		var utfMatch = /filename\*=UTF-8''([^;]+)/i.exec(disposition);
+		if (utfMatch && utfMatch[1]) {
+			return decodeURIComponent(utfMatch[1].trim());
+		}
+		var plainMatch = /filename="?([^";]+)"?/i.exec(disposition);
+		if (plainMatch && plainMatch[1]) {
+			return plainMatch[1].trim();
+		}
+		return fallback;
+	}
+
+	function downloadBlobFile(blob, filename) {
+		var objectUrl = URL.createObjectURL(blob);
 		var link = document.createElement('a');
-		link.href = url;
+		link.href = objectUrl;
+		link.download = filename;
 		link.style.display = 'none';
 		document.body.appendChild(link);
 		link.click();
 		document.body.removeChild(link);
+		window.setTimeout(function () {
+			URL.revokeObjectURL(objectUrl);
+		}, 2000);
+	}
+
+	function downloadFromUrl(url, fallbackName) {
+		return fetch(url, {
+			credentials: 'same-origin',
+			cache: 'no-store'
+		}).then(function (response) {
+			if (!response.ok) {
+				throw new Error('HTTP ' + response.status);
+			}
+			var disposition = response.headers.get('Content-Disposition');
+			return response.blob().then(function (blob) {
+				return {
+					blob: blob,
+					filename: parseDownloadFilename(disposition, fallbackName)
+				};
+			});
+		}).then(function (result) {
+			downloadBlobFile(result.blob, result.filename);
+		});
 	}
 
 	function downloadPostcardSides(format) {
@@ -374,13 +411,30 @@
 		if (!urls || !urls.front) {
 			return;
 		}
+		var ext = format === 'jpg' ? 'jpg' : 'png';
+		var uid = cfg.userId || 'postcard';
+		var frontName = 'postcard-' + uid + '-front.' + ext;
+		var backName = 'postcard-' + uid + '-back.' + ext;
+
 		setStatus(cfg.i18n.downloading || 'Downloading…', false);
-		triggerFileDownload(urls.front);
-		if (urls.back) {
-			window.setTimeout(function () {
-				triggerFileDownload(urls.back);
-			}, 450);
-		}
+
+		downloadFromUrl(urls.front, frontName)
+			.then(function () {
+				if (!urls.back) {
+					return;
+				}
+				return new Promise(function (resolve) {
+					window.setTimeout(resolve, 500);
+				}).then(function () {
+					return downloadFromUrl(urls.back, backName);
+				});
+			})
+			.then(function () {
+				setStatus('', false);
+			})
+			.catch(function () {
+				setStatus(cfg.i18n.downloadFail || 'Download failed', true);
+			});
 	}
 
 	['png', 'jpg'].forEach(function (format) {

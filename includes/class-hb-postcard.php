@@ -614,20 +614,45 @@ class Hb_Postcard {
 		if ( $url === '' ) {
 			return new WP_Error( 'no_front', __( 'No postcard available. Generate one first.', 'hello-elementor-child' ) );
 		}
+
 		$upload = wp_upload_dir();
 		$path   = '';
 		if ( ! empty( $upload['basedir'] ) && ! empty( $upload['baseurl'] ) && 0 === strpos( $url, $upload['baseurl'] ) ) {
 			$rel  = ltrim( substr( $url, strlen( $upload['baseurl'] ) ), '/' );
 			$path = trailingslashit( $upload['basedir'] ) . rawurldecode( $rel );
 		}
-		if ( $path === '' || ! is_file( $path ) ) {
-			return new WP_Error( 'front_missing', __( 'Postcard front file not found.', 'hello-elementor-child' ) );
+		if ( ( $path === '' || ! is_file( $path ) ) ) {
+			$path_from_url = self::path_from_site_upload_url( $url );
+			if ( $path_from_url !== '' && is_file( $path_from_url ) ) {
+				$path = $path_from_url;
+			}
 		}
-		$binary = (string) file_get_contents( $path );
-		if ( $binary === '' ) {
-			return new WP_Error( 'front_empty', __( 'Empty postcard front file.', 'hello-elementor-child' ) );
+		if ( $path !== '' && is_readable( $path ) ) {
+			$binary = (string) file_get_contents( $path );
+			if ( $binary !== '' ) {
+				return $binary;
+			}
 		}
-		return $binary;
+
+		if ( preg_match( '#^https?://#i', $url ) ) {
+			$response = wp_remote_get(
+				$url,
+				array(
+					'timeout'   => 30,
+					'sslverify' => true,
+				)
+			);
+			if ( is_wp_error( $response ) ) {
+				return $response;
+			}
+			$code = (int) wp_remote_retrieve_response_code( $response );
+			$body = (string) wp_remote_retrieve_body( $response );
+			if ( $code >= 200 && $code < 300 && $body !== '' ) {
+				return $body;
+			}
+		}
+
+		return new WP_Error( 'front_missing', __( 'Postcard front file not found.', 'hello-elementor-child' ) );
 	}
 
 	/**
@@ -1206,6 +1231,7 @@ class Hb_Postcard {
 			array(
 				'ajaxUrl'   => $ajax_url,
 				'nonce'     => $nonce,
+				'userId'    => $user_id,
 				'downloads' => array(
 					'png' => array(
 						'front' => esc_url_raw( $png_front_href ),
@@ -1223,6 +1249,7 @@ class Hb_Postcard {
 					'copyFail'      => __( 'Could not copy.', 'hello-elementor-child' ),
 					'confirmDel'    => __( 'Remove your saved postcard?', 'hello-elementor-child' ),
 					'downloading'   => __( 'Downloading front and back…', 'hello-elementor-child' ),
+					'downloadFail'  => __( 'Could not download postcard files.', 'hello-elementor-child' ),
 					'lightboxClose' => __( 'Close preview', 'hello-elementor-child' ),
 					'lightboxPrev'  => __( 'Previous image', 'hello-elementor-child' ),
 					'lightboxNext'  => __( 'Next image', 'hello-elementor-child' ),
