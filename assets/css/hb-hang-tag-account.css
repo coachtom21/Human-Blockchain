@@ -1,0 +1,605 @@
+/**
+ * Human Blockchain — Gratitude Hang-Tag (My Account).
+ */
+
+.hb-hang-tag-tools,
+.hb-hang-tag-tools * {
+	box-sizing: border-box;
+}
+
+.hb-hang-tag-tools {
+	font-family: 'Inter', sans-serif;
+	color: #e8eef5;
+}
+
+.hb-hang-tag-tools h3 {
+	margin: 0 0 0.5em;
+	font-size: 1.5rem;
+}
+
+.hb-hang-tag-intro {
+	margin: 0 0 1.5em;
+	max-width: 52em;
+	color: rgba(255, 255, 255, 0.72);
+	line-height: 1.55;
+}
+
+.hb-hang-tag-layout {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 2rem;
+}
+
+@media (min-width: 900px) {
+	.hb-hang-tag-layout {
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+		align-items: start;
+	}
+}
+
+.hb-hang-tag-actions .button {
+	margin-right: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.hb-hang-tag-scan-field {
+	margin-top: 1.25em;
+}
+
+.hb-hang-tag-scan-field label {
+	display: block;
+	margin-bottom: 0.35em;
+	font-size: 0.85em;
+	color: rgba(255, 255, 255, 0.65);
+}
+
+.hb-hang-tag-scan-field input[type="url"] {
+	width: 100%;
+	max-width: 28em;
+	background: rgba(255, 255, 255, 0.06);
+	border: 1px solid rgba(255, 255, 255, 0.12);
+	color: #fff;
+}
+
+.hb-hang-tag-preview-col h4 {
+	margin: 0 0 1em;
+	font-size: 1rem;
+	font-weight: 600;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	color: rgba(255, 255, 255, 0.55);
+}
+
+.hb-hang-tag-preview-duo {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1.5rem 2rem;
+	justify-content: center;
+	align-items: flex-start;
+}
+
+.hb-hang-tag-preview-card {
+	margin: 0;
+	text-align: center;
+}
+
+.hb-hang-tag-preview-label {
+	display: block;
+	margin-bottom: 0.65em;
+	font-size: 0.7rem;
+	font-weight: 600;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	color: rgba(255, 255, 255, 0.5);
+}
+
+.hb-hang-tag-preview-stage {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 1.5rem;
+	padding: 1.25rem;
+	background: #5a5a5a;
+	border-radius: 12px;
+}
+
+.hb-hang-tag-preview-stage .print-label {
+	color: rgba(255, 255, 255, 0.85);
+}
+
+.hb-hang-tag-preview-stage .tag {
+	flex-shrink: 0;
+}
+
+.hb-hang-tag-qr-img {
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+	display: block;
+}
+
+.hb-hang-tag-print-note {
+	margin: 1em 0 0;
+	font-size: 0.85em;
+	color: rgba(255, 255, 255, 0.5);
+	text-align: center;
+}
+
+@media print {
+	body * {
+		visibility: hidden;
+	}
+	.hb-hang-tag-print-area,
+	.hb-hang-tag-print-area * {
+		visibility: visible;
+	}
+	.hb-hang-tag-print-area {
+		position: absolute;
+		left: 0;
+		top: 0;
+		width: 100%;
+		background: #888;
+		padding: 0;
+	}
+	.hb-hang-tag-print-area .print-label {
+		display: none;
+	}
+	.hb-hang-tag-print-area .tag {
+		box-shadow: none;
+		page-break-after: always;
+		margin: 0 auto;
+	}
+}
+.hb-hang-tag-preview-stage .print-label {
+  color: #fff;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.7;
+  text-align: center;
+}
+
+/* 3" x 6" at 96dpi = 288px x 576px */
+/* We render at 2x for quality: 576 x 1152 then scale */
+.hb-hang-tag-preview-stage .tag {
+  width: 288px;
+  height: 576px;
+  position: relative;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+}
+
+/* ── FRONT ─────────────────────────────────────────── */
+.hb-hang-tag-preview-stage .front {
+  background: #0a1628;
+  display: flex;
+  flex-direction: column;
+}
+
+.hb-hang-tag-preview-stage .punch-hole {
+  position: absolute;
+  top: 13px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #888;
+  border: 2px solid #555;
+  z-index: 10;
+}
+
+.hb-hang-tag-preview-stage .front-top {
+  position: relative;
+  padding: 36px 14px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 2;
+}
+
+.hb-hang-tag-preview-stage .ssa-logo {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.hb-hang-tag-preview-stage .ssa-logo img {
+  width: 38px;
+  height: auto;
+}
+
+.hb-hang-tag-preview-stage .ssa-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.hb-hang-tag-preview-stage .ssa-name {
+  font-size: 8.5px;
+  font-weight: 600;
+  color: #ffffff;
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+}
+
+.hb-hang-tag-preview-stage .ssa-sub {
+  font-size: 7px;
+  color: rgba(255,255,255,0.55);
+  letter-spacing: 0.05em;
+  margin-top: 1px;
+}
+
+.hb-hang-tag-preview-stage .expires-badge {
+  font-size: 7px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.5);
+  letter-spacing: 0.06em;
+  text-align: right;
+  line-height: 1.4;
+}
+
+.hb-hang-tag-preview-stage .doves-wrap {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+  margin: 8px 0 0;
+}
+
+.hb-hang-tag-preview-stage .doves-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: left center;
+  display: block;
+}
+
+.hb-hang-tag-preview-stage .doves-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(10,22,40,0.0) 0%,
+    rgba(10,22,40,0.0) 45%,
+    rgba(10,22,40,0.75) 80%,
+    rgba(10,22,40,0.95) 100%
+  );
+}
+
+.hb-hang-tag-preview-stage .front-bottom {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 12px 14px 14px;
+  z-index: 3;
+  text-align: center;
+}
+
+.hb-hang-tag-preview-stage .tagline {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.25;
+  margin-bottom: 10px;
+  text-shadow: 0 1px 8px rgba(0,0,0,0.6);
+}
+
+.hb-hang-tag-preview-stage .qr-zone {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.hb-hang-tag-preview-stage .qr-box {
+  width: 72px;
+  height: 72px;
+  background: #ffffff;
+  border-radius: 6px;
+  padding: 5px;
+  flex-shrink: 0;
+}
+
+.hb-hang-tag-preview-stage .qr-inner {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hb-hang-tag-preview-stage .qr-inner--placeholder {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-template-rows: repeat(7, 1fr);
+  gap: 1.5px;
+}
+
+.hb-hang-tag-preview-stage .qc { border-radius: 1px; }
+.hb-hang-tag-preview-stage .qon { background: #0a1628; }
+.hb-hang-tag-preview-stage .qof { background: transparent; }
+
+.hb-hang-tag-preview-stage .qr-info {
+  text-align: left;
+  flex: 1;
+}
+
+.hb-hang-tag-preview-stage .qr-label {
+  font-size: 8px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.5);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.hb-hang-tag-preview-stage .qr-route {
+  font-size: 9px;
+  color: rgba(255,255,255,0.75);
+  line-height: 1.5;
+}
+
+.hb-hang-tag-preview-stage .detente-strip {
+  background: rgba(255,255,255,0.08);
+  border-radius: 4px;
+  padding: 4px 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.hb-hang-tag-preview-stage .detente-text {
+  font-size: 8px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.6);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.hb-hang-tag-preview-stage .detente-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #1D9E75;
+}
+
+/* ── BACK ──────────────────────────────────────────── */
+.hb-hang-tag-preview-stage .back {
+  background: linear-gradient(160deg, #0d2d5e 0%, #0a1628 60%, #1a0a30 100%);
+  display: flex;
+  flex-direction: column;
+  padding: 36px 16px 16px;
+  gap: 0;
+}
+
+.hb-hang-tag-preview-stage .back-punch {
+  position: absolute;
+  top: 13px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #888;
+  border: 2px solid #555;
+  z-index: 10;
+}
+
+.hb-hang-tag-preview-stage .back-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: #ffffff;
+  text-align: center;
+  margin-bottom: 3px;
+  letter-spacing: 0.02em;
+}
+
+.hb-hang-tag-preview-stage .back-sub {
+  font-size: 8px;
+  color: rgba(255,255,255,0.45);
+  text-align: center;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.hb-hang-tag-preview-stage .faith-table {
+  width: 100%;
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+.hb-hang-tag-preview-stage .faith-row {
+  display: flex;
+  align-items: stretch;
+  border-bottom: 0.5px solid rgba(255,255,255,0.08);
+}
+
+.hb-hang-tag-preview-stage .faith-row:last-child {
+  border-bottom: none;
+}
+
+.hb-hang-tag-preview-stage .fl {
+  width: 22px;
+  min-width: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Playfair Display', serif;
+  font-weight: 700;
+  font-size: 13px;
+  color: #fff;
+  padding: 5px 0;
+}
+
+.hb-hang-tag-preview-stage .fl-f { background: #534AB7; }
+.hb-hang-tag-preview-stage .fl-a { background: #1D9E75; }
+.hb-hang-tag-preview-stage .fl-i { background: #BA7517; }
+.hb-hang-tag-preview-stage .fl-t { background: #1A4F8A; }
+.hb-hang-tag-preview-stage .fl-h { background: #993556; }
+
+.hb-hang-tag-preview-stage .faith-content {
+  flex: 1;
+  padding: 5px 8px;
+  background: rgba(255,255,255,0.05);
+}
+
+.hb-hang-tag-preview-stage .faith-word {
+  font-size: 9px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.9);
+  letter-spacing: 0.04em;
+  margin-bottom: 1px;
+}
+
+.hb-hang-tag-preview-stage .faith-def {
+  font-size: 8px;
+  color: rgba(255,255,255,0.5);
+  line-height: 1.35;
+}
+
+.hb-hang-tag-preview-stage .divider {
+  border: none;
+  border-top: 0.5px solid rgba(255,255,255,0.1);
+  margin: 8px 0;
+}
+
+.hb-hang-tag-preview-stage .value-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.hb-hang-tag-preview-stage .val-card {
+  background: rgba(255,255,255,0.07);
+  border-radius: 5px;
+  padding: 7px 8px;
+  text-align: center;
+}
+
+.hb-hang-tag-preview-stage .val-num {
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffffff;
+  line-height: 1;
+  margin-bottom: 2px;
+}
+
+.hb-hang-tag-preview-stage .val-num.green { color: #1D9E75; }
+.hb-hang-tag-preview-stage .val-num.amber { color: #EF9F27; }
+.hb-hang-tag-preview-stage .val-num.blue  { color: #85B7EB; }
+.hb-hang-tag-preview-stage .val-num.purple { color: #AFA9EC; }
+
+.hb-hang-tag-preview-stage .val-label {
+  font-size: 7.5px;
+  color: rgba(255,255,255,0.45);
+  line-height: 1.3;
+  letter-spacing: 0.02em;
+}
+
+.hb-hang-tag-preview-stage .gestures {
+  background: rgba(255,255,255,0.05);
+  border-radius: 6px;
+  padding: 8px 10px;
+  margin-bottom: 8px;
+}
+
+.hb-hang-tag-preview-stage .gesture-line {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 3px 0;
+}
+
+.hb-hang-tag-preview-stage .g-icon {
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.hb-hang-tag-preview-stage .gi-r { background: #1D9E75; }
+.hb-hang-tag-preview-stage .gi-s { background: #534AB7; }
+
+.hb-hang-tag-preview-stage .g-text {
+  font-size: 9px;
+  color: rgba(255,255,255,0.75);
+  line-height: 1.3;
+}
+
+.hb-hang-tag-preview-stage .g-text strong {
+  color: #fff;
+  font-weight: 600;
+}
+
+.hb-hang-tag-preview-stage .rules-line {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.hb-hang-tag-preview-stage .rule-chip {
+  font-size: 8px;
+  padding: 3px 8px;
+  border-radius: 20px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+
+.hb-hang-tag-preview-stage .rc-time   { background: rgba(83,74,183,0.3); color: #AFA9EC; }
+.hb-hang-tag-preview-stage .rc-dist   { background: rgba(29,158,117,0.3); color: #5DCAA5; }
+.hb-hang-tag-preview-stage .rc-cap    { background: rgba(186,117,23,0.3); color: #FAC775; }
+
+.hb-hang-tag-preview-stage .back-footer {
+  margin-top: auto;
+  text-align: center;
+  border-top: 0.5px solid rgba(255,255,255,0.1);
+  padding-top: 8px;
+}
+
+.hb-hang-tag-preview-stage .footer-org {
+  font-size: 8.5px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.7);
+  letter-spacing: 0.06em;
+  margin-bottom: 2px;
+}
+
+.hb-hang-tag-preview-stage .footer-note {
+  font-size: 7px;
+  color: rgba(255,255,255,0.35);
+  letter-spacing: 0.05em;
+}
+
+.hb-hang-tag-preview-stage .mentor-line {
+  font-size: 7.5px;
+  color: rgba(255,255,255,0.45);
+  text-align: center;
+  font-style: italic;
+  margin-bottom: 6px;
+}
+
+.hb-hang-tag-preview-stage .tag p {
+	margin: 0;
+}
+
+.hb-hang-tag-status {
+	margin-left: 0.5em;
+	font-size: 0.9em;
+	color: #86efac;
+}

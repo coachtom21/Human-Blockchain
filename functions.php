@@ -660,6 +660,10 @@ function hb_load_core_files() {
 		require_once $includes_dir . '/class-hb-postcard.php';
 	}
 
+	if ( file_exists( $includes_dir . '/class-hb-hang-tag.php' ) ) {
+		require_once $includes_dir . '/class-hb-hang-tag.php';
+	}
+
 	if ( file_exists( $includes_dir . '/class-hb-biometric-settings.php' ) ) {
 		require_once $includes_dir . '/class-hb-biometric-settings.php';
 	}
