@@ -193,6 +193,11 @@ class Hb_Hang_Tag {
 		<div class="tag front">
 			<div class="punch-hole"></div>
 
+			<div class="front-bg doves-wrap" aria-hidden="true">
+				<img src="<?php echo esc_url( $images['doves'] ); ?>" alt="">
+				<div class="doves-overlay"></div>
+			</div>
+
 			<div class="front-top">
 				<div class="ssa-logo">
 					<img src="<?php echo esc_url( $images['logo'] ); ?>" alt="<?php esc_attr_e( 'Small Street Applied Atlanta cityscape logo', 'hello-elementor-child' ); ?>">
@@ -206,14 +211,9 @@ class Hb_Hang_Tag {
 				</div>
 			</div>
 
-			<div class="doves-wrap">
-				<img src="<?php echo esc_url( $images['doves'] ); ?>" alt="<?php esc_attr_e( 'White doves in flight with Member Treasury crest', 'hello-elementor-child' ); ?>">
-				<div class="doves-overlay"></div>
-			</div>
+			<p class="tagline"><?php echo wp_kses( __( '&ldquo;Seek Gratitude<br>for Showing Up&rdquo;', 'hello-elementor-child' ), array( 'br' => array() ) ); ?></p>
 
 			<div class="front-bottom">
-				<p class="tagline"><?php echo wp_kses( __( '&ldquo;Seek Gratitude<br>for Showing Up&rdquo;', 'hello-elementor-child' ), array( 'br' => array() ) ); ?></p>
-
 				<div class="qr-zone">
 					<div class="qr-box">
 						<div class="qr-inner<?php echo $qr_image_url === '' ? ' qr-inner--placeholder' : ''; ?>">
