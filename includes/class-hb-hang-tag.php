@@ -193,14 +193,6 @@ class Hb_Hang_Tag {
 		<div class="tag front">
 			<div class="punch-hole"></div>
 
-			<div
-				class="front-bg"
-				aria-hidden="true"
-				style="background-image: url('<?php echo esc_url( $images['doves'] ); ?>');"
-			>
-				<div class="doves-overlay"></div>
-			</div>
-
 			<div class="front-top">
 				<div class="ssa-logo">
 					<img src="<?php echo esc_url( $images['logo'] ); ?>" alt="<?php esc_attr_e( 'Small Street Applied Atlanta cityscape logo', 'hello-elementor-child' ); ?>">
@@ -212,6 +204,11 @@ class Hb_Hang_Tag {
 				<div class="expires-badge">
 					<?php echo wp_kses( __( 'Expires<br>12/31/2030<br><span style="color:rgba(255,255,255,0.3)">D&eacute;tente 2030</span>', 'hello-elementor-child' ), array( 'br' => array(), 'span' => array( 'style' => true ) ) ); ?>
 				</div>
+			</div>
+
+			<div class="doves-wrap">
+				<img src="<?php echo esc_url( $images['doves'] ); ?>" alt="<?php esc_attr_e( 'White doves in flight with Member Treasury crest', 'hello-elementor-child' ); ?>">
+				<div class="doves-overlay"></div>
 			</div>
 
 			<p class="tagline"><?php echo wp_kses( __( '&ldquo;Seek Gratitude<br>for Showing Up&rdquo;', 'hello-elementor-child' ), array( 'br' => array() ) ); ?></p>
