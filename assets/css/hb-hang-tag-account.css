@@ -173,23 +173,31 @@
 
 /* ── FRONT ─────────────────────────────────────────── */
 .hb-hang-tag-preview-stage .front {
+  position: relative;
   background: #0a1628;
-  display: flex;
-  flex-direction: column;
+  width: 100%;
+  height: 100%;
 }
 
 .hb-hang-tag-preview-stage .doves-wrap {
   position: absolute;
-  inset: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
   z-index: 0;
   overflow: hidden;
 }
 
 .hb-hang-tag-preview-stage .doves-wrap img {
-  width: 100%;
-  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none;
   object-fit: cover;
-  object-position: center center;
+  object-position: center 35%;
   display: block;
 }
 
