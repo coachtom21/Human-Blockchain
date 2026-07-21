@@ -132,15 +132,15 @@ class Hb_Postcard {
 	}
 
 	/**
-	 * Ensure a QR Tiger hosted vCard scan URL exists (photo, name, contact buttons).
+	 * Ensure a branded QR Tiger dynamic vCard exists (styled raster + short scan URL).
 	 *
 	 * Updates the existing vCard campaign when hb_vcard_qr_id is set; creates one only
 	 * on first use or when the update call fails. Skips QR Tiger when profile is unchanged.
 	 *
 	 * @param int $user_id User ID.
-	 * @return string|WP_Error Public scan URL (e.g. qr1.be/…).
+	 * @return array{scan_url:string,image_url:string}|WP_Error
 	 */
-	public static function ensure_vcard_scan_url( $user_id ) {
+	public static function ensure_vcard_qr_assets( $user_id ) {
 		$user_id = (int) $user_id;
 		if ( ! function_exists( 'hb_generate_qrtiger_qr_for_vcard' ) ) {
 			return new WP_Error(
@@ -175,7 +175,29 @@ class Hb_Postcard {
 			);
 		}
 
-		return esc_url_raw( apply_filters( 'hb_postcard_vcard_scan_url', $scan_url, $user_id ) );
+		$image_url = (string) get_user_meta( $user_id, 'hb_vcard_qr_image_url', true );
+		if ( $image_url === '' && ! empty( $qr['image_url'] ) ) {
+			$image_url = (string) $qr['image_url'];
+		}
+
+		return array(
+			'scan_url'  => esc_url_raw( apply_filters( 'hb_postcard_vcard_scan_url', $scan_url, $user_id ) ),
+			'image_url' => esc_url_raw( $image_url ),
+		);
+	}
+
+	/**
+	 * Ensure a QR Tiger hosted vCard scan URL exists (photo, name, contact buttons).
+	 *
+	 * @param int $user_id User ID.
+	 * @return string|WP_Error Public scan URL (e.g. qr1.be/…).
+	 */
+	public static function ensure_vcard_scan_url( $user_id ) {
+		$assets = self::ensure_vcard_qr_assets( $user_id );
+		if ( is_wp_error( $assets ) ) {
+			return $assets;
+		}
+		return $assets['scan_url'];
 	}
 
 	/**
@@ -259,6 +281,96 @@ class Hb_Postcard {
 			$parts[] = $phone;
 		}
 		return implode( ' • ', $parts );
+	}
+
+	/**
+	 * Load branded QR Tiger vCard raster bytes from a stored image URL.
+	 *
+	 * @param int    $user_id   User ID (for uploads path resolution).
+	 * @param string $image_url Local uploads URL, remote URL, or data: URL.
+	 * @return string|WP_Error PNG/JPEG binary.
+	 */
+	private static function load_qr_image_binary( $user_id, $image_url ) {
+		$image_url = trim( (string) $image_url );
+		if ( $image_url === '' ) {
+			return new WP_Error( 'qr_image_missing', __( 'Branded QR image is not available.', 'hello-elementor-child' ) );
+		}
+
+		$binary = '';
+		$upload = wp_upload_dir();
+		$base_url = ! empty( $upload['baseurl'] ) ? $upload['baseurl'] : '';
+		$base_dir = ! empty( $upload['basedir'] ) ? $upload['basedir'] : '';
+
+		if ( $base_url !== '' && $base_dir !== '' && 0 === strpos( $image_url, $base_url ) ) {
+			$rel  = ltrim( substr( $image_url, strlen( $base_url ) ), '/' );
+			$path = trailingslashit( $base_dir ) . rawurldecode( $rel );
+			if ( is_file( $path ) ) {
+				$binary = (string) file_get_contents( $path );
+			}
+		}
+
+		if ( $binary === '' ) {
+			$path = self::path_from_site_upload_url( $image_url );
+			if ( $path !== '' && is_file( $path ) ) {
+				$binary = (string) file_get_contents( $path );
+			}
+		}
+
+		if ( $binary === '' && preg_match( '#^data:image/(png|jpe?g|webp);base64,(.+)$#i', $image_url, $m ) ) {
+			$binary = (string) base64_decode( $m[2], true );
+		}
+
+		if ( $binary === '' && preg_match( '#^https?://#i', $image_url ) ) {
+			$response = wp_remote_get(
+				$image_url,
+				array(
+					'timeout'   => 25,
+					'sslverify' => true,
+					'headers'   => array( 'Accept' => 'image/*,*/*;q=0.8' ),
+				)
+			);
+			if ( is_wp_error( $response ) ) {
+				return $response;
+			}
+			$code = (int) wp_remote_retrieve_response_code( $response );
+			if ( $code >= 200 && $code < 300 ) {
+				$binary = (string) wp_remote_retrieve_body( $response );
+			}
+		}
+
+		if ( $binary === '' || strlen( $binary ) < 8 ) {
+			return new WP_Error( 'qr_image_load', __( 'Could not load branded QR image.', 'hello-elementor-child' ) );
+		}
+
+		return $binary;
+	}
+
+	/**
+	 * Branded dynamic vCard QR raster for the postcard (QR Tiger styling).
+	 *
+	 * Falls back to a plain encoded QR only when the branded asset cannot be loaded.
+	 *
+	 * @param int    $user_id   User ID.
+	 * @param string $scan_url  Dynamic scan URL (qr1.be/…).
+	 * @param int    $size      Target pixel size for fallback plain QR.
+	 * @return string|WP_Error
+	 */
+	public static function fetch_branded_qr_png( $user_id, $scan_url, $size = 400 ) {
+		$user_id   = (int) $user_id;
+		$image_url = (string) get_user_meta( $user_id, 'hb_vcard_qr_image_url', true );
+
+		if ( $image_url !== '' ) {
+			$binary = self::load_qr_image_binary( $user_id, $image_url );
+			if ( ! is_wp_error( $binary ) ) {
+				return apply_filters( 'hb_postcard_branded_qr_png', $binary, $user_id, $scan_url );
+			}
+		}
+
+		if ( $scan_url !== '' ) {
+			return self::fetch_qr_png( $scan_url, $size );
+		}
+
+		return new WP_Error( 'qr_image_missing', __( 'Branded QR image is not available.', 'hello-elementor-child' ) );
 	}
 
 	/**
@@ -614,13 +726,15 @@ class Hb_Postcard {
 			return new WP_Error( 'gd_missing', __( 'Image library (GD) is not available on this server.', 'hello-elementor-child' ) );
 		}
 
-		$user_id  = (int) $user_id;
-		$fields   = self::get_fields( $user_id );
-		$scan_url = self::ensure_vcard_scan_url( $user_id );
+		$user_id = (int) $user_id;
+		$fields  = self::get_fields( $user_id );
+		$assets  = self::ensure_vcard_qr_assets( $user_id );
 
-		if ( is_wp_error( $scan_url ) ) {
-			return $scan_url;
+		if ( is_wp_error( $assets ) ) {
+			return $assets;
 		}
+
+		$scan_url = $assets['scan_url'];
 
 		if ( self::get_template_url_config() === '' ) {
 			return new WP_Error(
@@ -664,8 +778,8 @@ class Hb_Postcard {
 			}
 		}
 
-		$placement   = self::get_qr_placement( $w, $h, $user_id );
-		$qr_binary   = self::fetch_qr_png( $scan_url, max( 200, $placement['size'] + 40 ) );
+		$placement = self::get_qr_placement( $w, $h, $user_id );
+		$qr_binary = self::fetch_branded_qr_png( $user_id, $scan_url, max( 200, $placement['size'] + 40 ) );
 		if ( is_wp_error( $qr_binary ) ) {
 			imagedestroy( $img );
 			return $qr_binary;
@@ -954,7 +1068,7 @@ class Hb_Postcard {
 		<div id="hb-postcard-tools" class="hb-postcard-tools" data-has-image="<?php echo $has_image ? '1' : '0'; ?>">
 			<h3><?php esc_html_e( 'Postcard', 'hello-elementor-child' ); ?></h3>
 			<p class="hb-postcard-intro">
-				<?php esc_html_e( 'Your hosted vCard QR is stamped onto the Human Gold Rush RSVP postcard (SCAN TO RSVP slot). Scanning opens your contact page with photo, name, and save-to-phone options — same as the previous VCard flow.', 'hello-elementor-child' ); ?>
+				<?php esc_html_e( 'Your branded MEGAcoach vCard QR is stamped onto the Human Gold Rush RSVP postcard (SCAN TO RSVP slot). Scanning opens your dynamic QR Tiger contact page — photo, name, and save-to-phone options update automatically when you refresh your profile.', 'hello-elementor-child' ); ?>
 			</p>
 
 			<div class="hb-postcard-layout">
@@ -967,7 +1081,7 @@ class Hb_Postcard {
 					</p>
 
 					<div class="hb-postcard-referral" id="hb-postcard-referral-wrap"<?php echo $has_image ? '' : ' hidden'; ?>>
-						<label for="hb-postcard-ref-url"><strong><?php esc_html_e( 'Public vCard link (encoded in QR)', 'hello-elementor-child' ); ?></strong></label>
+						<label for="hb-postcard-ref-url"><strong><?php esc_html_e( 'Dynamic vCard link (scans resolve to your live profile)', 'hello-elementor-child' ); ?></strong></label>
 						<input type="url" id="hb-postcard-ref-url" readonly value="<?php echo esc_attr( $scan_url ); ?>" placeholder="<?php esc_attr_e( 'Generate postcard to create your vCard link', 'hello-elementor-child' ); ?>">
 						<p class="hb-postcard-actions">
 							<a class="button" id="hb-postcard-ref-preview" href="<?php echo esc_url( $scan_url !== '' ? $scan_url : '#' ); ?>" target="_blank" rel="noopener noreferrer"<?php echo $scan_url === '' ? ' aria-disabled="true" tabindex="-1"' : ''; ?>><?php esc_html_e( 'Preview vCard', 'hello-elementor-child' ); ?></a>
