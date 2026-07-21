@@ -2028,6 +2028,126 @@ function hb_get_qrtiger_vcard_master_styling() {
 }
 
 /**
+ * Frameless Human Gold gradient styling for the postcard RSVP slot.
+ *
+ * Uses the same gradient + center logo as the identity vCard QR, but omits the
+ * decorative outer frame (frame 16) so the scannable pattern remains visible when
+ * scaled down onto the 4×6 artwork.
+ *
+ * @return array<string, mixed>
+ */
+function hb_get_qrtiger_postcard_styling() {
+	$styling = hb_get_qrtiger_vcard_master_styling();
+	$strip   = array(
+		'frame',
+		'frameText',
+		'frametextFont',
+		'frameColor',
+		'frameColor2',
+		'frameColorType',
+		'frameColorStyleType',
+		'frameGradientType',
+		'frameGradientStartColor',
+		'frameGradientEndColor',
+	);
+	foreach ( $strip as $key ) {
+		unset( $styling[ $key ] );
+	}
+	$styling['size']     = 500;
+	$styling['qrFormat'] = 'png';
+
+	return apply_filters( 'hb_qrtiger_postcard_styling', $styling );
+}
+
+/**
+ * Generate a frameless branded PNG for the postcard (encodes the dynamic scan URL).
+ *
+ * Uses QR Tiger POST /api/qr/static so we do not create extra dynamic campaigns.
+ *
+ * @param string $scan_url Public short URL (e.g. qr1.be/…).
+ * @return string|WP_Error PNG binary.
+ */
+function hb_fetch_qrtiger_postcard_qr_png( $scan_url ) {
+	$scan_url = esc_url_raw( trim( (string) $scan_url ) );
+	if ( '' === $scan_url ) {
+		return new WP_Error( 'qr_url_empty', __( 'Scan URL is required to render the postcard QR.', 'hello-elementor-child' ) );
+	}
+
+	$creds = hb_get_qrtiger_credentials();
+	if ( '' === $creds['key'] ) {
+		return new WP_Error( 'missing_key', __( 'QRTiger API key is missing in NWP Gateway settings.', 'hello-elementor-child' ) );
+	}
+
+	$styling   = hb_get_qrtiger_postcard_styling();
+	$cache_key = 'hb_pcard_qr_' . md5( $scan_url . wp_json_encode( $styling ) );
+	$cached    = get_transient( $cache_key );
+	if ( is_string( $cached ) && strlen( $cached ) > 8 && "\x89PNG" === substr( $cached, 0, 4 ) ) {
+		return $cached;
+	}
+
+	$payload = array_merge(
+		$styling,
+		array(
+			'qrCategory' => 'url',
+			'text'       => $scan_url,
+		)
+	);
+
+	$response = wp_remote_post(
+		$creds['url'] . '/api/qr/static',
+		array(
+			'timeout' => 30,
+			'headers' => hb_qrtiger_request_headers( $creds ),
+			'body'    => wp_json_encode( $payload ),
+		)
+	);
+
+	if ( is_wp_error( $response ) ) {
+		return $response;
+	}
+
+	$code = (int) wp_remote_retrieve_response_code( $response );
+	$body = (string) wp_remote_retrieve_body( $response );
+
+	if ( $code < 200 || $code >= 300 || '' === $body ) {
+		return new WP_Error(
+			'qrtiger_static',
+			sprintf(
+				/* translators: %d: HTTP status code */
+				__( 'QRTiger could not render the postcard QR (HTTP %d).', 'hello-elementor-child' ),
+				$code
+			)
+		);
+	}
+
+	$binary = '';
+	if ( "\x89PNG" === substr( $body, 0, 4 ) ) {
+		$binary = $body;
+	} else {
+		$data = json_decode( $body, true );
+		if ( is_array( $data ) && ! empty( $data['data'] ) && is_string( $data['data'] ) ) {
+			$decoded = base64_decode( $data['data'], true );
+			if ( is_string( $decoded ) && strlen( $decoded ) > 8 ) {
+				$binary = $decoded;
+			}
+		} elseif ( is_object( $data ) && ! empty( $data->data ) && is_string( $data->data ) ) {
+			$decoded = base64_decode( $data->data, true );
+			if ( is_string( $decoded ) && strlen( $decoded ) > 8 ) {
+				$binary = $decoded;
+			}
+		}
+	}
+
+	if ( '' === $binary || "\x89PNG" !== substr( $binary, 0, 4 ) ) {
+		return new WP_Error( 'qrtiger_static_png', __( 'QRTiger did not return a valid postcard QR image.', 'hello-elementor-child' ) );
+	}
+
+	set_transient( $cache_key, $binary, DAY_IN_SECONDS );
+
+	return $binary;
+}
+
+/**
  * Sanitize a QR Tiger campaign ID stored on a user.
  *
  * @param mixed $qr_id Raw meta value.

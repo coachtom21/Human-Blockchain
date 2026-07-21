@@ -356,9 +356,19 @@ class Hb_Postcard {
 	 * @return string|WP_Error
 	 */
 	public static function fetch_branded_qr_png( $user_id, $scan_url, $size = 400 ) {
-		$user_id   = (int) $user_id;
-		$image_url = (string) get_user_meta( $user_id, 'hb_vcard_qr_image_url', true );
+		$user_id  = (int) $user_id;
+		$scan_url = trim( (string) $scan_url );
 
+		// Postcard slot needs a frameless gradient QR — not the full vCard campaign
+		// raster (frame 16 collapses to a circle at ~108px).
+		if ( $scan_url !== '' && function_exists( 'hb_fetch_qrtiger_postcard_qr_png' ) ) {
+			$binary = hb_fetch_qrtiger_postcard_qr_png( $scan_url );
+			if ( ! is_wp_error( $binary ) ) {
+				return apply_filters( 'hb_postcard_branded_qr_png', $binary, $user_id, $scan_url );
+			}
+		}
+
+		$image_url = (string) get_user_meta( $user_id, 'hb_vcard_qr_image_url', true );
 		if ( $image_url !== '' ) {
 			$binary = self::load_qr_image_binary( $user_id, $image_url );
 			if ( ! is_wp_error( $binary ) ) {
@@ -1068,7 +1078,7 @@ class Hb_Postcard {
 		<div id="hb-postcard-tools" class="hb-postcard-tools" data-has-image="<?php echo $has_image ? '1' : '0'; ?>">
 			<h3><?php esc_html_e( 'Postcard', 'hello-elementor-child' ); ?></h3>
 			<p class="hb-postcard-intro">
-				<?php esc_html_e( 'Your branded MEGAcoach vCard QR is stamped onto the Human Gold Rush RSVP postcard (SCAN TO RSVP slot). Scanning opens your dynamic QR Tiger contact page — photo, name, and save-to-phone options update automatically when you refresh your profile.', 'hello-elementor-child' ); ?>
+				<?php esc_html_e( 'Your Human Gold gradient vCard QR is stamped onto the RSVP slot on the postcard. Scanning opens your dynamic QR Tiger contact page — photo, name, and save-to-phone options update when you refresh your profile.', 'hello-elementor-child' ); ?>
 			</p>
 
 			<div class="hb-postcard-layout">
