@@ -356,4 +356,40 @@
 			});
 		});
 	}
+
+	function triggerFileDownload(url) {
+		if (!url) {
+			return;
+		}
+		var link = document.createElement('a');
+		link.href = url;
+		link.style.display = 'none';
+		document.body.appendChild(link);
+		link.click();
+		document.body.removeChild(link);
+	}
+
+	function downloadPostcardSides(format) {
+		var urls = cfg.downloads && cfg.downloads[format];
+		if (!urls || !urls.front) {
+			return;
+		}
+		setStatus(cfg.i18n.downloading || 'Downloading…', false);
+		triggerFileDownload(urls.front);
+		if (urls.back) {
+			window.setTimeout(function () {
+				triggerFileDownload(urls.back);
+			}, 450);
+		}
+	}
+
+	['png', 'jpg'].forEach(function (format) {
+		var btn = document.getElementById('hb-postcard-dl-' + format);
+		if (!btn) {
+			return;
+		}
+		btn.addEventListener('click', function () {
+			downloadPostcardSides(format);
+		});
+	});
 })();

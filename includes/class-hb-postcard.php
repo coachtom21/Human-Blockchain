@@ -1204,14 +1204,25 @@ class Hb_Postcard {
 			'hb-postcard-account',
 			'hbPostcard',
 			array(
-				'ajaxUrl' => $ajax_url,
-				'nonce'   => $nonce,
-				'i18n'    => array(
-					'generating'   => __( 'Generating postcard…', 'hello-elementor-child' ),
-					'saving'       => __( 'Saving…', 'hello-elementor-child' ),
-					'copied'       => __( 'Copied.', 'hello-elementor-child' ),
-					'copyFail'     => __( 'Could not copy.', 'hello-elementor-child' ),
-					'confirmDel'   => __( 'Remove your saved postcard?', 'hello-elementor-child' ),
+				'ajaxUrl'   => $ajax_url,
+				'nonce'     => $nonce,
+				'downloads' => array(
+					'png' => array(
+						'front' => esc_url_raw( $png_front_href ),
+						'back'  => $back_url !== '' ? esc_url_raw( $png_back_href ) : '',
+					),
+					'jpg' => array(
+						'front' => esc_url_raw( $jpg_front_href ),
+						'back'  => $back_url !== '' ? esc_url_raw( $jpg_back_href ) : '',
+					),
+				),
+				'i18n'      => array(
+					'generating'    => __( 'Generating postcard…', 'hello-elementor-child' ),
+					'saving'        => __( 'Saving…', 'hello-elementor-child' ),
+					'copied'        => __( 'Copied.', 'hello-elementor-child' ),
+					'copyFail'      => __( 'Could not copy.', 'hello-elementor-child' ),
+					'confirmDel'    => __( 'Remove your saved postcard?', 'hello-elementor-child' ),
+					'downloading'   => __( 'Downloading front and back…', 'hello-elementor-child' ),
 					'lightboxClose' => __( 'Close preview', 'hello-elementor-child' ),
 					'lightboxPrev'  => __( 'Previous image', 'hello-elementor-child' ),
 					'lightboxNext'  => __( 'Next image', 'hello-elementor-child' ),
@@ -1251,14 +1262,8 @@ class Hb_Postcard {
 
 					<div id="hb-postcard-download-wrap"<?php echo $has_image ? '' : ' hidden'; ?>>
 						<p class="hb-postcard-actions">
-							<a class="button" id="hb-postcard-dl-png-front" href="<?php echo esc_url( $png_front_href ); ?>"><?php esc_html_e( 'Download Front PNG (4×6)', 'hello-elementor-child' ); ?></a>
-							<?php if ( $back_url !== '' ) : ?>
-							<a class="button" id="hb-postcard-dl-png-back" href="<?php echo esc_url( $png_back_href ); ?>"><?php esc_html_e( 'Download Back PNG (4×6)', 'hello-elementor-child' ); ?></a>
-							<?php endif; ?>
-							<a class="button" id="hb-postcard-dl-jpg-front" href="<?php echo esc_url( $jpg_front_href ); ?>"><?php esc_html_e( 'Download Front JPG', 'hello-elementor-child' ); ?></a>
-							<?php if ( $back_url !== '' ) : ?>
-							<a class="button" id="hb-postcard-dl-jpg-back" href="<?php echo esc_url( $jpg_back_href ); ?>"><?php esc_html_e( 'Download Back JPG', 'hello-elementor-child' ); ?></a>
-							<?php endif; ?>
+							<button type="button" class="button" id="hb-postcard-dl-png" data-format="png"><?php esc_html_e( 'Download PNG (4×6)', 'hello-elementor-child' ); ?></button>
+							<button type="button" class="button" id="hb-postcard-dl-jpg" data-format="jpg"><?php esc_html_e( 'Download JPG', 'hello-elementor-child' ); ?></button>
 							<button type="button" class="button" id="hb-postcard-delete-btn"><?php esc_html_e( 'Delete', 'hello-elementor-child' ); ?></button>
 						</p>
 					</div>
@@ -1310,7 +1315,7 @@ class Hb_Postcard {
 						</figure>
 						<?php endif; ?>
 					</div>
-					<p class="hb-postcard-print-note" id="hb-postcard-print-note"<?php echo $has_image ? '' : ' hidden'; ?>><?php esc_html_e( 'Print front and back at 4×6 inches (300 DPI). Download each side separately for double-sided printing.', 'hello-elementor-child' ); ?></p>
+					<p class="hb-postcard-print-note" id="hb-postcard-print-note"<?php echo $has_image ? '' : ' hidden'; ?>><?php esc_html_e( 'Print front and back at 4×6 inches (300 DPI). Each download button saves both sides as separate files.', 'hello-elementor-child' ); ?></p>
 				</div>
 			</div>
 
