@@ -193,8 +193,11 @@ class Hb_Hang_Tag {
 		<div class="tag front">
 			<div class="punch-hole"></div>
 
-			<div class="front-bg doves-wrap" aria-hidden="true">
-				<img src="<?php echo esc_url( $images['doves'] ); ?>" alt="">
+			<div
+				class="front-bg"
+				aria-hidden="true"
+				style="background-image: url('<?php echo esc_url( $images['doves'] ); ?>');"
+			>
 				<div class="doves-overlay"></div>
 			</div>
 
