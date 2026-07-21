@@ -578,6 +578,138 @@ class Hb_Postcard {
 	}
 
 	/**
+	 * Resolve postcard back artwork path on disk when available.
+	 *
+	 * @return string
+	 */
+	private static function get_back_path() {
+		$url = self::get_back_url();
+		if ( $url === '' ) {
+			return '';
+		}
+		$upload = wp_upload_dir();
+		if ( ! empty( $upload['basedir'] ) && ! empty( $upload['baseurl'] ) && 0 === strpos( $url, $upload['baseurl'] ) ) {
+			$rel  = ltrim( substr( $url, strlen( $upload['baseurl'] ) ), '/' );
+			$path = trailingslashit( $upload['basedir'] ) . rawurldecode( $rel );
+			return is_file( $path ) ? $path : '';
+		}
+		if ( 0 === strpos( $url, get_stylesheet_directory_uri() ) ) {
+			$rel  = ltrim( substr( $url, strlen( get_stylesheet_directory_uri() ) ), '/' );
+			$path = trailingslashit( get_stylesheet_directory() ) . $rel;
+			return is_file( $path ) ? $path : '';
+		}
+		$path_from_url = self::path_from_site_upload_url( $url );
+		return ( $path_from_url !== '' && is_file( $path_from_url ) ) ? $path_from_url : '';
+	}
+
+	/**
+	 * Load generated postcard front PNG bytes for the current user.
+	 *
+	 * @param int $user_id User ID.
+	 * @return string|WP_Error
+	 */
+	private static function load_front_binary( $user_id ) {
+		$user_id = (int) $user_id;
+		$url     = (string) get_user_meta( $user_id, self::META_IMAGE_URL, true );
+		if ( $url === '' ) {
+			return new WP_Error( 'no_front', __( 'No postcard available. Generate one first.', 'hello-elementor-child' ) );
+		}
+		$upload = wp_upload_dir();
+		$path   = '';
+		if ( ! empty( $upload['basedir'] ) && ! empty( $upload['baseurl'] ) && 0 === strpos( $url, $upload['baseurl'] ) ) {
+			$rel  = ltrim( substr( $url, strlen( $upload['baseurl'] ) ), '/' );
+			$path = trailingslashit( $upload['basedir'] ) . rawurldecode( $rel );
+		}
+		if ( $path === '' || ! is_file( $path ) ) {
+			return new WP_Error( 'front_missing', __( 'Postcard front file not found.', 'hello-elementor-child' ) );
+		}
+		$binary = (string) file_get_contents( $path );
+		if ( $binary === '' ) {
+			return new WP_Error( 'front_empty', __( 'Empty postcard front file.', 'hello-elementor-child' ) );
+		}
+		return $binary;
+	}
+
+	/**
+	 * Load static postcard back artwork bytes.
+	 *
+	 * @return string|WP_Error
+	 */
+	private static function load_back_binary() {
+		$path = self::get_back_path();
+		if ( $path !== '' && is_readable( $path ) ) {
+			$binary = (string) file_get_contents( $path );
+			if ( $binary !== '' ) {
+				return $binary;
+			}
+		}
+
+		$url = self::get_back_url();
+		if ( $url === '' ) {
+			return new WP_Error( 'no_back', __( 'Postcard back artwork is not configured.', 'hello-elementor-child' ) );
+		}
+
+		$response = wp_remote_get(
+			$url,
+			array(
+				'timeout'   => 30,
+				'sslverify' => true,
+			)
+		);
+		if ( is_wp_error( $response ) ) {
+			return $response;
+		}
+		$code = (int) wp_remote_retrieve_response_code( $response );
+		$body = (string) wp_remote_retrieve_body( $response );
+		if ( $code < 200 || $code >= 300 || $body === '' ) {
+			return new WP_Error( 'back_fetch', __( 'Could not download the postcard back artwork.', 'hello-elementor-child' ) );
+		}
+		return $body;
+	}
+
+	/**
+	 * Convert PNG bytes to JPEG bytes when GD is available.
+	 *
+	 * @param string $png_binary PNG image bytes.
+	 * @return string|WP_Error
+	 */
+	private static function png_binary_to_jpeg( $png_binary ) {
+		if ( ! function_exists( 'imagecreatefromstring' ) || ! function_exists( 'imagejpeg' ) ) {
+			return new WP_Error( 'gd_missing', __( 'Image conversion is not available on this server.', 'hello-elementor-child' ) );
+		}
+		$im = imagecreatefromstring( $png_binary );
+		if ( ! $im ) {
+			return new WP_Error( 'jpg_convert', __( 'Could not convert postcard image to JPG.', 'hello-elementor-child' ) );
+		}
+		ob_start();
+		imagejpeg( $im, null, 92 );
+		$binary = ob_get_clean();
+		imagedestroy( $im );
+		if ( ! is_string( $binary ) || $binary === '' ) {
+			return new WP_Error( 'jpg_empty', __( 'JPG export failed.', 'hello-elementor-child' ) );
+		}
+		return $binary;
+	}
+
+	/**
+	 * Stream a postcard side download response.
+	 *
+	 * @param string $binary    Image bytes.
+	 * @param string $filename  Download filename without path.
+	 * @param string $mime      MIME type.
+	 * @return void
+	 */
+	private static function stream_download_binary( $binary, $filename, $mime ) {
+		header( 'Content-Type: ' . $mime );
+		header( 'Content-Disposition: attachment; filename="' . sanitize_file_name( $filename ) . '"' );
+		header( 'Content-Length: ' . strlen( $binary ) );
+		header( 'X-Content-Type-Options: nosniff' );
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo $binary;
+		exit;
+	}
+
+	/**
 	 * Load master artwork from disk.
 	 *
 	 * @return resource|\GdImage|null
@@ -954,50 +1086,44 @@ class Hb_Postcard {
 			status_header( 403 );
 			wp_die( esc_html__( 'Invalid security token.', 'hello-elementor-child' ) );
 		}
+
 		$format = isset( $_GET['format'] ) ? strtolower( sanitize_key( wp_unslash( $_GET['format'] ) ) ) : 'png';
 		if ( 'jpeg' === $format ) {
 			$format = 'jpg';
 		}
+		if ( ! in_array( $format, array( 'png', 'jpg' ), true ) ) {
+			$format = 'png';
+		}
+
+		$side = isset( $_GET['side'] ) ? sanitize_key( wp_unslash( $_GET['side'] ) ) : 'front';
+		if ( ! in_array( $side, array( 'front', 'back' ), true ) ) {
+			$side = 'front';
+		}
+
 		$user_id = (int) get_current_user_id();
-		$url     = (string) get_user_meta( $user_id, self::META_IMAGE_URL, true );
-		if ( $url === '' ) {
-			status_header( 404 );
-			wp_die( esc_html__( 'No postcard available. Generate one first.', 'hello-elementor-child' ) );
+		if ( 'back' === $side ) {
+			$binary = self::load_back_binary();
+		} else {
+			$binary = self::load_front_binary( $user_id );
 		}
-		$upload = wp_upload_dir();
-		$path   = '';
-		if ( ! empty( $upload['basedir'] ) && ! empty( $upload['baseurl'] ) && 0 === strpos( $url, $upload['baseurl'] ) ) {
-			$rel  = ltrim( substr( $url, strlen( $upload['baseurl'] ) ), '/' );
-			$path = trailingslashit( $upload['basedir'] ) . rawurldecode( $rel );
+
+		if ( is_wp_error( $binary ) ) {
+			$code = 'no_front' === $binary->get_error_code() || 'front_missing' === $binary->get_error_code() ? 404 : 502;
+			status_header( $code );
+			wp_die( esc_html( $binary->get_error_message() ) );
 		}
-		if ( $path === '' || ! is_file( $path ) ) {
-			status_header( 404 );
-			wp_die( esc_html__( 'Postcard file not found.', 'hello-elementor-child' ) );
-		}
-		$binary = (string) file_get_contents( $path );
-		if ( $binary === '' ) {
-			status_header( 502 );
-			wp_die( esc_html__( 'Empty postcard file.', 'hello-elementor-child' ) );
-		}
-		if ( 'jpg' === $format && function_exists( 'imagecreatefrompng' ) ) {
-			$im = imagecreatefrompng( $path );
-			if ( $im ) {
-				ob_start();
-				imagejpeg( $im, null, 92 );
-				$binary = ob_get_clean();
-				imagedestroy( $im );
-				header( 'Content-Type: image/jpeg' );
-				header( 'Content-Disposition: attachment; filename="postcard-' . $user_id . '.jpg"' );
-				header( 'Content-Length: ' . strlen( $binary ) );
-				echo $binary; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-				exit;
+
+		$filename = 'postcard-' . $user_id . '-' . $side;
+		if ( 'jpg' === $format ) {
+			$converted = self::png_binary_to_jpeg( $binary );
+			if ( is_wp_error( $converted ) ) {
+				status_header( 502 );
+				wp_die( esc_html( $converted->get_error_message() ) );
 			}
+			self::stream_download_binary( $converted, $filename . '.jpg', 'image/jpeg' );
 		}
-		header( 'Content-Type: image/png' );
-		header( 'Content-Disposition: attachment; filename="postcard-' . $user_id . '.png"' );
-		header( 'Content-Length: ' . strlen( $binary ) );
-		echo $binary; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		exit;
+
+		self::stream_download_binary( $binary, $filename . '.png', 'image/png' );
 	}
 
 	/**
@@ -1020,18 +1146,38 @@ class Hb_Postcard {
 		$ajax_url    = admin_url( 'admin-ajax.php' );
 		$nonce       = wp_create_nonce( 'hb_postcard' );
 		$dl_nonce    = wp_create_nonce( 'hb_postcard_download' );
-		$png_href    = add_query_arg(
+		$png_front_href = add_query_arg(
 			array(
 				'action' => 'hb_download_postcard',
 				'format' => 'png',
+				'side'   => 'front',
 				'nonce'  => $dl_nonce,
 			),
 			$ajax_url
 		);
-		$jpg_href    = add_query_arg(
+		$png_back_href  = add_query_arg(
+			array(
+				'action' => 'hb_download_postcard',
+				'format' => 'png',
+				'side'   => 'back',
+				'nonce'  => $dl_nonce,
+			),
+			$ajax_url
+		);
+		$jpg_front_href = add_query_arg(
 			array(
 				'action' => 'hb_download_postcard',
 				'format' => 'jpg',
+				'side'   => 'front',
+				'nonce'  => $dl_nonce,
+			),
+			$ajax_url
+		);
+		$jpg_back_href  = add_query_arg(
+			array(
+				'action' => 'hb_download_postcard',
+				'format' => 'jpg',
+				'side'   => 'back',
 				'nonce'  => $dl_nonce,
 			),
 			$ajax_url
@@ -1105,8 +1251,14 @@ class Hb_Postcard {
 
 					<div id="hb-postcard-download-wrap"<?php echo $has_image ? '' : ' hidden'; ?>>
 						<p class="hb-postcard-actions">
-							<a class="button" id="hb-postcard-dl-png" href="<?php echo esc_url( $png_href ); ?>"><?php esc_html_e( 'Download PNG (4×6)', 'hello-elementor-child' ); ?></a>
-							<a class="button" id="hb-postcard-dl-jpg" href="<?php echo esc_url( $jpg_href ); ?>"><?php esc_html_e( 'Download JPG', 'hello-elementor-child' ); ?></a>
+							<a class="button" id="hb-postcard-dl-png-front" href="<?php echo esc_url( $png_front_href ); ?>"><?php esc_html_e( 'Download Front PNG (4×6)', 'hello-elementor-child' ); ?></a>
+							<?php if ( $back_url !== '' ) : ?>
+							<a class="button" id="hb-postcard-dl-png-back" href="<?php echo esc_url( $png_back_href ); ?>"><?php esc_html_e( 'Download Back PNG (4×6)', 'hello-elementor-child' ); ?></a>
+							<?php endif; ?>
+							<a class="button" id="hb-postcard-dl-jpg-front" href="<?php echo esc_url( $jpg_front_href ); ?>"><?php esc_html_e( 'Download Front JPG', 'hello-elementor-child' ); ?></a>
+							<?php if ( $back_url !== '' ) : ?>
+							<a class="button" id="hb-postcard-dl-jpg-back" href="<?php echo esc_url( $jpg_back_href ); ?>"><?php esc_html_e( 'Download Back JPG', 'hello-elementor-child' ); ?></a>
+							<?php endif; ?>
 							<button type="button" class="button" id="hb-postcard-delete-btn"><?php esc_html_e( 'Delete', 'hello-elementor-child' ); ?></button>
 						</p>
 					</div>
@@ -1158,7 +1310,7 @@ class Hb_Postcard {
 						</figure>
 						<?php endif; ?>
 					</div>
-					<p class="hb-postcard-print-note" id="hb-postcard-print-note"<?php echo $has_image ? '' : ' hidden'; ?>><?php esc_html_e( 'Print front and back at 4×6 inches (300 DPI). Download PNG for the front; use the back artwork when printing double-sided.', 'hello-elementor-child' ); ?></p>
+					<p class="hb-postcard-print-note" id="hb-postcard-print-note"<?php echo $has_image ? '' : ' hidden'; ?>><?php esc_html_e( 'Print front and back at 4×6 inches (300 DPI). Download each side separately for double-sided printing.', 'hello-elementor-child' ); ?></p>
 				</div>
 			</div>
 
