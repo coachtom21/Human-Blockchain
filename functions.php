@@ -2053,22 +2053,102 @@ function hb_get_qrtiger_postcard_styling() {
 	foreach ( $strip as $key ) {
 		unset( $styling[ $key ] );
 	}
-	$styling['size']     = 500;
-	$styling['qrFormat'] = 'png';
+	$styling['size']       = 500;
+	$styling['qrFormat']   = 'png';
+	$styling['eye_outer']  = 'eyeOuter11';
+	$styling['eye_inner']  = 'eyeInner10';
+	$styling['eye_color']  = false;
 
 	return apply_filters( 'hb_qrtiger_postcard_styling', $styling );
 }
 
 /**
+ * Decode a QR Tiger image URL (data: or remote) to PNG bytes.
+ *
+ * @param string $image_url QR image URL from QR Tiger.
+ * @return string|WP_Error
+ */
+function hb_fetch_qrtiger_qr_image_binary( $image_url ) {
+	$image_url = trim( (string) $image_url );
+	if ( '' === $image_url ) {
+		return new WP_Error( 'qr_image_empty', __( 'Empty QR image URL.', 'hello-elementor-child' ) );
+	}
+
+	if ( preg_match( '#^data:image/(png|jpe?g|webp);base64,(.+)$#i', $image_url, $m ) ) {
+		$binary = base64_decode( $m[2], true );
+		if ( is_string( $binary ) && strlen( $binary ) > 8 ) {
+			return $binary;
+		}
+	}
+
+	if ( preg_match( '#^https?://#i', $image_url ) ) {
+		$response = wp_remote_get(
+			$image_url,
+			array(
+				'timeout'   => 25,
+				'sslverify' => true,
+				'headers'   => array( 'Accept' => 'image/*,*/*;q=0.8' ),
+			)
+		);
+		if ( is_wp_error( $response ) ) {
+			return $response;
+		}
+		$code = (int) wp_remote_retrieve_response_code( $response );
+		$body = (string) wp_remote_retrieve_body( $response );
+		if ( $code >= 200 && $code < 300 && strlen( $body ) > 8 ) {
+			return $body;
+		}
+	}
+
+	return new WP_Error( 'qr_image_fetch', __( 'Could not load QR image from QR Tiger.', 'hello-elementor-child' ) );
+}
+
+/**
+ * Build the QR Tiger campaign payload for a frameless postcard URL QR.
+ *
+ * @param string               $scan_url Dynamic short URL (qr1.be/…).
+ * @param array<string, mixed> $styling  Styling array for the nested `qr` object.
+ * @return array<string, mixed>
+ */
+function hb_build_qrtiger_postcard_campaign_payload( $scan_url, array $styling ) {
+	if ( isset( $styling['logo'] ) && is_string( $styling['logo'] ) && $styling['logo'] !== '' ) {
+		$styling['logo'] = esc_url_raw( $styling['logo'] );
+	} else {
+		$styling['logo'] = '';
+	}
+
+	return array(
+		'qr'         => $styling,
+		'qrUrl'      => esc_url_raw( $scan_url ),
+		'qrType'     => 'qr2',
+		'qrCategory' => 'url',
+	);
+}
+
+/**
+ * Stored QR Tiger campaign ID for a user's postcard render QR.
+ *
+ * @param int $user_id WP user ID.
+ * @return string
+ */
+function hb_get_user_postcard_qr_id( $user_id ) {
+	return hb_sanitize_qrtiger_qr_id( get_user_meta( (int) $user_id, 'hb_postcard_qr_id', true ) );
+}
+
+/**
  * Generate a frameless branded PNG for the postcard (encodes the dynamic scan URL).
  *
- * Uses QR Tiger POST /api/qr/static so we do not create extra dynamic campaigns.
+ * Uses QR Tiger POST /api/campaign/ with styling nested under `qr` so custom
+ * finder patterns (eyeOuter11 / eyeInner10) render correctly — the /api/qr/static
+ * endpoint ignores those eye styles and falls back to basic squares.
  *
  * @param string $scan_url Public short URL (e.g. qr1.be/…).
+ * @param int    $user_id  WordPress user ID (reuses one postcard campaign per user).
  * @return string|WP_Error PNG binary.
  */
-function hb_fetch_qrtiger_postcard_qr_png( $scan_url ) {
+function hb_fetch_qrtiger_postcard_qr_png( $scan_url, $user_id = 0 ) {
 	$scan_url = esc_url_raw( trim( (string) $scan_url ) );
+	$user_id  = (int) $user_id;
 	if ( '' === $scan_url ) {
 		return new WP_Error( 'qr_url_empty', __( 'Scan URL is required to render the postcard QR.', 'hello-elementor-child' ) );
 	}
@@ -2078,68 +2158,64 @@ function hb_fetch_qrtiger_postcard_qr_png( $scan_url ) {
 		return new WP_Error( 'missing_key', __( 'QRTiger API key is missing in NWP Gateway settings.', 'hello-elementor-child' ) );
 	}
 
-	$styling   = hb_get_qrtiger_postcard_styling();
-	$cache_key = 'hb_pcard_qr_' . md5( $scan_url . wp_json_encode( $styling ) );
-	$cached    = get_transient( $cache_key );
+	$styling      = hb_get_qrtiger_postcard_styling();
+	$payload      = hb_build_qrtiger_postcard_campaign_payload( $scan_url, $styling );
+	$payload_hash = md5( wp_json_encode( $payload ) );
+	$cache_key    = 'hb_pcard_qr_v3_' . $user_id . '_' . $payload_hash;
+	$cached       = get_transient( $cache_key );
 	if ( is_string( $cached ) && strlen( $cached ) > 8 && "\x89PNG" === substr( $cached, 0, 4 ) ) {
 		return $cached;
 	}
 
-	$payload = array_merge(
-		$styling,
-		array(
-			'qrCategory' => 'url',
-			'text'       => $scan_url,
-		)
-	);
+	$existing_qr_id   = $user_id > 0 ? hb_get_user_postcard_qr_id( $user_id ) : '';
+	$existing_image   = $user_id > 0 ? (string) get_user_meta( $user_id, 'hb_postcard_qr_image_url', true ) : '';
+	$stored_hash      = $user_id > 0 ? sanitize_text_field( (string) get_user_meta( $user_id, 'hb_postcard_qr_payload_hash', true ) ) : '';
 
-	$response = wp_remote_post(
-		$creds['url'] . '/api/qr/static',
-		array(
-			'timeout' => 30,
-			'headers' => hb_qrtiger_request_headers( $creds ),
-			'body'    => wp_json_encode( $payload ),
-		)
-	);
-
-	if ( is_wp_error( $response ) ) {
-		return $response;
-	}
-
-	$code = (int) wp_remote_retrieve_response_code( $response );
-	$body = (string) wp_remote_retrieve_body( $response );
-
-	if ( $code < 200 || $code >= 300 || '' === $body ) {
-		return new WP_Error(
-			'qrtiger_static',
-			sprintf(
-				/* translators: %d: HTTP status code */
-				__( 'QRTiger could not render the postcard QR (HTTP %d).', 'hello-elementor-child' ),
-				$code
-			)
-		);
-	}
-
-	$binary = '';
-	if ( "\x89PNG" === substr( $body, 0, 4 ) ) {
-		$binary = $body;
-	} else {
-		$data = json_decode( $body, true );
-		if ( is_array( $data ) && ! empty( $data['data'] ) && is_string( $data['data'] ) ) {
-			$decoded = base64_decode( $data['data'], true );
-			if ( is_string( $decoded ) && strlen( $decoded ) > 8 ) {
-				$binary = $decoded;
-			}
-		} elseif ( is_object( $data ) && ! empty( $data->data ) && is_string( $data->data ) ) {
-			$decoded = base64_decode( $data->data, true );
-			if ( is_string( $decoded ) && strlen( $decoded ) > 8 ) {
-				$binary = $decoded;
-			}
+	if ( $user_id > 0 && $stored_hash === $payload_hash && '' !== $existing_image ) {
+		$binary = hb_fetch_qrtiger_qr_image_binary( $existing_image );
+		if ( ! is_wp_error( $binary ) && "\x89PNG" === substr( $binary, 0, 4 ) ) {
+			set_transient( $cache_key, $binary, DAY_IN_SECONDS );
+			return $binary;
 		}
 	}
 
-	if ( '' === $binary || "\x89PNG" !== substr( $binary, 0, 4 ) ) {
-		return new WP_Error( 'qrtiger_static_png', __( 'QRTiger did not return a valid postcard QR image.', 'hello-elementor-child' ) );
+	if ( '' !== $existing_qr_id ) {
+		$update_payload               = $payload;
+		$update_payload['qrId']       = $existing_qr_id;
+		$update_payload['qrCategory'] = 'url';
+		$result                       = hb_parse_qrtiger_campaign_response(
+			hb_qrtiger_post_campaign( $creds, $update_payload ),
+			array(
+				'require_image'      => true,
+				'fallback_qr_id'     => $existing_qr_id,
+				'fallback_short_url' => $scan_url,
+				'fallback_image_url' => $existing_image,
+			)
+		);
+	} else {
+		$result = hb_create_qrtiger_vcard_campaign( $payload, $creds );
+	}
+
+	if ( is_wp_error( $result ) ) {
+		return $result;
+	}
+
+	if ( $user_id > 0 && ! empty( $result['qr_id'] ) ) {
+		update_user_meta( $user_id, 'hb_postcard_qr_id', sanitize_text_field( (string) $result['qr_id'] ) );
+		update_user_meta( $user_id, 'hb_postcard_qr_payload_hash', sanitize_text_field( $payload_hash ) );
+		if ( ! empty( $result['image_url'] ) ) {
+			update_user_meta( $user_id, 'hb_postcard_qr_image_url', esc_url_raw( (string) $result['image_url'] ) );
+		}
+	}
+
+	$image_url = ! empty( $result['image_url'] ) ? (string) $result['image_url'] : $existing_image;
+	$binary    = hb_fetch_qrtiger_qr_image_binary( $image_url );
+	if ( is_wp_error( $binary ) ) {
+		return $binary;
+	}
+
+	if ( "\x89PNG" !== substr( $binary, 0, 4 ) ) {
+		return new WP_Error( 'qrtiger_postcard_png', __( 'QRTiger did not return a valid postcard QR image.', 'hello-elementor-child' ) );
 	}
 
 	set_transient( $cache_key, $binary, DAY_IN_SECONDS );

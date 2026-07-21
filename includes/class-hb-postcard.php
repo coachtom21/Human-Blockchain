@@ -362,7 +362,7 @@ class Hb_Postcard {
 		// Postcard slot needs a frameless gradient QR — not the full vCard campaign
 		// raster (frame 16 collapses to a circle at ~108px).
 		if ( $scan_url !== '' && function_exists( 'hb_fetch_qrtiger_postcard_qr_png' ) ) {
-			$binary = hb_fetch_qrtiger_postcard_qr_png( $scan_url );
+			$binary = hb_fetch_qrtiger_postcard_qr_png( $scan_url, $user_id );
 			if ( ! is_wp_error( $binary ) ) {
 				return apply_filters( 'hb_postcard_branded_qr_png', $binary, $user_id, $scan_url );
 			}
