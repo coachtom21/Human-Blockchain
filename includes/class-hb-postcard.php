@@ -34,7 +34,7 @@ class Hb_Postcard {
 	const RSVP_QR_IMAGE = 'assets/images/postcard/rsvp-qr.png';
 
 	/** Public URL encoded in the RSVP QR (Legacy to Live By landing). */
-	const PUBLIC_SCAN_URL = 'https://legacytoliveby.org/index.html';
+	const PUBLIC_SCAN_URL = 'https://legacytoliveby.org/';
 
 	/**
 	 * Bootstrap hooks.
