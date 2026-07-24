@@ -12,6 +12,7 @@
 	var qrImg = document.getElementById('hb-hang-tag-qr-img');
 	var previewLink = document.getElementById('hb-hang-tag-preview-link');
 	var copyBtn = document.getElementById('hb-hang-tag-copy-btn');
+	var captureApi = window.htmlToImage;
 
 	function setStatus(msg, isError) {
 		if (!statusEl) {
@@ -65,6 +66,91 @@
 		}
 	}
 
+	function downloadDataUrl(dataUrl, filename) {
+		var link = document.createElement('a');
+		link.href = dataUrl;
+		link.download = filename;
+		link.style.display = 'none';
+		document.body.appendChild(link);
+		link.click();
+		document.body.removeChild(link);
+	}
+
+	function readyForCapture(element) {
+		var waits = [];
+		if (document.fonts && document.fonts.ready) {
+			waits.push(document.fonts.ready);
+		}
+		var imgs = element.querySelectorAll('img');
+		Array.prototype.forEach.call(imgs, function (img) {
+			if (img.complete) {
+				return;
+			}
+			waits.push(new Promise(function (resolve) {
+				img.addEventListener('load', resolve, { once: true });
+				img.addEventListener('error', resolve, { once: true });
+			}));
+		});
+		return Promise.all(waits);
+	}
+
+	function captureTag(element, format) {
+		if (!captureApi) {
+			return Promise.reject(new Error('capture_unavailable'));
+		}
+		return readyForCapture(element).then(function () {
+			var options = {
+				pixelRatio: 4,
+				cacheBust: true,
+				skipFonts: false
+			};
+			if (format === 'jpg') {
+				return captureApi.toJpeg(element, Object.assign({}, options, {
+					quality: 0.92,
+					backgroundColor: '#0a1628'
+				}));
+			}
+			return captureApi.toPng(element, options);
+		});
+	}
+
+	function downloadHangTagSides(format) {
+		var front = document.getElementById('hb-hang-tag-front-tag');
+		var back = document.getElementById('hb-hang-tag-back-tag');
+		if (!front || !back) {
+			setStatus(cfg.i18n.downloadFail, true);
+			return;
+		}
+		if (!captureApi) {
+			setStatus(cfg.i18n.downloadFail, true);
+			return;
+		}
+
+		var ext = format === 'jpg' ? 'jpg' : 'png';
+		var uid = cfg.userId || 'hang-tag';
+		var frontName = 'hang-tag-' + uid + '-front.' + ext;
+		var backName = 'hang-tag-' + uid + '-back.' + ext;
+
+		setStatus(cfg.i18n.downloading, false);
+
+		captureTag(front, format)
+			.then(function (frontDataUrl) {
+				downloadDataUrl(frontDataUrl, frontName);
+				return new Promise(function (resolve) {
+					window.setTimeout(resolve, 500);
+				}).then(function () {
+					return captureTag(back, format);
+				});
+			})
+			.then(function (backDataUrl) {
+				downloadDataUrl(backDataUrl, backName);
+				setStatus('', false);
+			})
+			.catch(function () {
+				setStatus(cfg.i18n.downloadFail, true);
+			});
+	}
+
 	var refreshBtn = document.getElementById('hb-hang-tag-refresh-btn');
 	if (refreshBtn) {
 		refreshBtn.addEventListener('click', function () {
@@ -109,10 +195,13 @@
 		});
 	}
 
-	var printBtn = document.getElementById('hb-hang-tag-print-btn');
-	if (printBtn) {
-		printBtn.addEventListener('click', function () {
-			window.print();
+	['png', 'jpg'].forEach(function (format) {
+		var btn = document.getElementById('hb-hang-tag-dl-' + format);
+		if (!btn) {
+			return;
+		}
+		btn.addEventListener('click', function () {
+			downloadHangTagSides(format);
 		});
-	}
+	});
 })();

@@ -212,7 +212,7 @@ class Hb_Hang_Tag {
 	private static function render_front( $qr_image_url ) {
 		$images = self::get_image_urls();
 		?>
-		<div class="tag front">
+		<div class="tag front" id="hb-hang-tag-front-tag">
 			<div class="punch-hole"></div>
 
 			<div class="front-top">
@@ -284,7 +284,7 @@ class Hb_Hang_Tag {
 	 */
 	private static function render_back() {
 		?>
-		<div class="tag back">
+		<div class="tag back" id="hb-hang-tag-back-tag">
 			<div class="back-punch"></div>
 
 			<p class="back-title"><?php esc_html_e( 'Practice FAITH', 'hello-elementor-child' ); ?></p>
@@ -428,9 +428,16 @@ class Hb_Hang_Tag {
 			$css_ver
 		);
 		wp_enqueue_script(
+			'html-to-image',
+			'https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.js',
+			array(),
+			'1.11.11',
+			true
+		);
+		wp_enqueue_script(
 			'hb-hang-tag-account',
 			get_stylesheet_directory_uri() . '/assets/js/hb-hang-tag-account.js',
-			array(),
+			array( 'html-to-image' ),
 			$js_ver,
 			true
 		);
@@ -440,11 +447,14 @@ class Hb_Hang_Tag {
 			array(
 				'ajaxUrl' => admin_url( 'admin-ajax.php' ),
 				'nonce'   => wp_create_nonce( 'hb_hang_tag' ),
+				'userId'  => $user_id,
 				'i18n'    => array(
-					'refreshing' => __( 'Refreshing QR…', 'hello-elementor-child' ),
-					'copied'     => __( 'Copied.', 'hello-elementor-child' ),
-					'copyFail'   => __( 'Could not copy.', 'hello-elementor-child' ),
-					'refreshFail'=> __( 'Could not refresh QR.', 'hello-elementor-child' ),
+					'refreshing'   => __( 'Refreshing QR…', 'hello-elementor-child' ),
+					'copied'       => __( 'Copied.', 'hello-elementor-child' ),
+					'copyFail'     => __( 'Could not copy.', 'hello-elementor-child' ),
+					'refreshFail'  => __( 'Could not refresh QR.', 'hello-elementor-child' ),
+					'downloading'  => __( 'Downloading front and back…', 'hello-elementor-child' ),
+					'downloadFail' => __( 'Could not download hang-tag files.', 'hello-elementor-child' ),
 				),
 			)
 		);
@@ -461,8 +471,11 @@ class Hb_Hang_Tag {
 						<button type="button" class="button alt" id="hb-hang-tag-refresh-btn">
 							<?php esc_html_e( 'Refresh QR', 'hello-elementor-child' ); ?>
 						</button>
-						<button type="button" class="button" id="hb-hang-tag-print-btn">
-							<?php esc_html_e( 'Print hang-tag', 'hello-elementor-child' ); ?>
+						<button type="button" class="button" id="hb-hang-tag-dl-png" data-format="png">
+							<?php esc_html_e( 'Download PNG (3×6)', 'hello-elementor-child' ); ?>
+						</button>
+						<button type="button" class="button" id="hb-hang-tag-dl-jpg" data-format="jpg">
+							<?php esc_html_e( 'Download JPG', 'hello-elementor-child' ); ?>
 						</button>
 						<span id="hb-hang-tag-status" class="hb-hang-tag-status" role="status" aria-live="polite"></span>
 					</p>
@@ -508,7 +521,7 @@ class Hb_Hang_Tag {
 							</div>
 						</figure>
 					</div>
-					<p class="hb-hang-tag-print-note"><?php esc_html_e( 'Print front and back at 3×6 inches. Use card stock with a punch hole at the top center.', 'hello-elementor-child' ); ?></p>
+					<p class="hb-hang-tag-print-note"><?php esc_html_e( 'Download PNG or JPG to save separate front and back files at 3×6 inches. Use card stock with a punch hole at the top center.', 'hello-elementor-child' ); ?></p>
 				</div>
 			</div>
 		</div>
