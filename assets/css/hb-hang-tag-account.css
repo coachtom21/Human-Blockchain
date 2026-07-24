@@ -172,32 +172,46 @@
 }
 
 /* ── FRONT ─────────────────────────────────────────── */
-.hb-hang-tag-preview-stage .front {
-  position: relative;
+.hb-hang-tag-preview-stage .tag.front {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
   background: #0a1628;
-  width: 100%;
-  height: 100%;
+}
+
+.hb-hang-tag-preview-stage .front-top {
+  position: relative;
+  grid-row: 1;
+  padding: 36px 14px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #0a1628;
+  z-index: 2;
+}
+
+.hb-hang-tag-preview-stage .front-body {
+  position: relative;
+  grid-row: 2;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .hb-hang-tag-preview-stage .doves-wrap {
   position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
+  inset: 0;
   z-index: 0;
   overflow: hidden;
 }
 
-.hb-hang-tag-preview-stage .doves-wrap img {
+.hb-hang-tag-preview-stage .doves-wrap > img {
   position: absolute;
   top: 0;
   left: 0;
-  width: 100% !important;
-  height: 100% !important;
+  width: 100%;
+  height: 100%;
   max-width: none;
   object-fit: cover;
-  object-position: center 35%;
+  object-position: center 20%;
   display: block;
 }
 
@@ -207,9 +221,9 @@
   background: linear-gradient(
     to bottom,
     rgba(10, 22, 40, 0) 0%,
-    rgba(10, 22, 40, 0) 45%,
-    rgba(10, 22, 40, 0.75) 80%,
-    rgba(10, 22, 40, 0.95) 100%
+    rgba(10, 22, 40, 0) 55%,
+    rgba(10, 22, 40, 0.5) 82%,
+    rgba(10, 22, 40, 0.8) 100%
   );
   pointer-events: none;
 }
@@ -225,21 +239,6 @@
   background: #888;
   border: 2px solid #555;
   z-index: 10;
-}
-
-.hb-hang-tag-preview-stage .front-top {
-  position: relative;
-  padding: 36px 14px 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  z-index: 2;
-}
-
-.hb-hang-tag-preview-stage .ssa-name,
-.hb-hang-tag-preview-stage .ssa-sub,
-.hb-hang-tag-preview-stage .expires-badge {
-  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.65);
 }
 
 .hb-hang-tag-preview-stage .ssa-logo {
@@ -282,11 +281,11 @@
   line-height: 1.4;
 }
 
-.hb-hang-tag-preview-stage .tagline {
+.hb-hang-tag-preview-stage .front-body .tagline {
   position: absolute;
   left: 14px;
   right: 14px;
-  top: 48%;
+  top: 38%;
   transform: translateY(-50%);
   z-index: 2;
   font-family: 'Playfair Display', serif;

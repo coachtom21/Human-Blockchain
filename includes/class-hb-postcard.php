@@ -30,6 +30,12 @@ class Hb_Postcard {
 	/** Static back of postcard (print reverse side). */
 	const DEFAULT_BACK_URL = 'https://humanblockchain.info/wp-content/uploads/2026/07/Human-Gold-Rush-Postcard-Back.png';
 
+	/** Branded RSVP QR raster stamped onto the postcard front (same for all members). */
+	const RSVP_QR_IMAGE = 'assets/images/postcard/rsvp-qr.png';
+
+	/** Public URL encoded in the RSVP QR (Legacy to Live By landing). */
+	const PUBLIC_SCAN_URL = 'https://legacytoliveby.org/index.html';
+
 	/**
 	 * Bootstrap hooks.
 	 *
@@ -201,18 +207,93 @@ class Hb_Postcard {
 	}
 
 	/**
-	 * URL encoded in the postcard QR (hosted vCard contact page).
+	 * Public scan URL shown in My Account (Legacy to Live By landing).
+	 *
+	 * @param int $user_id User ID.
+	 * @return string
+	 */
+	public static function get_public_scan_url( $user_id = 0 ) {
+		$url = self::PUBLIC_SCAN_URL;
+		return (string) apply_filters( 'hb_postcard_public_scan_url', $url, (int) $user_id );
+	}
+
+	/**
+	 * URL encoded in the postcard QR and shown in the scan-link field.
 	 *
 	 * @param int $user_id User ID.
 	 * @return string
 	 */
 	public static function get_display_scan_url( $user_id ) {
+		if ( self::has_rsvp_qr_image() ) {
+			return esc_url_raw( self::get_public_scan_url( $user_id ) );
+		}
+
 		$user_id = (int) $user_id;
 		$vcard   = (string) get_user_meta( $user_id, 'hb_vcard_short_url', true );
 		if ( $vcard !== '' ) {
 			return $vcard;
 		}
 		return (string) get_user_meta( $user_id, self::META_REF_URL, true );
+	}
+
+	/**
+	 * Whether the theme ships a static RSVP QR image for the postcard slot.
+	 *
+	 * @return bool
+	 */
+	public static function has_rsvp_qr_image() {
+		$path = self::get_rsvp_qr_image_path();
+		return $path !== '' && is_readable( $path );
+	}
+
+	/**
+	 * Absolute path to the static RSVP QR PNG.
+	 *
+	 * @return string
+	 */
+	public static function get_rsvp_qr_image_path() {
+		$relative = (string) apply_filters( 'hb_postcard_rsvp_qr_image', self::RSVP_QR_IMAGE );
+		if ( $relative === '' ) {
+			return '';
+		}
+		if ( preg_match( '#^https?://#i', $relative ) ) {
+			return '';
+		}
+		$path = $relative;
+		if ( $relative[0] !== '/' ) {
+			$path = get_stylesheet_directory() . '/' . ltrim( $relative, '/' );
+		}
+		return $path;
+	}
+
+	/**
+	 * Load the static branded RSVP QR PNG bytes.
+	 *
+	 * @return string|WP_Error
+	 */
+	public static function load_rsvp_qr_binary() {
+		$path = self::get_rsvp_qr_image_path();
+		if ( $path === '' || ! is_readable( $path ) ) {
+			return new WP_Error( 'rsvp_qr_missing', __( 'RSVP QR image is not configured.', 'hello-elementor-child' ) );
+		}
+		$binary = file_get_contents( $path );
+		if ( ! is_string( $binary ) || strlen( $binary ) < 8 || "\x89PNG" !== substr( $binary, 0, 4 ) ) {
+			return new WP_Error( 'rsvp_qr_invalid', __( 'RSVP QR image is not a valid PNG.', 'hello-elementor-child' ) );
+		}
+		return $binary;
+	}
+
+	/**
+	 * Sync vCard profile metadata in the background (not used as the postcard scan target).
+	 *
+	 * @param int $user_id User ID.
+	 * @return void
+	 */
+	private static function maybe_sync_vcard_metadata( $user_id ) {
+		if ( ! function_exists( 'hb_generate_qrtiger_qr_for_vcard' ) ) {
+			return;
+		}
+		hb_generate_qrtiger_qr_for_vcard( (int) $user_id );
 	}
 
 	/**
@@ -359,8 +440,12 @@ class Hb_Postcard {
 		$user_id  = (int) $user_id;
 		$scan_url = trim( (string) $scan_url );
 
-		// Postcard slot needs a frameless gradient QR — not the full vCard campaign
-		// raster (frame 16 collapses to a circle at ~108px).
+		$static_qr = self::load_rsvp_qr_binary();
+		if ( ! is_wp_error( $static_qr ) ) {
+			return apply_filters( 'hb_postcard_branded_qr_png', $static_qr, $user_id, $scan_url );
+		}
+
+		// Legacy fallback: frameless gradient QR from QR Tiger API.
 		if ( $scan_url !== '' && function_exists( 'hb_fetch_qrtiger_postcard_qr_png' ) ) {
 			$binary = hb_fetch_qrtiger_postcard_qr_png( $scan_url, $user_id );
 			if ( ! is_wp_error( $binary ) ) {
@@ -895,13 +980,18 @@ class Hb_Postcard {
 
 		$user_id = (int) $user_id;
 		$fields  = self::get_fields( $user_id );
-		$assets  = self::ensure_vcard_qr_assets( $user_id );
 
-		if ( is_wp_error( $assets ) ) {
-			return $assets;
+		self::maybe_sync_vcard_metadata( $user_id );
+
+		if ( self::has_rsvp_qr_image() ) {
+			$scan_url = self::get_public_scan_url( $user_id );
+		} else {
+			$assets = self::ensure_vcard_qr_assets( $user_id );
+			if ( is_wp_error( $assets ) ) {
+				return $assets;
+			}
+			$scan_url = $assets['scan_url'];
 		}
-
-		$scan_url = $assets['scan_url'];
 
 		if ( self::get_template_url_config() === '' ) {
 			return new WP_Error(
@@ -1262,7 +1352,7 @@ class Hb_Postcard {
 		<div id="hb-postcard-tools" class="hb-postcard-tools" data-has-image="<?php echo $has_image ? '1' : '0'; ?>">
 			<h3><?php esc_html_e( 'Postcard', 'hello-elementor-child' ); ?></h3>
 			<p class="hb-postcard-intro">
-				<?php esc_html_e( 'Your Human Gold gradient vCard QR is stamped onto the RSVP slot on the postcard. Scanning opens your dynamic QR Tiger contact page — photo, name, and save-to-phone options update when you refresh your profile.', 'hello-elementor-child' ); ?>
+				<?php esc_html_e( 'The branded Human Gold RSVP QR is stamped onto the postcard front. Scanning opens the Legacy to Live By Human Gold Rush landing page. Your vCard profile is kept in the background for registered-device flows — it is not the postcard scan destination.', 'hello-elementor-child' ); ?>
 			</p>
 
 			<div class="hb-postcard-layout">
@@ -1275,10 +1365,10 @@ class Hb_Postcard {
 					</p>
 
 					<div class="hb-postcard-referral" id="hb-postcard-referral-wrap"<?php echo $has_image ? '' : ' hidden'; ?>>
-						<label for="hb-postcard-ref-url"><strong><?php esc_html_e( 'Dynamic vCard link (scans resolve to your live profile)', 'hello-elementor-child' ); ?></strong></label>
-						<input type="url" id="hb-postcard-ref-url" readonly value="<?php echo esc_attr( $scan_url ); ?>" placeholder="<?php esc_attr_e( 'Generate postcard to create your vCard link', 'hello-elementor-child' ); ?>">
+						<label for="hb-postcard-ref-url"><strong><?php esc_html_e( 'RSVP scan link (encoded in the postcard QR)', 'hello-elementor-child' ); ?></strong></label>
+						<input type="url" id="hb-postcard-ref-url" readonly value="<?php echo esc_attr( $scan_url ); ?>" placeholder="<?php esc_attr_e( 'Generate postcard to load the RSVP scan link', 'hello-elementor-child' ); ?>">
 						<p class="hb-postcard-actions">
-							<a class="button" id="hb-postcard-ref-preview" href="<?php echo esc_url( $scan_url !== '' ? $scan_url : '#' ); ?>" target="_blank" rel="noopener noreferrer"<?php echo $scan_url === '' ? ' aria-disabled="true" tabindex="-1"' : ''; ?>><?php esc_html_e( 'Preview vCard', 'hello-elementor-child' ); ?></a>
+							<a class="button" id="hb-postcard-ref-preview" href="<?php echo esc_url( $scan_url !== '' ? $scan_url : '#' ); ?>" target="_blank" rel="noopener noreferrer"<?php echo $scan_url === '' ? ' aria-disabled="true" tabindex="-1"' : ''; ?>><?php esc_html_e( 'Preview scan destination', 'hello-elementor-child' ); ?></a>
 							<button type="button" class="button" id="hb-postcard-ref-copy"<?php echo $scan_url === '' ? ' disabled' : ''; ?>><?php esc_html_e( 'Copy link', 'hello-elementor-child' ); ?></button>
 						</p>
 						<p class="hb-postcard-referral-note">
@@ -1300,7 +1390,7 @@ class Hb_Postcard {
 					<h4><?php esc_html_e( 'Preview', 'hello-elementor-child' ); ?></h4>
 					<div class="hb-postcard-preview-duo">
 						<figure class="hb-postcard-preview-card">
-							<figcaption class="hb-postcard-preview-label"><?php esc_html_e( 'Front (your vCard QR)', 'hello-elementor-child' ); ?></figcaption>
+							<figcaption class="hb-postcard-preview-label"><?php esc_html_e( 'Front (RSVP QR)', 'hello-elementor-child' ); ?></figcaption>
 							<div class="hb-postcard-preview-frame">
 								<button
 									type="button"
@@ -1313,7 +1403,7 @@ class Hb_Postcard {
 										id="hb-postcard-preview-img"
 										class="hb-postcard-preview-img"
 										src="<?php echo $has_image ? esc_url( $image_url ) : ''; ?>"
-										alt="<?php esc_attr_e( 'Generated 4×6 postcard front with your vCard QR', 'hello-elementor-child' ); ?>"
+										alt="<?php esc_attr_e( 'Generated 4×6 postcard front with RSVP QR', 'hello-elementor-child' ); ?>"
 										<?php echo $has_image ? '' : ' hidden'; ?>
 									>
 								</button>

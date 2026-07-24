@@ -206,15 +206,20 @@ class Hb_Hang_Tag {
 				</div>
 			</div>
 
-			<div class="doves-wrap">
-				<img src="<?php echo esc_url( $images['doves'] ); ?>" alt="<?php esc_attr_e( 'White doves in flight with Member Treasury crest', 'hello-elementor-child' ); ?>">
-				<div class="doves-overlay"></div>
-			</div>
+			<div class="front-body">
+				<div
+					class="doves-wrap"
+					role="img"
+					aria-label="<?php esc_attr_e( 'White doves in flight with Member Treasury crest', 'hello-elementor-child' ); ?>"
+					style="background-image: url('<?php echo esc_url( $images['doves'] ); ?>');"
+				>
+					<div class="doves-overlay"></div>
+				</div>
 
-			<p class="tagline"><?php echo wp_kses( __( '&ldquo;Seek Gratitude<br>for Showing Up&rdquo;', 'hello-elementor-child' ), array( 'br' => array() ) ); ?></p>
+				<p class="tagline"><?php echo wp_kses( __( '&ldquo;Seek Gratitude<br>for Showing Up&rdquo;', 'hello-elementor-child' ), array( 'br' => array() ) ); ?></p>
 
-			<div class="front-bottom">
-				<div class="qr-zone">
+				<div class="front-bottom">
+					<div class="qr-zone">
 					<div class="qr-box">
 						<div class="qr-inner<?php echo $qr_image_url === '' ? ' qr-inner--placeholder' : ''; ?>">
 							<?php if ( $qr_image_url !== '' ) : ?>
@@ -237,12 +242,13 @@ class Hb_Hang_Tag {
 							<?php echo wp_kses( __( 'Registered device &rarr; wallet<br>Unregistered &rarr; onboarding<br>UUID links to your account', 'hello-elementor-child' ), array( 'br' => array() ) ); ?>
 						</p>
 					</div>
-				</div>
+					</div>
 
-				<div class="detente-strip">
-					<div class="detente-dot"></div>
-					<span class="detente-text"><?php esc_html_e( 'YAM Trading · Atlanta, USA · YAM-is-On Delivery', 'hello-elementor-child' ); ?></span>
-					<div class="detente-dot"></div>
+					<div class="detente-strip">
+						<div class="detente-dot"></div>
+						<span class="detente-text"><?php esc_html_e( 'YAM Trading · Atlanta, USA · YAM-is-On Delivery', 'hello-elementor-child' ); ?></span>
+						<div class="detente-dot"></div>
+					</div>
 				</div>
 			</div>
 		</div>
