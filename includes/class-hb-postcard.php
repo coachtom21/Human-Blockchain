@@ -247,6 +247,25 @@ class Hb_Postcard {
 	}
 
 	/**
+	 * Public URL for the static branded RSVP QR PNG.
+	 *
+	 * @return string
+	 */
+	public static function get_rsvp_qr_image_url() {
+		if ( ! self::has_rsvp_qr_image() ) {
+			return '';
+		}
+		$relative = (string) apply_filters( 'hb_postcard_rsvp_qr_image', self::RSVP_QR_IMAGE );
+		if ( $relative === '' ) {
+			return '';
+		}
+		if ( preg_match( '#^https?://#i', $relative ) ) {
+			return esc_url_raw( $relative );
+		}
+		return esc_url_raw( trailingslashit( get_stylesheet_directory_uri() ) . ltrim( $relative, '/' ) );
+	}
+
+	/**
 	 * Absolute path to the static RSVP QR PNG.
 	 *
 	 * @return string

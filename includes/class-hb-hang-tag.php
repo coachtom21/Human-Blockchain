@@ -10,7 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * 3×6 hang-tag preview with dynamic vCard QR on the front.
+ * 3×6 hang-tag preview with branded RSVP QR on the front.
  */
 class Hb_Hang_Tag {
 
@@ -99,29 +99,44 @@ class Hb_Hang_Tag {
 	}
 
 	/**
-	 * Ensure vCard assets exist and return scan + QR image URLs.
+	 * Return scan destination + QR image URLs for the hang-tag front slot.
 	 *
 	 * @param int $user_id User ID.
 	 * @return array{scan_url:string,qr_image_url:string}
 	 */
 	public static function get_qr_assets( $user_id ) {
-		$user_id  = (int) $user_id;
-		$scan_url = '';
+		$user_id = (int) $user_id;
 
-		if ( class_exists( 'Hb_Postcard' ) ) {
-			$assets = Hb_Postcard::ensure_vcard_qr_assets( $user_id );
-			if ( ! is_wp_error( $assets ) ) {
-				$scan_url = isset( $assets['scan_url'] ) ? (string) $assets['scan_url'] : '';
-			}
+		if ( ! class_exists( 'Hb_Postcard' ) ) {
+			return array(
+				'scan_url'     => '',
+				'qr_image_url' => '',
+			);
 		}
 
-		if ( $scan_url === '' && class_exists( 'Hb_Postcard' ) ) {
+		if ( Hb_Postcard::has_rsvp_qr_image() ) {
+			if ( function_exists( 'hb_generate_qrtiger_qr_for_vcard' ) ) {
+				hb_generate_qrtiger_qr_for_vcard( $user_id );
+			}
+			$scan_url = Hb_Postcard::get_display_scan_url( $user_id );
+			return array(
+				'scan_url'     => $scan_url,
+				'qr_image_url' => self::get_qr_image_url( $user_id, $scan_url ),
+			);
+		}
+
+		$scan_url = '';
+		$assets   = Hb_Postcard::ensure_vcard_qr_assets( $user_id );
+		if ( ! is_wp_error( $assets ) ) {
+			$scan_url = isset( $assets['scan_url'] ) ? (string) $assets['scan_url'] : '';
+		}
+		if ( $scan_url === '' ) {
 			$scan_url = Hb_Postcard::get_display_scan_url( $user_id );
 		}
 
 		return array(
-			'scan_url'      => $scan_url,
-			'qr_image_url'  => self::get_qr_image_url( $user_id, $scan_url ),
+			'scan_url'     => $scan_url,
+			'qr_image_url' => self::get_qr_image_url( $user_id, $scan_url ),
 		);
 	}
 
@@ -135,6 +150,13 @@ class Hb_Hang_Tag {
 	public static function get_qr_image_url( $user_id, $scan_url = '' ) {
 		$user_id  = (int) $user_id;
 		$scan_url = trim( (string) $scan_url );
+
+		if ( class_exists( 'Hb_Postcard' ) && Hb_Postcard::has_rsvp_qr_image() ) {
+			$static_qr = Hb_Postcard::get_rsvp_qr_image_url();
+			if ( $static_qr !== '' ) {
+				return esc_url_raw( $static_qr );
+			}
+		}
 
 		if ( $scan_url === '' && class_exists( 'Hb_Postcard' ) ) {
 			$scan_url = Hb_Postcard::get_display_scan_url( $user_id );
@@ -227,7 +249,7 @@ class Hb_Hang_Tag {
 									id="hb-hang-tag-qr-img"
 									class="hb-hang-tag-qr-img"
 									src="<?php echo esc_url( $qr_image_url ); ?>"
-									alt="<?php esc_attr_e( 'Your dynamic Universal QR', 'hello-elementor-child' ); ?>"
+									alt="<?php esc_attr_e( 'Branded RSVP Universal QR', 'hello-elementor-child' ); ?>"
 									width="62"
 									height="62"
 								>
@@ -354,10 +376,10 @@ class Hb_Hang_Tag {
 		$user_id = (int) get_current_user_id();
 		$assets  = self::get_qr_assets( $user_id );
 
-		if ( $assets['scan_url'] === '' ) {
+		if ( $assets['scan_url'] === '' && $assets['qr_image_url'] === '' ) {
 			wp_send_json_error(
 				array(
-					'message' => __( 'Could not create your vCard link. Complete your profile or generate a postcard first.', 'hello-elementor-child' ),
+					'message' => __( 'Could not load the hang-tag QR. Complete your profile or generate a postcard first.', 'hello-elementor-child' ),
 				)
 			);
 		}
@@ -386,7 +408,7 @@ class Hb_Hang_Tag {
 		$assets  = self::get_qr_assets( $user_id );
 		$scan_url     = $assets['scan_url'];
 		$qr_image_url = $assets['qr_image_url'];
-		$has_qr       = $scan_url !== '';
+		$has_qr       = $scan_url !== '' || $qr_image_url !== '';
 
 		$css_file = get_stylesheet_directory() . '/assets/css/hb-hang-tag-account.css';
 		$css_ver  = file_exists( $css_file ) ? (string) filemtime( $css_file ) : HELLO_ELEMENTOR_CHILD_VERSION;
@@ -430,7 +452,7 @@ class Hb_Hang_Tag {
 		<div id="hb-hang-tag-tools" class="hb-hang-tag-tools">
 			<h3><?php esc_html_e( 'Gratitude Hang-Tag', 'hello-elementor-child' ); ?></h3>
 			<p class="hb-hang-tag-intro">
-				<?php esc_html_e( 'Your 3×6 Gratitude Hang-Tag pairs the YAM-is-On front design with a Practice FAITH back. The Universal QR slot shows your live dynamic vCard — the same scan URL as your postcard.', 'hello-elementor-child' ); ?>
+				<?php esc_html_e( 'Your 3×6 Gratitude Hang-Tag pairs the YAM-is-On front design with a Practice FAITH back. The Universal QR slot uses the same branded RSVP QR as your postcard — scanning opens the Legacy to Live By Human Gold Rush landing page. Your vCard profile stays in the background for registered-device flows.', 'hello-elementor-child' ); ?>
 			</p>
 
 			<div class="hb-hang-tag-layout">
@@ -446,13 +468,13 @@ class Hb_Hang_Tag {
 					</p>
 
 					<div class="hb-hang-tag-scan-field">
-						<label for="hb-hang-tag-scan-url"><strong><?php esc_html_e( 'Dynamic vCard link (scans resolve to your live profile)', 'hello-elementor-child' ); ?></strong></label>
+						<label for="hb-hang-tag-scan-url"><strong><?php esc_html_e( 'RSVP scan link (encoded in the hang-tag QR)', 'hello-elementor-child' ); ?></strong></label>
 						<input
 							type="url"
 							id="hb-hang-tag-scan-url"
 							readonly
 							value="<?php echo esc_attr( $scan_url ); ?>"
-							placeholder="<?php esc_attr_e( 'Refresh QR to create your vCard link', 'hello-elementor-child' ); ?>"
+							placeholder="<?php esc_attr_e( 'Refresh QR to load the RSVP scan link', 'hello-elementor-child' ); ?>"
 						>
 						<p class="hb-hang-tag-actions">
 							<a
@@ -462,7 +484,7 @@ class Hb_Hang_Tag {
 								target="_blank"
 								rel="noopener noreferrer"
 								<?php echo $has_qr ? '' : ' aria-disabled="true" tabindex="-1"'; ?>
-							><?php esc_html_e( 'Preview vCard', 'hello-elementor-child' ); ?></a>
+							><?php esc_html_e( 'Preview scan destination', 'hello-elementor-child' ); ?></a>
 							<button type="button" class="button" id="hb-hang-tag-copy-btn"<?php echo $has_qr ? '' : ' disabled'; ?>><?php esc_html_e( 'Copy link', 'hello-elementor-child' ); ?></button>
 						</p>
 					</div>

@@ -59,7 +59,7 @@
 			} else if (qrInner) {
 				qrInner.classList.remove('qr-inner--placeholder');
 				qrInner.innerHTML = '<img id="hb-hang-tag-qr-img" class="hb-hang-tag-qr-img" src="' +
-					qrImageUrl + '" alt="Your dynamic Universal QR" width="62" height="62">';
+					qrImageUrl + '" alt="Branded RSVP Universal QR" width="62" height="62">';
 				qrImg = document.getElementById('hb-hang-tag-qr-img');
 			}
 		}
