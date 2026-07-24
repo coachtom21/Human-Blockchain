@@ -25,16 +25,19 @@
 }
 
 .hb-hang-tag-layout {
-	display: grid;
-	grid-template-columns: 1fr;
+	display: flex;
+	flex-direction: column;
 	gap: 2rem;
+	max-width: 980px;
 }
 
-@media (min-width: 900px) {
-	.hb-hang-tag-layout {
-		grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
-		align-items: start;
-	}
+.hb-hang-tag-actions-col {
+	order: 1;
+}
+
+.hb-hang-tag-preview-col {
+	order: 2;
+	width: 100%;
 }
 
 .hb-hang-tag-actions .button {
@@ -63,6 +66,8 @@
 
 .hb-hang-tag-preview-col h4 {
 	margin: 0 0 1em;
+	padding-top: 0.5rem;
+	border-top: 1px solid rgba(255, 255, 255, 0.1);
 	font-size: 1rem;
 	font-weight: 600;
 	letter-spacing: 0.04em;
