@@ -881,96 +881,6 @@ class Hb_Postcard {
 	}
 
 	/**
-	 * Stamp a QR raster onto the postcard with alpha-aware compositing.
-	 *
-	 * @param GdImage $canvas Destination image.
-	 * @param GdImage $qr_img Source QR image.
-	 * @param int     $x      Destination X.
-	 * @param int     $y      Destination Y.
-	 * @param int     $size   Target square size in pixels.
-	 * @return void
-	 */
-	private static function stamp_qr_on_canvas( $canvas, $qr_img, $x, $y, $size ) {
-		$size   = max( 1, (int) $size );
-		$src_w  = imagesx( $qr_img );
-		$src_h  = imagesy( $qr_img );
-		$scaled = imagecreatetruecolor( $size, $size );
-		if ( ! $scaled ) {
-			imagecopyresampled( $canvas, $qr_img, $x, $y, 0, 0, $size, $size, $src_w, $src_h );
-			return;
-		}
-
-		imagealphablending( $scaled, false );
-		imagesavealpha( $scaled, true );
-		$transparent = imagecolorallocatealpha( $scaled, 0, 0, 0, 127 );
-		imagefilledrectangle( $scaled, 0, 0, $size, $size, $transparent );
-		imagealphablending( $scaled, true );
-		imagecopyresampled( $scaled, $qr_img, 0, 0, 0, 0, $size, $size, $src_w, $src_h );
-		self::imagecopymerge_alpha( $canvas, $scaled, $x, $y, 0, 0, $size, $size, 100 );
-		imagedestroy( $scaled );
-	}
-
-	/**
-	 * Copy a source image onto a destination while respecting PNG alpha.
-	 *
-	 * @param GdImage $dst_im Destination image.
-	 * @param GdImage $src_im Source image.
-	 * @param int     $dst_x  Destination X.
-	 * @param int     $dst_y  Destination Y.
-	 * @param int     $src_x  Source X.
-	 * @param int     $src_y  Source Y.
-	 * @param int     $src_w  Source width.
-	 * @param int     $src_h  Source height.
-	 * @param int     $pct    Opacity 0-100.
-	 * @return void
-	 */
-	private static function imagecopymerge_alpha( $dst_im, $src_im, $dst_x, $dst_y, $src_x, $src_y, $src_w, $src_h, $pct ) {
-		$pct = max( 0, min( 100, (int) $pct ) ) / 100;
-		imagealphablending( $dst_im, true );
-		imagesavealpha( $dst_im, true );
-
-		for ( $x = 0; $x < $src_w; $x++ ) {
-			for ( $y = 0; $y < $src_h; $y++ ) {
-				$dst_px = $dst_x + $x;
-				$dst_py = $dst_y + $y;
-				if ( $dst_px < 0 || $dst_py < 0 || $dst_px >= imagesx( $dst_im ) || $dst_py >= imagesy( $dst_im ) ) {
-					continue;
-				}
-
-				$src_px = $src_x + $x;
-				$src_py = $src_y + $y;
-				if ( $src_px < 0 || $src_py < 0 || $src_px >= imagesx( $src_im ) || $src_py >= imagesy( $src_im ) ) {
-					continue;
-				}
-
-				$src_rgba = imagecolorat( $src_im, $src_px, $src_py );
-				$src_a    = ( $src_rgba & 0x7F000000 ) >> 24;
-				if ( $src_a >= 127 ) {
-					continue;
-				}
-
-				$src_r = ( $src_rgba >> 16 ) & 0xFF;
-				$src_g = ( $src_rgba >> 8 ) & 0xFF;
-				$src_b = $src_rgba & 0xFF;
-				$opacity = ( 127 - $src_a ) / 127 * $pct;
-
-				$dst_rgba = imagecolorat( $dst_im, $dst_px, $dst_py );
-				$dst_r    = ( $dst_rgba >> 16 ) & 0xFF;
-				$dst_g    = ( $dst_rgba >> 8 ) & 0xFF;
-				$dst_b    = $dst_rgba & 0xFF;
-
-				$out_r = (int) round( $dst_r * ( 1 - $opacity ) + $src_r * $opacity );
-				$out_g = (int) round( $dst_g * ( 1 - $opacity ) + $src_g * $opacity );
-				$out_b = (int) round( $dst_b * ( 1 - $opacity ) + $src_b * $opacity );
-				$color = imagecolorallocate( $dst_im, $out_r, $out_g, $out_b );
-				if ( $color !== false ) {
-					imagesetpixel( $dst_im, $dst_px, $dst_py, $color );
-				}
-			}
-		}
-	}
-
-	/**
 	 * Optional "To:" address block (not used on Human Gold Rush RSVP art by default).
 	 *
 	 * @param int $w Canvas width.
@@ -1140,18 +1050,21 @@ class Hb_Postcard {
 			return new WP_Error( 'qr_decode', __( 'Could not decode QR image.', 'hello-elementor-child' ) );
 		}
 
-		$qr_size = (int) $placement['size'];
-		$qr_x    = (int) $placement['x'];
-		$qr_y    = (int) $placement['y'];
-		$wipe_pad = (int) apply_filters( 'hb_postcard_qr_wipe_padding', 8, $user_id, $placement );
-		$wipe_pad = max( 0, min( 32, $wipe_pad ) );
+		$qr_size  = (int) $placement['size'];
+		$qr_x     = (int) $placement['x'];
+		$qr_y     = (int) $placement['y'];
+		$src_w    = imagesx( $qr_img );
+		$src_h    = imagesy( $qr_img );
 
 		if ( ! empty( $placement['wipe'] ) ) {
-			$white = imagecolorallocate( $img, 255, 255, 255 );
+			$wipe_pad = (int) apply_filters( 'hb_postcard_qr_wipe_padding', 8, $user_id, $placement );
+			$wipe_pad = max( 0, min( 32, $wipe_pad ) );
+			$white    = imagecolorallocate( $img, 255, 255, 255 );
 			imagefilledrectangle( $img, $qr_x - $wipe_pad, $qr_y - $wipe_pad, $qr_x + $qr_size + $wipe_pad, $qr_y + $qr_size + $wipe_pad, $white );
 		}
 
-		self::stamp_qr_on_canvas( $img, $qr_img, $qr_x, $qr_y, $qr_size );
+		// RSVP asset: keep its own white interior and black border (no transparency).
+		imagecopyresampled( $img, $qr_img, $qr_x, $qr_y, 0, 0, $qr_size, $qr_size, $src_w, $src_h );
 		imagedestroy( $qr_img );
 
 		ob_start();
