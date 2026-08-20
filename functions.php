@@ -1226,6 +1226,8 @@ function hb_enqueue_how_it_works_styles() {
 }
 add_action( 'wp_enqueue_scripts', 'hb_enqueue_how_it_works_styles', 25 );
 
+require_once get_stylesheet_directory() . '/includes/coach-tom-welcome.php';
+
 /**
  * Force /how-it-works/ onto the funnel How It Works template.
  *

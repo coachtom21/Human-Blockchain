@@ -124,8 +124,9 @@ $css_ver  = file_exists( $css_file ) ? (string) filemtime( $css_file ) : HELLO_E
 			</div>
 		</section>
 
-		<section class="hb-section hb-section--white">
+		<section class="hb-section hb-section--white" id="three-qr-layers">
 			<div class="hb-wrap">
+				<?php hb_render_coach_tom_welcome(); ?>
 				<span class="hb-kicker"><?php esc_html_e( 'Three QR layers', 'hello-elementor-child' ); ?></span>
 				<h2 class="hb-title"><?php esc_html_e( 'Identity, trade, and gratitude stay distinct', 'hello-elementor-child' ); ?></h2>
 				<div class="hb-rules">

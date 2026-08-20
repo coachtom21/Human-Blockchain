@@ -123,6 +123,10 @@ body.hb-hiw-body .skip:focus {
 	background: #fff;
 }
 
+.hb-hiw-page .ctw-audio {
+	margin: 0 auto 48px;
+}
+
 .hb-hiw-page .hb-kicker {
 	color: var(--hiw-teal);
 	font-weight: 800;
