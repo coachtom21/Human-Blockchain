@@ -75,6 +75,71 @@ function hb_nwp_landing_section_url( $section_id ) {
 }
 
 /**
+ * Whether the current view is the NWP landing page.
+ *
+ * @return bool
+ */
+function hb_is_nwp_landing_page() {
+	return function_exists( 'is_page_template' ) && is_page_template( 'templates-parts/template-nwp-landing.php' );
+}
+
+/**
+ * Map a header menu item to an NWP landing section id.
+ *
+ * @param object $item Menu item.
+ * @return string Section id or empty string.
+ */
+function hb_nwp_menu_item_section_id( $item ) {
+	$title = strtolower( trim( wp_strip_all_tags( (string) ( $item->title ?? '' ) ) ) );
+	$map   = array(
+		'how it works' => 'how-it-works',
+		'seller types' => 'seller-types',
+		'trade value'  => 'trade-value',
+	);
+	if ( isset( $map[ $title ] ) ) {
+		return $map[ $title ];
+	}
+
+	$url = strtolower( (string) ( $item->url ?? '' ) );
+	foreach ( array( 'how-it-works', 'seller-types', 'trade-value' ) as $section ) {
+		if ( false !== strpos( $url, $section ) ) {
+			return $section;
+		}
+	}
+
+	return '';
+}
+
+/**
+ * Point How It Works / Seller Types / Trade Value at the NWP landing sections.
+ *
+ * @param array<int, object> $items Menu items.
+ * @param stdClass           $args  wp_nav_menu args.
+ * @return array<int, object>
+ */
+function hb_rewrite_nwp_header_section_urls( $items, $args ) {
+	unset( $args );
+	if ( is_admin() || ! is_array( $items ) ) {
+		return $items;
+	}
+
+	$on_landing = hb_is_nwp_landing_page();
+
+	foreach ( $items as $item ) {
+		$section = hb_nwp_menu_item_section_id( $item );
+		if ( $section === '' ) {
+			continue;
+		}
+		$item->url = $on_landing
+			? '#' . $section
+			: hb_nwp_landing_section_url( $section );
+	}
+
+	return $items;
+}
+add_filter( 'wp_nav_menu_objects', 'hb_rewrite_nwp_header_section_urls', 20, 2 );
+
+/**
  * Whether the current singular page needs WooCommerce My Account UI assets.
  * Detects shortcode in post content and in Elementor JSON (common cause of missing styles).
  *
@@ -903,6 +968,93 @@ function hb_enqueue_legal_page_styles() {
 add_action( 'wp_enqueue_scripts', 'hb_enqueue_legal_page_styles', 20 );
 
 /**
+ * Whether the current request is the Treasured Penny page.
+ *
+ * @return bool
+ */
+function hb_is_treasured_penny_page() {
+	if ( function_exists( 'is_page_template' ) && is_page_template( 'templates-parts/template-treasured-penny.php' ) ) {
+		return true;
+	}
+	if ( is_singular( 'page' ) && 'treasured-penny' === get_post_field( 'post_name', get_queried_object_id() ) ) {
+		return true;
+	}
+	return false;
+}
+
+/**
+ * Enqueue Treasured Penny page styles.
+ *
+ * @return void
+ */
+function hb_enqueue_treasured_penny_styles() {
+	if ( ! hb_is_treasured_penny_page() ) {
+		return;
+	}
+	$path = get_stylesheet_directory() . '/assets/css/treasured-penny.css';
+	wp_enqueue_style(
+		'hb-treasured-penny',
+		get_stylesheet_directory_uri() . '/assets/css/treasured-penny.css',
+		array( 'hello-elementor-child-style', 'hb-nwp-site-header' ),
+		file_exists( $path ) ? (string) filemtime( $path ) : HELLO_ELEMENTOR_CHILD_VERSION
+	);
+}
+add_action( 'wp_enqueue_scripts', 'hb_enqueue_treasured_penny_styles', 25 );
+
+/**
+ * Force /treasured-penny/ onto the HBC Treasured Penny template.
+ *
+ * @param string $template Path to the template file.
+ * @return string
+ */
+function hb_treasured_penny_page_template( $template ) {
+	if ( is_admin() || ! is_singular( 'page' ) ) {
+		return $template;
+	}
+	if ( 'treasured-penny' !== get_post_field( 'post_name', get_queried_object_id() ) ) {
+		return $template;
+	}
+	$penny = get_stylesheet_directory() . '/templates-parts/template-treasured-penny.php';
+	return file_exists( $penny ) ? $penny : $template;
+}
+add_filter( 'template_include', 'hb_treasured_penny_page_template', 100 );
+
+/**
+ * Publish The Treasured Penny page and assign its template.
+ *
+ * @return void
+ */
+function hb_ensure_treasured_penny_page() {
+	if ( get_option( 'hb_treasured_penny_page' ) === HELLO_ELEMENTOR_CHILD_VERSION ) {
+		return;
+	}
+
+	$page = get_page_by_path( 'treasured-penny' );
+	if ( $page instanceof WP_Post ) {
+		$id = (int) $page->ID;
+	} else {
+		$id = wp_insert_post(
+			array(
+				'post_title'     => __( 'The Treasured Penny', 'hello-elementor-child' ),
+				'post_name'      => 'treasured-penny',
+				'post_status'    => 'publish',
+				'post_type'      => 'page',
+				'post_content'   => '',
+				'comment_status' => 'closed',
+				'ping_status'    => 'closed',
+			)
+		);
+	}
+
+	if ( $id && ! is_wp_error( $id ) ) {
+		update_post_meta( $id, '_wp_page_template', 'templates-parts/template-treasured-penny.php' );
+	}
+
+	update_option( 'hb_treasured_penny_page', HELLO_ELEMENTOR_CHILD_VERSION );
+}
+add_action( 'init', 'hb_ensure_treasured_penny_page', 20 );
+
+/**
  * Create registration pages automatically
  * Run once by visiting: ?hb_create_pages=1 (as admin)
  */
@@ -941,6 +1093,11 @@ function hb_create_registration_pages() {
 			'title'    => 'My Account',
 			'slug'     => 'my-account',
 			'template' => 'templates-parts/template-my-account.php',
+		),
+		array(
+			'title'    => 'The Treasured Penny',
+			'slug'     => 'treasured-penny',
+			'template' => 'templates-parts/template-treasured-penny.php',
 		),
 	);
 	

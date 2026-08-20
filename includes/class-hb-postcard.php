@@ -30,11 +30,11 @@ class Hb_Postcard {
 	/** Static back of postcard (print reverse side). */
 	const DEFAULT_BACK_URL = 'https://humanblockchain.info/wp-content/uploads/2026/07/Human-Gold-Rush-Postcard-Back.png';
 
-	/** Branded RSVP QR raster stamped onto the postcard front (same for all members). */
-	const RSVP_QR_IMAGE = 'assets/images/postcard/rsvp-qr.png';
+	/** Branded Human Gold RSVP QR (theme-hosted; do not regenerate via ChatGPT or QRTiger). */
+	const RSVP_QR_IMAGE = 'assets/images/postcard/Human_Gold_RSVP.png';
 
-	/** Public URL encoded in the RSVP QR (Legacy to Live By landing). */
-	const PUBLIC_SCAN_URL = 'https://legacytoliveby.org/';
+	/** Public URL encoded in the RSVP QR (discovery entrance). */
+	const PUBLIC_SCAN_URL = 'https://megavoters.com/';
 
 	/**
 	 * Bootstrap hooks.
@@ -207,7 +207,7 @@ class Hb_Postcard {
 	}
 
 	/**
-	 * Public scan URL shown in My Account (Legacy to Live By landing).
+	 * Public scan URL shown in My Account (megavoters.com discovery portal).
 	 *
 	 * @param int $user_id User ID.
 	 * @return string
@@ -1376,7 +1376,7 @@ class Hb_Postcard {
 		<div id="hb-postcard-tools" class="hb-postcard-tools" data-has-image="<?php echo $has_image ? '1' : '0'; ?>">
 			<h3><?php esc_html_e( 'Postcard', 'hello-elementor-child' ); ?></h3>
 			<p class="hb-postcard-intro">
-				<?php esc_html_e( 'The branded Human Gold RSVP QR is stamped onto the postcard front. Scanning opens the Legacy to Live By Human Gold Rush landing page. Your vCard profile is kept in the background for registered-device flows — it is not the postcard scan destination.', 'hello-elementor-child' ); ?>
+				<?php esc_html_e( 'The Human Gold RSVP code is stamped onto the postcard front. Scanning opens megavoters.com. Front and back remain separate downloads for printing. Your vCard profile is kept in the background for registered-device flows — it is not the postcard scan destination.', 'hello-elementor-child' ); ?>
 			</p>
 
 			<div class="hb-postcard-layout">
