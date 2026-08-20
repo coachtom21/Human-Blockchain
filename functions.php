@@ -75,6 +75,45 @@ function hb_nwp_landing_section_url( $section_id ) {
 }
 
 /**
+ * Trade Value destination — YAM JAM Rewards page.
+ *
+ * @return string
+ */
+function hb_yam_jam_rewards_url() {
+	$page = get_page_by_path( 'yam-jam-rewards' );
+	if ( $page instanceof WP_Post ) {
+		return esc_url( get_permalink( $page ) );
+	}
+	return esc_url( home_url( '/yam-jam-rewards/' ) );
+}
+
+/**
+ * How It Works destination — three-site funnel page.
+ *
+ * @return string
+ */
+function hb_how_it_works_url() {
+	$page = get_page_by_path( 'how-it-works' );
+	if ( $page instanceof WP_Post ) {
+		return esc_url( get_permalink( $page ) );
+	}
+	return esc_url( home_url( '/how-it-works/' ) );
+}
+
+/**
+ * Seller Types destination — dedicated seller/giver roles page.
+ *
+ * @return string
+ */
+function hb_seller_types_url() {
+	$page = get_page_by_path( 'seller-types' );
+	if ( $page instanceof WP_Post ) {
+		return esc_url( get_permalink( $page ) );
+	}
+	return esc_url( home_url( '/seller-types/' ) );
+}
+
+/**
  * Whether the current view is the NWP landing page.
  *
  * @return bool
@@ -111,7 +150,8 @@ function hb_nwp_menu_item_section_id( $item ) {
 }
 
 /**
- * Point How It Works / Seller Types / Trade Value at the NWP landing sections.
+ * Point How It Works at /how-it-works/, Seller Types at /seller-types/,
+ * and Trade Value at /yam-jam-rewards/.
  *
  * @param array<int, object> $items Menu items.
  * @param stdClass           $args  wp_nav_menu args.
@@ -123,16 +163,24 @@ function hb_rewrite_nwp_header_section_urls( $items, $args ) {
 		return $items;
 	}
 
-	$on_landing = hb_is_nwp_landing_page();
-
 	foreach ( $items as $item ) {
 		$section = hb_nwp_menu_item_section_id( $item );
 		if ( $section === '' ) {
 			continue;
 		}
-		$item->url = $on_landing
-			? '#' . $section
-			: hb_nwp_landing_section_url( $section );
+		if ( 'trade-value' === $section ) {
+			$item->url = hb_yam_jam_rewards_url();
+			continue;
+		}
+		if ( 'how-it-works' === $section ) {
+			$item->url = hb_how_it_works_url();
+			continue;
+		}
+		if ( 'seller-types' === $section ) {
+			$item->url = hb_seller_types_url();
+			continue;
+		}
+		$item->url = hb_nwp_landing_section_url( $section );
 	}
 
 	return $items;
@@ -1053,6 +1101,180 @@ function hb_ensure_treasured_penny_page() {
 	update_option( 'hb_treasured_penny_page', HELLO_ELEMENTOR_CHILD_VERSION );
 }
 add_action( 'init', 'hb_ensure_treasured_penny_page', 20 );
+
+/**
+ * Whether the current request is the How It Works funnel page.
+ *
+ * @return bool
+ */
+function hb_is_how_it_works_page() {
+	if ( function_exists( 'is_page_template' ) && is_page_template( 'templates-parts/template-hb-how-it-works.php' ) ) {
+		return true;
+	}
+	if ( is_singular( 'page' ) && 'how-it-works' === get_post_field( 'post_name', get_queried_object_id() ) ) {
+		return true;
+	}
+	return false;
+}
+
+/**
+ * Enqueue How It Works funnel styles.
+ *
+ * @return void
+ */
+function hb_enqueue_how_it_works_styles() {
+	if ( ! hb_is_how_it_works_page() ) {
+		return;
+	}
+	$path = get_stylesheet_directory() . '/assets/css/hb-how-it-works.css';
+	wp_enqueue_style(
+		'hb-how-it-works',
+		get_stylesheet_directory_uri() . '/assets/css/hb-how-it-works.css',
+		array( 'hello-elementor-child-style', 'hb-nwp-site-header' ),
+		file_exists( $path ) ? (string) filemtime( $path ) : HELLO_ELEMENTOR_CHILD_VERSION
+	);
+}
+add_action( 'wp_enqueue_scripts', 'hb_enqueue_how_it_works_styles', 25 );
+
+/**
+ * Force /how-it-works/ onto the funnel How It Works template.
+ *
+ * @param string $template Path to the template file.
+ * @return string
+ */
+function hb_how_it_works_page_template( $template ) {
+	if ( is_admin() || ! is_singular( 'page' ) ) {
+		return $template;
+	}
+	if ( 'how-it-works' !== get_post_field( 'post_name', get_queried_object_id() ) ) {
+		return $template;
+	}
+	$hiw = get_stylesheet_directory() . '/templates-parts/template-hb-how-it-works.php';
+	return file_exists( $hiw ) ? $hiw : $template;
+}
+add_filter( 'template_include', 'hb_how_it_works_page_template', 100 );
+
+/**
+ * Publish How It Works and assign the funnel template.
+ *
+ * @return void
+ */
+function hb_ensure_how_it_works_page() {
+	if ( get_option( 'hb_how_it_works_funnel_page' ) === '1' ) {
+		return;
+	}
+
+	$page = get_page_by_path( 'how-it-works' );
+	if ( $page instanceof WP_Post ) {
+		$id = (int) $page->ID;
+	} else {
+		$id = wp_insert_post(
+			array(
+				'post_title'     => __( 'How It Works', 'hello-elementor-child' ),
+				'post_name'      => 'how-it-works',
+				'post_status'    => 'publish',
+				'post_type'      => 'page',
+				'post_content'   => '',
+				'comment_status' => 'closed',
+				'ping_status'    => 'closed',
+			)
+		);
+	}
+
+	if ( $id && ! is_wp_error( $id ) ) {
+		update_post_meta( $id, '_wp_page_template', 'templates-parts/template-hb-how-it-works.php' );
+	}
+
+	update_option( 'hb_how_it_works_funnel_page', '1' );
+}
+add_action( 'init', 'hb_ensure_how_it_works_page', 20 );
+
+/**
+ * Whether the current request is the Seller Types page.
+ *
+ * @return bool
+ */
+function hb_is_seller_types_page() {
+	if ( function_exists( 'is_page_template' ) && is_page_template( 'templates-parts/template-hb-seller-types.php' ) ) {
+		return true;
+	}
+	if ( is_singular( 'page' ) && 'seller-types' === get_post_field( 'post_name', get_queried_object_id() ) ) {
+		return true;
+	}
+	return false;
+}
+
+/**
+ * Enqueue Seller Types styles.
+ *
+ * @return void
+ */
+function hb_enqueue_seller_types_styles() {
+	if ( ! hb_is_seller_types_page() ) {
+		return;
+	}
+	$path = get_stylesheet_directory() . '/assets/css/hb-seller-types.css';
+	wp_enqueue_style(
+		'hb-seller-types',
+		get_stylesheet_directory_uri() . '/assets/css/hb-seller-types.css',
+		array( 'hello-elementor-child-style', 'hb-nwp-site-header' ),
+		file_exists( $path ) ? (string) filemtime( $path ) : HELLO_ELEMENTOR_CHILD_VERSION
+	);
+}
+add_action( 'wp_enqueue_scripts', 'hb_enqueue_seller_types_styles', 25 );
+
+/**
+ * Force /seller-types/ onto the Seller Types template.
+ *
+ * @param string $template Path to the template file.
+ * @return string
+ */
+function hb_seller_types_page_template( $template ) {
+	if ( is_admin() || ! is_singular( 'page' ) ) {
+		return $template;
+	}
+	if ( 'seller-types' !== get_post_field( 'post_name', get_queried_object_id() ) ) {
+		return $template;
+	}
+	$st = get_stylesheet_directory() . '/templates-parts/template-hb-seller-types.php';
+	return file_exists( $st ) ? $st : $template;
+}
+add_filter( 'template_include', 'hb_seller_types_page_template', 100 );
+
+/**
+ * Publish Seller Types and assign the dedicated template.
+ *
+ * @return void
+ */
+function hb_ensure_seller_types_page() {
+	if ( get_option( 'hb_seller_types_page' ) === '1' ) {
+		return;
+	}
+
+	$page = get_page_by_path( 'seller-types' );
+	if ( $page instanceof WP_Post ) {
+		$id = (int) $page->ID;
+	} else {
+		$id = wp_insert_post(
+			array(
+				'post_title'     => __( 'Seller Types', 'hello-elementor-child' ),
+				'post_name'      => 'seller-types',
+				'post_status'    => 'publish',
+				'post_type'      => 'page',
+				'post_content'   => '',
+				'comment_status' => 'closed',
+				'ping_status'    => 'closed',
+			)
+		);
+	}
+
+	if ( $id && ! is_wp_error( $id ) ) {
+		update_post_meta( $id, '_wp_page_template', 'templates-parts/template-hb-seller-types.php' );
+	}
+
+	update_option( 'hb_seller_types_page', '1' );
+}
+add_action( 'init', 'hb_ensure_seller_types_page', 20 );
 
 /**
  * Create registration pages automatically

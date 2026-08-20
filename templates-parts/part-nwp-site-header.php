@@ -57,9 +57,15 @@ $shop_url = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 
 					)
 				);
 			} else {
-				$how    = hb_nwp_landing_section_url( 'how-it-works' );
-				$seller = hb_nwp_landing_section_url( 'seller-types' );
-				$trade  = hb_nwp_landing_section_url( 'trade-value' );
+				$how    = function_exists( 'hb_how_it_works_url' )
+					? hb_how_it_works_url()
+					: home_url( '/how-it-works/' );
+				$seller = function_exists( 'hb_seller_types_url' )
+					? hb_seller_types_url()
+					: home_url( '/seller-types/' );
+				$trade  = function_exists( 'hb_yam_jam_rewards_url' )
+					? hb_yam_jam_rewards_url()
+					: home_url( '/yam-jam-rewards/' );
 				?>
 				<ul class="nav-menu">
 					<li class="menu-item"><a href="<?php echo $how; ?>"><?php echo esc_html__( 'How It Works', 'hello-elementor-child' ); ?></a></li>
