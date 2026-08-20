@@ -114,6 +114,19 @@ function hb_seller_types_url() {
 }
 
 /**
+ * Oligopoly Umbrella destination.
+ *
+ * @return string
+ */
+function hb_oligopoly_umbrella_url() {
+	$page = get_page_by_path( 'oligopoly-umbrella' );
+	if ( $page instanceof WP_Post ) {
+		return esc_url( get_permalink( $page ) );
+	}
+	return esc_url( home_url( '/oligopoly-umbrella/' ) );
+}
+
+/**
  * Whether the current view is the NWP landing page.
  *
  * @return bool
@@ -131,16 +144,17 @@ function hb_is_nwp_landing_page() {
 function hb_nwp_menu_item_section_id( $item ) {
 	$title = strtolower( trim( wp_strip_all_tags( (string) ( $item->title ?? '' ) ) ) );
 	$map   = array(
-		'how it works' => 'how-it-works',
-		'seller types' => 'seller-types',
-		'trade value'  => 'trade-value',
+		'how it works'       => 'how-it-works',
+		'seller types'       => 'seller-types',
+		'trade value'        => 'trade-value',
+		'oligopoly umbrella' => 'oligopoly-umbrella',
 	);
 	if ( isset( $map[ $title ] ) ) {
 		return $map[ $title ];
 	}
 
 	$url = strtolower( (string) ( $item->url ?? '' ) );
-	foreach ( array( 'how-it-works', 'seller-types', 'trade-value' ) as $section ) {
+	foreach ( array( 'how-it-works', 'seller-types', 'trade-value', 'oligopoly-umbrella' ) as $section ) {
 		if ( false !== strpos( $url, $section ) ) {
 			return $section;
 		}
@@ -151,7 +165,7 @@ function hb_nwp_menu_item_section_id( $item ) {
 
 /**
  * Point How It Works at /how-it-works/, Seller Types at /seller-types/,
- * and Trade Value at /yam-jam-rewards/.
+ * Trade Value at /yam-jam-rewards/, and Oligopoly Umbrella at /oligopoly-umbrella/.
  *
  * @param array<int, object> $items Menu items.
  * @param stdClass           $args  wp_nav_menu args.
@@ -180,12 +194,88 @@ function hb_rewrite_nwp_header_section_urls( $items, $args ) {
 			$item->url = hb_seller_types_url();
 			continue;
 		}
+		if ( 'oligopoly-umbrella' === $section ) {
+			$item->url = hb_oligopoly_umbrella_url();
+			continue;
+		}
 		$item->url = hb_nwp_landing_section_url( $section );
 	}
 
 	return $items;
 }
 add_filter( 'wp_nav_menu_objects', 'hb_rewrite_nwp_header_section_urls', 20, 2 );
+
+/**
+ * Add Oligopoly Umbrella to the NWP header menu when it is missing.
+ *
+ * @param array<int, object> $items Menu items.
+ * @param stdClass           $args  wp_nav_menu args.
+ * @return array<int, object>
+ */
+function hb_inject_oligopoly_umbrella_nav_item( $items, $args ) {
+	if ( is_admin() || ! is_array( $items ) || $items === array() ) {
+		return $items;
+	}
+
+	$menu_name = isset( $args->menu ) ? (string) $args->menu : '';
+	$location  = isset( $args->theme_location ) ? (string) $args->theme_location : '';
+	if ( 'New Menu' !== $menu_name && 'menu-1' !== $location ) {
+		return $items;
+	}
+
+	foreach ( $items as $item ) {
+		$title = strtolower( trim( wp_strip_all_tags( (string) ( $item->title ?? '' ) ) ) );
+		$url   = strtolower( (string) ( $item->url ?? '' ) );
+		if ( 'oligopoly umbrella' === $title || false !== strpos( $url, 'oligopoly-umbrella' ) ) {
+			return $items;
+		}
+	}
+
+	$source = null;
+	foreach ( $items as $item ) {
+		if ( empty( $item->menu_item_parent ) ) {
+			$source = $item;
+			break;
+		}
+	}
+	if ( ! $source ) {
+		return $items;
+	}
+
+	$added                       = clone $source;
+	$added->ID                   = -198765;
+	$added->db_id                = 0;
+	$added->title                = __( 'Oligopoly Umbrella', 'hello-elementor-child' );
+	$added->url                  = hb_oligopoly_umbrella_url();
+	$added->object               = 'custom';
+	$added->type                 = 'custom';
+	$added->object_id            = 0;
+	$added->menu_item_parent     = 0;
+	$added->classes              = array( 'menu-item', 'menu-item-type-custom', 'menu-item-object-custom', 'menu-item-oligopoly-umbrella' );
+	$added->target               = '';
+	$added->xfn                  = '';
+	$added->description          = '';
+	$added->current_item_parent  = false;
+	$added->current_item_ancestor = false;
+	$added->current              = function_exists( 'hb_is_oligopoly_umbrella_page' ) && hb_is_oligopoly_umbrella_page();
+
+	$out      = array();
+	$inserted = false;
+	foreach ( $items as $item ) {
+		$out[] = $item;
+		$title = strtolower( trim( wp_strip_all_tags( (string) ( $item->title ?? '' ) ) ) );
+		if ( ! $inserted && 'trade value' === $title ) {
+			$out[]    = $added;
+			$inserted = true;
+		}
+	}
+	if ( ! $inserted ) {
+		$out[] = $added;
+	}
+
+	return $out;
+}
+add_filter( 'wp_nav_menu_objects', 'hb_inject_oligopoly_umbrella_nav_item', 25, 2 );
 
 /**
  * Whether the current singular page needs WooCommerce My Account UI assets.
@@ -1275,6 +1365,101 @@ function hb_ensure_seller_types_page() {
 	update_option( 'hb_seller_types_page', '1' );
 }
 add_action( 'init', 'hb_ensure_seller_types_page', 20 );
+
+/**
+ * Whether the current request is the Oligopoly Umbrella page.
+ *
+ * @return bool
+ */
+function hb_is_oligopoly_umbrella_page() {
+	if ( function_exists( 'is_page_template' ) && is_page_template( 'templates-parts/template-hb-oligopoly-umbrella.php' ) ) {
+		return true;
+	}
+	if ( is_singular( 'page' ) && 'oligopoly-umbrella' === get_post_field( 'post_name', get_queried_object_id() ) ) {
+		return true;
+	}
+	return false;
+}
+
+/**
+ * Enqueue Oligopoly Umbrella styles and modal script.
+ *
+ * @return void
+ */
+function hb_enqueue_oligopoly_umbrella_assets() {
+	if ( ! hb_is_oligopoly_umbrella_page() ) {
+		return;
+	}
+	$css = get_stylesheet_directory() . '/assets/css/hb-oligopoly-umbrella.css';
+	$js  = get_stylesheet_directory() . '/assets/js/hb-oligopoly-umbrella.js';
+	wp_enqueue_style(
+		'hb-oligopoly-umbrella',
+		get_stylesheet_directory_uri() . '/assets/css/hb-oligopoly-umbrella.css',
+		array( 'hello-elementor-child-style', 'hb-nwp-site-header' ),
+		file_exists( $css ) ? (string) filemtime( $css ) : HELLO_ELEMENTOR_CHILD_VERSION
+	);
+	wp_enqueue_script(
+		'hb-oligopoly-umbrella',
+		get_stylesheet_directory_uri() . '/assets/js/hb-oligopoly-umbrella.js',
+		array(),
+		file_exists( $js ) ? (string) filemtime( $js ) : HELLO_ELEMENTOR_CHILD_VERSION,
+		true
+	);
+}
+add_action( 'wp_enqueue_scripts', 'hb_enqueue_oligopoly_umbrella_assets', 25 );
+
+/**
+ * Force /oligopoly-umbrella/ onto the Oligopoly Umbrella template.
+ *
+ * @param string $template Path to the template file.
+ * @return string
+ */
+function hb_oligopoly_umbrella_page_template( $template ) {
+	if ( is_admin() || ! is_singular( 'page' ) ) {
+		return $template;
+	}
+	if ( 'oligopoly-umbrella' !== get_post_field( 'post_name', get_queried_object_id() ) ) {
+		return $template;
+	}
+	$ou = get_stylesheet_directory() . '/templates-parts/template-hb-oligopoly-umbrella.php';
+	return file_exists( $ou ) ? $ou : $template;
+}
+add_filter( 'template_include', 'hb_oligopoly_umbrella_page_template', 100 );
+
+/**
+ * Publish Oligopoly Umbrella and assign the dedicated template.
+ *
+ * @return void
+ */
+function hb_ensure_oligopoly_umbrella_page() {
+	if ( get_option( 'hb_oligopoly_umbrella_page' ) === '1' ) {
+		return;
+	}
+
+	$page = get_page_by_path( 'oligopoly-umbrella' );
+	if ( $page instanceof WP_Post ) {
+		$id = (int) $page->ID;
+	} else {
+		$id = wp_insert_post(
+			array(
+				'post_title'     => __( 'Oligopoly Umbrella', 'hello-elementor-child' ),
+				'post_name'      => 'oligopoly-umbrella',
+				'post_status'    => 'publish',
+				'post_type'      => 'page',
+				'post_content'   => '',
+				'comment_status' => 'closed',
+				'ping_status'    => 'closed',
+			)
+		);
+	}
+
+	if ( $id && ! is_wp_error( $id ) ) {
+		update_post_meta( $id, '_wp_page_template', 'templates-parts/template-hb-oligopoly-umbrella.php' );
+	}
+
+	update_option( 'hb_oligopoly_umbrella_page', '1' );
+}
+add_action( 'init', 'hb_ensure_oligopoly_umbrella_page', 20 );
 
 /**
  * Create registration pages automatically

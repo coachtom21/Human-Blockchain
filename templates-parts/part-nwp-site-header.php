@@ -66,11 +66,15 @@ $shop_url = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 
 				$trade  = function_exists( 'hb_yam_jam_rewards_url' )
 					? hb_yam_jam_rewards_url()
 					: home_url( '/yam-jam-rewards/' );
+				$umbrella = function_exists( 'hb_oligopoly_umbrella_url' )
+					? hb_oligopoly_umbrella_url()
+					: home_url( '/oligopoly-umbrella/' );
 				?>
 				<ul class="nav-menu">
 					<li class="menu-item"><a href="<?php echo $how; ?>"><?php echo esc_html__( 'How It Works', 'hello-elementor-child' ); ?></a></li>
 					<li class="menu-item"><a href="<?php echo $seller; ?>"><?php echo esc_html__( 'Seller Types', 'hello-elementor-child' ); ?></a></li>
 					<li class="menu-item"><a href="<?php echo $trade; ?>"><?php echo esc_html__( 'Trade Value', 'hello-elementor-child' ); ?></a></li>
+					<li class="menu-item"><a href="<?php echo $umbrella; ?>"><?php echo esc_html__( 'Oligopoly Umbrella', 'hello-elementor-child' ); ?></a></li>
 					<li class="menu-item"><a href="<?php echo esc_url( $shop_url ); ?>"><?php echo esc_html__( 'Shop', 'hello-elementor-child' ); ?></a></li>
 					<li class="cpm-nwp-register-btn-wrap menu-item"><a href="#" class="cpm-nwp-register-btn cpm-nwp-open-modal" data-cpm-modal="cpm-nwp-register-modal"><?php echo esc_html__( 'Activate Your Phone', 'cpm-humanblockchain' ); ?></a></li>
 					<li class="cpm-hb-get-started-wrap menu-item"><a href="#" class="cpm-hb-get-started-btn cpm-hb-open-membership-modal btn ghost"><?php echo esc_html__( 'Get started', 'cpm-humanblockchain' ); ?></a></li>
