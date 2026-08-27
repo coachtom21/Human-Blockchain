@@ -60,6 +60,9 @@ $shop_url = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 
 				$how    = function_exists( 'hb_how_it_works_url' )
 					? hb_how_it_works_url()
 					: home_url( '/how-it-works/' );
+				$treasury = function_exists( 'hb_re_member_treasury_url' )
+					? hb_re_member_treasury_url()
+					: home_url( '/re-member-treasury/' );
 				$seller = function_exists( 'hb_seller_types_url' )
 					? hb_seller_types_url()
 					: home_url( '/seller-types/' );
@@ -72,6 +75,7 @@ $shop_url = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 
 				?>
 				<ul class="nav-menu">
 					<li class="menu-item"><a href="<?php echo $how; ?>"><?php echo esc_html__( 'How It Works', 'hello-elementor-child' ); ?></a></li>
+					<li class="menu-item"><a href="<?php echo $treasury; ?>"><?php echo esc_html__( 'Re-Member Treasury', 'hello-elementor-child' ); ?></a></li>
 					<li class="menu-item"><a href="<?php echo $seller; ?>"><?php echo esc_html__( 'Seller Types', 'hello-elementor-child' ); ?></a></li>
 					<li class="menu-item"><a href="<?php echo $trade; ?>"><?php echo esc_html__( 'Trade Value', 'hello-elementor-child' ); ?></a></li>
 					<li class="menu-item"><a href="<?php echo $umbrella; ?>"><?php echo esc_html__( 'Oligopoly Umbrella', 'hello-elementor-child' ); ?></a></li>

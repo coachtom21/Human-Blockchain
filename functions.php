@@ -127,6 +127,32 @@ function hb_oligopoly_umbrella_url() {
 }
 
 /**
+ * Re-Member Treasury destination.
+ *
+ * @return string
+ */
+function hb_re_member_treasury_url() {
+	$page = get_page_by_path( 're-member-treasury' );
+	if ( $page instanceof WP_Post ) {
+		return esc_url( get_permalink( $page ) );
+	}
+	return esc_url( home_url( '/re-member-treasury/' ) );
+}
+
+/**
+ * Patron Membership destination (page may be published later).
+ *
+ * @return string
+ */
+function hb_patron_membership_url() {
+	$page = get_page_by_path( 'patron-membership' );
+	if ( $page instanceof WP_Post ) {
+		return esc_url( get_permalink( $page ) );
+	}
+	return esc_url( home_url( '/patron-membership/' ) );
+}
+
+/**
  * Whether the current view is the NWP landing page.
  *
  * @return bool
@@ -145,6 +171,7 @@ function hb_nwp_menu_item_section_id( $item ) {
 	$title = strtolower( trim( wp_strip_all_tags( (string) ( $item->title ?? '' ) ) ) );
 	$map   = array(
 		'how it works'       => 'how-it-works',
+		're-member treasury' => 're-member-treasury',
 		'seller types'       => 'seller-types',
 		'trade value'        => 'trade-value',
 		'oligopoly umbrella' => 'oligopoly-umbrella',
@@ -154,7 +181,7 @@ function hb_nwp_menu_item_section_id( $item ) {
 	}
 
 	$url = strtolower( (string) ( $item->url ?? '' ) );
-	foreach ( array( 'how-it-works', 'seller-types', 'trade-value', 'oligopoly-umbrella' ) as $section ) {
+	foreach ( array( 'how-it-works', 're-member-treasury', 'seller-types', 'trade-value', 'oligopoly-umbrella' ) as $section ) {
 		if ( false !== strpos( $url, $section ) ) {
 			return $section;
 		}
@@ -188,6 +215,10 @@ function hb_rewrite_nwp_header_section_urls( $items, $args ) {
 		}
 		if ( 'how-it-works' === $section ) {
 			$item->url = hb_how_it_works_url();
+			continue;
+		}
+		if ( 're-member-treasury' === $section ) {
+			$item->url = hb_re_member_treasury_url();
 			continue;
 		}
 		if ( 'seller-types' === $section ) {
@@ -276,6 +307,78 @@ function hb_inject_oligopoly_umbrella_nav_item( $items, $args ) {
 	return $out;
 }
 add_filter( 'wp_nav_menu_objects', 'hb_inject_oligopoly_umbrella_nav_item', 25, 2 );
+
+/**
+ * Add Re-Member Treasury to the NWP header menu after How It Works when missing.
+ *
+ * @param array<int, object> $items Menu items.
+ * @param stdClass           $args  wp_nav_menu args.
+ * @return array<int, object>
+ */
+function hb_inject_re_member_treasury_nav_item( $items, $args ) {
+	if ( is_admin() || ! is_array( $items ) || $items === array() ) {
+		return $items;
+	}
+
+	$menu_name = isset( $args->menu ) ? (string) $args->menu : '';
+	$location  = isset( $args->theme_location ) ? (string) $args->theme_location : '';
+	if ( 'New Menu' !== $menu_name && 'menu-1' !== $location ) {
+		return $items;
+	}
+
+	foreach ( $items as $item ) {
+		$title = strtolower( trim( wp_strip_all_tags( (string) ( $item->title ?? '' ) ) ) );
+		$url   = strtolower( (string) ( $item->url ?? '' ) );
+		if ( 're-member treasury' === $title || false !== strpos( $url, 're-member-treasury' ) ) {
+			return $items;
+		}
+	}
+
+	$source = null;
+	foreach ( $items as $item ) {
+		if ( empty( $item->menu_item_parent ) ) {
+			$source = $item;
+			break;
+		}
+	}
+	if ( ! $source ) {
+		return $items;
+	}
+
+	$added                        = clone $source;
+	$added->ID                    = -198766;
+	$added->db_id                 = 0;
+	$added->title                 = __( 'Re-Member Treasury', 'hello-elementor-child' );
+	$added->url                   = hb_re_member_treasury_url();
+	$added->object                = 'custom';
+	$added->type                  = 'custom';
+	$added->object_id             = 0;
+	$added->menu_item_parent      = 0;
+	$added->classes               = array( 'menu-item', 'menu-item-type-custom', 'menu-item-object-custom', 'menu-item-re-member-treasury' );
+	$added->target                = '';
+	$added->xfn                   = '';
+	$added->description           = '';
+	$added->current_item_parent   = false;
+	$added->current_item_ancestor = false;
+	$added->current               = function_exists( 'hb_is_re_member_treasury_page' ) && hb_is_re_member_treasury_page();
+
+	$out      = array();
+	$inserted = false;
+	foreach ( $items as $item ) {
+		$out[] = $item;
+		$title = strtolower( trim( wp_strip_all_tags( (string) ( $item->title ?? '' ) ) ) );
+		if ( ! $inserted && 'how it works' === $title ) {
+			$out[]    = $added;
+			$inserted = true;
+		}
+	}
+	if ( ! $inserted ) {
+		array_unshift( $out, $added );
+	}
+
+	return $out;
+}
+add_filter( 'wp_nav_menu_objects', 'hb_inject_re_member_treasury_nav_item', 26, 2 );
 
 /**
  * Whether the current singular page needs WooCommerce My Account UI assets.
@@ -1462,6 +1565,93 @@ function hb_ensure_oligopoly_umbrella_page() {
 	update_option( 'hb_oligopoly_umbrella_page', '1' );
 }
 add_action( 'init', 'hb_ensure_oligopoly_umbrella_page', 20 );
+
+/**
+ * Whether the current request is the Re-Member Treasury page.
+ *
+ * @return bool
+ */
+function hb_is_re_member_treasury_page() {
+	if ( function_exists( 'is_page_template' ) && is_page_template( 'templates-parts/template-hb-re-member-treasury.php' ) ) {
+		return true;
+	}
+	if ( is_singular( 'page' ) && 're-member-treasury' === get_post_field( 'post_name', get_queried_object_id() ) ) {
+		return true;
+	}
+	return false;
+}
+
+/**
+ * Enqueue Re-Member Treasury styles.
+ *
+ * @return void
+ */
+function hb_enqueue_re_member_treasury_assets() {
+	if ( ! hb_is_re_member_treasury_page() ) {
+		return;
+	}
+	$path = get_stylesheet_directory() . '/assets/css/hb-re-member-treasury.css';
+	wp_enqueue_style(
+		'hb-re-member-treasury',
+		get_stylesheet_directory_uri() . '/assets/css/hb-re-member-treasury.css',
+		array( 'hello-elementor-child-style', 'hb-nwp-site-header' ),
+		file_exists( $path ) ? (string) filemtime( $path ) : HELLO_ELEMENTOR_CHILD_VERSION
+	);
+}
+add_action( 'wp_enqueue_scripts', 'hb_enqueue_re_member_treasury_assets', 25 );
+
+/**
+ * Force /re-member-treasury/ onto the Re-Member Treasury template.
+ *
+ * @param string $template Path to the template file.
+ * @return string
+ */
+function hb_re_member_treasury_page_template( $template ) {
+	if ( is_admin() || ! is_singular( 'page' ) ) {
+		return $template;
+	}
+	if ( 're-member-treasury' !== get_post_field( 'post_name', get_queried_object_id() ) ) {
+		return $template;
+	}
+	$rmt = get_stylesheet_directory() . '/templates-parts/template-hb-re-member-treasury.php';
+	return file_exists( $rmt ) ? $rmt : $template;
+}
+add_filter( 'template_include', 'hb_re_member_treasury_page_template', 100 );
+
+/**
+ * Publish Re-Member Treasury and assign the dedicated template.
+ *
+ * @return void
+ */
+function hb_ensure_re_member_treasury_page() {
+	if ( get_option( 'hb_re_member_treasury_page' ) === '1' ) {
+		return;
+	}
+
+	$page = get_page_by_path( 're-member-treasury' );
+	if ( $page instanceof WP_Post ) {
+		$id = (int) $page->ID;
+	} else {
+		$id = wp_insert_post(
+			array(
+				'post_title'     => __( 'Re-Member Treasury', 'hello-elementor-child' ),
+				'post_name'      => 're-member-treasury',
+				'post_status'    => 'publish',
+				'post_type'      => 'page',
+				'post_content'   => '',
+				'comment_status' => 'closed',
+				'ping_status'    => 'closed',
+			)
+		);
+	}
+
+	if ( $id && ! is_wp_error( $id ) ) {
+		update_post_meta( $id, '_wp_page_template', 'templates-parts/template-hb-re-member-treasury.php' );
+	}
+
+	update_option( 'hb_re_member_treasury_page', '1' );
+}
+add_action( 'init', 'hb_ensure_re_member_treasury_page', 20 );
 
 /**
  * Create registration pages automatically

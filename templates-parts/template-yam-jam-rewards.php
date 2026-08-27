@@ -725,6 +725,14 @@ get_header();
     </div>
   </section>
 
+  <?php if ( shortcode_exists( 'hbc_yam_jam_home_currency' ) ) : ?>
+  <section class="yamjam-home-currency-staging" id="yam-jam-home-currency">
+    <div class="yamjam-wrap">
+      <?php echo do_shortcode( '[hbc_yam_jam_home_currency]' ); ?>
+    </div>
+  </section>
+  <?php endif; ?>
+
   <section class="yamjam-footer-cta">
     <div class="yamjam-wrap">
       <div class="yamjam-cta-box">
