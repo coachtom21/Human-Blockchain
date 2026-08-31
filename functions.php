@@ -973,6 +973,10 @@ function hb_load_core_files() {
 	if ( file_exists( $includes_dir . '/class-hb-biometric-settings.php' ) ) {
 		require_once $includes_dir . '/class-hb-biometric-settings.php';
 	}
+
+	if ( file_exists( $includes_dir . '/hb-pmpro-checkout-account.php' ) ) {
+		require_once $includes_dir . '/hb-pmpro-checkout-account.php';
+	}
 }
 add_action( 'after_setup_theme', 'hb_load_core_files' );
 
