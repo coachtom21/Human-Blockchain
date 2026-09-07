@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
-define( 'HELLO_ELEMENTOR_CHILD_VERSION', '2.0.0' );
+define( 'HELLO_ELEMENTOR_CHILD_VERSION', '2.0.2' );
 
 /**
  * After logout, redirect to the home page (not wp-login or PMPro login).
@@ -657,6 +657,9 @@ add_action( 'wp_enqueue_scripts', 'hb_enqueue_order_received_ui_styles', 102 );
  * @return void
  */
 function hello_elementor_child_scripts_styles() {
+	if ( class_exists( 'HB_Start_Activate' ) && HB_Start_Activate::is_activate_page() ) {
+		return;
+	}
 
 	wp_enqueue_style(
 		'hello-elementor-child-style',
@@ -976,6 +979,20 @@ function hb_load_core_files() {
 
 	if ( file_exists( $includes_dir . '/hb-pmpro-checkout-account.php' ) ) {
 		require_once $includes_dir . '/hb-pmpro-checkout-account.php';
+	}
+
+	if ( file_exists( $includes_dir . '/class-hb-doorway-counts.php' ) ) {
+		require_once $includes_dir . '/class-hb-doorway-counts.php';
+		if ( class_exists( 'HB_Doorway_Counts' ) ) {
+			HB_Doorway_Counts::init();
+		}
+	}
+
+	if ( file_exists( $includes_dir . '/class-hb-start-activate.php' ) ) {
+		require_once $includes_dir . '/class-hb-start-activate.php';
+		if ( class_exists( 'HB_Start_Activate' ) ) {
+			HB_Start_Activate::init();
+		}
 	}
 }
 add_action( 'after_setup_theme', 'hb_load_core_files' );

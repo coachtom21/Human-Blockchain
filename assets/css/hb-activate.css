@@ -1,0 +1,108 @@
+/**
+ * Dedicated /activate/ funnel. Isolated from shop / NWP chrome.
+ *
+ * @package HelloElementorChild
+ */
+
+body.hb-activate-body {
+	margin: 0;
+	background: #f4f6f9;
+	color: #12213a;
+	font-family: Arial, Helvetica, sans-serif;
+	line-height: 1.55;
+}
+
+body.hb-activate-body .xoo-wsc-modal,
+body.hb-activate-body .xoo-wsc-slider-modal,
+body.hb-activate-body .xoo-wsc-basket,
+body.hb-activate-body .widget_shopping_cart {
+	display: none !important;
+}
+
+.hb-act-wrap { width: min(720px, calc(100% - 32px)); margin-inline: auto; }
+
+.hb-act-top { background: #fff; border-bottom: 1px solid #dce2ea; }
+.hb-act-top__inner { display: flex; min-height: 68px; align-items: center; justify-content: space-between; gap: 16px; }
+.hb-act-brand { display: flex; align-items: center; gap: 10px; color: #13284a; text-decoration: none; }
+.hb-act-mark {
+	display: grid; width: 36px; height: 36px; place-items: center;
+	border-radius: 50%; background: #13284a; color: #e2ad3a; font-weight: 800;
+}
+.hb-act-brand strong { display: block; font-family: Georgia, serif; font-size: 1.15rem; }
+.hb-act-brand small { display: block; color: #5d6879; font-size: .72rem; }
+.hb-act-back { color: #244d89; font-weight: 800; text-decoration: none; font-size: .9rem; }
+
+.hb-act-progress { background: #13284a; color: #fff; }
+.hb-act-progress__inner { display: grid; grid-template-columns: repeat(3, 1fr); }
+.hb-act-progress__step {
+	display: flex; align-items: center; justify-content: center; gap: 8px;
+	min-height: 48px; border-right: 1px solid rgba(255,255,255,.15); font-size: .86rem;
+}
+.hb-act-progress__step:last-child { border-right: 0; }
+.hb-act-progress__step span {
+	display: grid; width: 24px; height: 24px; place-items: center;
+	border: 1px solid rgba(255,255,255,.45); border-radius: 50%; font-size: .75rem; font-weight: 800;
+}
+.hb-act-progress__step.is-current { background: #1c3a67; }
+.hb-act-progress__step.is-current span,
+.hb-act-progress__step.is-done span { border-color: #e2ad3a; background: #e2ad3a; color: #13284a; }
+
+.hb-act-main { padding: 48px 0 72px; }
+.hb-act-card {
+	padding: 36px; border: 1px solid #dce2ea; border-radius: 14px;
+	background: #fff; box-shadow: 0 14px 38px rgba(18,33,58,.08);
+}
+.hb-act-eyebrow {
+	margin: 0 0 10px; color: #244d89; font-size: .76rem;
+	font-weight: 800; letter-spacing: .14em; text-transform: uppercase;
+}
+.hb-act-card h1 {
+	margin: 0 0 14px; font-family: Georgia, serif; color: #13284a;
+	font-size: clamp(1.8rem, 4vw, 2.6rem); line-height: 1.15;
+}
+.hb-act-card > p { color: #5d6879; }
+
+.hb-act-lock {
+	margin: 22px 0; padding: 16px 18px; border-left: 5px solid #e2ad3a; background: #fff9e9;
+}
+.hb-act-lock strong { display: block; color: #13284a; }
+.hb-act-lock p { margin: 6px 0 0; }
+.hb-act-lock__warn { color: #4f482f; font-size: .92rem; }
+
+.hb-act-card label { display: block; margin: 16px 0; }
+.hb-act-card label > span { display: block; margin-bottom: 6px; font-weight: 700; color: #13284a; }
+.hb-act-card input[type="email"],
+.hb-act-card input[type="tel"] {
+	width: 100%; min-height: 46px; padding: 10px 12px;
+	border: 2px solid #dce2ea; border-radius: 9px;
+}
+.hb-act-check { display: flex; gap: 10px; align-items: flex-start; }
+.hb-act-check input { margin-top: 3px; }
+
+.hb-act-btn {
+	display: inline-flex; min-height: 50px; padding: 12px 22px; align-items: center; justify-content: center;
+	border: 2px solid #13284a; border-radius: 999px; background: #13284a; color: #fff;
+	font-weight: 800; text-decoration: none; cursor: pointer;
+}
+.hb-act-btn:hover { background: #1d3b69; }
+.hb-act-btn:disabled { background: #9ca5b2; border-color: #9ca5b2; cursor: not-allowed; }
+.hb-act-btn--ghost { background: #fff; color: #13284a; }
+
+.hb-act-note { color: #5d6879; font-size: .82rem; }
+.hb-act-msg { margin-top: 14px; padding: 12px 14px; border-radius: 8px; background: #eef6f1; color: #205f43; }
+.hb-act-msg.is-error { background: #f9e9ea; color: #81323b; }
+
+.hb-act-acks { margin: 20px 0; padding: 0; list-style: none; display: grid; gap: 10px; }
+.hb-act-acks li {
+	position: relative; padding: 12px 14px 12px 40px;
+	border: 1px solid #dce2ea; border-radius: 10px; background: #f4f6f9;
+}
+.hb-act-acks li::before { content: "✓"; position: absolute; left: 14px; color: #287150; font-weight: 900; }
+
+.hb-act-next { display: grid; gap: 12px; margin-top: 24px; }
+
+@media (max-width: 600px) {
+	.hb-act-top__inner { flex-direction: column; align-items: flex-start; justify-content: center; padding: 10px 0; }
+	.hb-act-progress__step { font-size: .72rem; }
+	.hb-act-card { padding: 24px 18px; }
+}
