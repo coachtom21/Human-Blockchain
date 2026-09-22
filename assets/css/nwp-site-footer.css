@@ -2,7 +2,7 @@
  * NWP site footer — aligned with nwp-site-header palette.
  */
 .nwp-site-footer {
-	--nwp-max: 1180px;
+	--nwp-max: 1120px;
 	margin-top: clamp(2rem, 5vw, 3.5rem);
 	background: rgba(7, 16, 28, 0.94);
 	border-top: 1px solid rgba(255, 255, 255, 0.08);

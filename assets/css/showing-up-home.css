@@ -1,0 +1,45 @@
+/* Showing Up Counts — Human Blockchain front page (deliverable index.html) */
+body.hb-showing-up .xoo-wsc-modal,
+body.hb-showing-up .xoo-wsc-slider-modal,
+body.hb-showing-up .xoo-wsc-basket{display:none!important}
+:root{--ink:#03080e;--navy:#081225;--cream:#fff2d0;--text:#ecebe5;--muted:#aeb6c6;--blue:#64ccff;--gold:#f0c45b;--line:rgba(205,220,255,.18);--wrap:1120px;--read:780px}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--ink);color:var(--text);font:17px/1.75 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}a{color:inherit;text-underline-offset:4px}h1,h2,h3,p{margin-top:0}h1,h2,h3{font-family:Georgia,"Times New Roman",serif;color:var(--cream);font-weight:500;line-height:1.08;letter-spacing:-.025em}h1{font-size:clamp(4.5rem,10vw,8.5rem);margin-bottom:28px}h2{font-size:clamp(2.4rem,5vw,4.5rem);margin-bottom:25px}h3{font-size:1.65rem}.wrap{width:min(calc(100% - 42px),var(--wrap));margin:auto}.reading{max-width:var(--read)}.skip{position:fixed;top:-80px;left:16px;z-index:9;padding:8px 14px;background:var(--cream);color:var(--ink)}.skip:focus{top:16px}header{border-bottom:1px solid var(--line);background:#03080e}.header-row{min-height:80px;display:flex;align-items:center;justify-content:space-between;gap:28px}.brand{text-decoration:none;font-family:Georgia,serif;font-size:1.15rem}.brand span{display:block;color:var(--muted);font:700 .62rem/1.4 Inter,sans-serif;text-transform:uppercase;letter-spacing:.16em}nav{display:flex;gap:22px}nav a{font-size:.82rem;text-decoration:none;color:#d7dbe3}nav a:hover{color:var(--blue)}.hero{padding:125px 0 115px;background:linear-gradient(130deg,#040a12,#09152c 62%,#111637);border-bottom:1px solid var(--line)}.hero-copy{max-width:920px}.hero-lede{max-width:750px;font:500 clamp(1.45rem,3vw,2.25rem)/1.35 Georgia,serif;color:var(--blue)}.hero-copy>p:not(.kicker):not(.hero-lede){max-width:700px;color:#cfd3db}.kicker,.label,time{color:var(--gold);font-size:.72rem;font-weight:900;text-transform:uppercase;letter-spacing:.17em}.links{display:flex;flex-wrap:wrap;align-items:center;gap:22px;margin:34px 0 24px}.links a,.primary,.text-link{font-weight:800}.primary{display:inline-block;padding:12px 20px;border-radius:4px;background:var(--blue);color:#06101b;text-decoration:none}.text-link{color:var(--blue)}.hero small,.note,.footnote{color:var(--muted)}.section,.statement,.final{padding:105px 0}.shade{background:#060d18}.section ol{margin:35px 0;padding:0;list-style:none;border-top:1px solid var(--line)}.section li{padding:22px 0;border-bottom:1px solid var(--line);font:500 1.3rem Georgia,serif}.section li:before{content:counter(list-item,decimal-leading-zero);display:inline-block;width:52px;color:var(--blue);font:800 .72rem Inter,sans-serif}.statement{background:var(--navy);border-block:1px solid var(--line)}.split{display:grid;grid-template-columns:1fr 1fr;gap:90px;align-items:start}.split p{color:#c6cbd5}.large{font:500 1.65rem/1.45 Georgia,serif;color:var(--cream)!important}.compact{padding:85px 0}.choices,.dates{display:grid;grid-template-columns:1fr 1fr;margin-top:45px;border-block:1px solid var(--line)}.choices article,.dates>div{padding:38px 42px 40px 0}.choices article+article,.dates>div+div{padding-left:42px;border-left:1px solid var(--line)}.choices h3{font-size:2.25rem}.choices p{color:var(--muted);min-height:100px}.gracebook{background:linear-gradient(130deg,#0b1530,#171630);border-block:1px solid var(--line)}.dates time{display:block;margin-bottom:12px}.dates p{color:var(--muted)}.note{max-width:820px;margin-top:34px}.final{background:linear-gradient(135deg,#111a38,#211731)}footer{border-top:1px solid var(--line)}.footer-row{padding:50px 0 25px;display:flex;justify-content:space-between;gap:30px;border-bottom:1px solid var(--line)}.footer-row p{font-size:.82rem;color:#c5cad4}.footnote{padding:20px 0 30px;font-size:.72rem}@media(max-width:820px){.split{grid-template-columns:1fr;gap:38px}.choices,.dates{grid-template-columns:1fr}.choices article,.dates>div{padding:32px 0}.choices article+article,.dates>div+div{padding:32px 0;border-left:0;border-top:1px solid var(--line)}.choices p{min-height:0}.footer-row{display:block}.footer-row nav{flex-wrap:wrap}}@media(max-width:520px){body{font-size:16px}.wrap{width:min(calc(100% - 28px),var(--wrap))}.header-row{min-height:68px}h1{font-size:3.9rem}.hero,.section,.statement,.final{padding:72px 0}.links a{width:100%}.primary{text-align:center}.section li{font-size:1.12rem}.footer-row nav{display:grid;grid-template-columns:1fr 1fr}}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
+body.hb-showing-up a.primary,
+body.hb-showing-up a.ghost {
+	display: inline-block;
+	padding: 13px 22px;
+	border-radius: 4px;
+	font-weight: 800;
+	line-height: 1.2;
+	text-align: center;
+	text-decoration: none;
+	transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+body.hb-showing-up a.primary {
+	background: var(--blue);
+	border: 1px solid var(--blue);
+	color: #06101b;
+}
+body.hb-showing-up a.primary:hover,
+body.hb-showing-up a.primary:focus-visible {
+	background: #8ad8ff;
+	border-color: #8ad8ff;
+	color: #06101b;
+}
+body.hb-showing-up a.ghost {
+	background: transparent;
+	border: 1px solid var(--blue);
+	color: var(--blue);
+}
+body.hb-showing-up a.ghost:hover,
+body.hb-showing-up a.ghost:focus-visible {
+	background: rgba(100, 204, 255, 0.12);
+	color: #9fe0ff;
+}
+@media (max-width: 520px) {
+	body.hb-showing-up a.primary,
+	body.hb-showing-up a.ghost {
+		width: 100%;
+	}
+}
+

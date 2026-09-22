@@ -32,7 +32,7 @@
     .btn:hover{filter:brightness(1.1)}
     .btn.primary{background:linear-gradient(135deg, rgba(125,211,252,.25), rgba(167,139,250,.20))}
     .card{border:1px solid var(--line);border-radius:18px;padding:16px;background:rgba(255,255,255,.04);box-shadow:0 18px 45px rgba(0,0,0,.25)}
-    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
     @media (max-width:980px){.grid{grid-template-columns:1fr}}
     .price{display:inline-block;margin:6px 0 10px;padding:4px 10px;border-radius:999px;border:1px solid var(--line);color:var(--muted);font-size:12px}
     ul{margin:0;padding-left:18px;color:var(--muted);line-height:1.55}
@@ -115,16 +115,6 @@
             <li>Can issue NWP through Seller POC</li>
           </ul>
         </div>
-
-        <div class="card" style="box-shadow:none">
-          <h2 style="margin:0 0 6px">Patron / Stakeholder</h2>
-          <div class="price">Honor / leaderboard award</div>
-          <ul>
-            <li>Recognition for reliability and participation</li>
-            <li>Supports Detente 2030 build-out</li>
-            <li>May unlock deeper organizer responsibilities</li>
-          </ul>
-        </div>
       </div>
 
       <div class="divider"></div>
@@ -133,7 +123,6 @@
       <select id="pick">
         <option value="Buyer">Buyer (YAM'er)</option>
         <option value="Seller">Seller / Sponsor (MEGAvoter)</option>
-        <option value="Patron">Patron / Stakeholder (award)</option>
       </select>
 
       <div class="actions">
@@ -148,7 +137,7 @@
       </p>
 
       <p class="foot">
-        Referral XP opportunities (annual, for active members): <strong>$1</strong> YAM'er, <strong>$5</strong> MEGAvoter, <strong>$25</strong> Patron recognition.
+        Referral XP opportunities (annual, for active members): <strong>$1</strong> YAM'er, <strong>$5</strong> MEGAvoter.
         Bonuses post when referred members remain <strong>Active</strong>.
       </p>
 
@@ -173,7 +162,6 @@
       var pick = document.getElementById('pick');
       var v = pick ? String(pick.value || '') : 'Buyer';
       if (v === 'Seller') return 'megavoter';
-      if (v === 'Patron') return 'patron';
       return 'yamer';
     }
     function hbOpenMembershipModal() {

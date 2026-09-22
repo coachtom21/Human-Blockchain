@@ -1036,7 +1036,7 @@
         <aside class="statement-box">
           <p>
             <strong>
-              "Small Street Applied–Atlanta is a Wyoming DAO and Limited Cooperative Association
+              "Small Street Applied–Stone Mountain is a Wyoming DAO and Limited Cooperative Association
             </strong>
             that embodies the functional spirit of an FRB Section 25A coordination role by operating a
             <strong>non-custodial, proof-based clearing-visibility and reporting system</strong>

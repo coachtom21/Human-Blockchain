@@ -217,9 +217,9 @@ class Hb_Hang_Tag {
 
 			<div class="front-top">
 				<div class="ssa-logo">
-					<img src="<?php echo esc_url( $images['logo'] ); ?>" alt="<?php esc_attr_e( 'Small Street Applied Atlanta cityscape logo', 'hello-elementor-child' ); ?>">
+					<img src="<?php echo esc_url( $images['logo'] ); ?>" alt="<?php esc_attr_e( 'Small Street Applied Stone Mountain cityscape logo', 'hello-elementor-child' ); ?>">
 					<div class="ssa-text">
-						<span class="ssa-name"><?php echo wp_kses( __( 'Small Street<br>Applied &ndash; Atlanta', 'hello-elementor-child' ), array( 'br' => array() ) ); ?></span>
+						<span class="ssa-name"><?php echo wp_kses( __( 'Small Street<br>Applied &ndash; Stone Mountain', 'hello-elementor-child' ), array( 'br' => array() ) ); ?></span>
 						<span class="ssa-sub"><?php esc_html_e( 'Human Blockchain · Guild', 'hello-elementor-child' ); ?></span>
 					</div>
 				</div>
@@ -268,7 +268,7 @@ class Hb_Hang_Tag {
 
 					<div class="detente-strip">
 						<div class="detente-dot"></div>
-						<span class="detente-text"><?php esc_html_e( 'YAM Trading · Atlanta, USA · YAM-is-On Delivery', 'hello-elementor-child' ); ?></span>
+						<span class="detente-text"><?php esc_html_e( 'YAM Trading · Stone Mountain, Georgia, USA · YAM-is-On Delivery', 'hello-elementor-child' ); ?></span>
 						<div class="detente-dot"></div>
 					</div>
 				</div>
@@ -354,7 +354,7 @@ class Hb_Hang_Tag {
 			<p class="mentor-line"><?php esc_html_e( 'Lilburn Co-op — mentor & Human Blockchain guild', 'hello-elementor-child' ); ?></p>
 
 			<div class="back-footer">
-				<p class="footer-org"><?php esc_html_e( 'Small Street Applied – Atlanta · Détente 2030', 'hello-elementor-child' ); ?></p>
+				<p class="footer-org"><?php esc_html_e( 'Small Street Applied – Stone Mountain · Détente 2030', 'hello-elementor-child' ); ?></p>
 				<p class="footer-note"><?php esc_html_e( 'Human Gold Experiment 2026–2030 · lilburnco-op.org · Expires 12/31/2030', 'hello-elementor-child' ); ?></p>
 			</div>
 		</div>

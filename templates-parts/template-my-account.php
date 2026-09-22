@@ -214,6 +214,7 @@ $hb_xp_display_html = static function ( $value ) {
 	<?php wp_head(); ?>
 </head>
 <body <?php body_class( 'hb-my-account-page' ); ?>>
+	<?php get_template_part( 'templates-parts/part', 'nwp-site-header' ); ?>
 	<div class="wrap">
 		<h1><?php esc_html_e( 'My account', 'hello-elementor-child' ); ?></h1>
 		<p class="sub"><?php echo esc_html( sprintf( /* translators: %s: display name */ __( 'Signed in as %s', 'hello-elementor-child' ), $current_user->display_name ) ); ?></p>
@@ -238,7 +239,7 @@ $hb_xp_display_html = static function ( $value ) {
 					<dd><?php echo esc_html( implode( ', ', $current_user->roles ) ); ?></dd>
 				</dl>
 				<p class="actions">
-					<a class="btn secondary" href="<?php echo esc_url( wp_logout_url( home_url( '/' ) ) ); ?>"><?php esc_html_e( 'Log out', 'hello-elementor-child' ); ?></a>
+					<a class="btn secondary" href="<?php echo esc_url( function_exists( 'hb_signout_url' ) ? hb_signout_url() : wp_logout_url( home_url( '/' ) ) ); ?>"><?php esc_html_e( 'Log out', 'hello-elementor-child' ); ?></a>
 				</p>
 			</div>
 

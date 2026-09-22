@@ -10,58 +10,25 @@ body.explore-research-landing {
 body.explore-research-landing .nwp-site-header {
 	background: rgba(246, 241, 232, 0.92);
 	border-bottom: 1px solid rgba(17, 24, 39, 0.1);
-	backdrop-filter: blur(10px);
 }
 
-body.explore-research-landing .nwp-site-header .brand-site-title,
-body.explore-research-landing .nwp-site-header .nav-links a {
+body.explore-research-landing .nwp-site-header .brand {
 	color: #111827;
 }
 
-body.explore-research-landing .nwp-site-header .nav-links a:hover {
-	color: #2f6f3e;
-}
-
-body.explore-research-landing .nwp-site-header .nwp-site-header__tagline {
+body.explore-research-landing .nwp-site-header .brand span {
 	color: #6b7280;
 }
 
-/* Ghost “Get started” is styled for dark headers — override on light research portal */
-body.explore-research-landing .nwp-site-header .nav-links .nav-menu > li.cpm-hb-get-started-wrap,
-body.explore-research-landing .nwp-site-header .nav-links .nav-menu > li.cpm-nwp-register-btn-wrap {
-	flex-shrink: 0;
+body.explore-research-landing .nwp-site-header .nav-links a,
+body.explore-research-landing .nwp-site-header .nav-links .nav-menu > li > a {
+	color: #111827;
 }
 
-body.explore-research-landing .nwp-site-header .nav-links .nav-menu > li:last-child > a.cpm-hb-get-started-btn,
-body.explore-research-landing .nwp-site-header .nav-links .nav-menu > li:last-child > a {
-	background: #ffffff !important;
-	border: 1px solid rgba(17, 24, 39, 0.22) !important;
-	color: #111827 !important;
-	box-shadow: 0 4px 14px rgba(17, 24, 39, 0.08);
-}
-
-body.explore-research-landing .nwp-site-header .nav-links .nav-menu > li:last-child > a.cpm-hb-get-started-btn:hover,
-body.explore-research-landing .nwp-site-header .nav-links .nav-menu > li:last-child > a:hover {
-	background: #f3f4f6 !important;
-	border-color: rgba(17, 24, 39, 0.35) !important;
-	color: #111827 !important;
-}
-
-body.explore-research-landing .nwp-site-header .nav-links .nav-menu > li:nth-last-child(2) > a {
-	color: #08111f !important;
-}
-
-@media (min-width: 992px) and (max-width: 1280px) {
-	body.explore-research-landing .nwp-site-header .nav-links {
-		font-size: 0.85rem;
-	}
-	body.explore-research-landing .nwp-site-header .nav-links .nav-menu {
-		gap: 8px 10px;
-	}
-	body.explore-research-landing .nwp-site-header .nav-links .nav-menu > li:nth-last-child(2) > a,
-	body.explore-research-landing .nwp-site-header .nav-links .nav-menu > li:last-child > a {
-		padding: 8px 12px;
-	}
+body.explore-research-landing .nwp-site-header .nav-links a:hover,
+body.explore-research-landing .nwp-site-header .nav-links .nav-menu > li > a:hover {
+	color: #2f6f3e;
+	background: transparent;
 }
 
 body.explore-research-landing .yamjam-portal {

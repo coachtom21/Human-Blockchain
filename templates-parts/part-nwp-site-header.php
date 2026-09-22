@@ -1,6 +1,8 @@
 <?php
 /**
- * NWP site header: NWP badge, site title, nav (New Menu, menu-1, or static fallback).
+ * Site header shared across all pages.
+ * Showing Up Counts chrome: Human Blockchain / Detente 2030 + text nav.
+ * Shop only for MEGAvoter / Participant.
  *
  * @package HelloElementorChild
  */
@@ -9,16 +11,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-$shop_url = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'shop' ) : home_url( '/shop/' );
+$how_url     = home_url( '/#how' );
+$join_url    = home_url( '/#join' );
+$laugh_url   = home_url( '/r' );
+$account_url = home_url( '/my-account/' );
+$shop_url    = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'shop' ) : home_url( '/shop/' );
+$can_shop    = function_exists( 'hb_user_can_access_shop' ) && hb_user_can_access_shop();
 ?>
-<nav class="nwp-site-header" aria-label="<?php echo esc_attr__( 'Primary', 'hello-elementor-child' ); ?>">
+<header class="nwp-site-header" role="banner">
 	<div class="container nwp-site-header__inner">
 		<a class="nwp-site-header__brand brand" href="<?php echo esc_url( home_url( '/' ) ); ?>">
-			<div class="brand-badge">NWP</div>
-			<div>
-				<div class="brand-site-title"><?php echo esc_html( get_bloginfo( 'name' ) ); ?></div>
-				<small class="nwp-site-header__tagline"><?php echo esc_html__( 'NWP Processing Center', 'hello-elementor-child' ); ?></small>
-			</div>
+			Human Blockchain <span><?php esc_html_e( 'Detente 2030', 'hello-elementor-child' ); ?></span>
 		</a>
 		<button
 			type="button"
@@ -34,58 +37,21 @@ $shop_url = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 
 				<span class="nwp-site-header__menu-toggle-inner"></span>
 			</span>
 		</button>
-		<div class="nwp-site-header__nav nav-links" id="nwp-header-nav">
-			<?php
-			$new_menu = wp_get_nav_menu_object( 'New Menu' );
-			if ( $new_menu ) {
-				wp_nav_menu(
-					array(
-						'menu'         => 'New Menu',
-						'container'    => false,
-						'menu_class'   => 'nav-menu',
-						'fallback_cb'  => false,
-					)
-				);
-			} elseif ( has_nav_menu( 'menu-1' ) ) {
-				wp_nav_menu(
-					array(
-						'theme_location' => 'menu-1',
-						'container'      => false,
-						'menu_class'     => 'nav-menu',
-						'fallback_cb'    => false,
-						'depth'          => 2,
-					)
-				);
-			} else {
-				$how    = function_exists( 'hb_how_it_works_url' )
-					? hb_how_it_works_url()
-					: home_url( '/how-it-works/' );
-				$treasury = function_exists( 'hb_re_member_treasury_url' )
-					? hb_re_member_treasury_url()
-					: home_url( '/re-member-treasury/' );
-				$seller = function_exists( 'hb_seller_types_url' )
-					? hb_seller_types_url()
-					: home_url( '/seller-types/' );
-				$trade  = function_exists( 'hb_yam_jam_rewards_url' )
-					? hb_yam_jam_rewards_url()
-					: home_url( '/yam-jam-rewards/' );
-				$umbrella = function_exists( 'hb_oligopoly_umbrella_url' )
-					? hb_oligopoly_umbrella_url()
-					: home_url( '/oligopoly-umbrella/' );
-				?>
-				<ul class="nav-menu">
-					<li class="menu-item"><a href="<?php echo $how; ?>"><?php echo esc_html__( 'How It Works', 'hello-elementor-child' ); ?></a></li>
-					<li class="menu-item"><a href="<?php echo $treasury; ?>"><?php echo esc_html__( 'Re-Member Treasury', 'hello-elementor-child' ); ?></a></li>
-					<li class="menu-item"><a href="<?php echo $seller; ?>"><?php echo esc_html__( 'Seller Types', 'hello-elementor-child' ); ?></a></li>
-					<li class="menu-item"><a href="<?php echo $trade; ?>"><?php echo esc_html__( 'Trade Value', 'hello-elementor-child' ); ?></a></li>
-					<li class="menu-item"><a href="<?php echo $umbrella; ?>"><?php echo esc_html__( 'Oligopoly Umbrella', 'hello-elementor-child' ); ?></a></li>
-					<li class="menu-item"><a href="<?php echo esc_url( $shop_url ); ?>"><?php echo esc_html__( 'Shop', 'hello-elementor-child' ); ?></a></li>
-					<li class="cpm-nwp-register-btn-wrap menu-item"><a href="#" class="cpm-nwp-register-btn cpm-nwp-open-modal" data-cpm-modal="cpm-nwp-register-modal"><?php echo esc_html__( 'Activate Your Phone', 'cpm-humanblockchain' ); ?></a></li>
-					<li class="cpm-hb-get-started-wrap menu-item"><a href="#" class="cpm-hb-get-started-btn cpm-hb-open-membership-modal btn ghost"><?php echo esc_html__( 'Get started', 'cpm-humanblockchain' ); ?></a></li>
-				</ul>
-				<?php
-			}
-			?>
-		</div>
+		<nav class="nwp-site-header__nav nav-links" id="nwp-header-nav" aria-label="<?php echo esc_attr__( 'Primary', 'hello-elementor-child' ); ?>">
+			<ul class="nav-menu">
+				<li class="menu-item"><a href="<?php echo esc_url( $how_url ); ?>"><?php esc_html_e( 'How It Works', 'hello-elementor-child' ); ?></a></li>
+				<?php if ( ! $can_shop ) : ?>
+				<li class="menu-item"><a href="<?php echo esc_url( $join_url ); ?>"><?php esc_html_e( 'Join', 'hello-elementor-child' ); ?></a></li>
+				<?php endif; ?>
+				<li class="menu-item"><a href="<?php echo esc_url( $laugh_url ); ?>"><?php esc_html_e( 'LAUGH Events', 'hello-elementor-child' ); ?></a></li>
+				<?php if ( $can_shop ) : ?>
+				<li class="menu-item"><a href="<?php echo esc_url( $shop_url ); ?>"><?php esc_html_e( 'Shop', 'hello-elementor-child' ); ?></a></li>
+				<?php endif; ?>
+				<li class="menu-item"><a href="<?php echo esc_url( $account_url ); ?>"><?php esc_html_e( 'My Account', 'hello-elementor-child' ); ?></a></li>
+				<?php if ( is_user_logged_in() ) : ?>
+				<li class="menu-item"><a href="<?php echo esc_url( function_exists( 'hb_signout_url' ) ? hb_signout_url() : wp_logout_url( home_url( '/' ) ) ); ?>"><?php esc_html_e( 'Log out', 'hello-elementor-child' ); ?></a></li>
+				<?php endif; ?>
+			</ul>
+		</nav>
 	</div>
-</nav>
+</header>

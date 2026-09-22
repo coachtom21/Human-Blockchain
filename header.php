@@ -2,7 +2,7 @@
 /**
  * The template for displaying the header.
  *
- * NWP site header (badge, title, menu, plugin CTAs) is shared across all pages
+ * Shared Showing Up Counts header is included on all pages
  * via templates-parts/part-nwp-site-header.php and assets/css/nwp-site-header.css.
  *
  * @package HelloElementorChild

@@ -41,6 +41,113 @@ function hb_woocommerce_logout_redirect_home() {
 add_filter( 'woocommerce_logout_default_redirect_url', 'hb_woocommerce_logout_redirect_home' );
 
 /**
+ * Sign-out URL that ends the WordPress session and the Human Gold device token.
+ *
+ * @return string
+ */
+function hb_signout_url() {
+	return wp_nonce_url( home_url( '/?hbc_signout=1' ), 'log-out' );
+}
+
+/**
+ * Point every logout link at the same home sign-out, not /login/ or Woo My Account.
+ *
+ * @param string $logout_url Logout URL.
+ * @return string
+ */
+function hb_force_home_signout_url( $logout_url ) {
+	unset( $logout_url );
+	return hb_signout_url();
+}
+add_filter( 'logout_url', 'hb_force_home_signout_url', 99 );
+
+/**
+ * Guest My Account must stay on the OTP door. Do not bounce it to /login/.
+ *
+ * @param string|false $redirect Current PMPro account redirect.
+ * @return string|false
+ */
+function hb_keep_guest_my_account_on_otp( $redirect ) {
+	if ( is_page( 'my-account' ) || is_page_template( 'templates-parts/template-my-account.php' ) ) {
+		return false;
+	}
+	return $redirect;
+}
+add_filter( 'pmpro_account_preheader_redirect', 'hb_keep_guest_my_account_on_otp' );
+
+/**
+ * Remember that this browser should drop the Human Gold device token.
+ *
+ * @return void
+ */
+function hb_flag_clear_device_token() {
+	$path = defined( 'COOKIEPATH' ) && COOKIEPATH ? COOKIEPATH : '/';
+	setcookie( 'hbc_clear_device', '1', time() + 120, $path, '', false, false );
+	$_COOKIE['hbc_clear_device'] = '1';
+}
+add_action( 'wp_logout', 'hb_flag_clear_device_token' );
+
+/**
+ * End the WordPress session and the registered-device token, then go home.
+ *
+ * @return void
+ */
+function hb_handle_front_signout() {
+	if ( empty( $_GET['hbc_signout'] ) ) {
+		return;
+	}
+
+	if ( is_user_logged_in() ) {
+		$nonce = isset( $_GET['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ) : '';
+		if ( $nonce !== '' && ! wp_verify_nonce( $nonce, 'log-out' ) ) {
+			wp_die( esc_html__( 'This sign-out link has expired. Go back and try again.', 'hello-elementor-child' ) );
+		}
+		wp_logout();
+	}
+
+	hb_flag_clear_device_token();
+	nocache_headers();
+	$home = home_url( '/' );
+	echo '<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Signing out</title></head><body>';
+	echo '<p>Signing out…</p><script>';
+	echo 'try{localStorage.removeItem("hbc_device_token");}catch(e){}';
+	echo 'location.replace(' . wp_json_encode( $home ) . ');';
+	echo '</script></body></html>';
+	exit;
+}
+add_action( 'template_redirect', 'hb_handle_front_signout', 0 );
+
+/**
+ * Clear a leftover Human Gold device token after a normal WordPress logout.
+ *
+ * @return void
+ */
+function hb_clear_device_token_script() {
+	if ( empty( $_COOKIE['hbc_clear_device'] ) ) {
+		return;
+	}
+	echo '<script>try{localStorage.removeItem("hbc_device_token");}catch(e){}</script>';
+}
+add_action( 'wp_head', 'hb_clear_device_token_script', 1 );
+
+/**
+ * Let a guest leave the login page instead of feeling stuck.
+ *
+ * @return void
+ */
+function hb_login_page_back_home() {
+	if ( is_admin() || is_user_logged_in() ) {
+		return;
+	}
+	$on_login = is_page( 'login' ) || ( function_exists( 'pmpro_is_login_page' ) && pmpro_is_login_page() );
+	if ( ! $on_login ) {
+		return;
+	}
+	echo '<p class="hb-login-back-home" style="text-align:center;margin:24px 0 8px"><a href="' . esc_url( home_url( '/' ) ) . '">' . esc_html__( 'Back to Showing Up Counts', 'hello-elementor-child' ) . '</a></p>';
+}
+add_action( 'wp_footer', 'hb_login_page_back_home' );
+
+/**
  * Permalink of the page using the NWP Landing template, or home.
  *
  * @return string
@@ -3619,3 +3726,722 @@ function hb_cpm_hb_pmpro_level_id_for_tier( $id, $tier ) {
 	return (int) $defaults[ $tier ];
 }
 add_filter( 'cpm_hb_pmpro_level_id_for_tier', 'hb_cpm_hb_pmpro_level_id_for_tier', 10, 2 );
+
+/**
+ * Showing Up Counts homepage + Observer routes (Sep 2026).
+ *
+ * @param string $template Current template path.
+ * @return string
+ */
+function hb_showing_up_front_page_template( $template ) {
+	if ( is_admin() || ! is_front_page() ) {
+		return $template;
+	}
+	$file = get_stylesheet_directory() . '/front-page.php';
+	return file_exists( $file ) ? $file : $template;
+}
+add_filter( 'template_include', 'hb_showing_up_front_page_template', 101 );
+
+/**
+ * Keep /my-account/ on the OTP / sign-out template so Woo/PMPro cannot trap guests on a login form.
+ *
+ * @param string $template Current template path.
+ * @return string
+ */
+function hb_force_my_account_template( $template ) {
+	if ( is_admin() || ! is_page( 'my-account' ) ) {
+		return $template;
+	}
+	$file = get_stylesheet_directory() . '/templates-parts/template-my-account.php';
+	return file_exists( $file ) ? $file : $template;
+}
+add_filter( 'template_include', 'hb_force_my_account_template', 102 );
+
+/**
+ * Observer signup is not gated by Discord. Redirect to My Account after OTP.
+ *
+ * @param bool $show Whether to show the Discord modal.
+ * @return bool
+ */
+function hb_observer_skip_discord_modal( $show ) {
+	unset( $show );
+	return false;
+}
+add_filter( 'cpm_nwp_after_verify_show_discord_modal', 'hb_observer_skip_discord_modal' );
+
+/**
+ * @param string $url Redirect after OTP.
+ * @return string
+ */
+function hb_observer_after_verify_redirect( $url ) {
+	if ( is_string( $url ) && $url !== '' ) {
+		return $url;
+	}
+
+	$referer = wp_get_referer();
+	if ( is_string( $referer ) && $referer !== '' && function_exists( 'pmpro_url' ) ) {
+		$checkout = pmpro_url( 'checkout' );
+		$check_path = $checkout ? (string) wp_parse_url( $checkout, PHP_URL_PATH ) : '';
+		$ref_path   = (string) wp_parse_url( $referer, PHP_URL_PATH );
+		if ( $check_path !== '' && untrailingslashit( $ref_path ) === untrailingslashit( $check_path ) ) {
+			$safe = wp_validate_redirect( $referer, false );
+			if ( is_string( $safe ) && $safe !== '' ) {
+				return $safe;
+			}
+		}
+	}
+
+	return home_url( '/my-account/' );
+}
+add_filter( 'cpm_nwp_after_verify_redirect', 'hb_observer_after_verify_redirect' );
+
+/**
+ * Assign the free YAM’er PMPro membership after device registration.
+ * Does not charge. Does not replace MEGAvoter or another paid level.
+ *
+ * @param int $user_id WordPress user ID.
+ * @return bool
+ */
+function hb_grant_free_yamer_membership( $user_id ) {
+	$user_id = (int) $user_id;
+	if ( $user_id <= 0 || ! function_exists( 'pmpro_changeMembershipLevel' ) ) {
+		return false;
+	}
+
+	$level_id = 0;
+	if ( class_exists( 'Cpm_Humanblockchain_Membership' ) ) {
+		$level_id = (int) Cpm_Humanblockchain_Membership::get_pmpro_level_id_for_tier( 'yamer' );
+	}
+	if ( $level_id <= 0 ) {
+		$level_id = 1;
+	}
+
+	if ( function_exists( 'pmpro_hasMembershipLevel' ) && pmpro_hasMembershipLevel( $level_id, $user_id ) ) {
+		$role = (string) get_user_meta( $user_id, 'hb_participation_role', true );
+		if ( $role === '' || $role === 'observer' ) {
+			update_user_meta( $user_id, 'hb_participation_role', 'yamer' );
+		}
+		return true;
+	}
+
+	if ( function_exists( 'pmpro_getMembershipLevelsForUser' ) ) {
+		$actives = pmpro_getMembershipLevelsForUser( $user_id );
+		if ( is_array( $actives ) ) {
+			foreach ( $actives as $lvl ) {
+				$aid = isset( $lvl->id ) ? (int) $lvl->id : 0;
+				if ( $aid <= 0 || $aid === $level_id ) {
+					continue;
+				}
+				$tier = '';
+				if ( class_exists( 'Cpm_Humanblockchain_Membership' ) ) {
+					$mapped = Cpm_Humanblockchain_Membership::tier_slug_for_pmpro_level_id( $aid );
+					$tier   = is_string( $mapped ) ? $mapped : '';
+				}
+				if ( 'megavoter' === $tier || 2 === $aid ) {
+					return false;
+				}
+				if ( function_exists( 'pmpro_isLevelFree' ) && ! pmpro_isLevelFree( $lvl ) ) {
+					return false;
+				}
+			}
+		}
+	}
+
+	$granted = pmpro_changeMembershipLevel( $level_id, $user_id );
+	if ( ! $granted ) {
+		return false;
+	}
+
+	update_user_meta( $user_id, 'hb_participation_role', 'yamer' );
+
+	$user      = get_userdata( $user_id );
+	$level_obj = function_exists( 'pmpro_getLevel' ) ? pmpro_getLevel( $level_id ) : null;
+	if ( $user instanceof WP_User && $level_obj && class_exists( 'Cpm_Humanblockchain_Membership' ) && ! get_user_meta( $user_id, 'hb_yamer_pmpro_order_id', true ) ) {
+		$oid = Cpm_Humanblockchain_Membership::create_pmpro_member_order(
+			$user_id,
+			$level_obj,
+			$user,
+			array(
+				'payment_type'           => 'free',
+				'payment_transaction_id' => 'yamer-register-' . $user_id,
+				'notes'                  => 'Free YAM’er membership assigned at device registration.',
+				'amount_override'        => 0,
+			)
+		);
+		if ( $oid > 0 ) {
+			update_user_meta( $user_id, 'hb_yamer_pmpro_order_id', $oid );
+		}
+	}
+
+	return true;
+}
+
+/**
+ * @param int    $device_id Device row.
+ * @param int    $user_id   WordPress user ID.
+ * @param string $email     Email.
+ * @return void
+ */
+function hb_grant_yamer_after_device_registered( $device_id, $user_id, $email = '' ) {
+	unset( $device_id, $email );
+	hb_grant_free_yamer_membership( $user_id );
+}
+add_action( 'cpm_hb_after_device_registered', 'hb_grant_yamer_after_device_registered', 10, 3 );
+
+/**
+ * @param int $user_id   WordPress user ID.
+ * @param int $device_id Device row.
+ * @return void
+ */
+function hb_grant_yamer_after_otp( $user_id, $device_id = 0 ) {
+	unset( $device_id );
+	hb_grant_free_yamer_membership( $user_id );
+}
+add_action( 'cpm_hb_after_otp_verified', 'hb_grant_yamer_after_otp', 10, 2 );
+
+/**
+ * Give already-registered devices the free YAM’er level they missed.
+ *
+ * @return void
+ */
+function hb_backfill_yamer_for_registered_devices() {
+	if ( get_option( 'hb_yamer_auto_grant_backfill' ) === '2026-09-16' ) {
+		return;
+	}
+	if ( ! function_exists( 'pmpro_changeMembershipLevel' ) ) {
+		return;
+	}
+
+	global $wpdb;
+	$table = $wpdb->prefix . 'nwp_devices';
+	if ( $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $table ) ) !== $table ) {
+		update_option( 'hb_yamer_auto_grant_backfill', '2026-09-16' );
+		return;
+	}
+
+	$ids = $wpdb->get_col( "SELECT DISTINCT user_id FROM {$table} WHERE user_id IS NOT NULL AND user_id > 0" );
+	if ( is_array( $ids ) ) {
+		foreach ( $ids as $uid ) {
+			hb_grant_free_yamer_membership( (int) $uid );
+		}
+	}
+
+	update_option( 'hb_yamer_auto_grant_backfill', '2026-09-16' );
+}
+add_action( 'init', 'hb_backfill_yamer_for_registered_devices', 30 );
+
+/**
+ * New homepage is an Observer door. Do not stack the old PoD “Enter Website” gate on it.
+ *
+ * @param bool $show Whether to show the landing gate.
+ * @return bool
+ */
+function hb_disable_entry_gate_on_showing_up( $show ) {
+	if ( is_front_page() && ( ! isset( $_GET['proof'] ) || strtolower( (string) wp_unslash( $_GET['proof'] ) ) !== 'scan' ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		return false;
+	}
+	return $show;
+}
+add_filter( 'cpm_hb_show_landing_entry_modal', 'hb_disable_entry_gate_on_showing_up' );
+
+/**
+ * Publish homepage-linked routes so Start Playing Free does not 404 later links.
+ *
+ * @return void
+ */
+function hb_ensure_showing_up_pages() {
+	if ( get_option( 'hb_showing_up_pages' ) === '2026-09-16-megavoter' ) {
+		return;
+	}
+
+	$next = 'templates-parts/template-showing-up-route.php';
+	$pages = array(
+		array(
+			'title'    => __( 'Register Device', 'hello-elementor-child' ),
+			'slug'     => 'register-device',
+			'template' => 'templates-parts/template-register-device.php',
+		),
+		array(
+			'title'    => __( 'MEGAvoter', 'hello-elementor-child' ),
+			'slug'     => 'megavoter',
+			'template' => 'templates-parts/template-megavoter.php',
+		),
+		array(
+			'title'    => __( 'Find a LAUGH', 'hello-elementor-child' ),
+			'slug'     => 'laugh-events',
+			'template' => $next,
+		),
+		array(
+			'title'    => __( 'Create a LAUGH', 'hello-elementor-child' ),
+			'slug'     => 'host-a-laugh',
+			'template' => $next,
+		),
+		array(
+			'title'    => __( 'Organizer Dashboard', 'hello-elementor-child' ),
+			'slug'     => 'organizer-dashboard',
+			'template' => $next,
+		),
+		array(
+			'title'    => __( 'Make a Move', 'hello-elementor-child' ),
+			'slug'     => 'make-a-move',
+			'template' => $next,
+		),
+		array(
+			'title'    => __( 'My XP', 'hello-elementor-child' ),
+			'slug'     => 'my-xp',
+			'template' => $next,
+		),
+		array(
+			'title'    => __( 'Gracebook', 'hello-elementor-child' ),
+			'slug'     => 'gracebook',
+			'template' => $next,
+		),
+		array(
+			'title'    => __( 'Practice FAITH', 'hello-elementor-child' ),
+			'slug'     => 'practice-faith',
+			'template' => $next,
+		),
+		array(
+			'title'    => __( 'Contact', 'hello-elementor-child' ),
+			'slug'     => 'contact',
+			'template' => $next,
+		),
+	);
+
+	foreach ( $pages as $page_data ) {
+		$page = get_page_by_path( $page_data['slug'] );
+		if ( $page instanceof WP_Post ) {
+			$id = (int) $page->ID;
+		} else {
+			$id = wp_insert_post(
+				array(
+					'post_title'     => $page_data['title'],
+					'post_name'      => $page_data['slug'],
+					'post_status'    => 'publish',
+					'post_type'      => 'page',
+					'post_content'   => '',
+					'comment_status' => 'closed',
+					'ping_status'    => 'closed',
+				)
+			);
+		}
+		if ( $id && ! is_wp_error( $id ) ) {
+			update_post_meta( $id, '_wp_page_template', $page_data['template'] );
+		}
+	}
+
+	update_option( 'hb_showing_up_pages', '2026-09-16-megavoter' );
+}
+add_action( 'init', 'hb_ensure_showing_up_pages', 20 );
+
+/**
+ * Participant door: branch + $12 PMPro MEGAvoter checkout on this site.
+ *
+ * @return void
+ */
+function hb_megavoter_handle_checkout_start() {
+	if ( is_admin() || ! is_page( 'megavoter' ) ) {
+		return;
+	}
+	if ( empty( $_POST['hb_megavoter_checkout'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		return;
+	}
+	$nonce = isset( $_POST['hb_megavoter_nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['hb_megavoter_nonce'] ) ) : '';
+	if ( ! wp_verify_nonce( $nonce, 'hb_megavoter_checkout' ) ) {
+		return;
+	}
+
+	$branch  = isset( $_POST['branch'] ) ? sanitize_key( wp_unslash( $_POST['branch'] ) ) : '';
+	$allowed = class_exists( 'Cpm_Humanblockchain_Membership' )
+		? Cpm_Humanblockchain_Membership::valid_branch_slugs()
+		: array( 'planning', 'budget', 'media', 'distribution', 'membership' );
+	if ( $branch === '' || ! in_array( $branch, $allowed, true ) ) {
+		wp_safe_redirect( add_query_arg( 'branch_needed', '1', home_url( '/megavoter/' ) ) );
+		exit;
+	}
+
+	if ( is_user_logged_in() && class_exists( 'Cpm_Humanblockchain_Membership' ) ) {
+		Cpm_Humanblockchain_Membership::save_local_membership_to_user(
+			get_current_user_id(),
+			'megavoter',
+			'MEGAvoter',
+			$branch
+		);
+	}
+
+	$level_id = 2;
+	if ( class_exists( 'Cpm_Humanblockchain_Membership' ) ) {
+		$level_id = (int) Cpm_Humanblockchain_Membership::get_pmpro_level_id_for_tier( 'megavoter' );
+	}
+	if ( $level_id <= 0 ) {
+		$level_id = 2;
+	}
+
+	$url = function_exists( 'pmpro_url' ) ? pmpro_url( 'checkout', 'level=' . $level_id ) : home_url( '/membership-checkout/' );
+	$url = add_query_arg(
+		array(
+			'level'         => $level_id,
+			'cpm_hb_tier'   => 'megavoter',
+			'cpm_hb_branch' => $branch,
+		),
+		$url
+	);
+	wp_safe_redirect( $url );
+	exit;
+}
+add_action( 'template_redirect', 'hb_megavoter_handle_checkout_start', 20 );
+
+/**
+ * After a successful $12 MEGAvoter order, mark the user as Participant. Do not grant host.
+ *
+ * @param int   $user_id User ID.
+ * @param mixed $order   PMPro order.
+ * @return void
+ */
+function hb_megavoter_mark_participant_after_checkout( $user_id, $order = null ) {
+	$user_id = (int) $user_id;
+	if ( $user_id <= 0 ) {
+		return;
+	}
+
+	$level_id = 0;
+	if ( is_object( $order ) && isset( $order->membership_id ) ) {
+		$level_id = (int) $order->membership_id;
+	} elseif ( function_exists( 'pmpro_getMembershipLevelForUser' ) ) {
+		$level = pmpro_getMembershipLevelForUser( $user_id );
+		if ( $level && isset( $level->id ) ) {
+			$level_id = (int) $level->id;
+		}
+	}
+
+	$tier = '';
+	if ( class_exists( 'Cpm_Humanblockchain_Membership' ) && $level_id > 0 ) {
+		$mapped = Cpm_Humanblockchain_Membership::tier_slug_for_pmpro_level_id( $level_id );
+		$tier   = is_string( $mapped ) ? $mapped : '';
+	}
+	if ( $tier === '' && 2 === $level_id ) {
+		$tier = 'megavoter';
+	}
+	if ( 'megavoter' !== $tier ) {
+		return;
+	}
+
+	update_user_meta( $user_id, 'hb_participation_role', 'participant' );
+	if ( ! get_user_meta( $user_id, 'hb_funnel_role', true ) ) {
+		update_user_meta( $user_id, 'hb_funnel_role', 'participant' );
+	}
+}
+add_action( 'pmpro_after_checkout', 'hb_megavoter_mark_participant_after_checkout', 15, 2 );
+
+/**
+ * Whether a PMPro level is the retired Patron offer.
+ *
+ * @param object|int $level Level object or ID.
+ * @return bool
+ */
+function hb_pmpro_level_is_patron( $level ) {
+	$name = '';
+	$id   = 0;
+	if ( is_object( $level ) ) {
+		$id   = isset( $level->id ) ? (int) $level->id : 0;
+		$name = isset( $level->name ) ? strtolower( trim( (string) $level->name ) ) : '';
+	} else {
+		$id = (int) $level;
+		if ( $id > 0 && function_exists( 'pmpro_getLevel' ) ) {
+			$obj = pmpro_getLevel( $id );
+			if ( $obj && isset( $obj->name ) ) {
+				$name = strtolower( trim( (string) $obj->name ) );
+			}
+		}
+	}
+	if ( $name === 'patron' ) {
+		return true;
+	}
+	if ( class_exists( 'Cpm_Humanblockchain_Membership' ) && $id > 0 ) {
+		return 'patron' === Cpm_Humanblockchain_Membership::tier_slug_for_pmpro_level_id( $id );
+	}
+	return false;
+}
+
+/**
+ * Hide Patron on the public PMPro levels table.
+ *
+ * @param array $levels Levels.
+ * @return array
+ */
+function hb_hide_patron_from_pmpro_levels_page( $levels ) {
+	if ( ! is_array( $levels ) ) {
+		return $levels;
+	}
+	foreach ( $levels as $key => $level ) {
+		if ( hb_pmpro_level_is_patron( $level ) ) {
+			unset( $levels[ $key ] );
+		}
+	}
+	return $levels;
+}
+add_filter( 'pmpro_levels_array', 'hb_hide_patron_from_pmpro_levels_page' );
+
+/**
+ * Send leftover Patron checkout links to the MEGAvoter door.
+ *
+ * @return void
+ */
+function hb_block_patron_pmpro_checkout() {
+	if ( is_admin() || ! function_exists( 'pmpro_is_checkout' ) || ! pmpro_is_checkout() ) {
+		return;
+	}
+	$level_id = isset( $_REQUEST['level'] ) ? (int) $_REQUEST['level'] : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+	if ( $level_id <= 0 || ! hb_pmpro_level_is_patron( $level_id ) ) {
+		return;
+	}
+	wp_safe_redirect( home_url( '/megavoter/' ) );
+	exit;
+}
+add_action( 'template_redirect', 'hb_block_patron_pmpro_checkout', 5 );
+
+/**
+ * Remove the Patron PMPro level. If anyone is still active on it, only close new signups.
+ *
+ * @return void
+ */
+function hb_remove_patron_pmpro_level() {
+	if ( get_option( 'hb_patron_membership_removed' ) === '2026-09-16' ) {
+		return;
+	}
+	if ( ! function_exists( 'pmpro_getAllLevels' ) ) {
+		return;
+	}
+
+	global $wpdb;
+	$level = $wpdb->get_row( "SELECT * FROM {$wpdb->pmpro_membership_levels} WHERE name = 'Patron' LIMIT 1" );
+	if ( ! $level || empty( $level->id ) ) {
+		update_option( 'hb_patron_membership_removed', '2026-09-16' );
+		return;
+	}
+
+	$id = (int) $level->id;
+	if ( in_array( $id, array( 1, 2 ), true ) ) {
+		return;
+	}
+
+	$active = (int) $wpdb->get_var(
+		$wpdb->prepare(
+			"SELECT COUNT(*) FROM {$wpdb->pmpro_memberships_users} WHERE membership_id = %d AND status = 'active'",
+			$id
+		)
+	);
+	if ( $active > 0 ) {
+		$wpdb->update( $wpdb->pmpro_membership_levels, array( 'allow_signups' => 0 ), array( 'id' => $id ) );
+		update_option( 'hb_patron_membership_removed', '2026-09-16-paused' );
+		return;
+	}
+
+	do_action( 'pmpro_delete_membership_level', $id );
+	if ( isset( $wpdb->pmpro_memberships_categories ) ) {
+		$wpdb->delete( $wpdb->pmpro_memberships_categories, array( 'membership_id' => $id ) );
+	}
+	if ( isset( $wpdb->pmpro_membership_levels_groups ) ) {
+		$wpdb->delete( $wpdb->pmpro_membership_levels_groups, array( 'level' => $id ) );
+	}
+	$wpdb->delete( $wpdb->pmpro_membership_levels, array( 'id' => $id ) );
+	update_option( 'hb_patron_membership_removed', '2026-09-16' );
+}
+add_action( 'init', 'hb_remove_patron_pmpro_level', 30 );
+
+/**
+ * Open the Observer register modal when arriving from Start Playing Free.
+ *
+ * @return void
+ */
+function hb_observer_register_autostart() {
+	if ( is_admin() || ! is_page( 'register-device' ) ) {
+		return;
+	}
+	if ( empty( $_GET['start'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		return;
+	}
+	?>
+	<script>
+	document.addEventListener('DOMContentLoaded', function () {
+		window.setTimeout(function () {
+			var btn = document.querySelector('.hb-observer .cpm-nwp-open-modal[data-cpm-modal="cpm-nwp-register-modal"]');
+			if (btn) {
+				btn.click();
+			}
+		}, 400);
+	});
+	</script>
+	<?php
+}
+add_action( 'wp_footer', 'hb_observer_register_autostart', 99 );
+
+/**
+ * Observer door has no cart. Hide Woo side-cart unless the visitor is a MEGAvoter Participant.
+ *
+ * @return void
+ */
+function hb_observer_hide_cart_chrome() {
+	if ( is_admin() ) {
+		return;
+	}
+	if ( function_exists( 'hb_user_can_access_shop' ) && hb_user_can_access_shop() ) {
+		return;
+	}
+	?>
+	<style id="hb-observer-hide-cart">
+		body .xoo-wsc-modal,
+		body .xoo-wsc-slider-modal,
+		body .xoo-wsc-basket,
+		body .xoo-wsc-container,
+		body .xoo-wsc-sc-cont { display: none !important; visibility: hidden !important; pointer-events: none !important; }
+		#cpm-nwp-register-modal { z-index: 10000001 !important; }
+	</style>
+	<?php
+}
+add_action( 'wp_head', 'hb_observer_hide_cart_chrome', 99 );
+
+/**
+ * Keep Activate Your Phone / Get started off WordPress menus. Those doors are the new header CTAs.
+ *
+ * @param string $items Menu HTML.
+ * @return string
+ */
+function hb_strip_legacy_header_ctas( $items ) {
+	if ( ! is_string( $items ) || $items === '' ) {
+		return $items;
+	}
+	$items = preg_replace( '/<li[^>]*cpm-nwp-register-btn-wrap[^>]*>.*?<\/li>/is', '', $items );
+	$items = preg_replace( '/<li[^>]*cpm-hb-get-started-wrap[^>]*>.*?<\/li>/is', '', $items );
+	return is_string( $items ) ? $items : '';
+}
+add_filter( 'wp_nav_menu_items', 'hb_strip_legacy_header_ctas', 20 );
+
+/**
+ * MEGAvoter / Participant is the role that can see WooCommerce Shop.
+ *
+ * @param int $user_id User ID. 0 = current user.
+ * @return bool
+ */
+function hb_user_can_access_shop( $user_id = 0 ) {
+	$user_id = $user_id ? (int) $user_id : get_current_user_id();
+	if ( $user_id > 0 && user_can( $user_id, 'manage_woocommerce' ) ) {
+		return true;
+	}
+	if ( $user_id > 0 && user_can( $user_id, 'manage_options' ) ) {
+		return true;
+	}
+	if ( $user_id <= 0 ) {
+		return false;
+	}
+
+	if ( function_exists( 'pmpro_hasMembershipLevel' ) ) {
+		$level_id = 2;
+		if ( class_exists( 'Cpm_Humanblockchain_Membership' ) ) {
+			$mapped = (int) Cpm_Humanblockchain_Membership::get_pmpro_level_id_for_tier( 'megavoter' );
+			if ( $mapped > 0 ) {
+				$level_id = $mapped;
+			}
+		}
+		if ( pmpro_hasMembershipLevel( $level_id, $user_id ) ) {
+			return true;
+		}
+	}
+
+	$role = (string) get_user_meta( $user_id, 'hb_participation_role', true );
+	return ( 'participant' === $role );
+}
+
+/**
+ * Shop catalog, products, cart, and Woo checkout — not My Account, not PMPro membership checkout.
+ *
+ * @return bool
+ */
+function hb_is_woo_shop_surface() {
+	if ( function_exists( 'pmpro_is_checkout' ) && pmpro_is_checkout() ) {
+		return false;
+	}
+	if ( function_exists( 'is_account_page' ) && is_account_page() ) {
+		return false;
+	}
+	if ( is_page( array( 'membership-checkout', 'membership-levels', 'membership-account', 'megavoter' ) ) ) {
+		return false;
+	}
+	if ( ! function_exists( 'is_shop' ) ) {
+		return false;
+	}
+	if ( is_shop() || is_product() || is_product_taxonomy() || is_cart() ) {
+		return true;
+	}
+	if ( function_exists( 'is_checkout' ) && is_checkout() ) {
+		return true;
+	}
+	return false;
+}
+
+/**
+ * Hide Shop in WP menus unless the user is a MEGAvoter Participant.
+ *
+ * @param array $items Menu items.
+ * @return array
+ */
+function hb_nav_hide_shop_unless_megavoter( $items ) {
+	if ( ! is_array( $items ) || hb_user_can_access_shop() ) {
+		return $items;
+	}
+	$shop_id  = function_exists( 'wc_get_page_id' ) ? (int) wc_get_page_id( 'shop' ) : 0;
+	$shop_url = function_exists( 'wc_get_page_permalink' ) ? (string) wc_get_page_permalink( 'shop' ) : home_url( '/shop/' );
+	$shop_path = (string) wp_parse_url( $shop_url, PHP_URL_PATH );
+
+	foreach ( $items as $key => $item ) {
+		$is_shop = false;
+		if ( $shop_id > 0 && isset( $item->object_id ) && (int) $item->object_id === $shop_id ) {
+			$is_shop = true;
+		}
+		$title = isset( $item->title ) ? strtolower( trim( wp_strip_all_tags( (string) $item->title ) ) ) : '';
+		if ( 'shop' === $title ) {
+			$is_shop = true;
+		}
+		if ( ! $is_shop && ! empty( $item->url ) && $shop_path ) {
+			$item_path = (string) wp_parse_url( $item->url, PHP_URL_PATH );
+			if ( untrailingslashit( $item_path ) === untrailingslashit( $shop_path ) ) {
+				$is_shop = true;
+			}
+		}
+		if ( $is_shop ) {
+			unset( $items[ $key ] );
+		}
+	}
+	return $items;
+}
+add_filter( 'wp_nav_menu_objects', 'hb_nav_hide_shop_unless_megavoter', 20 );
+
+/**
+ * Send guests and Observers who open Shop to the MEGAvoter door.
+ *
+ * @return void
+ */
+function hb_gate_shop_to_megavoter() {
+	if ( is_admin() || ! hb_is_woo_shop_surface() || hb_user_can_access_shop() ) {
+		return;
+	}
+	wp_safe_redirect( home_url( '/megavoter/' ) );
+	exit;
+}
+add_action( 'template_redirect', 'hb_gate_shop_to_megavoter', 6 );
+
+/**
+ * After $12 MEGAvoter payment, point them at Shop.
+ *
+ * @param string $message Confirmation HTML.
+ * @return string
+ */
+function hb_megavoter_confirmation_shop_link( $message ) {
+	if ( ! hb_user_can_access_shop() ) {
+		return $message;
+	}
+	$shop = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'shop' ) : home_url( '/shop/' );
+	$link = '<p class="hb-megavoter-shop-next"><a href="' . esc_url( $shop ) . '">' . esc_html__( 'Open the Shop', 'hello-elementor-child' ) . '</a></p>';
+	return $message . $link;
+}
+add_filter( 'pmpro_confirmation_message', 'hb_megavoter_confirmation_shop_link' );

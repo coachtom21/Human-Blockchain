@@ -105,8 +105,8 @@ body.pmpro-checkout form.pmpro_form .pmpro_level_name_text {
 	color: var(--hb-pmpro-text);
 }
 
-/* Labels — default; checkout fields override below */
-/* Hide password + confirm-email; phone is collected instead. */
+/* Hide password, username, and confirm-email; phone is collected instead. */
+body.pmpro-checkout form.pmpro_form .pmpro_checkout-field-username,
 body.pmpro-checkout form.pmpro_form .pmpro_checkout-field-password,
 body.pmpro-checkout form.pmpro_form .pmpro_checkout-field-password2,
 body.pmpro-checkout form.pmpro_form .pmpro_checkout-field-bconfirmemail,
@@ -293,10 +293,14 @@ body.pmpro-checkout #pmpro_user_fields .pmpro_checkout-field-password {
 	grid-column: 2;
 }
 
-body.pmpro-checkout #pmpro_user_fields .pmpro_checkout-field-password2,
-body.pmpro-checkout #pmpro_user_fields .pmpro_checkout-field-bemail,
-body.pmpro-checkout #pmpro_user_fields .pmpro_checkout-field-bconfirmemail {
+body.pmpro-checkout #pmpro_user_fields .pmpro_checkout-field-hb-phone {
 	grid-column: 1 / -1;
+	order: 1;
+}
+
+body.pmpro-checkout #pmpro_user_fields .pmpro_checkout-field-bemail {
+	grid-column: 1 / -1;
+	order: 2;
 }
 
 body.pmpro-checkout #pmpro_billing_address_fields .pmpro_checkout-field-baddress1,
@@ -399,4 +403,52 @@ body.pmpro-checkout form.pmpro_form input#pmpro_btn-submit.pmpro_btn-submit-chec
 
 body.pmpro-checkout form.pmpro_form input#pmpro_btn-submit.pmpro_btn-submit-checkout:active {
 	transform: translateY(1px);
+}
+
+/*
+ * Device OTP modal must sit above the sticky header and the white checkout card.
+ * html/body overflow-x: clip plus the header z-index otherwise keep it underneath.
+ */
+html:has(body.pmpro-checkout.cpm-nwp-modal-open),
+body.pmpro-checkout.cpm-nwp-modal-open {
+	overflow: hidden !important;
+}
+
+body.pmpro-checkout.cpm-nwp-modal-open .nwp-site-header {
+	z-index: 0;
+}
+
+body.pmpro-checkout #cpm-nwp-activate-modal,
+body.pmpro-checkout #cpm-nwp-verify-otp-modal,
+body.pmpro-checkout #cpm-nwp-register-modal {
+	z-index: 2147483000 !important;
+	position: fixed !important;
+	inset: 0 !important;
+}
+
+body.pmpro-checkout #cpm-nwp-activate-modal:not(.cpm-nwp-modal--hidden),
+body.pmpro-checkout #cpm-nwp-verify-otp-modal:not(.cpm-nwp-modal--hidden),
+body.pmpro-checkout #cpm-nwp-register-modal:not(.cpm-nwp-modal--hidden) {
+	opacity: 1 !important;
+	visibility: visible !important;
+	pointer-events: auto !important;
+}
+
+body.pmpro-checkout #cpm-nwp-activate-modal.cpm-nwp-modal--hidden,
+body.pmpro-checkout #cpm-nwp-verify-otp-modal.cpm-nwp-modal--hidden,
+body.pmpro-checkout #cpm-nwp-register-modal.cpm-nwp-modal--hidden {
+	opacity: 0 !important;
+	visibility: hidden !important;
+	pointer-events: none !important;
+}
+
+body.pmpro-checkout .cpm-nwp-modal-overlay {
+	background: rgba(3, 8, 14, 0.72);
+}
+
+body.pmpro-checkout .cpm-nwp-modal--activate .cpm-nwp-modal-container,
+body.pmpro-checkout #cpm-nwp-verify-otp-modal .cpm-nwp-modal-container {
+	position: relative;
+	z-index: 1;
+	background: #fff;
 }
