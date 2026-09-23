@@ -33,8 +33,11 @@ class Hb_Postcard {
 	/** Branded Human Gold RSVP QR (theme-hosted; do not regenerate via ChatGPT or QRTiger). */
 	const RSVP_QR_IMAGE = 'assets/images/postcard/Human_Gold_RSVP.png';
 
-	/** Public URL encoded in the RSVP QR (/start entrance). */
-	const PUBLIC_SCAN_URL = 'https://megavoters.com/start/';
+	/**
+	 * Fallback public URL encoded in the RSVP QR (Human Gold Gate 1).
+	 * Prefer home_url( '/r' ) via get_public_scan_url() so local and live stay aligned.
+	 */
+	const PUBLIC_SCAN_URL = 'https://humanblockchain.info/r';
 
 	/**
 	 * Bootstrap hooks.
@@ -207,13 +210,17 @@ class Hb_Postcard {
 	}
 
 	/**
-	 * Public scan URL shown in My Account (megavoters.com/start/).
+	 * Public scan URL shown in My Account and encoded in the postcard RSVP QR.
+	 * Human Gold Gate 1: site /r (device RSVP), not megavoters.com/start/.
 	 *
 	 * @param int $user_id User ID.
 	 * @return string
 	 */
 	public static function get_public_scan_url( $user_id = 0 ) {
-		$url = self::PUBLIC_SCAN_URL;
+		$url = home_url( '/r' );
+		if ( $url === '' ) {
+			$url = self::PUBLIC_SCAN_URL;
+		}
 		return (string) apply_filters( 'hb_postcard_public_scan_url', $url, (int) $user_id );
 	}
 
@@ -459,17 +466,25 @@ class Hb_Postcard {
 		$user_id  = (int) $user_id;
 		$scan_url = trim( (string) $scan_url );
 
-		$static_qr = self::load_rsvp_qr_binary();
-		if ( ! is_wp_error( $static_qr ) ) {
-			return apply_filters( 'hb_postcard_branded_qr_png', $static_qr, $user_id, $scan_url );
-		}
-
-		// Legacy fallback: frameless gradient QR from QR Tiger API.
+		// Always encode the current public scan URL (/r). Do not prefer the static
+		// theme PNG first — that artwork may still contain an outdated destination.
 		if ( $scan_url !== '' && function_exists( 'hb_fetch_qrtiger_postcard_qr_png' ) ) {
 			$binary = hb_fetch_qrtiger_postcard_qr_png( $scan_url, $user_id );
 			if ( ! is_wp_error( $binary ) ) {
 				return apply_filters( 'hb_postcard_branded_qr_png', $binary, $user_id, $scan_url );
 			}
+		}
+
+		if ( $scan_url !== '' ) {
+			$plain = self::fetch_qr_png( $scan_url, $size );
+			if ( ! is_wp_error( $plain ) ) {
+				return apply_filters( 'hb_postcard_branded_qr_png', $plain, $user_id, $scan_url );
+			}
+		}
+
+		$static_qr = self::load_rsvp_qr_binary();
+		if ( ! is_wp_error( $static_qr ) ) {
+			return apply_filters( 'hb_postcard_branded_qr_png', $static_qr, $user_id, $scan_url );
 		}
 
 		$image_url = (string) get_user_meta( $user_id, 'hb_vcard_qr_image_url', true );
@@ -478,10 +493,6 @@ class Hb_Postcard {
 			if ( ! is_wp_error( $binary ) ) {
 				return apply_filters( 'hb_postcard_branded_qr_png', $binary, $user_id, $scan_url );
 			}
-		}
-
-		if ( $scan_url !== '' ) {
-			return self::fetch_qr_png( $scan_url, $size );
 		}
 
 		return new WP_Error( 'qr_image_missing', __( 'Branded QR image is not available.', 'hello-elementor-child' ) );
@@ -1376,7 +1387,7 @@ class Hb_Postcard {
 		<div id="hb-postcard-tools" class="hb-postcard-tools" data-has-image="<?php echo $has_image ? '1' : '0'; ?>">
 			<h3><?php esc_html_e( 'Postcard', 'hello-elementor-child' ); ?></h3>
 			<p class="hb-postcard-intro">
-				<?php esc_html_e( 'The Human Gold RSVP code is stamped onto the postcard front. Scanning opens megavoters.com/start/. Front and back remain separate downloads for printing. Your vCard profile is kept in the background for registered-device flows — it is not the postcard scan destination.', 'hello-elementor-child' ); ?>
+				<?php esc_html_e( 'The Human Gold RSVP code is stamped onto the postcard front. Scanning opens this site’s /r Human Gold RSVP page. Front and back remain separate downloads for printing. Your vCard profile is kept in the background for registered-device flows — it is not the postcard scan destination.', 'hello-elementor-child' ); ?>
 			</p>
 
 			<div class="hb-postcard-layout">
