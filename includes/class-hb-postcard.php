@@ -30,8 +30,12 @@ class Hb_Postcard {
 	/** Static back of postcard (print reverse side). */
 	const DEFAULT_BACK_URL = 'https://humanblockchain.info/wp-content/uploads/2026/07/Human-Gold-Rush-Postcard-Back.png';
 
-	/** Branded Human Gold RSVP QR (theme-hosted; do not regenerate via ChatGPT or QRTiger). */
+	/** Branded Human Gold RSVP QR (theme-hosted fixture; not QRTiger). */
 	const RSVP_QR_IMAGE = 'assets/images/postcard/Human_Gold_RSVP.png';
+
+	/** Preferred SVG fixture name Tom asked to cement for printed postcards. */
+	const RSVP_QR_SVG = 'assets/images/postcard/Human_Gold_RSVP.svg';
+	const RSVP_QR_SVG_ALIAS = 'assets/images/postcard/Human_Gold.svg';
 
 	/**
 	 * Fallback public URL encoded in the RSVP QR (Human Gold Gate 1).
@@ -254,42 +258,47 @@ class Hb_Postcard {
 	}
 
 	/**
-	 * Public URL for the static branded RSVP QR PNG.
-	 *
-	 * @return string
-	 */
-	public static function get_rsvp_qr_image_url() {
-		if ( ! self::has_rsvp_qr_image() ) {
-			return '';
-		}
-		$relative = (string) apply_filters( 'hb_postcard_rsvp_qr_image', self::RSVP_QR_IMAGE );
-		if ( $relative === '' ) {
-			return '';
-		}
-		if ( preg_match( '#^https?://#i', $relative ) ) {
-			return esc_url_raw( $relative );
-		}
-		return esc_url_raw( trailingslashit( get_stylesheet_directory_uri() ) . ltrim( $relative, '/' ) );
-	}
-
-	/**
-	 * Absolute path to the static RSVP QR PNG.
+	 * Absolute path to the static RSVP QR fixture (SVG preferred, then PNG).
 	 *
 	 * @return string
 	 */
 	public static function get_rsvp_qr_image_path() {
-		$relative = (string) apply_filters( 'hb_postcard_rsvp_qr_image', self::RSVP_QR_IMAGE );
-		if ( $relative === '' ) {
+		$candidates = array(
+			(string) apply_filters( 'hb_postcard_rsvp_qr_image', '' ),
+			self::RSVP_QR_SVG_ALIAS,
+			self::RSVP_QR_SVG,
+			self::RSVP_QR_IMAGE,
+		);
+		foreach ( $candidates as $relative ) {
+			$relative = trim( (string) $relative );
+			if ( $relative === '' || preg_match( '#^https?://#i', $relative ) ) {
+				continue;
+			}
+			$path = $relative[0] === '/' ? $relative : get_stylesheet_directory() . '/' . ltrim( $relative, '/' );
+			if ( is_readable( $path ) ) {
+				return $path;
+			}
+		}
+		return '';
+	}
+
+	/**
+	 * Public URL for the static branded RSVP QR fixture.
+	 *
+	 * @return string
+	 */
+	public static function get_rsvp_qr_image_url() {
+		$path = self::get_rsvp_qr_image_path();
+		if ( $path === '' ) {
 			return '';
 		}
-		if ( preg_match( '#^https?://#i', $relative ) ) {
-			return '';
+		$dir = wp_normalize_path( get_stylesheet_directory() );
+		$path_n = wp_normalize_path( $path );
+		if ( strpos( $path_n, $dir ) === 0 ) {
+			$rel = ltrim( substr( $path_n, strlen( $dir ) ), '/' );
+			return esc_url_raw( trailingslashit( get_stylesheet_directory_uri() ) . $rel );
 		}
-		$path = $relative;
-		if ( $relative[0] !== '/' ) {
-			$path = get_stylesheet_directory() . '/' . ltrim( $relative, '/' );
-		}
-		return $path;
+		return '';
 	}
 
 	/**
@@ -298,15 +307,22 @@ class Hb_Postcard {
 	 * @return string|WP_Error
 	 */
 	public static function load_rsvp_qr_binary() {
-		$path = self::get_rsvp_qr_image_path();
-		if ( $path === '' || ! is_readable( $path ) ) {
-			return new WP_Error( 'rsvp_qr_missing', __( 'RSVP QR image is not configured.', 'hello-elementor-child' ) );
+		// Postcard compositing needs a PNG raster; SVG fixtures are for display/print reference.
+		$png_candidates = array(
+			self::RSVP_QR_IMAGE,
+			'assets/images/postcard/rsvp-qr.png',
+		);
+		foreach ( $png_candidates as $relative ) {
+			$path = get_stylesheet_directory() . '/' . ltrim( $relative, '/' );
+			if ( ! is_readable( $path ) ) {
+				continue;
+			}
+			$binary = file_get_contents( $path );
+			if ( is_string( $binary ) && strlen( $binary ) >= 8 && "\x89PNG" === substr( $binary, 0, 4 ) ) {
+				return $binary;
+			}
 		}
-		$binary = file_get_contents( $path );
-		if ( ! is_string( $binary ) || strlen( $binary ) < 8 || "\x89PNG" !== substr( $binary, 0, 4 ) ) {
-			return new WP_Error( 'rsvp_qr_invalid', __( 'RSVP QR image is not a valid PNG.', 'hello-elementor-child' ) );
-		}
-		return $binary;
+		return new WP_Error( 'rsvp_qr_missing', __( 'RSVP QR PNG fixture is not configured.', 'hello-elementor-child' ) );
 	}
 
 	/**
@@ -466,13 +482,10 @@ class Hb_Postcard {
 		$user_id  = (int) $user_id;
 		$scan_url = trim( (string) $scan_url );
 
-		// Always encode the current public scan URL (/r). Do not prefer the static
-		// theme PNG first — that artwork may still contain an outdated destination.
-		if ( $scan_url !== '' && function_exists( 'hb_fetch_qrtiger_postcard_qr_png' ) ) {
-			$binary = hb_fetch_qrtiger_postcard_qr_png( $scan_url, $user_id );
-			if ( ! is_wp_error( $binary ) ) {
-				return apply_filters( 'hb_postcard_branded_qr_png', $binary, $user_id, $scan_url );
-			}
+		// Cemented Human Gold fixture first (theme-hosted). Do not depend on QRTiger for postcard print.
+		$static_qr = self::load_rsvp_qr_binary();
+		if ( ! is_wp_error( $static_qr ) ) {
+			return apply_filters( 'hb_postcard_branded_qr_png', $static_qr, $user_id, $scan_url );
 		}
 
 		if ( $scan_url !== '' ) {
@@ -480,11 +493,6 @@ class Hb_Postcard {
 			if ( ! is_wp_error( $plain ) ) {
 				return apply_filters( 'hb_postcard_branded_qr_png', $plain, $user_id, $scan_url );
 			}
-		}
-
-		$static_qr = self::load_rsvp_qr_binary();
-		if ( ! is_wp_error( $static_qr ) ) {
-			return apply_filters( 'hb_postcard_branded_qr_png', $static_qr, $user_id, $scan_url );
 		}
 
 		$image_url = (string) get_user_meta( $user_id, 'hb_vcard_qr_image_url', true );
@@ -495,7 +503,7 @@ class Hb_Postcard {
 			}
 		}
 
-		return new WP_Error( 'qr_image_missing', __( 'Branded QR image is not available.', 'hello-elementor-child' ) );
+		return new WP_Error( 'qr_unavailable', __( 'Could not load the Human Gold RSVP QR fixture.', 'hello-elementor-child' ) );
 	}
 
 	/**
