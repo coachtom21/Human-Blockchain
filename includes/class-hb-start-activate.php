@@ -514,6 +514,13 @@ class HB_Start_Activate {
 		update_user_meta( $user_id, 'hb_funnel_role', $role );
 		update_user_meta( $user_id, 'hb_device_registered', '1' );
 		update_user_meta( $user_id, 'hb_device_registered_at', gmdate( 'c' ) );
+		// Device registration completes required onboarding; Discord/Gracebook stays optional.
+		if ( (string) get_user_meta( $user_id, 'hb_onboarding_complete', true ) !== '1' ) {
+			update_user_meta( $user_id, 'hb_onboarding_complete', '1' );
+			if ( class_exists( 'HB_Doorway_Counts' ) ) {
+				HB_Doorway_Counts::bump( 'onboarding_complete' );
+			}
+		}
 
 		$state['device_registered'] = true;
 		$state['user_id']           = $user_id;
@@ -529,7 +536,7 @@ class HB_Start_Activate {
 
 		wp_send_json_success(
 			array(
-				'message' => __( 'Device recognized. One step remains.', 'hello-elementor-child' ),
+				'message' => __( 'Device recognized. You can return to your event — Discord is optional.', 'hello-elementor-child' ),
 			)
 		);
 	}
@@ -565,15 +572,11 @@ class HB_Start_Activate {
 
 		if ( class_exists( 'HB_Doorway_Counts' ) && ! $already_gracebook ) {
 			HB_Doorway_Counts::bump( 'gracebook_accepted' );
-			if ( ! empty( $state['device_registered'] ) && (string) get_user_meta( $user_id, 'hb_onboarding_complete', true ) !== '1' ) {
-				update_user_meta( $user_id, 'hb_onboarding_complete', '1' );
-				HB_Doorway_Counts::bump( 'onboarding_complete' );
-			}
 		}
 
 		wp_send_json_success(
 			array(
-				'message'    => __( 'Community Checker ready.', 'hello-elementor-child' ),
+				'message'    => __( 'Optional Gracebook interest saved. Discord was not opened automatically.', 'hello-elementor-child' ),
 				'discordUrl' => self::discord_invite_url(),
 			)
 		);
@@ -771,8 +774,8 @@ class HB_Start_Activate {
 		$label   = self::branch_label( $branch );
 		$is_obs  = ( 'observer' === $role );
 		$subject = $is_obs
-			? __( 'Welcome — Observer / YAM’er', 'hello-elementor-child' )
-			: __( 'Welcome — Participant / MEGAvoter', 'hello-elementor-child' );
+			? __( 'Welcome — Observer / Nugget', 'hello-elementor-child' )
+			: __( 'Welcome — Participant / Miner', 'hello-elementor-child' );
 		$body = $is_obs ? self::observer_letter( $label ) : self::participant_letter( $label );
 
 		$sent = wp_mail( $email, $subject, $body, array( 'Content-Type: text/plain; charset=UTF-8' ) );
@@ -788,11 +791,11 @@ class HB_Start_Activate {
 	private static function participant_letter( $branch_label ) {
 		$branch_label = $branch_label !== '' ? $branch_label : '[SELECTED BRANCH]';
 		return "Welcome to the Human Gold Rush.\n\n"
-			. "Your smartphone has been registered for the Participant/MEGAvoter pathway within your selected Peace Pentagon branch:\n\n"
+			. "Your smartphone has been registered for the Participant/Miner pathway within your selected Peace Pentagon branch:\n\n"
 			. $branch_label . "\n\n"
 			. "This first Peace Pentagon branch selection is defining and cannot be changed.\n\n"
 			. "Your two pending POC assignments\n\n"
-			. "Every MEGAvoter is placed into two separate assignments within the selected branch:\n\n"
+			. "Every Miner is placed into two separate assignments within the selected branch:\n\n"
 			. "- Pending Buyer/Recipient POC\n"
 			. "- Pending Seller/Giver POC\n\n"
 			. "POC means Patron Organizing Community.\n\n"
@@ -800,7 +803,7 @@ class HB_Start_Activate {
 			. "Think of the scan as an approval screen\n\n"
 			. "At a retailer, a card terminal presents a transaction and asks whether the customer approves it.\n\n"
 			. "HumanBlockchain uses a similar moment of choice, but your smartphone is not a card reader or payment terminal.\n\n"
-			. "As a MEGAvoter, your device may present an Identity, Trade, or Gratitude encounter. The recipient’s device independently reviews the request and chooses:\n\n"
+			. "As a Miner, your device may present a Presence Acknowledged, Trade, or Gratitude encounter. The recipient’s device independently reviews the request and chooses:\n\n"
 			. "- Accept\n"
 			. "- Decline\n"
 			. "- Observe\n"
@@ -808,20 +811,20 @@ class HB_Start_Activate {
 			. "- Scan nothing\n\n"
 			. "No payment card is required. No bank account is accessed. No card or banking information is captured. Presenting a QR request does not complete the encounter.\n\n"
 			. "Three voluntary QR gateways\n\n"
-			. "Identity\n\n"
+			. "Presence Acknowledged\n\n"
 			. "“I choose to offer recognition or contact.”\n\n"
-			. "An Identity scan may present your registered device, virtual business card, or Peace Pentagon Penny contact information. Someone may view or save the contact information without completing a transaction.\n\n"
+			. "A Presence scan may present your registered device, virtual business card, or Peace Pentagon Penny contact information. Someone may view or save the contact information without completing a transaction.\n\n"
 			. "Trade\n\n"
 			. "“I choose to present a stated trade encounter.”\n\n"
 			. "A Trade scan places the proposed encounter before the recipient. Like reviewing a retailer’s approval screen, the recipient decides whether the information is accurate before accepting it.\n\n"
 			. "Gratitude\n\n"
 			. "“I choose to recognize presence, service, or goodwill.”\n\n"
 			. "A Gratitude scan offers Experience Presence recognition without turning gratitude into payment or money.\n\n"
-			. "Where required, a valid encounter uses two distinct registered devices within the established three-minute and 50-meter guidelines. Both sides must affirm the Y/Y/Y questions before the testnet records the proof as true.\n\n"
+			. "Where required, a valid encounter uses two distinct registered devices within the established five-minute and 50-meter guidelines. Both sides must affirm the Y/Y/Y questions before the testnet records the proof as true.\n\n"
 			. "What may be captured\n\n"
 			. "A voluntary scan may record only what is needed for the chosen encounter:\n\n"
 			. "- Pseudonymous device references\n"
-			. "- Identity, Trade, or Gratitude gateway\n"
+			. "- Presence, Trade, or Gratitude gateway\n"
 			. "- Timestamp\n"
 			. "- Limited proximity confirmation\n"
 			. "- Buyer/recipient and seller/giver relationship\n"
@@ -839,10 +842,10 @@ class HB_Start_Activate {
 			. "Human Gold recognizes the time people freely choose to share through service, listening, delivery, trade, gratitude, and presence.\n\n"
 			. "HumanBlockchain records only the encounters both parties choose to post. It does not attempt to capture or judge the rest of anyone’s life.\n\n"
 			. "Your next step\n\n"
-			. "Discord Gracebook acceptance is required to complete MEGAvoter onboarding. Joining the server alone does not constitute acceptance.\n\n"
-			. "You must explicitly acknowledge the Practice FAITH covenant:\n\n"
+			. "Discord Gracebook is optional. You are not required to join Discord to finish device registration or return to your Human Gold event.\n\n"
+			. "If you choose to join later, you may acknowledge the Practice FAITH covenant:\n\n"
 			. "Fair • Accepting • Insightful • Transparent • Humble\n\n"
-			. "After Discord acceptance, your Buyer/Recipient and Seller/Giver POC assignments remain pending until the Serendipity Protocol develops the appropriate 30-member Patron Organizing Communities.\n\n"
+			. "Your Buyer/Recipient and Seller/Giver POC assignments remain pending until the Serendipity Protocol develops the appropriate 30-member Patron Organizing Communities.\n\n"
 			. "Registration recognizes intention. Serendipity organizes community. Two devices confirm the encounter. Separate ledgers preserve the difference between money and showing up.\n\n"
 			. "No response is ever treated as a character judgment.\n\n"
 			. "HumanBlockchain.info\n"
@@ -856,12 +859,12 @@ class HB_Start_Activate {
 	private static function observer_letter( $branch_label ) {
 		$branch_label = $branch_label !== '' ? $branch_label : '[SELECTED BRANCH]';
 		return "Welcome to the Human Gold Rush.\n\n"
-			. "Your smartphone has been registered as an Observer/YAM’er device within your selected Peace Pentagon branch:\n\n"
+			. "Your smartphone has been registered as an Observer/Nugget device within your selected Peace Pentagon branch:\n\n"
 			. $branch_label . "\n\n"
 			. "Registration recognizes the device as a voluntary Community Checker. It does not measure your character, beliefs, importance, or human worth.\n\n"
 			. "Think of the scan as an approval screen\n\n"
 			. "At a retailer, a card terminal presents information and asks whether you approve a purchase. HumanBlockchain uses a similar moment of choice—but your smartphone is not being used as a payment terminal.\n\n"
-			. "One device presents an Identity, Trade, or Gratitude encounter. Your device lets you review it and choose:\n\n"
+			. "One device presents a Presence Acknowledged, Trade, or Gratitude encounter. Your device lets you review it and choose:\n\n"
 			. "Accept\n"
 			. "Decline\n"
 			. "Observe\n"
@@ -869,9 +872,9 @@ class HB_Start_Activate {
 			. "Scan nothing\n\n"
 			. "No payment card is required. No bank account is accessed. No card or banking information is captured. A scan records only the encounter you deliberately choose to confirm.\n\n"
 			. "Three voluntary QR gateways\n\n"
-			. "Identity\n\n"
+			. "Presence Acknowledged\n\n"
 			. "“I choose to be recognized as present.”\n\n"
-			. "An Identity scan may recognize your registered device or allow you to review someone’s virtual business-card information. It does not create a purchase or transfer money.\n\n"
+			. "A Presence scan may recognize your registered device or allow you to review someone’s virtual business-card information. It does not create a purchase or transfer money.\n\n"
 			. "Trade\n\n"
 			. "“I choose to consider a trade encounter.”\n\n"
 			. "A Trade scan presents the stated transaction for your review. Like reading a retailer’s approval screen, you decide whether the information is accurate before accepting it.\n\n"
@@ -881,7 +884,7 @@ class HB_Start_Activate {
 			. "What may be captured\n\n"
 			. "A voluntary scan may record only the information needed for that encounter:\n\n"
 			. "Pseudonymous device references\n"
-			. "Identity, Trade, or Gratitude gateway\n"
+			. "Presence, Trade, or Gratitude gateway\n"
 			. "Timestamp\n"
 			. "Limited proximity confirmation\n"
 			. "Acceptance, decline, or unresolved status\n\n"
@@ -895,7 +898,8 @@ class HB_Start_Activate {
 			. "Every person receives the same 24 hours each day. No one can save those hours for tomorrow or rewind the clock.\n\n"
 			. "Human Gold is a way to recognize how people choose to spend that limited time—showing up, helping, listening, serving, trading, or expressing gratitude.\n\n"
 			. "HumanBlockchain records only the encounters you choose to post. Everything else remains yours.\n\n"
-			. "Discord Gracebook acceptance is the final step in completing your Observer/YAM’er onboarding. Joining the Discord server alone is not acceptance; you must explicitly acknowledge the Practice FAITH covenant.\n\n"
+			. "Discord Gracebook is optional. You are not required to join Discord to finish Observer/Nugget registration or return to your event.\n\n"
+			. "If you choose Gracebook later, you may acknowledge the Practice FAITH covenant.\n\n"
 			. "Your time is yours. Your presence is yours. Confirmation is always your choice.\n\n"
 			. "No response is ever treated as a character judgment.\n\n"
 			. "HumanBlockchain.info\n"

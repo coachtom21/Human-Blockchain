@@ -1,5 +1,5 @@
 /**
- * Activate funnel: register device, then explicit Gracebook accept.
+ * Activate funnel: register device. Discord Gracebook is optional (not a redirect gate).
  *
  * @package HelloElementorChild
  */
@@ -11,6 +11,7 @@
 	var registerBtn = document.getElementById('hb-register-btn');
 	var registerMsg = document.getElementById('hb-register-msg');
 	var graceBtn = document.getElementById('hb-gracebook-btn');
+	var graceSkip = document.getElementById('hb-gracebook-skip');
 	var graceMsg = document.getElementById('hb-gracebook-msg');
 	var devicePanel = document.getElementById('hb-device-panel');
 	var gracePanel = document.getElementById('hb-gracebook-panel');
@@ -18,8 +19,8 @@
 
 	function show(panel) {
 		if (devicePanel) devicePanel.hidden = panel !== devicePanel;
-		if (gracePanel) gracePanel.hidden = panel !== gracePanel;
 		if (completePanel) completePanel.hidden = panel !== completePanel;
+		// gracePanel lives inside completePanel as an optional block — do not hide it when Ready shows.
 	}
 
 	function setMsg(el, text, isError) {
@@ -73,7 +74,8 @@
 					throw new Error((json && json.data && json.data.message) || 'Registration failed');
 				}
 				setMsg(registerMsg, (json.data && json.data.message) || 'Device recognized.');
-				show(gracePanel);
+				// Client: Discord is optional — do not force Gracebook or open Discord.
+				show(completePanel);
 			}).catch(function (err) {
 				setMsg(registerMsg, err.message || 'Registration failed.', true);
 				registerBtn.disabled = false;
@@ -93,18 +95,27 @@
 				.then(function (res) { return res.json(); })
 				.then(function (json) {
 					if (!json || !json.success) {
-						throw new Error((json && json.data && json.data.message) || 'Acceptance failed');
+						throw new Error((json && json.data && json.data.message) || 'Could not save optional Gracebook note');
 					}
+					setMsg(graceMsg, 'Optional Gracebook interest saved. Discord was not opened automatically.');
+					var link = document.getElementById('hb-discord-optional-link');
 					var url = (json.data && json.data.discordUrl) || cfg.discordUrl;
-					if (url) {
-						window.open(url, '_blank', 'noopener');
+					if (link && url) {
+						link.href = url;
+						link.hidden = false;
 					}
 					show(completePanel);
 				})
 				.catch(function (err) {
-					setMsg(graceMsg, err.message || 'Acceptance failed.', true);
+					setMsg(graceMsg, err.message || 'Could not save optional Gracebook note.', true);
 					graceBtn.disabled = false;
 				});
+		});
+	}
+
+	if (graceSkip) {
+		graceSkip.addEventListener('click', function () {
+			show(completePanel);
 		});
 	}
 })();

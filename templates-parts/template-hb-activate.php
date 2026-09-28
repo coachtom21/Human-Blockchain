@@ -3,6 +3,7 @@
  * Template Name: Activate (Mega funnel)
  *
  * Dedicated Mega handoff activate page. No shop, PoD, $0, $12, $30, $4, or XP.
+ * Discord / Gracebook is optional — never an auto-redirect gate.
  *
  * @package HelloElementorChild
  */
@@ -14,11 +15,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 $state       = HB_Start_Activate::state();
 $branch      = HB_Start_Activate::branch_label( isset( $state['branch'] ) ? $state['branch'] : '' );
 $mega_start  = HB_Start_Activate::mega_start_url();
+$hbc_rsvp    = home_url( '/r' );
+$discord_url = HB_Start_Activate::discord_invite_url();
 $step        = 'device';
-if ( ! empty( $state['gracebook_accepted'] ) ) {
+if ( ! empty( $state['device_registered'] ) ) {
+	// Device registration completes the required funnel. Gracebook/Discord is optional.
 	$step = 'complete';
-} elseif ( ! empty( $state['device_registered'] ) ) {
-	$step = 'gracebook';
 } elseif ( ! empty( $state['error'] ) ) {
 	$step = 'error';
 } elseif ( empty( $state['redeemed'] ) ) {
@@ -51,14 +53,11 @@ if ( ! empty( $state['gracebook_accepted'] ) ) {
 
 	<nav class="hb-act-progress" aria-label="<?php echo esc_attr__( 'Activation progress', 'hello-elementor-child' ); ?>">
 		<div class="hb-act-wrap hb-act-progress__inner">
-			<div class="hb-act-progress__step<?php echo 'device' === $step ? ' is-current' : ''; ?><?php echo in_array( $step, array( 'gracebook', 'complete' ), true ) ? ' is-done' : ''; ?>">
+			<div class="hb-act-progress__step<?php echo 'device' === $step ? ' is-current' : ''; ?><?php echo 'complete' === $step ? ' is-done' : ''; ?>">
 				<span>1</span><?php esc_html_e( 'Device', 'hello-elementor-child' ); ?>
 			</div>
-			<div class="hb-act-progress__step<?php echo 'gracebook' === $step ? ' is-current' : ''; ?><?php echo 'complete' === $step ? ' is-done' : ''; ?>">
-				<span>2</span><?php esc_html_e( 'Gracebook', 'hello-elementor-child' ); ?>
-			</div>
 			<div class="hb-act-progress__step<?php echo 'complete' === $step ? ' is-current' : ''; ?>">
-				<span>3</span><?php esc_html_e( 'Ready', 'hello-elementor-child' ); ?>
+				<span>2</span><?php esc_html_e( 'Ready', 'hello-elementor-child' ); ?>
 			</div>
 		</div>
 	</nav>
@@ -70,7 +69,7 @@ if ( ! empty( $state['gracebook_accepted'] ) ) {
 				<section class="hb-act-card">
 					<p class="hb-act-eyebrow"><?php esc_html_e( 'Start first', 'hello-elementor-child' ); ?></p>
 					<h1><?php esc_html_e( 'This page needs a Start handoff.', 'hello-elementor-child' ); ?></h1>
-					<p><?php esc_html_e( 'Choose Participate on MEGAvoters. That sealed token is the only way this page knows your Peace Pentagon branch.', 'hello-elementor-child' ); ?></p>
+					<p><?php esc_html_e( 'Choose Participate on Megavoters. That sealed token is the only way this page knows your Peace Pentagon branch.', 'hello-elementor-child' ); ?></p>
 					<a class="hb-act-btn" href="<?php echo esc_url( $mega_start ); ?>"><?php esc_html_e( 'Go to Start', 'hello-elementor-child' ); ?></a>
 				</section>
 
@@ -109,34 +108,37 @@ if ( ! empty( $state['gracebook_accepted'] ) ) {
 							<span><?php esc_html_e( 'I accept the privacy disclosure for this voluntary device recognition.', 'hello-elementor-child' ); ?></span>
 						</label>
 						<button class="hb-act-btn" type="submit" id="hb-register-btn"><?php esc_html_e( 'Register My Device', 'hello-elementor-child' ); ?></button>
-						<p class="hb-act-note"><?php esc_html_e( 'No shop, pledge, membership, XP, or proof-of-delivery is collected here.', 'hello-elementor-child' ); ?></p>
+						<p class="hb-act-note"><?php esc_html_e( 'No shop, pledge, membership, XP, or Discord join is required here.', 'hello-elementor-child' ); ?></p>
 						<div id="hb-register-msg" role="status" aria-live="polite"></div>
 					</form>
 				</section>
 
-				<section class="hb-act-card" id="hb-gracebook-panel" <?php echo 'gracebook' === $step ? '' : 'hidden'; ?>>
-					<p class="hb-act-eyebrow"><?php esc_html_e( 'Join the conversation—not an ideology', 'hello-elementor-child' ); ?></p>
-					<h1><?php esc_html_e( 'Accept the Gracebook covenant.', 'hello-elementor-child' ); ?></h1>
-					<p><?php esc_html_e( 'Discord Gracebook is where Community Checkers receive pilot notices, ask questions, and help reconcile what the community reports. Joining the server alone does not complete acceptance.', 'hello-elementor-child' ); ?></p>
-					<ul class="hb-act-acks">
-						<li><?php esc_html_e( 'I will Practice FAITH: Fair, Accepting, Insightful, Transparent, and Humble.', 'hello-elementor-child' ); ?></li>
-						<li><?php esc_html_e( 'I understand that participation is voluntary and no response is a character judgment.', 'hello-elementor-child' ); ?></li>
-						<li><?php esc_html_e( 'I understand that testnet XP is Experience Presence and never money.', 'hello-elementor-child' ); ?></li>
-					</ul>
-					<button class="hb-act-btn" type="button" id="hb-gracebook-btn"><?php esc_html_e( 'I Accept and Enter Gracebook', 'hello-elementor-child' ); ?></button>
-					<p class="hb-act-note"><?php esc_html_e( 'This click is the acceptance. Opening Discord without it leaves onboarding incomplete.', 'hello-elementor-child' ); ?></p>
-					<div id="hb-gracebook-msg" role="status" aria-live="polite"></div>
-				</section>
-
 				<section class="hb-act-card" id="hb-complete-panel" <?php echo 'complete' === $step ? '' : 'hidden'; ?>>
-					<p class="hb-act-eyebrow"><?php esc_html_e( 'Both flags are true', 'hello-elementor-child' ); ?></p>
-					<h1><?php esc_html_e( 'Community Checker ready', 'hello-elementor-child' ); ?></h1>
-					<p><?php esc_html_e( 'This device is registered and Gracebook acceptance is confirmed. You may now RSVP, observe as a YAM’er, or continue as a MEGAvoter.', 'hello-elementor-child' ); ?></p>
+					<p class="hb-act-eyebrow"><?php esc_html_e( 'Device ready', 'hello-elementor-child' ); ?></p>
+					<h1><?php esc_html_e( 'You can return to your event.', 'hello-elementor-child' ); ?></h1>
+					<p><?php esc_html_e( 'This device is registered. Discord Gracebook is optional — you are not sent there automatically. Continue with Human Gold RSVP or explore Megavoters.', 'hello-elementor-child' ); ?></p>
 					<div class="hb-act-next">
-						<a class="hb-act-btn" href="<?php echo esc_url( HB_Start_Activate::sister_url( 'llb', '/god-wink/' ) ); ?>"><?php esc_html_e( 'RSVP for the proposed LAUGH gathering', 'hello-elementor-child' ); ?></a>
-						<a class="hb-act-btn hb-act-btn--ghost" href="<?php echo esc_url( HB_Start_Activate::sister_url( 'mega', '/discover/' ) ); ?>"><?php esc_html_e( 'Observe as a YAM’er', 'hello-elementor-child' ); ?></a>
-						<a class="hb-act-btn hb-act-btn--ghost" href="<?php echo esc_url( HB_Start_Activate::sister_url( 'mega', '/' ) ); ?>"><?php esc_html_e( 'Explore MEGAvoter participation', 'hello-elementor-child' ); ?></a>
+						<a class="hb-act-btn" href="<?php echo esc_url( $hbc_rsvp ); ?>"><?php esc_html_e( 'Return to Human Gold RSVP (/r)', 'hello-elementor-child' ); ?></a>
+						<a class="hb-act-btn hb-act-btn--ghost" href="<?php echo esc_url( HB_Start_Activate::sister_url( 'mega', '/discover/' ) ); ?>"><?php esc_html_e( 'Observe as a Nugget', 'hello-elementor-child' ); ?></a>
+						<a class="hb-act-btn hb-act-btn--ghost" href="<?php echo esc_url( HB_Start_Activate::sister_url( 'mega', '/' ) ); ?>"><?php esc_html_e( 'Explore Miner participation', 'hello-elementor-child' ); ?></a>
 					</div>
+
+					<details class="hb-act-optional" style="margin-top:28px">
+						<summary><?php esc_html_e( 'Optional: Discord Gracebook invite', 'hello-elementor-child' ); ?></summary>
+						<div id="hb-gracebook-panel" style="margin-top:16px">
+							<p><?php esc_html_e( 'Gracebook is an optional conversation space. It is not required for RSVP, device registration, or attending an HBC event.', 'hello-elementor-child' ); ?></p>
+							<button class="hb-act-btn hb-act-btn--ghost" type="button" id="hb-gracebook-btn"><?php esc_html_e( 'Save optional Gracebook interest', 'hello-elementor-child' ); ?></button>
+							<?php if ( is_string( $discord_url ) && $discord_url !== '' ) : ?>
+								<p style="margin-top:12px">
+									<a id="hb-discord-optional-link" class="hb-act-btn hb-act-btn--ghost" href="<?php echo esc_url( $discord_url ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Open Discord invite (optional)', 'hello-elementor-child' ); ?></a>
+								</p>
+							<?php else : ?>
+								<a id="hb-discord-optional-link" hidden href="#" target="_blank" rel="noopener noreferrer"></a>
+							<?php endif; ?>
+							<button class="hb-act-btn hb-act-btn--ghost" type="button" id="hb-gracebook-skip" style="margin-top:8px"><?php esc_html_e( 'Skip — stay here', 'hello-elementor-child' ); ?></button>
+							<div id="hb-gracebook-msg" role="status" aria-live="polite"></div>
+						</div>
+					</details>
 				</section>
 
 			<?php endif; ?>
