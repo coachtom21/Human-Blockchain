@@ -241,7 +241,7 @@ class Serendipity_Service {
 			return $buyer_poc;
 		}
 		
-		// Assign Seller POC (out-of-state/global) - only for MEGAvoter and Patron
+		// Assign Seller POC (out-of-state/global) - only for Miner and Patron
 		global $wpdb;
 		$device = $wpdb->get_row(
 			$wpdb->prepare( "SELECT membership_tier FROM {$wpdb->prefix}hb_devices WHERE id = %d", $device_id ),

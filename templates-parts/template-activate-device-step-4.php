@@ -68,11 +68,11 @@
 
       <div class="membership-options" id="membershipOptions">
         <div class="option" data-tier="yamer">
-          <h3>YAM'er — Free</h3>
+          <h3>Nugget — Free</h3>
           <p>Participate in Proof of Delivery.</p>
         </div>
         <div class="option" data-tier="megavoter">
-          <h3>MEGAvoter — Annual</h3>
+          <h3>Miner — Annual</h3>
           <p>Guide social impact decisions.</p>
         </div>
         <div class="option" data-tier="patron">

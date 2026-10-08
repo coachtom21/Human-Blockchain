@@ -94,7 +94,7 @@
 
       <div class="grid">
         <div class="card" style="box-shadow:none">
-          <h2 style="margin:0 0 6px">Buyer (YAM'er)</h2>
+          <h2 style="margin:0 0 6px">Buyer (Nugget)</h2>
           <div class="price">Free • Buyer-first path</div>
           <ul>
             <li>Requires device registration + MSB credentials</li>
@@ -105,7 +105,7 @@
         </div>
 
         <div class="card" style="box-shadow:none">
-          <h2 style="margin:0 0 6px">Seller / Sponsor (MEGAvoter)</h2>
+          <h2 style="margin:0 0 6px">Seller / Sponsor (Miner)</h2>
           <div class="price">$12 annual pledge • Seller path</div>
           <ul>
             <li>Requires QRtiger v-card</li>
@@ -121,8 +121,8 @@
 
       <label for="pick">Select your membership level</label>
       <select id="pick">
-        <option value="Buyer">Buyer (YAM'er)</option>
-        <option value="Seller">Seller / Sponsor (MEGAvoter)</option>
+        <option value="Buyer">Buyer (Nugget)</option>
+        <option value="Seller">Seller / Sponsor (Miner)</option>
       </select>
 
       <div class="actions">
@@ -137,7 +137,7 @@
       </p>
 
       <p class="foot">
-        Referral XP opportunities (annual, for active members): <strong>$1</strong> YAM'er, <strong>$5</strong> MEGAvoter.
+        Referral XP opportunities (annual, for active members): <strong>$1</strong> Nugget, <strong>$5</strong> Miner.
         Bonuses post when referred members remain <strong>Active</strong>.
       </p>
 

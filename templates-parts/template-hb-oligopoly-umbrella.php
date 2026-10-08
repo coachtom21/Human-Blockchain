@@ -39,7 +39,7 @@ $participant = array(
 	<meta charset="<?php bloginfo( 'charset' ); ?>" />
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 	<title><?php echo esc_html( __( 'Oligopoly Umbrella Explainer', 'hello-elementor-child' ) . ' | ' . get_bloginfo( 'name' ) ); ?></title>
-	<meta name="description" content="<?php echo esc_attr__( 'Understand the YAM’er observer and MEGAvoter participant roles within Oligopoly Community Checkers.', 'hello-elementor-child' ); ?>" />
+	<meta name="description" content="<?php echo esc_attr__( 'Understand the Nugget observer and Miner participant roles within Oligopoly Community Checkers.', 'hello-elementor-child' ); ?>" />
 	<?php wp_head(); ?>
 	<link rel="stylesheet" href="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/css/hb-oligopoly-umbrella.css' ); ?>?ver=<?php echo esc_attr( $css_ver ); ?>" />
 </head>
@@ -61,9 +61,9 @@ $participant = array(
 			</div>
 			<div class="visual" aria-label="<?php echo esc_attr__( 'A Community Checker device freely choosing between observer and participant', 'hello-elementor-child' ); ?>">
 				<div class="dome">
-					<span class="yam"><?php echo wp_kses( __( 'YAM’er<small>Observe</small>', 'hello-elementor-child' ), array( 'small' => array() ) ); ?></span>
+					<span class="yam"><?php echo wp_kses( __( 'Nugget<small>Observe</small>', 'hello-elementor-child' ), array( 'small' => array() ) ); ?></span>
 					<span class="device">▣<small><?php esc_html_e( 'DEVICE', 'hello-elementor-child' ); ?></small></span>
-					<span class="mega"><?php echo wp_kses( __( 'MEGAvoter<small>Participate</small>', 'hello-elementor-child' ), array( 'small' => array() ) ); ?></span>
+					<span class="mega"><?php echo wp_kses( __( 'Miner<small>Participate</small>', 'hello-elementor-child' ), array( 'small' => array() ) ); ?></span>
 				</div>
 				<p><b>≐</b> <?php esc_html_e( 'Human choice remains final', 'hello-elementor-child' ); ?></p>
 			</div>
@@ -79,7 +79,7 @@ $participant = array(
 				<article>
 					<span>02</span>
 					<h3><?php esc_html_e( 'Understand the roles', 'hello-elementor-child' ); ?></h3>
-					<p><?php esc_html_e( 'Observe freely as a YAM’er or voluntarily begin the MEGAvoter path.', 'hello-elementor-child' ); ?></p>
+					<p><?php esc_html_e( 'Observe freely as a Nugget or voluntarily begin the Miner path.', 'hello-elementor-child' ); ?></p>
 				</article>
 				<article>
 					<span>03</span>
@@ -95,30 +95,30 @@ $participant = array(
 					<p class="eyebrow"><?php esc_html_e( 'Two entry roles', 'hello-elementor-child' ); ?></p>
 					<h2><?php esc_html_e( 'Observe freely. Participate by choice.', 'hello-elementor-child' ); ?></h2>
 				</div>
-				<p><?php esc_html_e( 'Shopping, scanning and Discord acceptance do not create membership. Only a voluntary MEGAvoter selection begins the membership process.', 'hello-elementor-child' ); ?></p>
+				<p><?php esc_html_e( 'Shopping, scanning and Discord acceptance do not create membership. Only a voluntary Miner selection begins the membership process.', 'hello-elementor-child' ); ?></p>
 			</div>
 			<div class="roles">
 				<article class="role">
 					<span class="tag"><?php esc_html_e( 'No membership obligation', 'hello-elementor-child' ); ?></span>
-					<h3><?php esc_html_e( 'YAM’er', 'hello-elementor-child' ); ?></h3>
+					<h3><?php esc_html_e( 'Nugget', 'hello-elementor-child' ); ?></h3>
 					<p class="subtitle"><?php esc_html_e( 'Observer · Buyer · Shopper', 'hello-elementor-child' ); ?></p>
 					<ul>
 						<?php foreach ( $observer as $item ) : ?>
 							<li><b>✓</b><?php echo esc_html( $item ); ?></li>
 						<?php endforeach; ?>
 					</ul>
-					<a class="button ghost" href="<?php echo esc_url( $yam_url ); ?>"><?php esc_html_e( 'Remain a YAM’er', 'hello-elementor-child' ); ?></a>
+					<a class="button ghost" href="<?php echo esc_url( $yam_url ); ?>"><?php esc_html_e( 'Remain a Nugget', 'hello-elementor-child' ); ?></a>
 				</article>
 				<article class="role featured">
 					<span class="tag"><?php esc_html_e( 'Voluntary membership path', 'hello-elementor-child' ); ?></span>
-					<h3><?php esc_html_e( 'MEGAvoter', 'hello-elementor-child' ); ?></h3>
+					<h3><?php esc_html_e( 'Miner', 'hello-elementor-child' ); ?></h3>
 					<p class="subtitle"><?php esc_html_e( 'Participant · Seller · Messenger', 'hello-elementor-child' ); ?></p>
 					<ul>
 						<?php foreach ( $participant as $item ) : ?>
 							<li><b>✓</b><?php echo esc_html( $item ); ?></li>
 						<?php endforeach; ?>
 					</ul>
-					<a class="button" href="<?php echo esc_url( $mega_url ); ?>"><?php esc_html_e( 'Explore MEGAvoter', 'hello-elementor-child' ); ?></a>
+					<a class="button" href="<?php echo esc_url( $mega_url ); ?>"><?php esc_html_e( 'Explore Miner', 'hello-elementor-child' ); ?></a>
 				</article>
 			</div>
 		</section>
@@ -191,17 +191,17 @@ $participant = array(
 			<p class="intro"><?php esc_html_e( 'Both paths preserve your freedom to change encounter roles or walk away. Only participation begins a membership request.', 'hello-elementor-child' ); ?></p>
 			<div class="modal-grid">
 				<div>
-					<b><?php esc_html_e( 'YAM’er · Observer', 'hello-elementor-child' ); ?></b>
+					<b><?php esc_html_e( 'Nugget · Observer', 'hello-elementor-child' ); ?></b>
 					<p><?php esc_html_e( 'Free to browse, shop and observe. No $12 pledge, membership obligation or dual POC assignment.', 'hello-elementor-child' ); ?></p>
 				</div>
 				<div>
-					<b><?php esc_html_e( 'MEGAvoter · Participant', 'hello-elementor-child' ); ?></b>
+					<b><?php esc_html_e( 'Miner · Participant', 'hello-elementor-child' ); ?></b>
 					<p><?php esc_html_e( 'Voluntary $12 annual pledge. Pending until device, Discord and dual 30-member POC assignment.', 'hello-elementor-child' ); ?></p>
 				</div>
 			</div>
 			<div class="actions">
-				<a class="button ghost" href="<?php echo esc_url( $yam_url ); ?>"><?php esc_html_e( 'Remain a YAM’er', 'hello-elementor-child' ); ?></a>
-				<a class="button" href="<?php echo esc_url( $mega_url ); ?>"><?php esc_html_e( 'Explore MEGAvoter', 'hello-elementor-child' ); ?></a>
+				<a class="button ghost" href="<?php echo esc_url( $yam_url ); ?>"><?php esc_html_e( 'Remain a Nugget', 'hello-elementor-child' ); ?></a>
+				<a class="button" href="<?php echo esc_url( $mega_url ); ?>"><?php esc_html_e( 'Explore Miner', 'hello-elementor-child' ); ?></a>
 			</div>
 			<p class="modal-foot"><?php esc_html_e( 'No membership payment is collected during gameplay.', 'hello-elementor-child' ); ?></p>
 		</section>

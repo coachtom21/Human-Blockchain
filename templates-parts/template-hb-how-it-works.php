@@ -116,7 +116,7 @@ $css_ver  = file_exists( $css_file ) ? (string) filemtime( $css_file ) : HELLO_E
 						<p><?php esc_html_e( 'A free observer/buyer/recipient path. Discord Gracebook acceptance is required when consideration or XP recognition is received. There is no fiscal responsibility simply for observing.', 'hello-elementor-child' ); ?></p>
 					</article>
 					<article class="hb-path hb-path--blue">
-						<small><?php esc_html_e( 'MEGAvoter', 'hello-elementor-child' ); ?></small>
+						<small><?php esc_html_e( 'Miner', 'hello-elementor-child' ); ?></small>
 						<h3><?php esc_html_e( 'Participate • Sell • Give', 'hello-elementor-child' ); ?></h3>
 						<p><?php esc_html_e( 'A participant/seller/messenger path connected to a $12 annual membership pledge and a Tiger\'s Eye worry-prayer touchstone backorder. The pledge is not a payment collected at a LAUGH event.', 'hello-elementor-child' ); ?></p>
 					</article>

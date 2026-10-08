@@ -432,7 +432,7 @@ class HB_Start_Activate {
 		);
 
 		if ( defined( 'MEGAVOTERS_HANDOFF_SECRET' ) && MEGAVOTERS_HANDOFF_SECRET ) {
-			$args['headers']['X-Megavoters-Handoff-Key'] = MEGAVOTERS_HANDOFF_SECRET;
+			$args['headers']['X-MEGAvoters-Handoff-Key'] = MEGAVOTERS_HANDOFF_SECRET;
 		}
 
 		$response = wp_remote_post( self::mega_rest_base() . '/megavoters/v1/handoff/redeem', $args );
@@ -475,7 +475,7 @@ class HB_Start_Activate {
 		$state  = self::load_funnel( $posted );
 
 		if ( empty( $state['redeemed'] ) || empty( $state['branch'] ) ) {
-			wp_send_json_error( array( 'message' => __( 'Start from MEGAvoters so this device can inherit your branch.', 'hello-elementor-child' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Start from Miners so this device can inherit your branch.', 'hello-elementor-child' ) ) );
 		}
 
 		if ( ! empty( $state['device_registered'] ) ) {

@@ -74,7 +74,7 @@ $css_ver  = file_exists( $css_file ) ? (string) filemtime( $css_file ) : HELLO_E
 					</article>
 					<article class="hb-card">
 						<span class="hb-tag"><?php esc_html_e( 'Participant path', 'hello-elementor-child' ); ?></span>
-						<h3><?php esc_html_e( 'MEGAvoter seller/giver', 'hello-elementor-child' ); ?></h3>
+						<h3><?php esc_html_e( 'Miner seller/giver', 'hello-elementor-child' ); ?></h3>
 						<p><?php esc_html_e( 'A participant, messenger, sponsor, seller, or giver who helps invitations and items reach their intended recipients.', 'hello-elementor-child' ); ?></p>
 						<ul>
 							<li><?php esc_html_e( 'Connects to the $12 annual membership pledge', 'hello-elementor-child' ); ?></li>
@@ -203,7 +203,7 @@ $css_ver  = file_exists( $css_file ) ? (string) filemtime( $css_file ) : HELLO_E
 					</article>
 					<article class="hb-card">
 						<h3><?php esc_html_e( '2. Register', 'hello-elementor-child' ); ?></h3>
-						<p><?php esc_html_e( 'Register the device and choose MEGAvoter participant/seller/giver status.', 'hello-elementor-child' ); ?></p>
+						<p><?php esc_html_e( 'Register the device and choose Miner participant/seller/giver status.', 'hello-elementor-child' ); ?></p>
 					</article>
 					<article class="hb-card">
 						<h3><?php esc_html_e( '3. Join', 'hello-elementor-child' ); ?></h3>

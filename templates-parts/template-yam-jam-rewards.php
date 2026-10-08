@@ -515,8 +515,8 @@ get_header();
 			?>
           </p>
           <ul class="yamjam-clean">
-            <li><?php esc_html_e( '$1 YAM’er', 'hello-elementor-child' ); ?></li>
-            <li><?php esc_html_e( '$5 MEGAvoter', 'hello-elementor-child' ); ?></li>
+            <li><?php esc_html_e( '$1 Nugget', 'hello-elementor-child' ); ?></li>
+            <li><?php esc_html_e( '$5 Miner', 'hello-elementor-child' ); ?></li>
             <li><?php esc_html_e( '$25 Patron', 'hello-elementor-child' ); ?></li>
             <li><?php esc_html_e( 'Annual residual member incentive', 'hello-elementor-child' ); ?></li>
           </ul>

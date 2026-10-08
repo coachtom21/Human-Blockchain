@@ -2,8 +2,8 @@
 /**
  * Front page — Showing Up Counts (deliverable index.html as a WordPress template).
  * Do not overwrite WordPress index.php.
- * Free path: Start Playing Free → YAM’er / register-device.
- * Paid path: Continue as a MEGAvoter → /megavoter/ ($12 checkout).
+ * Free path: Start Playing Free → Nugget / register-device.
+ * Paid path: Continue as a Miner → /megavoter/ ($12 checkout).
  * LAUGH RSVP: Find a LAUGH → /r.
  *
  * @package HelloElementorChild
@@ -139,17 +139,17 @@ $css_ver  = file_exists( $css_file ) ? (string) filemtime( $css_file ) : HELLO_E
 			<div class="choices">
 				<?php if ( ! $logged_in ) : ?>
 				<article>
-					<p class="label"><?php esc_html_e( 'Observer / YAM’er', 'hello-elementor-child' ); ?></p>
+					<p class="label"><?php esc_html_e( 'Observer / Nugget', 'hello-elementor-child' ); ?></p>
 					<h3><?php esc_html_e( 'Free', 'hello-elementor-child' ); ?></h3>
 					<p><?php esc_html_e( 'Your email address and mobile phone number are all you need to start playing Oligopoly: Community Checkers. No Discord credentials or membership payment are required.', 'hello-elementor-child' ); ?></p>
 					<a class="primary" href="<?php echo esc_url( $yamer_url ); ?>"><?php esc_html_e( 'Start Playing Free', 'hello-elementor-child' ); ?></a>
 				</article>
 				<?php endif; ?>
 				<article>
-					<p class="label"><?php esc_html_e( 'Participant / MEGAvoter', 'hello-elementor-child' ); ?></p>
+					<p class="label"><?php esc_html_e( 'Participant / Miner', 'hello-elementor-child' ); ?></p>
 					<h3><?php esc_html_e( '$12 annually', 'hello-elementor-child' ); ?></h3>
 					<p><?php esc_html_e( 'Participate more deeply in LAUGH events and the Human Blockchain community, and unlock Shop.', 'hello-elementor-child' ); ?></p>
-					<a class="primary" href="<?php echo esc_url( $megavoter_url ); ?>"><?php esc_html_e( 'Continue as a MEGAvoter', 'hello-elementor-child' ); ?></a>
+					<a class="primary" href="<?php echo esc_url( $megavoter_url ); ?>"><?php esc_html_e( 'Continue as a Miner', 'hello-elementor-child' ); ?></a>
 				</article>
 			</div>
 		</div>
@@ -172,7 +172,7 @@ $css_ver  = file_exists( $css_file ) ? (string) filemtime( $css_file ) : HELLO_E
 				<p><?php esc_html_e( 'Schedule and publish events, manage RSVPs and communications, access the three universal QR codes, document attendance and outcomes, report aggregate participation, and review ongoing performance.', 'hello-elementor-child' ); ?></p>
 				<div class="links">
 					<a class="primary" href="<?php echo esc_url( $dash_url ); ?>"><?php esc_html_e( 'Open Organizer Dashboard', 'hello-elementor-child' ); ?></a>
-					<a class="ghost" href="<?php echo esc_url( $mega_start ); ?>"><?php esc_html_e( 'Start with MEGAvoters', 'hello-elementor-child' ); ?></a>
+					<a class="ghost" href="<?php echo esc_url( $mega_start ); ?>"><?php esc_html_e( 'Start with Miners', 'hello-elementor-child' ); ?></a>
 				</div>
 			</div>
 		</div>
@@ -206,7 +206,7 @@ $css_ver  = file_exists( $css_file ) ? (string) filemtime( $css_file ) : HELLO_E
 				<p><?php echo wp_kses_post( __( 'A touchstone is <strong>not</strong> required to start playing, attend an event, register a device, complete an encounter, receive XP, or belong to the community.', 'hello-elementor-child' ) ); ?></p>
 				<div class="links">
 					<a class="primary" href="<?php echo esc_url( $laugh_url ); ?>"><?php esc_html_e( 'Find an Event and RSVP', 'hello-elementor-child' ); ?></a>
-					<a class="ghost" href="<?php echo esc_url( $mega_start ); ?>"><?php esc_html_e( 'Start with MEGAvoters', 'hello-elementor-child' ); ?></a>
+					<a class="ghost" href="<?php echo esc_url( $mega_start ); ?>"><?php esc_html_e( 'Start with Miners', 'hello-elementor-child' ); ?></a>
 				</div>
 			</div>
 		</div>

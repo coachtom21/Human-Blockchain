@@ -190,7 +190,7 @@ $css_ver  = file_exists( $css_file ) ? (string) filemtime( $css_file ) : HELLO_E
 					<div class="card">
 						<h3><?php esc_html_e( 'Discord Gracebook', 'hello-elementor-child' ); ?></h3>
 						<p>
-							<?php esc_html_e( 'The community becomes the operating room for observers, YAM’ers, MEGAvoters, stewards, and Group Hug organizers.', 'hello-elementor-child' ); ?>
+							<?php esc_html_e( 'The community becomes the operating room for observers, Nuggets, Miners, stewards, and Group Hug organizers.', 'hello-elementor-child' ); ?>
 						</p>
 					</div>
 				</div>
@@ -231,7 +231,7 @@ $css_ver  = file_exists( $css_file ) ? (string) filemtime( $css_file ) : HELLO_E
 				<h2><?php esc_html_e( 'Membership Path', 'hello-elementor-child' ); ?></h2>
 				<div class="grid">
 					<div class="card">
-						<h3><?php esc_html_e( 'YAM’er', 'hello-elementor-child' ); ?></h3>
+						<h3><?php esc_html_e( 'Nugget', 'hello-elementor-child' ); ?></h3>
 						<div class="price"><?php esc_html_e( 'Free', 'hello-elementor-child' ); ?></div>
 						<p>
 							<?php esc_html_e( 'Become an observer, register your device, and learn the Detente 2030 Human Gold Experiment.', 'hello-elementor-child' ); ?>
@@ -239,7 +239,7 @@ $css_ver  = file_exists( $css_file ) ? (string) filemtime( $css_file ) : HELLO_E
 						<a href="<?php echo esc_url( $url_observe_free ); ?>" class="btn btn-secondary"><?php esc_html_e( 'Observe Free', 'hello-elementor-child' ); ?></a>
 					</div>
 					<div class="card">
-						<h3><?php esc_html_e( 'MEGAvoter', 'hello-elementor-child' ); ?></h3>
+						<h3><?php esc_html_e( 'Miner', 'hello-elementor-child' ); ?></h3>
 						<div class="price"><?php esc_html_e( '$12/yr', 'hello-elementor-child' ); ?></div>
 						<p>
 							<?php esc_html_e( 'Receive the right to publish postcards, support Group Hug events, and help organize Krill Kit fulfillment.', 'hello-elementor-child' ); ?>

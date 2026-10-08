@@ -1056,7 +1056,7 @@
     <div class="yam-dialog">
       <div class="yam-dialogHeader">
         <div class="yam-titleBlock">
-          <div class="yam-kicker"><span class="yam-dot"></span> YAM'er Portal • Accrued Demand</div>
+          <div class="yam-kicker"><span class="yam-dot"></span> Nugget Portal • Accrued Demand</div>
           <h3 id="joinPOCTitle">Join a POC Guild (5 sellers / 25 buyers)</h3>
           <p class="yam-sub">
             This pop-up records your <b>accrued demand</b> to join a community Guild. That demand is a Kalshi Mirror reputation signal:
@@ -1083,7 +1083,7 @@
                 <label for="rolePref">Role preference</label>
                 <select id="rolePref" name="role_preference" required>
                   <option value="" selected disabled>Select…</option>
-                  <option value="YAMER_BUYER">YAM'er (Buyer)</option>
+                  <option value="YAMER_BUYER">Nugget (Buyer)</option>
                   <option value="SELLER_ELIGIBLE">Seller-Eligible (I can sponsor + deliver)</option>
                   <option value="EITHER_SERENDIPITY">Either (serendipity assigns)</option>
                 </select>
@@ -1275,8 +1275,8 @@
         <div>
           <label for="regRole">I am registering as…</label>
           <select id="regRole">
-            <option value="Buyer">Buyer (YAM'er)</option>
-            <option value="Seller">Seller / Sponsor (MEGAvoter)</option>
+            <option value="Buyer">Buyer (Nugget)</option>
+            <option value="Seller">Seller / Sponsor (Miner)</option>
           </select>
         </div>
         <div id="regSellerTypeWrap" class="hidden">
@@ -1347,14 +1347,14 @@
             <div class="badge"><span class="good">Buyer</span> • No QRtiger v-card required</div>
             <div style="height:1px;background:var(--line);margin:12px 0"></div>
             <div class="mini">
-              <h3>Buyer (YAM'er path)</h3>
+              <h3>Buyer (Nugget path)</h3>
               <p>Device registration + MSB credentials (PayPal, Venmo, Apple Pay, Google Pay) + Discord Gracebook acceptance. A verified $30 pledge can trigger the <strong>$5 XP reward</strong>.</p>
             </div>
             <div style="height:10px"></div>
             <div class="badge"><span class="good">Seller</span> • QRtiger v-card required</div>
             <div style="height:1px;background:var(--line);margin:12px 0"></div>
             <div class="mini">
-              <h3>Seller / Sponsor (MEGAvoter path)</h3>
+              <h3>Seller / Sponsor (Miner path)</h3>
               <p>Everything a buyer has, plus a <strong>QRtiger v-card</strong>. Seller can be individual-sponsored or group-sponsored. <strong>NWP issuing is strictly a feature of the Seller POC.</strong></p>
             </div>
             <p class="note">If five sellers can't gather and sing a song for peace, how will any plan work? This movement scales when even a small fraction shows up.</p>

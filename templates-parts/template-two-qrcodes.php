@@ -103,12 +103,12 @@ get_header();
         <h2>Visible symbols of a living system</h2>
         <p>
           The Human Blockchain spreads through physical merchandise and recognizable artifacts designed to unify community, participation,
-          and message. Détente 2030 coins, MEGA coach medallions, MEGAvoter hats, shirts, and dual hang tags act as visible touchpoints
+          and message. Détente 2030 coins, MEGA coach medallions, Miner hats, shirts, and dual hang tags act as visible touchpoints
           for a movement built on proof, presence, and purpose.
         </p>
         <ul class="hb2030-list">
           <li><strong>Détente 2030 Coins:</strong> MEGA coach medallions carrying QR codes and phrases such as <em>Legacy to Live By</em> and <em>Bounty for Inspirational Services</em>.</li>
-          <li><strong>Apparel and Tagging:</strong> MEGAvoter hats and shirts carrying the slogan <em>Organized Krill Can Starve a Whale</em>.</li>
+          <li><strong>Apparel and Tagging:</strong> Miner hats and shirts carrying the slogan <em>Organized Krill Can Starve a Whale</em>.</li>
           <li><strong>Dual Hang Tags:</strong> Merchandise labels showing expiration dates, QR system access, and language like <em>World Peace Détente 2.0</em> and <em>How Money Works</em>.</li>
         </ul>
       </article>
@@ -125,7 +125,7 @@ get_header();
           <li>Registers the user’s device</li>
           <li>Opens the QRtiger v-card</li>
           <li>Provides Discord Gracebook invitation</li>
-          <li>Routes the person into YAM’er, MEGAvoter, or Patron pathways</li>
+          <li>Routes the person into Nugget, Miner, or Patron pathways</li>
         </ul>
       </article>
 

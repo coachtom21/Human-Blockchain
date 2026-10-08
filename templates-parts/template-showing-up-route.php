@@ -28,12 +28,12 @@ $copy = array(
 	'host-a-laugh'         => array(
 		'kicker' => __( 'Create a LAUGH', 'hello-elementor-child' ),
 		'title'  => __( 'Hosting ships after Observer signup.', 'hello-elementor-child' ),
-		'body'   => __( 'Creating a gathering is for permitted MEGAvoter hosts. Pay $12 to become a Participant first. Free Observers register a phone and do not host from this path. The dashboard itself ships later.', 'hello-elementor-child' ),
+		'body'   => __( 'Creating a gathering is for permitted Miner hosts. Pay $12 to become a Participant first. Free Observers register a phone and do not host from this path. The dashboard itself ships later.', 'hello-elementor-child' ),
 	),
 	'organizer-dashboard'  => array(
 		'kicker' => __( 'Organizer Dashboard', 'hello-elementor-child' ),
 		'title'  => __( 'Your community tools are not live yet.', 'hello-elementor-child' ),
-		'body'   => __( 'The dashboard will manage events, RSVPs, attendance, and reports for that organizer. Observer / YAM’er signup does not open it.', 'hello-elementor-child' ),
+		'body'   => __( 'The dashboard will manage events, RSVPs, attendance, and reports for that organizer. Observer / Nugget signup does not open it.', 'hello-elementor-child' ),
 	),
 	'make-a-move'          => array(
 		'kicker' => __( 'Make a Move', 'hello-elementor-child' ),
@@ -48,7 +48,7 @@ $copy = array(
 	'gracebook'            => array(
 		'kicker' => __( 'Gracebook', 'hello-elementor-child' ),
 		'title'  => __( 'Discord is not part of this site.', 'hello-elementor-child' ),
-		'body'   => __( 'Human Blockchain does not use Discord or Gracebook to register, play, host, or receive XP. Use My Account, Find a LAUGH, or continue as a MEGAvoter.', 'hello-elementor-child' ),
+		'body'   => __( 'Human Blockchain does not use Discord or Gracebook to register, play, host, or receive XP. Use My Account, Find a LAUGH, or continue as a Miner.', 'hello-elementor-child' ),
 	),
 	'practice-faith'       => array(
 		'kicker' => __( 'Practice FAITH', 'hello-elementor-child' ),
@@ -92,7 +92,7 @@ get_header();
 		<?php if ( 'my-xp' === $slug ) : ?>
 			<a class="primary" href="<?php echo esc_url( $account_url ); ?>"><?php esc_html_e( 'Open My Account', 'hello-elementor-child' ); ?></a>
 		<?php elseif ( 'host-a-laugh' === $slug || 'organizer-dashboard' === $slug ) : ?>
-			<a class="primary" href="<?php echo esc_url( $megavoter_url ); ?>"><?php esc_html_e( 'Continue as a MEGAvoter', 'hello-elementor-child' ); ?></a>
+			<a class="primary" href="<?php echo esc_url( $megavoter_url ); ?>"><?php esc_html_e( 'Continue as a Miner', 'hello-elementor-child' ); ?></a>
 			<?php if ( ! $logged_in ) : ?>
 			<a class="ghost" href="<?php echo esc_url( $register_url ); ?>"><?php esc_html_e( 'Start Playing Free', 'hello-elementor-child' ); ?></a>
 			<?php endif; ?>
@@ -103,7 +103,7 @@ get_header();
 			<a class="primary" href="mailto:coachtom@legacytoliveby.org"><?php esc_html_e( 'Email Coach Tom', 'hello-elementor-child' ); ?></a>
 		<?php elseif ( ! $logged_in ) : ?>
 			<a class="primary" href="<?php echo esc_url( $register_url ); ?>"><?php esc_html_e( 'Start Playing Free', 'hello-elementor-child' ); ?></a>
-			<a class="ghost" href="<?php echo esc_url( $mega_start ); ?>"><?php esc_html_e( 'Start with MEGAvoters', 'hello-elementor-child' ); ?></a>
+			<a class="ghost" href="<?php echo esc_url( $mega_start ); ?>"><?php esc_html_e( 'Start with Miners', 'hello-elementor-child' ); ?></a>
 		<?php else : ?>
 			<a class="ghost" href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php esc_html_e( 'Back to Showing Up Counts', 'hello-elementor-child' ); ?></a>
 		<?php endif; ?>

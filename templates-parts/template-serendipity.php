@@ -994,7 +994,7 @@
             <div class="step-number">2</div>
             <div class="step-body">
               <strong>Choose your lane.</strong> Register as a
-              <strong>YAM&rsquo;er</strong> (shopper), <strong>MEGAvoter</strong> (organizer),
+              <strong>YAM&rsquo;er</strong> (shopper), <strong>Miner</strong> (organizer),
               or <strong>Patron</strong> (stakeholder) and connect your Venmo/FonePay MSB rails.
             </div>
           </div>

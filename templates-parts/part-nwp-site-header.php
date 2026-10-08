@@ -2,7 +2,7 @@
 /**
  * Site header shared across all pages.
  * Showing Up Counts chrome: Human Blockchain / Detente 2030 + text nav.
- * Shop only for MEGAvoter / Participant.
+ * Shop only for Miner / Participant.
  *
  * @package HelloElementorChild
  */

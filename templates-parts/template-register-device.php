@@ -2,7 +2,7 @@
 /**
  * Template Name: Register Device
  *
- * Observer / YAM’er free path: email + mobile + OTP. No Woo cart. No Discord required.
+ * Observer / Nugget free path: email + mobile + OTP. No Woo cart. No Discord required.
  *
  * @package HelloElementorChild
  */
@@ -48,7 +48,7 @@ get_header();
 </style>
 <main id="content" class="site-main hb-observer" role="main">
 	<div class="hb-observer-inner">
-	<p class="kicker"><?php esc_html_e( 'Observer / YAM’er · Free', 'hello-elementor-child' ); ?></p>
+	<p class="kicker"><?php esc_html_e( 'Observer / Nugget · Free', 'hello-elementor-child' ); ?></p>
 	<h1><?php esc_html_e( 'Start playing free.', 'hello-elementor-child' ); ?></h1>
 	<p class="lede"><?php esc_html_e( 'Email and mobile. Then a one-time phone code. That is the whole Observer path.', 'hello-elementor-child' ); ?></p>
 	<p><?php esc_html_e( 'Your registered phone is a checker piece. You can play, decline, or walk away. Nobody is judged for walking away. Discord is optional. There is no cart.', 'hello-elementor-child' ); ?></p>
@@ -61,7 +61,7 @@ get_header();
 		<button type="button" class="primary cpm-nwp-open-modal" data-cpm-modal="cpm-nwp-register-modal"><?php esc_html_e( 'Register this device', 'hello-elementor-child' ); ?></button>
 		<a class="ghost" href="<?php echo esc_url( $account_url ); ?>"><?php esc_html_e( 'I already registered — My Account', 'hello-elementor-child' ); ?></a>
 	</div>
-	<p class="note"><?php esc_html_e( 'Already have a number on file? Use Activate device inside the form to request a new code. $12 MEGAvoter membership is a later choice, not this page.', 'hello-elementor-child' ); ?></p>
+	<p class="note"><?php esc_html_e( 'Already have a number on file? Use Activate device inside the form to request a new code. $12 Miner membership is a later choice, not this page.', 'hello-elementor-child' ); ?></p>
 	<p class="note"><a class="text-link" href="<?php echo esc_url( $home_url ); ?>"><?php esc_html_e( 'Back to Showing Up Counts', 'hello-elementor-child' ); ?></a></p>
 	</div>
 </main>

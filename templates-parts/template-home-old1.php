@@ -1505,7 +1505,7 @@
     <div class="yam-dialog">
       <div class="yam-dialogHeader">
         <div class="yam-titleBlock">
-          <div class="yam-kicker"><span class="yam-dot"></span> YAM'er Portal • Accrued Demand</div>
+          <div class="yam-kicker"><span class="yam-dot"></span> Nugget Portal • Accrued Demand</div>
           <h3 id="joinPOCTitle">Join a POC Guild (5 sellers / 25 buyers)</h3>
           <p class="yam-sub">
             This pop-up records your <b>accrued demand</b> to join a community Guild. That demand is a Kalshi Mirror reputation signal:
@@ -1532,7 +1532,7 @@
                 <label for="rolePref">Role preference</label>
                 <select id="rolePref" name="role_preference" required>
                   <option value="" selected disabled>Select…</option>
-                  <option value="YAMER_BUYER">YAM'er (Buyer)</option>
+                  <option value="YAMER_BUYER">Nugget (Buyer)</option>
                   <option value="SELLER_ELIGIBLE">Seller-Eligible (I can sponsor + deliver)</option>
                   <option value="EITHER_SERENDIPITY">Either (serendipity assigns)</option>
                 </select>

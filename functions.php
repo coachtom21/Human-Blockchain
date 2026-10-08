@@ -3699,10 +3699,10 @@ function hb_cpm_hb_pmpro_level_id_for_tier( $id, $tier ) {
 		'megavoter' => 2,
 		'patron'    => 3,
 	);
-	$labels = array(
-		'yamer'     => 'YAMer',
-		'megavoter' => 'Pioneer',
-		'patron'    => 'Patron',
+	$aliases = array(
+		'yamer'     => array( 'nugget', 'yamer', 'yammer' ),
+		'megavoter' => array( 'miner', 'megavoter', 'pioneer' ),
+		'patron'    => array( 'patron' ),
 	);
 	if ( ! isset( $defaults[ $tier ] ) ) {
 		return (int) $id;
@@ -3715,12 +3715,10 @@ function hb_cpm_hb_pmpro_level_id_for_tier( $id, $tier ) {
 				$by_lower[ $n ] = (int) $lvl->id;
 			}
 		}
-		$want = strtolower( $labels[ $tier ] );
-		if ( isset( $by_lower[ $want ] ) ) {
-			return (int) $by_lower[ $want ];
-		}
-		if ( 'megavoter' === $tier && isset( $by_lower['megavoter'] ) ) {
-			return (int) $by_lower['megavoter'];
+		foreach ( $aliases[ $tier ] as $want ) {
+			if ( isset( $by_lower[ $want ] ) ) {
+				return (int) $by_lower[ $want ];
+			}
 		}
 	}
 	return (int) $defaults[ $tier ];
@@ -3864,7 +3862,7 @@ function hb_grant_free_yamer_membership( $user_id ) {
 			array(
 				'payment_type'           => 'free',
 				'payment_transaction_id' => 'yamer-register-' . $user_id,
-				'notes'                  => 'Free YAM’er membership assigned at device registration.',
+				'notes'                  => 'Free Nugget membership assigned at device registration.',
 				'amount_override'        => 0,
 			)
 		);
@@ -3950,6 +3948,16 @@ add_filter( 'cpm_hb_show_landing_entry_modal', 'hb_disable_entry_gate_on_showing
  * @return void
  */
 function hb_ensure_showing_up_pages() {
+	$miner_page = get_page_by_path( 'megavoter' );
+	if ( $miner_page instanceof WP_Post && 'MEGAvoter' === $miner_page->post_title ) {
+		wp_update_post(
+			array(
+				'ID'         => (int) $miner_page->ID,
+				'post_title' => 'Miner',
+			)
+		);
+	}
+
 	if ( get_option( 'hb_showing_up_pages' ) === '2026-09-16-megavoter' ) {
 		return;
 	}
@@ -3962,7 +3970,7 @@ function hb_ensure_showing_up_pages() {
 			'template' => 'templates-parts/template-register-device.php',
 		),
 		array(
-			'title'    => __( 'MEGAvoter', 'hello-elementor-child' ),
+			'title'    => __( 'Miner', 'hello-elementor-child' ),
 			'slug'     => 'megavoter',
 			'template' => 'templates-parts/template-megavoter.php',
 		),
@@ -4064,7 +4072,7 @@ function hb_megavoter_handle_checkout_start() {
 		Cpm_Humanblockchain_Membership::save_local_membership_to_user(
 			get_current_user_id(),
 			'megavoter',
-			'MEGAvoter',
+			'Miner',
 			$branch
 		);
 	}

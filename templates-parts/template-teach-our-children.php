@@ -622,7 +622,7 @@ Pledge first → Proof second → Settlement last
                 <p>3-page framed edition + NFT delivery option.</p>
               </div>
               <div class="nftitem">
-                <strong>MEGAvoter Kit</strong>
+                <strong>Miner Kit</strong>
                 <p>Hat + t-shirt pledge kit (optional gallery tile).</p>
               </div>
             </div>

@@ -1,8 +1,8 @@
 <?php
 /**
- * Template Name: MEGAvoter Participant
+ * Template Name: Miner Participant
  *
- * Participant / MEGAvoter $12 path. Membership turns on after a successful order.
+ * Participant / Miner $12 path. Membership turns on after a successful order.
  * Discord is optional. This does not open Create a LAUGH.
  *
  * @package HelloElementorChild
@@ -69,13 +69,13 @@ get_header();
 </style>
 <main id="content" class="site-main hb-megavoter" role="main">
 	<div class="hb-megavoter-inner">
-	<p class="kicker"><?php esc_html_e( 'Participant / MEGAvoter · $12 annually', 'hello-elementor-child' ); ?></p>
-	<h1><?php esc_html_e( 'Continue as a MEGAvoter.', 'hello-elementor-child' ); ?></h1>
+	<p class="kicker"><?php esc_html_e( 'Participant / Miner · $12 annually', 'hello-elementor-child' ); ?></p>
+	<h1><?php esc_html_e( 'Continue as a Miner.', 'hello-elementor-child' ); ?></h1>
 	<p class="lede"><?php esc_html_e( 'One $12 yearly membership. After the order succeeds, you can see the Shop. It is not XP, not a touchstone, and not a host dashboard.', 'hello-elementor-child' ); ?></p>
-	<p><?php esc_html_e( 'Participant / MEGAvoter is the paid role that unlocks WooCommerce Shop. Free Observers play without a cart. Discord is optional. Creating a LAUGH is a later host permission.', 'hello-elementor-child' ); ?></p>
+	<p><?php esc_html_e( 'Participant / Miner is the paid role that unlocks WooCommerce Shop. Free Observers play without a cart. Discord is optional. Creating a LAUGH is a later host permission.', 'hello-elementor-child' ); ?></p>
 	<ol>
 		<li><?php esc_html_e( 'Choose one Peace Pentagon branch.', 'hello-elementor-child' ); ?></li>
-		<li><?php esc_html_e( 'Complete the $12 MEGAvoter checkout on this site.', 'hello-elementor-child' ); ?></li>
+		<li><?php esc_html_e( 'Complete the $12 Miner checkout on this site.', 'hello-elementor-child' ); ?></li>
 		<li><?php esc_html_e( 'Membership turns on only after the order succeeds. Then Shop is available on this site.', 'hello-elementor-child' ); ?></li>
 	</ol>
 	<form method="post" action="<?php echo esc_url( home_url( '/megavoter/' ) ); ?>">

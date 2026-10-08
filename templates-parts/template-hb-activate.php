@@ -69,7 +69,7 @@ if ( ! empty( $state['device_registered'] ) ) {
 				<section class="hb-act-card">
 					<p class="hb-act-eyebrow"><?php esc_html_e( 'Start first', 'hello-elementor-child' ); ?></p>
 					<h1><?php esc_html_e( 'This page needs a Start handoff.', 'hello-elementor-child' ); ?></h1>
-					<p><?php esc_html_e( 'Choose Participate on Megavoters. That sealed token is the only way this page knows your Peace Pentagon branch.', 'hello-elementor-child' ); ?></p>
+					<p><?php esc_html_e( 'Choose Participate on Miners. That sealed token is the only way this page knows your Peace Pentagon branch.', 'hello-elementor-child' ); ?></p>
 					<a class="hb-act-btn" href="<?php echo esc_url( $mega_start ); ?>"><?php esc_html_e( 'Go to Start', 'hello-elementor-child' ); ?></a>
 				</section>
 
@@ -116,7 +116,7 @@ if ( ! empty( $state['device_registered'] ) ) {
 				<section class="hb-act-card" id="hb-complete-panel" <?php echo 'complete' === $step ? '' : 'hidden'; ?>>
 					<p class="hb-act-eyebrow"><?php esc_html_e( 'Device ready', 'hello-elementor-child' ); ?></p>
 					<h1><?php esc_html_e( 'You can return to your event.', 'hello-elementor-child' ); ?></h1>
-					<p><?php esc_html_e( 'This device is registered. Discord Gracebook is optional — you are not sent there automatically. Continue with Human Gold RSVP or explore Megavoters.', 'hello-elementor-child' ); ?></p>
+					<p><?php esc_html_e( 'This device is registered. Discord Gracebook is optional — you are not sent there automatically. Continue with Human Gold RSVP or explore Miners.', 'hello-elementor-child' ); ?></p>
 					<div class="hb-act-next">
 						<a class="hb-act-btn" href="<?php echo esc_url( $hbc_rsvp ); ?>"><?php esc_html_e( 'Return to Human Gold RSVP (/r)', 'hello-elementor-child' ); ?></a>
 						<a class="hb-act-btn hb-act-btn--ghost" href="<?php echo esc_url( HB_Start_Activate::sister_url( 'mega', '/discover/' ) ); ?>"><?php esc_html_e( 'Observe as a Nugget', 'hello-elementor-child' ); ?></a>
